@@ -38,7 +38,10 @@ then
         tar cf - \
             --exclude "xx*" \
             --exclude "yy*" \
-            *.js libs/*js drivers/*js drivers/libs/*.js bin/data/* bin/iotdb-control |
+            README.md \
+            LICENSE.txt \
+            *.js *.json \
+            libs/*js drivers/*js drivers/libs/*.js bin/data/* bin/iotdb-control |
         ( cd "${NPM_IOTDB_DST}" && tar xvf - )
 
         python -c "
