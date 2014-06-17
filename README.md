@@ -1,4 +1,3 @@
-node-iotdb
-==========
-
-Node IOTDB - universal control and monitor language
+IOTDB
+=
+The Internet of Things Database

@@ -1,0 +1,5 @@
+Creating a new IOTDB project in folder '$PROJECT'.
+
+Make sure you've created an IOTDB account first. 
+If you haven't, enter 'nobody' for the IOTDB username
+

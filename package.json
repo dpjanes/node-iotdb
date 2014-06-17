@@ -1,0 +1,43 @@
+{
+    "author": "David P. Janes <davidjanes@iotdb.org> (https://iotdb.org)", 
+    "bin": {
+        "iotdb-control": "./bin/iotdb-control"
+    }, 
+    "bugs": {
+        "url": "https://github.com/nodejitsu/node-iotdb/issues"
+    }, 
+    "dependencies": {
+        "feedparser": ">=0.16.6", 
+        "firmata": ">=0.3.3", 
+        "jsonld": ">=0.1.25", 
+        "minimist": ">=0.0.5", 
+        "mqtt": ">=0.3.7", 
+        "node-uuid": ">=1.4.1", 
+        "prompt": ">=0.2.12", 
+        "rdf": ">=2.1.2", 
+        "twitter": ">=0.2.9", 
+        "unirest": ">=0.1.9", 
+        "xml2js": ">=0.4.0"
+    }, 
+    "description": "IOTDB.org", 
+    "homepage": "https://iotdb.org", 
+    "keywords": [
+        "IOTDB", 
+        "IOT", 
+        "Internet", 
+        "Things", 
+        "Hardware", 
+        "Raspberry", 
+        "Pi", 
+        "Arduino", 
+        "Firmata"
+    ], 
+    "license": "Apache-2.0", 
+    "main": "iotdb.js", 
+    "name": "iotdb", 
+    "repository": {
+        "type": "git", 
+        "url": "https://github.com/dpjanes/node-iotdb"
+    }, 
+    "version": "0.1.7"
+}

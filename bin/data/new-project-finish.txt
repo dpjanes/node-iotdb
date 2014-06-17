@@ -1,0 +1,15 @@
+Important Notes:
+
+1) when you create an IOTDB object using 'new iotdb.IOT()', 
+   the initial settings will be read from the file 
+   '$PROJECT/$FILE_IOTDB'. 
+
+   Feel free to edit this file _OR_ you can add a 
+   dictionary argument to 'iotdb.IOT()' to override
+
+2) you can rerun 'iotdb-control' on this project. It will
+   not destroy any existing files, data or settings
+
+3) your starter code is in '$PROJECT/$FILE_JS'. If this
+   already exists, we did not overwrite it!
+

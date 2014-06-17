@@ -1,0 +1,30 @@
+{
+  "@context": {
+    "@base": "http://localhost:9000/dpjanes/models/abstract-clock", 
+    "iot": "https://iotdb.org/pub/iot#", 
+    "iot-attribute": "https://iotdb.org/pub/iot-attribute#", 
+    "iot-js": "https://iotdb.org/pub/iot-js#", 
+    "iot-js:format": {
+      "@type": "@id"
+    }, 
+    "iot-js:type": {
+      "@type": "@id"
+    }, 
+    "iot:model": {
+      "@type": "@id"
+    }, 
+    "iot:purpose": {
+      "@type": "@id"
+    }
+  }, 
+  "@id": "", 
+  "@type": "iot:model", 
+  "iot:attribute": {
+    "@id": "#when-instant", 
+    "@type": "iot:attribute", 
+    "iot-js:format": "iot-js:datetime", 
+    "iot-js:type": "iot-js:string", 
+    "iot:purpose": "iot-attribute:when-instant"
+  }, 
+  "iot:name": "abstract-clock"
+}
