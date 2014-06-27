@@ -103,9 +103,11 @@ exports.cfg_find = function(envd, paths, name, paramd) {
         }
 
         if ((name === null) || (name === undefined) || _.isRegExp(name)) {
-            try {
+            var list_files = function(path, callback) {
+                var is_recursive = path.match(/[\/][\/]$/)
                 var files = node_fs.readdirSync(path)
                 files.sort()
+
                 for (var fi in files) {
                     var file = files[fi]
                     if ((file === ".") || (file === "..")) {
@@ -114,16 +116,32 @@ exports.cfg_find = function(envd, paths, name, paramd) {
                         continue
                     }
 
-                    if ((name === null) || (name === undefined)) {
-                        results.push(node_path.join(path, file))
-                    } else if (file.match(name)) {
-                        results.push(node_path.join(path, file))
-                    }
-
-                    if (results.length && paramd.max && (results.length >= paramd.max)) {
-                        break;
+                    var subpath = node_path.join(path, file)
+                    var subpath_stbuf = node_fs.statSync(subpath)
+                    if (subpath_stbuf.isFile()) {
+                        if (callback(subpath, file)) {
+                            break
+                        }
+                    } else if (is_recursive && subpath_stbuf.isDirectory()) {
+                        if (list_files(subpath + "//", callback)) {
+                            break
+                        }
                     }
                 }
+            }
+            
+            try {
+                list_files(path, function(subpath, file) {
+                    if ((name === null) || (name === undefined)) {
+                        results.push(subpath)
+                    } else if (file.match(name)) {
+                        results.push(subpath)
+                    } 
+
+                    if (results.length && paramd.max && (results.length >= paramd.max)) {
+                        return true
+                    }
+                })
             } catch (x) {
                 console.log("# cfg_find: unexpected exception", x)
             }

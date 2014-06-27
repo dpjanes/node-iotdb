@@ -15,6 +15,7 @@ exports.Model = iotdb.make_model('WeMoSwitch')
     .description("Belkin WeMo Switch")
     .attribute(
         iotdb.make_boolean(":on")
+            .name("on / off")
             .control()
     )
     .make_attribute_reading("on", "on-value")

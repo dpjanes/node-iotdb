@@ -47,7 +47,7 @@ var UpnpControlPoint = function() {
 		var udn = getUUID(device.usn);
 			
 		if (TRACE) {
-			console.log("DeviceFound: " + udn);
+			console.log("- DeviceFound: " + udn);
 		}
 		
 		if (self.devices[udn]) {	
@@ -82,7 +82,7 @@ var UpnpControlPoint = function() {
 		}
 		
 		if (TRACE) {
-			console.log("DeviceAvailable");
+			console.log("- DeviceAvailable");
 			//console.log('\t' + JSON.stringify(device));
 			console.log('\t' + udn + " : " + device.nt);
 			// console.log('\t' + device.usn); 		// Unique Service Name.  A unique ID for the device
@@ -105,7 +105,7 @@ var UpnpControlPoint = function() {
 		var udn = getUUID(dev.usn);
 			
 		if (TRACE) {
-			console.log("DeviceUnavailable");
+			console.log("- DeviceUnavailable");
 			console.log('\t' + JSON.stringify(dev));
 		}
 		
@@ -121,7 +121,7 @@ var UpnpControlPoint = function() {
 		var udn = getUUID(device.usn);
 			
 		if (TRACE) {
-			console.log("DeviceUpdate");
+			console.log("- DeviceUpdate");
 			console.log('\t' + JSON.stringify(device));
 		}
 		
@@ -157,7 +157,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 	var self = this;
 	var localAddress = "127.0.0.1";		// will determine which local address is used to talk with the device.
 	if (TRACE) {
-		console.log("getting device details from " + location);
+		console.log("- getting device details from " + location);
 	}
 	options = Url.parse(location);
 	var req = http.request(options, function(res) {
@@ -168,7 +168,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 		});
 		res.on('end', function () {
 			if (res.statusCode != 200) {
-				console.log("problem getting device details: " + res.statusCode + " : " + resData);
+				console.log("- problem getting device details: " + res.statusCode + " : " + resData);
 				return;
 			}
 			xml2js.parseString(resData, function(err, result) {
@@ -190,7 +190,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 		localAddress = socket.address().address;	// the local address used to communicate with the device. Used to determine callback URL. 
 	});
 	req.on('error', function(e) {
-		console.log('problem with request: ' + e.message);
+		console.log('- problem with request: ' + e.message);
 	});
 	req.end();
 }
@@ -261,7 +261,7 @@ EventHandler.prototype._serviceCallbackHandler = function(req, res) {
 		try {
 			parser.parseString(reqContent, function(err, result) {
 				if (err) {
-					console.log("got XML parsing err: " + err);
+					console.log("# got XML parsing err: " + err);
 					return;
 				}
 				var sid = req.headers.sid;
@@ -293,7 +293,7 @@ EventHandler.prototype._serviceCallbackHandler = function(req, res) {
 				// ignore
 			}
 			else {
-				 console.log("exception: " + ex);
+				 console.log("# exception: " + ex);
 			}
 		}
 	});

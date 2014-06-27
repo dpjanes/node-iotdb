@@ -19,7 +19,7 @@ var UpnpService = function(device, desc) {
     EventEmitter.call(this);
 
 	if (TRACE && DETAIL) {
-		console.log("creating service object for: " + JSON.stringify(desc)); 
+		console.log("- creating service object for: " + JSON.stringify(desc)); 
 	}
 
 	this.device = device;
@@ -51,7 +51,7 @@ util.inherits(UpnpService, EventEmitter);
  */
 UpnpService.prototype.callAction = function(actionName, args, callback) {
 	if (TRACE) {
-		console.log("calling action : " + actionName + " " + JSON.stringify(args));
+		console.log("- calling action : " + actionName + " " + JSON.stringify(args));
 	}
 	var argXml = "";
 	for (name in args) {
@@ -69,7 +69,7 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 	}
 	
 	if (TRACE && DETAIL) {
-		console.log("sending SOAP request " + JSON.stringify(options) + "\n" + s);
+		console.log("- sending SOAP request " + JSON.stringify(options) + "\n" + s);
 	}
 
 	options.headers = {
@@ -114,7 +114,7 @@ UpnpService.prototype.subscribe = function(callback) {
 	};
 	
 	if (TRACE) {
-		console.log("subscribing: " + JSON.stringify(options));
+		console.log("- subscribing: " + JSON.stringify(options));
 	}
 	
 	var req = http.request(options, function(res) {
@@ -125,7 +125,7 @@ UpnpService.prototype.subscribe = function(callback) {
 			  callback(new Error("Problem with subscription on " + service.serviceId), buf);
 			}
 			else {
-				console.log("got subscription response: " + JSON.stringify(res.headers.sid));
+				console.log("- got subscription response: " + JSON.stringify(res.headers.sid));
 				var sid = res.headers.sid;
 				var subscription = new Subscription(self, sid, self.subscriptionTimeout);
 				self.device.controlPoint.eventHandler.addSubscription(subscription);
@@ -160,11 +160,11 @@ UpnpService.prototype._resubscribe = function(sid, callback) {
 		res.on('data', function (chunk) { buf += chunk });
 		res.on('end', function () { 
 			if (res.statusCode !== 200) {
-				console.log("Problem with re-subscription on " + sid + " : " + buf);
+				console.log("# Problem with re-subscription on " + sid + " : " + buf);
 				callback(new Error("Problem with re-subscription on " + sid), buf);
 			}
 			else {
-				console.log("re-subscription success: " + self.device.udn + " : " + self.serviceId);
+				console.log("- re-subscription success: " + self.device.udn + " : " + self.serviceId);
 				callback(null, buf);
 			} 
 		});
@@ -253,7 +253,7 @@ Subscription.prototype._resubscribe = function() {
 	var self = this;
 	this.service._resubscribe(this.sid, function(err, buf) {
 		if (err) {
-			console.log("ERROR:  problem re-subscribing: " + err + "\n" + buf);
+			console.log("# ERROR:  problem re-subscribing: " + err + "\n" + buf);
 			// remove from eventhandler
 			self.service.device.controlPoint.eventHandler.removeSubscription(self);
 			clearTimeout(self.timer);
@@ -276,7 +276,7 @@ Subscription.prototype.unsubscribe = function() {
 
 Subscription.prototype.handleEvent = function(event) {
 	if (TRACE && DETAIL) {
-		console.log("subscription event: " + JSON.stringify(event));
+		console.log("- subscription event: " + JSON.stringify(event));
 	}
 	this.service.emit("stateChange", event);
 }

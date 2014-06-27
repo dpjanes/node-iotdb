@@ -114,6 +114,11 @@ describe('test_cfg', function(){
         var gots = cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg2", /[.]js$/, { max: 1, dotfiles: true })
         assert.ok(_.equals(expects, gots))
     })
+    it('search subdirectories', function(){
+        var expects = [ 'data/cfg3/sub1/file1.txt', 'data/cfg3/sub2/file2.txt' ];
+        var gots = cfg.cfg_find(envd, "data/cfg3//")
+        assert.ok(_.equals(expects, gots))
+    })
   })
   describe('cfg_load_json', function(){
     it('', function(done){
