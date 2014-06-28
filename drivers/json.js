@@ -121,6 +121,11 @@ JSONDriver.prototype.setup = function(paramd) {
  *  See {@link Driver#discover Driver.discover}
  */
 JSONDriver.prototype.discover = function(paramd, discover_callback) {
+    if (paramd.initd === undefined) {
+        console.log("# JSONDriver.discover: no nearby discovery (not a problem)")
+        return
+    }
+
     discover_callback(new JSONDriver());
 }
 

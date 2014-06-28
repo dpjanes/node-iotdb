@@ -767,6 +767,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
             continue;
         }
 
+        // note no paramd.initd. Drivers know this is "nearby" because of that
         var discover_paramd = {
         }
         driver_exemplar.discover(discover_paramd, function(driver) {
@@ -1576,10 +1577,10 @@ IOT.prototype._load_drivers = function() {
 
         var module = paramd.doc
         if (module.Driver) {
-            console.log("- IOT._load_drivers:", "found driver", paramd.filename);
+            console.log("- IOT._load_drivers:", "found Driver", "\n ", paramd.filename);
             self.register_driver(module.Driver);
         } else {
-            console.log("- IOT._load_drivers:", "missing exports.Driver?", paramd.filename);
+            console.log("- IOT._load_drivers:", "missing exports.Driver?", "\n ", paramd.filename);
         }
     })
 }
@@ -1603,7 +1604,7 @@ IOT.prototype._load_models = function() {
 
         var module = paramd.doc
         if (module.Model) {
-            console.log("- IOT._load_models:", "found Model", paramd.filename);
+            console.log("- IOT._load_models:", "found Model", "\n ", paramd.filename);
             self.register_model(module.Model);
         } else {
             console.log("- IOT._load_models:", "missing exports.Model?", paramd.filename);

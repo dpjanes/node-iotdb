@@ -727,7 +727,7 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
 
         return false;
     } else if (otherwise === undefined) {
-        console.log("# Model.is_driver_supported: the Model has no identity?")
+        // console.log("# Model.is_driver_supported: the Model has no identity?")
         return false;
     } else {
         return otherwise

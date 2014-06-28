@@ -128,6 +128,11 @@ FeedDriver.prototype.setup = function(paramd) {
  *  See {@link Driver#discover Driver.discover}
  */
 FeedDriver.prototype.discover = function(paramd, discover_callback) {
+    if (paramd.initd === undefined) {
+        console.log("# FeedDriver.discover: no nearby discovery (not a problem)")
+        return
+    }
+
     discover_callback(new FeedDriver());
 }
 

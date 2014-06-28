@@ -535,6 +535,11 @@ FirmataDriver.prototype.setup = function(paramd) {
 FirmataDriver.prototype.discover = function(paramd, discover_callback) {
     var self = this;
 
+    if (paramd.initd === undefined) {
+        console.log("# FirmataDriver.discover: no nearby discovery (not a problem)")
+        return
+    }
+
     if (machine_id === undefined) {
         machine_id = self.cfg_get("machine_id", null)
         if (!machine_id) {
@@ -629,9 +634,11 @@ FirmataDriver.prototype.push = function(paramd) {
 FirmataDriver.prototype.pull = function() {
     var self = this;
 
+    /*
     console.log("- FirmataDriver.pull", 
         "\n  initd", paramd.initd
     )
+    */
 
     return self;
 }

@@ -136,7 +136,7 @@ MQTT.prototype.setup = function(paramd) {
  */
 MQTT.prototype.discover = function(paramd, discover_callback) {
     if (!paramd.initd) {
-        console.log("# MQTT.discover: expected paramd.initd")
+        console.log("# MQTTDriver.discover: no nearby discovery (not a problem)")
         return
     }
 
