@@ -1593,7 +1593,9 @@ IOT.prototype._load_drivers = function() {
 IOT.prototype._load_models = function() {
     var self = this;
 
+    console.log("- IOT._load_models", "loading models", self.initd.models_path)
     var filenames = cfg.cfg_find(self.envd, self.initd.models_path, /[.]js$/)
+    // console.log("- IOT._load_models", "filenames", filenames, self.envd)
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
             if (paramd.filename) {
