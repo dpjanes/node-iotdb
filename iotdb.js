@@ -113,6 +113,8 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('load_models', 1)
 
     self.ready_delta('on_register_things', 1)
+    self.ready_delta('load_things', 1)
+
     self.ready_delta('iotdb_device_get', 1)
     self.ready_delta('iotdb_places_get', 1)
 
@@ -141,6 +143,7 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('on_register_models', -1)
     self.ready_delta('load_models', -1)
     self.ready_delta('on_register_things', -1)
+    self.ready_delta('load_things', -1)
     self.ready_delta('iotdb_device_get', -1)
     self.ready_delta('iotdb_places_get', -1)
     self.ready_delta('configure', -1)
@@ -206,10 +209,14 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         models_path: [
             "$IOTDB_PROJECT/models"
         ],
+        things_path: [
+            "$IOTDB_PROJECT/things"
+        ],
 
         discover: false,
         load_drivers: false,
         load_models: false,
+        load_things: false,
         iotdb_places_get: false,
         iotdb_device_get: false,
         iotdb_device_create: false,
@@ -427,6 +434,9 @@ IOT.prototype.ready_delta = function(key, delta) {
         }
         if ((key == 'load_models') && self.initd.load_models) {
             self._load_models()
+        }
+        if ((key == 'load_things') && self.initd.load_things) {
+            self._load_things()
         }
         if ((key == 'iotdb_device_get') && self.initd.iotdb_device_get) {
             self._iotdb_device_get()
@@ -1586,7 +1596,7 @@ IOT.prototype._load_drivers = function() {
 }
 
 /**
- *  Automatically load all things. Set 'IOT.paramd.load_models'
+ *  Automatically load all Models. Set 'IOT.paramd.load_models'
  *
  *  @protected
  */
@@ -1611,6 +1621,30 @@ IOT.prototype._load_models = function() {
         } else {
             console.log("- IOT._load_models:", "missing exports.Model?", paramd.filename);
         }
+    })
+}
+
+/**
+ *  Automatically load all Things. Set 'IOT.paramd.load_things'
+ *
+ *  @protected
+ */
+IOT.prototype._load_things = function() {
+    var self = this;
+
+    console.log("- IOT._load_things", "loading things", self.initd.things_path)
+    var filenames = cfg.cfg_find(self.envd, self.initd.things_path, /[.]json$/)
+    cfg.cfg_load_js(filenames, function(paramd) {
+        if (paramd.error) {
+            if (paramd.filename) {
+                console.log("# IOT._load_things:", paramd.error, paramd.exception, paramd.filename)
+            }
+            return
+        }
+
+        var jd = self.format(paramd.doc)
+        console.log("- IOT._load_things", JSON.stringify(jd, null, 2))
+        self.discover(jd)
     })
 }
 

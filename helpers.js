@@ -2219,6 +2219,9 @@ exports.places_hierarchy = function(places) {
  *  Django(-ish) string formatting. Can take
  *  multiple dictionaries as arguments, priority
  *  given to the first argument seen
+ *  <p>
+ *  The first argument can be JSON-like objects,
+ *  in which case we'll run this recursively
  */
 exports.format = function() {
     if (arguments.length == 0) {
@@ -2226,45 +2229,72 @@ exports.format = function() {
     }
 
     var template = arguments[0]
+
     var valueds = []
     for (var ai = 1; ai < arguments.length; ai++) {
         valueds.push(arguments[ai])
     }
 
-    return template.replace(/{{(.*?)}}/g, function(match, variable) {
-        var otherwise = ""
+    return _format(template, valueds)
+}
 
-        // we can layer in django "|" later
-        var colonx = variable.indexOf(':')
-        if (colonx > -1) {
-            otherwise = variable.substring(colonx + 1)
-            variable = variable.substring(0, colonx)
+var _format = function(template, valueds) {
+    if (exports.isArray(template)) {
+        var ns = []
+        var os = template
+        for (var oi = 0; oi < os.length; oi++) {
+            var o = os[oi]
+            var n = _format(o, valueds)
+            ns.append(ns)
+        }
+    } else if (exports.isObject(template)) {
+        var nd = {}
+        var od = template
+        for (var key in od) {
+            var ovalue = od[key]
+            var nvalue = _format(ovalue, valueds)
+            nd[key] = nvalue
         }
 
-        var parts = variable.replace(/ /g, '').split('.')
+        return nd
+    } else if (!exports.isString(template)) {
+        return template
+    } else {
+        return template.replace(/{{(.*?)}}/g, function(match, variable) {
+            var otherwise = ""
 
-        var found = false;
+            // we can layer in django "|" later
+            var colonx = variable.indexOf(':')
+            if (colonx > -1) {
+                otherwise = variable.substring(colonx + 1)
+                variable = variable.substring(0, colonx)
+            }
 
-        for (var vdi = 0; vdi < valueds.length; vdi++) {
-            var valued = valueds[vdi];
-            for (var pi = 0; pi < parts.length - 1; pi++) {
-                var part = parts[pi];
-                var subd = valued[part];
-                if (!exports.isObject(subd)) {
-                    break;
+            var parts = variable.replace(/ /g, '').split('.')
+
+            var found = false;
+
+            for (var vdi = 0; vdi < valueds.length; vdi++) {
+                var valued = valueds[vdi];
+                for (var pi = 0; pi < parts.length - 1; pi++) {
+                    var part = parts[pi];
+                    var subd = valued[part];
+                    if (!exports.isObject(subd)) {
+                        break;
+                    }
+
+                    valued = subd
                 }
 
-                valued = subd
+                var value = valued[parts[parts.length - 1]]
+                if (value !== undefined) {
+                    return "" + value
+                }
             }
 
-            var value = valued[parts[parts.length - 1]]
-            if (value !== undefined) {
-                return "" + value
-            }
-        }
+            return otherwise
+        })
 
-        return otherwise
-    })
-
-    return template
+        return template
+    }
 }
