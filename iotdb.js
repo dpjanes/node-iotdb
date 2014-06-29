@@ -1767,6 +1767,7 @@ exports.model = require('./model')
 exports.make_model = exports.model.make_model
 exports.GraphManager = require('./graph').GraphManager
 exports.helpers = _;
+exports.cfg = cfg
 exports.libs = libs.libs;
 
 exports.EVENT_UPDATE_SUBJECT = exports.GraphManager.EVENT_UPDATED_SUBJECT;

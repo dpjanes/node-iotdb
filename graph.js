@@ -70,7 +70,14 @@ GraphManager.prototype.wire = function() {
  *  Interface
  */
 GraphManager.prototype.clear = function() {
-    this.graph = new rdf.TripletGraph();
+    if (rdf.TripletGraph) {
+        this.graph = new rdf.TripletGraph();
+    } else if (rdf.Graph) {
+        this.graph = new rdf.Graph();
+    } else {
+        throw "# whaaaa. rdf does not have any graphs?"
+    }
+
     this.irid = {};
 };
 
