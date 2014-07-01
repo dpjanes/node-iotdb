@@ -349,7 +349,7 @@ ModelMaker.prototype.make_attribute_control = function(reading_attribute_code, c
     var control_attribute = _.deepCopy(reading_attribute)
     control_attribute['@id'] = '#' + control_attribute_code;
 
-    _.ld_remove(control_attribute, _.expand("iot:role"), _.expand("iot:role-reading"))
+    _.ld_remove(control_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-reading"))
     control_attribute.control()
 
     self.attributed[control_attribute_code] = control_attribute;
@@ -377,7 +377,7 @@ ModelMaker.prototype.make_attribute_reading = function(control_attribute_code, r
     var reading_attribute = _.deepCopy(control_attribute)
     reading_attribute['@id'] = '#' + reading_attribute_code;
 
-    _.ld_remove(reading_attribute, _.expand("iot:role"), _.expand("iot:role-control"))
+    _.ld_remove(reading_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-control"))
     reading_attribute.reading()
 
     self.attributed[reading_attribute_code] = reading_attribute;
@@ -386,6 +386,12 @@ ModelMaker.prototype.make_attribute_reading = function(control_attribute_code, r
     self.link_control_reading(control_attribute_code, reading_attribute_code)
 
     return self
+}
+
+/**
+ */
+ModelMaker.prototype.vector = function(attribute_codes) {
+    return this
 }
 
 /**

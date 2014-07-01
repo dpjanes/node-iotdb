@@ -173,14 +173,14 @@ Attribute.prototype.purpose = function(purpose_iri) {
  *  This is a value, i.e. it is measuring something
  */
 Attribute.prototype.reading = function() {
-    return this.property('iot:role', 'iot:role-reading')
+    return this.property('iot:role', 'iot-attribute:role-reading')
 }
             
 /**
  *  This is a control, i.e. you can change with it
  */
 Attribute.prototype.control = function() {
-    return this.property('iot:role', 'iot:role-control')
+    return this.property('iot:role', 'iot-attribute:role-control')
 }
     
 
@@ -318,15 +318,24 @@ Attribute.prototype.measuring = function(unit_iri) {
 }
 
 Attribute.prototype.x_axis = function() {
-    return  this;
-}
-Attribute.prototype.y_axis = function() {
-    return  this;
-}
-Attribute.prototype.z_axis = function() {
-    return  this;
+    return this
+        .property_value(_.expand("iot:axis"), _.expand("iot-attribute:axis-x"))
 }
 
+Attribute.prototype.y_axis = function() {
+    return this
+        .property_value(_.expand("iot:axis"), _.expand("iot-attribute:axis-z"))
+}
+
+Attribute.prototype.z_axis = function() {
+    return this
+        .property_value(_.expand("iot:axis"), _.expand("iot-attribute:axis-y"))
+}
+
+Attribute.prototype.arithmetic_precision = function(places) {
+    return this
+        .property_value(_.expand("iot:arithmetic-precision"), places);
+}
 
 /**
  *  Specify the "iot:unit-multiplier" of this attribute. Whatever

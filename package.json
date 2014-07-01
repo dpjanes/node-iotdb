@@ -39,5 +39,5 @@
         "type": "git", 
         "url": "https://github.com/dpjanes/node-iotdb"
     }, 
-    "version": "0.1.11"
+    "version": "0.1.12"
 }

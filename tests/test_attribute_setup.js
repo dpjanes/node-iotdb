@@ -106,7 +106,7 @@ describe('test_attribute_setup', function(){
             '@id': '#temperature_f',
             'https://iotdb.org/pub/iot#name': 'value',
             'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#temperature',
-            'https://iotdb.org/pub/iot#role': 'https://iotdb.org/pub/iot#role-reading',
+            'https://iotdb.org/pub/iot#role': 'https://iotdb.org/pub/iot-attribute#role-reading',
             'https://iotdb.org/pub/iot#unit': 'https://iotdb.org/pub/iot-unit#temperature.si.fahrenheit',
             'https://iotdb.org/pub/iot-js#type': 'https://iotdb.org/pub/iot-js#number',
             'https://iotdb.org/pub/iot-js#write': false,
@@ -177,8 +177,8 @@ describe('test_attribute_setup', function(){
                 'https://iotdb.org/pub/iot#name': 'value',
                 'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#on',
                 'https://iotdb.org/pub/iot#role': [
-                    'https://iotdb.org/pub/iot#role-reading',
-                    'https://iotdb.org/pub/iot#role-control'
+                    'https://iotdb.org/pub/iot-attribute#role-reading',
+                    'https://iotdb.org/pub/iot-attribute#role-control'
                 ]
             }
             var a = attribute.make("value")
