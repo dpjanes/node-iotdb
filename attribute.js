@@ -306,35 +306,36 @@ Attribute.prototype.unit = function(unit_iri) {
 /**
  *  What is this Attribute measuring?
  *
- *  @param {string} unit
- *  A unit IRI. If no colon, assume it to be "iot-unit:"
+ *  @param {string} IRI
+ *  The measuring IRI.
  *
  *  @return {this}
  */
-Attribute.prototype.measuring = function(unit_iri) {
-    return this.property_value(_.expand("iot:measuring"), _.expand(unit_iri, function(v) {
-        return _.expand("iot-unit:" + v);
-    }));
+Attribute.prototype.measuring = function(iri) {
+    return this.property_value(_.expand("iot:measuring"), _.expand(iri))
 }
 
-Attribute.prototype.x_axis = function() {
-    return this
-        .property_value(_.expand("iot:axis"), _.expand("iot-attribute:axis-x"))
-}
-
-Attribute.prototype.y_axis = function() {
-    return this
-        .property_value(_.expand("iot:axis"), _.expand("iot-attribute:axis-z"))
-}
-
-Attribute.prototype.z_axis = function() {
-    return this
-        .property_value(_.expand("iot:axis"), _.expand("iot-attribute:axis-y"))
-}
-
+/**
+ *  Specify the arithmetic precision, i.e. the number
+ *  of places past the decimal point that count
+ */
 Attribute.prototype.arithmetic_precision = function(places) {
     return this
         .property_value(_.expand("iot:arithmetic-precision"), places);
+}
+
+/**
+ *  Specify the name of the vector this attribute belongs to.
+ *  Attributes in the same vector should be, um, considered 
+ *  part of the same vector.
+ *
+ *  @param {string} name
+ *  A name for the vector, preferably human readable
+ *
+ */
+Attribute.prototype.vector = function(name) {
+    return this
+        .property_value(_.expand("iot:vector"), name);
 }
 
 /**

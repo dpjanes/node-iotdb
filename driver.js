@@ -298,7 +298,7 @@ Driver.prototype.mqtt_subscribe = function() {
         "\n  mqtt_device", self.mqtt_device
     )
     mqtt_client.on('message', function(in_topic, in_message) {
-        // console.log("- Driver.mqtt_subscribe/on(message): MQTT receive:", in_topic, in_message)
+        console.log("- Driver.mqtt_subscribe/on(message): MQTT receive:", in_topic, in_message)
 
         try {
             self.on_mqtt_message(in_topic, in_message)
@@ -309,32 +309,46 @@ Driver.prototype.mqtt_subscribe = function() {
     mqtt_client.on('connect', function() {
         console.log("- Driver.mqtt_subscribe/on(connect):", arguments)
     })
+    mqtt_client.on('error', function(error) {
+        console.log("# Driver.mqtt_subscribe/on(error):", error)
+        self._mqtt_resubscribe()
+    })
     mqtt_client.on('close', function() {
-        if (self.mqtt_timer_id) {
-            return
-        }
-
-        var now = (new Date).getTime()
-        var delta_min = 60 * 1000
-        var delta_now = now - self.mqtt_last_millis;
-        if (delta_now < delta_min) {
-            var delta_wait = delta_min - delta_now
-            console.log("# Driver.mqtt_subscribe/on(close):", "will resubscribe in:", delta_wait)
-
-            self.mqtt_timer_id = timers.setInterval(function() {
-                console.log("- Driver.mqtt_subscribe/on(close)/timer:", "resubscribe now")
-
-                timers.clearTimeout(self.mqtt_timer_id)
-                self.mqtt_timer_id = 0
-
-                self.mqtt_subscribe()
-            }, delta_wait)
-        } else {
-            console.log("- Driver.mqtt_subscribe/on(close):", "resubscribe now")
-            self.mqtt_subscribe()
-        }
+        console.log("# Driver.mqtt_subscribe/close(error):", error)
+        self._mqtt_resubscribe()
     })
     mqtt_client.subscribe(self.mqtt_topic)
+}
+
+/**
+ *  Internal: called when a connection dies or whatever
+ */
+Driver.prototype._mqtt_resubscribe = function() {
+    var self = this
+
+    if (self.mqtt_timer_id) {
+        return
+    }
+
+    var now = (new Date).getTime()
+    var delta_min = 60 * 1000
+    var delta_now = now - self.mqtt_last_millis;
+    if (delta_now < delta_min) {
+        var delta_wait = delta_min - delta_now
+        console.log("# Driver._mqtt_resubscribe:", "will resubscribe in:", delta_wait)
+
+        self.mqtt_timer_id = timers.setInterval(function() {
+            console.log("- Driver._mqtt_resubscribe:", "resubscribe now")
+
+            timers.clearTimeout(self.mqtt_timer_id)
+            self.mqtt_timer_id = 0
+
+            self.mqtt_subscribe()
+        }, delta_wait)
+    } else {
+        console.log("- Driver._mqtt_resubscribe:", "resubscribe now")
+        self.mqtt_subscribe()
+    }
 }
 
 /**
