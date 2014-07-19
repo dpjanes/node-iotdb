@@ -809,7 +809,7 @@ IOT.prototype.store = function(store_id) {
  *  with expected elements <code>model</code> and <code>initd</code>.
  *  See @{link IOT#_discover_bind}
  */
-IOT.prototype.discover = function() {
+IOT.prototype.discover = function(things) {
     var self = this
 
     var thing_exemplar = null
@@ -829,11 +829,11 @@ IOT.prototype.discover = function() {
     }
 
     if (thing_exemplar) {
-        return self._discover_thing(thing_exemplar)
+        return self._discover_thing(thing_exemplar, things)
     } else if (thing_bindd) {
-        return self._discover_bind(thing_bindd)
+        return self._discover_bind(thing_bindd, things)
     } else {
-        return self._discover_nearby(driver_identityd)
+        return self._discover_nearby(driver_identityd, things)
     }
 }
 
@@ -849,7 +849,7 @@ IOT.prototype.discover = function() {
  *
  *  @protected
  */
-IOT.prototype._discover_nearby = function(find_driver_identityd) {
+IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
     var self = this;
 
     find_driver_identityd = _.identity_expand(find_driver_identityd);
@@ -894,7 +894,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
 
 
                 found = true;
-                self._add_thing(thing)
+                self._add_thing(thing, things)
                 /*
                 self.thingd[driver_identityd.thing_id] = thing;
                 self.emit(EVENT_NEW_THING, thing);
@@ -911,7 +911,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
 
 /**
  */
-IOT.prototype._add_thing = function(thing) {
+IOT.prototype._add_thing = function(thing, things) {
     var self = this
 
     var thing_id = thing.thing_id()
@@ -931,6 +931,10 @@ IOT.prototype._add_thing = function(thing) {
 
     self.thingd[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
+
+    if (things !== undefined) {
+        things.push(thing)
+    }
 
     thing.pull()
 
@@ -954,7 +958,7 @@ IOT.prototype._add_thing = function(thing) {
  *
  *  @protected
  */
-IOT.prototype._discover_thing = function(thing_exemplar) {
+IOT.prototype._discover_thing = function(thing_exemplar, things) {
     var self = this;
 
     console.log("- IOT._discover_thing", thing_exemplar.identity());

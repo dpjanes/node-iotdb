@@ -20,11 +20,17 @@
  *  limitations under the License.
  */
 
+"use strict"
+
 var _ = require("./helpers")
 var attribute = require("./attribute")
+var model = require("./model")
+var events = require('events');
+var util = require('util');
 
 /* --- constants --- */
 var VERBOSE = true;
+var EVENT_NEW_THING = 'EVENT_NEW_THING'
 
 /**
  *  An array for holding {@link Thing}s. When the
@@ -38,10 +44,73 @@ var VERBOSE = true;
  *
  *  @constructor
  */
-ThingArray = function() {
+var ThingArray = function(paramd) {
+    var self = this
+
+    paramd = _.defaults(paramd, {})
+
+    self.depth = 0
+    self.length = 0
+
+    /*
+     *  If paramd.persist is true, create an array for peristing commands
+     */
+    this._persistds = null
+    if (paramd.persist) {
+        this._persistds = []
+    }
+
+    events.EventEmitter.call(self);
 }
 
 ThingArray.prototype = new Array;
+util.inherits(ThingArray, events.EventEmitter);
+
+/**
+ *  Add a new thing to this ThingArray.
+ */
+ThingArray.prototype.push = function(thing) {
+    var self = this
+
+    Array.prototype.push.call(self, thing);
+
+    /*
+     *  event dispatch
+     */
+    self.emit(EVENT_NEW_THING, thing)
+
+    /*
+     *  Do persistent commands
+     */
+    if (self._persistds != null) {
+        for (var pi in self._persistds) {
+            var pd = self._persistds[pi]
+            pd.f.apply(thing, Array.prototype.slice.call(pd.av));
+        }
+    }
+
+    return self
+}
+
+/**
+ */
+ThingArray.prototype._persist_command = function(f, av) {
+    var self = this
+
+    if (self._persistds === null) {
+        return
+    }
+
+    if (self.depth === 0) {
+        self.perists = []
+    }
+
+    self._persistds.push({
+        f: f,
+        av: av
+    })
+}
+
 
 /**
  *  Call {@link Thing#start Model.start} on
@@ -100,6 +169,27 @@ ThingArray.prototype.set = function() {
         var item = self[ii];
         item.set.apply(item, Array.prototype.slice.call(arguments));
     }
+
+    self._persist_command(model.Model.prototype.set, arguments)
+
+    return self;
+}
+
+/**
+ *  Call {@link Thing#update Model.update} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.update = function() {
+    var self = this;
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        item.update.apply(item, Array.prototype.slice.call(arguments));
+    }
+
+    self._persist_command(model.Model.prototype.update, arguments)
+
     return self;
 }
 
@@ -111,10 +201,22 @@ ThingArray.prototype.set = function() {
  */
 ThingArray.prototype.pull = function() {
     var self = this;
+
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.pull.apply(item, Array.prototype.slice.call(arguments));
     }
+
+    /*
+     *  Apply to new things
+     */
+    var persist = this._persistds !== null
+    if (persist) {
+        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+            item.pull.apply(item, Array.prototype.slice.call(arguments));
+        })
+    }
+
     return self;
 }
 
@@ -130,17 +232,70 @@ ThingArray.prototype.on = function() {
         var item = self[ii];
         item.on.apply(item, Array.prototype.slice.call(arguments));
     }
+
+    /*
+     *  Apply to new things
+     */
+    var persist = this._persistds !== null
+    if (persist) {
+        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+            item.on.apply(item, Array.prototype.slice.call(arguments));
+        })
+    }
+
     return self;
 }
 
 /**
+ *  Call {@link Thing#on Model.on_change} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
  */
-ThingArray.prototype.filter = function(d) {
+ThingArray.prototype.on_change = function() {
     var self = this;
 
-    var out_items = new ThingArray();
-    var iot = require('./iotdb').iot()
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        item.on_change.apply(item, Array.prototype.slice.call(arguments));
+    }
 
+    /*
+     *  Apply to new things
+     */
+    var persist = this._persistds !== null
+    if (persist) {
+        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+            item.on_change.apply(item, Array.prototype.slice.call(arguments));
+        })
+    }
+
+    return self;
+}
+
+/**
+ *  This will be called whenever a new thing is added to this array
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.on_thing = function(callback) {
+    var self = this;
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        callback(item)
+    }
+
+    events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(thing) {
+        callback(thing)
+    })
+
+    return self;
+}
+
+ThingArray.prototype._filter_test = function(d, iot, thing) {
+    var thing_place_iri = thing.place_iri();
+    var thing_thing_iri = thing.thing_iri();
     var place_predicates = [
         _.expand("iot:place-location"),
         _.expand("iot:place-room"),
@@ -148,82 +303,101 @@ ThingArray.prototype.filter = function(d) {
         _.expand("iot:place-placement"),
     ];
 
-    for (var ii = 0; ii < self.length; ii++) {
-        var thing = self[ii];
-        var thing_place_iri = thing.place_iri();
-        var thing_device_iri = thing.device_iri();
-        var ok = true;
+    for (var dpredicate in d) {
+        var dobject = d[dpredicate];
+        if (dpredicate == "_location") {
+            dpredicate = _.expand("iot:place-location")
+        } else if (dpredicate == "_room") {
+            dpredicate = _.expand("iot:place-room")
+        } else if (dpredicate == "_floor") {
+            dpredicate = _.expand("iot:place-floor")
+        } else if (dpredicate == "_driver") {
+            var driver_got = thing.identity().driver
+            var driver_want = dobject
 
-        for (var dpredicate in d) {
-            var dobject = d[dpredicate];
-            if (dpredicate == "_location") {
-                dpredicate = _.expand("iot:place-location")
-            } else if (dpredicate == "_room") {
-                dpredicate = _.expand("iot:place-room")
-            } else if (dpredicate == "_floor") {
-                dpredicate = _.expand("iot:place-floor")
-            } else if (dpredicate == "_driver") {
-                var driver_got = thing.identity().driver
-                var driver_want = dobject
-
-                if (driver_got != driver_want) {
-                    ok = false
-                    break
-                }
-                // console.log("HERE:A", thing.identity(), )
-                // HERE:A { driver: 'https://iotdb.org/pub/iot-driver#hue',
-
-                continue
-            } else if (dpredicate == "_name") {
-                dpredicate = _.expand("iot:name")
-                /*
-                if (thing.name != dobject) {
-                    ok = false;
-                    break;
-                }
-                continue
-                */
-            } else if (dpredicate == "_code") {
-                if (thing.code != dobject) {
-                    ok = false;
-                    break;
-                }
-                continue
-            } else if (dpredicate == "_tag") {
-                if (!thing.has_tag(dobject)) {
-                    ok = false;
-                    break;
-                }
-                continue
+            if (driver_got != driver_want) {
+                return false
             }
 
-            dpredicate = _.expand(dpredicate);
-            
-            /* XXX BROKEN FIX */
+            continue
+        } else if (dpredicate == "_name") {
+            dpredicate = _.expand("iot:name")
             /*
-            if (dpredicate == _.expand("iot:place-placement")) {
-                continue
-            }
-            */
-
-            var subject_url = thing_device_iri;
-            /*
-            if (place_predicates.indexOf(dpredicate) > -1) {
-                subject_url = thing_place_iri;
-            }
-             */
-            
-            var is_contained = iot.gm.contains_triple(subject_url, dpredicate, dobject)
-            // console.log(subject_url, dpredicate, dobject, is_contained);
-            if (!is_contained) {
+            if (thing.name != dobject) {
                 ok = false;
                 break;
             }
+            continue
+            */
+        } else if (dpredicate == "_code") {
+            if (thing.code != dobject) {
+                return false
+            }
+            continue
+        } else if (dpredicate == "_tag") {
+            if (!thing.has_tag(dobject)) {
+                return false
+            }
+            continue
         }
 
-        if (ok) {
+        dpredicate = _.expand(dpredicate);
+        
+        /* XXX BROKEN FIX */
+        /*
+        if (dpredicate == _.expand("iot:place-placement")) {
+            continue
+        }
+        */
+
+        var subject_url = thing_thing_iri;
+        /*
+        if (place_predicates.indexOf(dpredicate) > -1) {
+            subject_url = thing_place_iri;
+        }
+         */
+        
+        var is_contained = iot.gm.contains_triple(subject_url, dpredicate, dobject)
+        // console.log(subject_url, dpredicate, dobject, is_contained);
+        if (!is_contained) {
+            return false
+        }
+    }
+
+    return true
+}
+
+/**
+ */
+ThingArray.prototype.filter = function(d) {
+    var self = this;
+    var persist = this._persistds !== null
+
+    var out_items = new ThingArray({
+        persist: persist
+    });
+    var iot = require('./iotdb').iot()
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var thing = self[ii];
+
+        if (self._filter_test(d, iot, thing)) {
             out_items.push(thing);
         }
+    }
+
+    if (out_items.length == 0) {
+        console.log("# ThingArray.filter: warning - nothing matched", d)
+    }
+
+    /*
+     */
+    if (persist) {
+        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(thing) {
+            if (self._filter_test(d, iot, thing)) {
+                out_items.push(thing);
+            }
+        })
     }
 
     return out_items;
