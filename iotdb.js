@@ -50,6 +50,7 @@ var EVENT_REGISTER_BRIDGE = "iot_register_driver";
 // internal
 var EVENT_ON_READY = "iot_ready";
 var EVENT_ON_REGISTER_DRIVERS = "iot_on_register_drivers";
+var EVENT_ON_REGISTER_STORES = "iot_on_register_stores";
 var EVENT_ON_REGISTER_MODELS = "iot_on_register_models";
 var EVENT_ON_REGISTER_THINGS = "iot_on_register_things";
 var EVENT_ON_READY_CHANGE = "iot_ready_change";
@@ -126,6 +127,9 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('on_register_drivers', 1)
     self.ready_delta('load_drivers', 1)
 
+    self.ready_delta('on_register_stores', 1)
+    self.ready_delta('load_stores', 1)
+
     self.ready_delta('on_register_models', 1)
     self.ready_delta('load_models', 1)
 
@@ -150,6 +154,7 @@ IOT.prototype.configure = function(paramd) {
     self.driver_exemplars = [];
     self.model_exemplard = {};
     self.thingd = {}
+    self.store_instanced = {}
 
     self.cfg_load_oauth()
     self.cfg_load_keystore()
@@ -157,6 +162,8 @@ IOT.prototype.configure = function(paramd) {
 
     self.ready_delta('on_register_drivers', -1)
     self.ready_delta('load_drivers', -1)
+    self.ready_delta('on_register_stores', -1)
+    self.ready_delta('load_stores', -1)
     self.ready_delta('on_register_models', -1)
     self.ready_delta('load_models', -1)
     self.ready_delta('on_register_things', -1)
@@ -223,6 +230,9 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         drivers_path: [
             "$IOTDB_INSTALL/drivers"
         ],
+        stores_path: [
+            "$IOTDB_INSTALL/stores"
+        ],
         models_path: [
             "$IOTDB_PROJECT/models"
         ],
@@ -232,6 +242,7 @@ IOT.prototype.cfg_load_paramd = function(initd) {
 
         discover: false,
         load_drivers: false,
+        load_stores: false,
         load_models: false,
         load_things: false,
         iotdb_places_get: false,
@@ -443,6 +454,12 @@ IOT.prototype.ready_delta = function(key, delta) {
         if ((key == 'load_drivers') && self.initd.load_drivers) {
             self._load_drivers()
         }
+        if (key == 'on_register_stores') {
+            self.emit(EVENT_ON_REGISTER_STORES)
+        }
+        if ((key == 'load_stores') && self.initd.load_stores) {
+            self._load_stores()
+        }
         if (key == 'on_register_models') {
             self.emit(EVENT_ON_REGISTER_MODELS)
         }
@@ -545,6 +562,30 @@ IOT.prototype.on_register_drivers = function(callback) {
         doit()
     } else {
         self.on(EVENT_ON_REGISTER_DRIVERS, doit)
+    }
+}
+
+IOT.prototype.on_register_stores = function(callback) {
+    var self = this;
+    
+    var doit = function() {
+        if (callback) {
+            try {
+                self.ready_delta('graph_ready', 1)
+                callback(self)
+            }
+            finally {
+                self.ready_delta('graph_ready', -1)
+            }
+        }
+
+        callback = null;
+    }
+
+    if (self.readyd['on_register_stores'] == 0) {
+        doit()
+    } else {
+        self.on(EVENT_ON_REGISTER_STORES, doit)
     }
 }
 
@@ -717,6 +758,31 @@ IOT.prototype.register_driver = function(driver) {
     self.emit(EVENT_REGISTER_BRIDGE, driver_exemplar);
 
     return self;
+}
+
+/**
+ *  Register a {@link Store}. 
+ *
+ *  @param {Driver} store
+ *
+ *  @return {this}
+ */
+IOT.prototype.register_store = function(store_class) {
+    var self = this;
+
+    self.store_instanced[_.expand(store_class.prototype.store, "iot-store:")] = new store_class()
+    console.log("- IOT.register_store:", store_class.prototype.name)
+
+    return self;
+}
+
+/**
+ *  Return the store with the given name
+ */
+IOT.prototype.store = function(store_id) {
+    var self = this
+
+    return  self.store_instanced[_.expand(store_id, "iot-store:")]
 }
 
 /**
@@ -934,7 +1000,7 @@ IOT.prototype._discover_bind = function(paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
-        initd: {}
+        initd: _.deepCopy(paramd) // !!!! - ie we use the paramd as the initd
     })
 
     self._clarify_model(paramd, paramd.model)
@@ -1608,6 +1674,35 @@ IOT.prototype._load_drivers = function() {
             self.register_driver(module.Driver);
         } else {
             console.log("- IOT._load_drivers:", "missing exports.Driver?", "\n ", paramd.filename);
+        }
+    })
+}
+
+/**
+ *  Automatically load all stores. Set 'IOT.paramd.load_stores'
+ *
+ *  @protected
+ */
+IOT.prototype._load_stores = function() {
+    var self = this;
+
+    var filenames = cfg.cfg_find(self.envd, self.initd.stores_path, /[.]js$/)
+    cfg.cfg_load_js(filenames, function(paramd) {
+        if (paramd.error) {
+            console.log("# IOT._load_stores:", 
+                "\n  filename", paramd.filename, 
+                "\n  error", paramd.error, 
+                "\n  exception", paramd.exception)
+            console.trace()
+            return
+        }
+
+        var module = paramd.doc
+        if (module.Store) {
+            console.log("- IOT._load_stores:", "found Store", "\n ", paramd.filename);
+            self.register_store(module.Store);
+        } else {
+            console.log("- IOT._load_stores:", "missing exports.Store?", "\n ", paramd.filename);
         }
     })
 }
