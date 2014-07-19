@@ -528,7 +528,7 @@ IOT.prototype.on_ready = function(callback) {
 
     var doit = function() {
         if (callback) {
-            callback(self)
+            callback()
         }
 
         callback = null;
@@ -548,7 +548,7 @@ IOT.prototype.on_register_drivers = function(callback) {
         if (callback) {
             try {
                 self.ready_delta('graph_ready', 1)
-                callback(self)
+                callback()
             }
             finally {
                 self.ready_delta('graph_ready', -1)
@@ -572,7 +572,7 @@ IOT.prototype.on_register_stores = function(callback) {
         if (callback) {
             try {
                 self.ready_delta('graph_ready', 1)
-                callback(self)
+                callback()
             }
             finally {
                 self.ready_delta('graph_ready', -1)
@@ -596,7 +596,7 @@ IOT.prototype.on_register_models = function(callback) {
         if (callback) {
             try {
                 self.ready_delta('graph_ready', 1)
-                callback(self)
+                callback()
             }
             finally {
                 self.ready_delta('graph_ready', -1)
@@ -618,7 +618,7 @@ IOT.prototype.on_register_things = function(callback) {
 
     var doit = function() {
         if (callback) {
-            callback(self)
+            callback()
         }
 
         callback = null;
@@ -635,7 +635,7 @@ IOT.prototype.on_graph_ready = function(callback) {
     var self = this;
 
     if (self.readyd['graph_ready'] == 0) {
-        callback(self)
+        callback()
     } else {
         self.on(EVENT_ON_READY_CHANGE, function(key) {
             if (key == 'graph_ready') {
@@ -660,7 +660,7 @@ IOT.prototype.on_thing = function(callback) {
             continue
         }
 
-        callback(self, thing)
+        callback(thing)
     }
 }
 
@@ -670,9 +670,9 @@ IOT.prototype.on_thing_with_model = function(model, callback) {
     var modeld = {}
     self._clarify_model(modeld, model)
 
-    self.on(EVENT_NEW_THING, function(iot, thing) {
+    self.on(EVENT_NEW_THING, function(thing) {
         if (thing.code === modeld.model_code) {
-            callback(self, thing)
+            callback(thing)
         }
     })
 
@@ -684,7 +684,7 @@ IOT.prototype.on_thing_with_model = function(model, callback) {
         }
 
         if (thing.code === modeld.model_code) {
-            callback(self, thing)
+            callback(thing)
         }
     }
 }
@@ -694,7 +694,7 @@ IOT.prototype.on_thing_with_tag = function(tag, callback) {
 
     self.on(EVENT_NEW_THING, function(iot, thing) {
         if (thing.has_tag(tag)) {
-            callback(self, thing)
+            callback(thing)
         }
     })
 
@@ -705,7 +705,7 @@ IOT.prototype.on_thing_with_tag = function(tag, callback) {
             continue
         }
         if (thing.has_tag(tag)) {
-            callback(self, thing)
+            callback(thing)
         }
     }
 }
@@ -897,7 +897,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
                 self._add_thing(thing)
                 /*
                 self.thingd[driver_identityd.thing_id] = thing;
-                self.emit(EVENT_NEW_THING, self, thing);
+                self.emit(EVENT_NEW_THING, thing);
                 */
                 break;
             }
@@ -930,7 +930,7 @@ IOT.prototype._add_thing = function(thing) {
     }
 
     self.thingd[thing_id] = thing;
-    self.emit(EVENT_NEW_THING, self, thing);
+    self.emit(EVENT_NEW_THING, thing);
 
     thing.pull()
 
@@ -996,7 +996,7 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
 
             self.thingd[driver.identity().thing_id] = thing;
 
-            self.emit(EVENT_NEW_THING, self, thing);
+            self.emit(EVENT_NEW_THING, thing);
             */
         });
 
@@ -1818,7 +1818,7 @@ IOT.prototype.on_things = function(callback, paramd) {
 
         if (things.length == nthings) {
             clearTimeout(timeoutId)
-            callback(self, things, paramd);
+            callback(things, paramd);
             return
         }
 
@@ -1865,7 +1865,7 @@ IOT.prototype.on_places = function(callback, paramd) {
             return false;
         }
 
-        callback(self, self.places(), paramd)
+        callback(self.places(), paramd)
         self.removeListener(event, listener);
         return true
     }

@@ -32,6 +32,8 @@ var libs = require("./libs/libs")
 var VERBOSE = true;
 var iot_name = _.expand("iot:name")
 
+var EVENT_THING_CHANGED = "thing_changed"
+
 /**
  *  Convenience function to make a ModelMaker instance
  *
@@ -672,7 +674,7 @@ Model.prototype.on_change = function(callback) {
 
     var iot = require('./iotdb').iot()
     if (iot) {
-        iot.on("thing_changed", function(thing) {
+        iot.on(EVENT_THING_CHANGED, function(thing) {
             if (thing == self) {
                 callback(self, [])
             }
@@ -1107,7 +1109,7 @@ Model.prototype._do_notifies = function(attributed) {
     if (any) {
         var iot = require('./iotdb').iot()
         if (iot) {
-            iot.emit("thing_changed", self)
+            iot.emit(EVENT_THING_CHANGED, self)
         }
     }
 }
