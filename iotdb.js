@@ -892,10 +892,13 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
                 });
                 self._bind_driver(thing, driver);
 
-                self.thingd[driver_identityd.thing_id] = thing;
 
                 found = true;
+                self._add_thing(thing)
+                /*
+                self.thingd[driver_identityd.thing_id] = thing;
                 self.emit(EVENT_NEW_THING, self, thing);
+                */
                 break;
             }
 
@@ -904,6 +907,34 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
             }
         });
     };
+}
+
+/**
+ */
+IOT.prototype._add_thing = function(thing) {
+    var self = this
+
+    var thing_id = thing.thing_id()
+    if (!thing_id) {
+        console.log("# IOT._add_thing", "Thing does not have an identity", thing.initd)
+        return;
+    }
+
+    var existing = self.thingd[thing_id]
+    if (existing) {
+        console.log("# IOT._add_thing", "Thing has already been registered",
+            "\n  thing_id", thing_id,
+            "\n  driver_identityd", thing.driver_identityd,
+            "\n  initd", thing.initd)
+        return;
+    }
+
+    self.thingd[thing_id] = thing;
+    self.emit(EVENT_NEW_THING, self, thing);
+
+    thing.pull()
+
+    return true
 }
 
 /**
@@ -952,6 +983,8 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
 
             console.log("- IOT._discover_thing", "found Driver (bound)");
 
+            self._add_thing(thing)
+            /*
             var driver_identityd = driver.identity()
             var existing = self.thingd[driver_identityd.thing_id];
             if (existing !== undefined) {
@@ -964,6 +997,7 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
             self.thingd[driver.identity().thing_id] = thing;
 
             self.emit(EVENT_NEW_THING, self, thing);
+            */
         });
 
         console.log("- IOT._discover_thing", "found Driver (exemplar)");

@@ -127,9 +127,11 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
         }
 
         
-        if (!kitchen_sink) {
-            self.__identityd = identityd;
+        if (kitchen_sink) {
+            return identityd
         }
+
+        self.__identityd = identityd;
     }
 
     return self.__identityd;

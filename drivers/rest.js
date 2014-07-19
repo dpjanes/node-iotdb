@@ -1,5 +1,5 @@
 /*
- *  drivers/json.js
+ *  drivers/rest.js
  *
  *  David Janes
  *  IOTDB.org
@@ -29,6 +29,10 @@ var driver = require('../driver')
 var FIFOQueue = require('../queue').FIFOQueue
 var unirest = require('unirest');
 
+var xml2js = require('xml2js');
+var iotdb = require('iotdb');
+var node_url = require('url');
+
 var queue = new FIFOQueue("RESTDriver");
 
 /**
@@ -45,6 +49,9 @@ var RESTDriver = function(paramd) {
 
     self.verbose = paramd.verbose;
     self.driver = _.expand(paramd.driver)
+    self.iri = null
+    self.content_type = "application/json"
+    self.poll = null
 
     self._init(paramd.initd)
 
@@ -68,6 +75,12 @@ RESTDriver.prototype._init = function(initd) {
     }
     if (initd.iri) {
         self.iri = initd.iri
+    }
+    if (initd.content_type) {
+        self.content_type = initd.content_type
+    }
+    if (initd.poll) {
+        self.poll = initd.poll
     }
 
     self.mqtt_init(initd)
@@ -167,6 +180,62 @@ RESTDriver.prototype.push = function(paramd) {
     return self;
 }
 
+RESTDriver.prototype._parse_headers = function(headers) {
+    var self = this;
+
+    if (self.__parsed_headers) {
+        return
+    } else {
+        self.__parsed_headers = true
+    }
+
+    /*
+     *  rel="mqtt"
+     */
+    if (headers.link) {
+        var linkdd = iotdb.libs.http.parse_link(headers.link)
+        for (var mqtt_url in linkdd) {
+            var linkd = linkdd[mqtt_url]
+            if (linkd.rel != "mqtt") {
+                continue
+            }
+
+            var mqtt_host = null
+            var mqtt_port = 1833
+            var mqtt_topic = ""
+
+            var mqtt_urlp = node_url.parse(mqtt_url)
+            if (mqtt_urlp.protocol != "tcp:") {
+                continue
+            }
+
+            mqtt_port = parseInt(mqtt_urlp.port)
+            mqtt_host = mqtt_urlp.hostname
+
+            if (linkd.topic) {
+                mqtt_topic = linkd.topic
+            } else {
+                var irip = node_url.parse(self.iri)
+                if (irip.path) {
+                    mqtt_topic = irip.path.replace(/^\//, '')
+                }
+            }
+
+            console.log("- RestDriver._parse_headers: MQTT info found",
+                "\n  mqtt_host", mqtt_host,
+                "\n  mqtt_port", mqtt_port,
+                "\n  mqtt_topic", mqtt_topic
+            )
+
+            self.mqtt_host = mqtt_host
+            self.mqtt_port = mqtt_port
+            self.mqtt_topic = mqtt_topic
+            self.mqtt_subscribe()
+            break
+        }
+    }
+}
+
 /**
  *  Request the Driver's current state. It should
  *  be called back with <code>callback</code>
@@ -185,15 +254,43 @@ RESTDriver.prototype.pull = function() {
         run: function() {
             unirest
                 .get(self.iri)
-                .headers({'Accept': 'application/json'})
+                .headers({'Accept': self.content_type})
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# RESTDriver.pull/.end - not ok", "\n  url", self.iri, "\n  result", result.text);
+                        console.log("# RESTDriver.pull/.end - not ok", 
+                            "\n  url", self.iri, 
+                            "\n  result", result.text);
                         return
                     }
 
-                    self.pulled(result.body)
+                    self._parse_headers(result.headers)
+
+                    if (self.content_type == "application/json") {
+                        self.pulled(result.body)
+                    } else if (self.content_type.match(/application\/[^+]*[+]json/)) {
+                        self.pulled(result.body)
+                    } else if ((self.content_type == "application/xml") || (self.content_type == "text/xml")) {
+                        xml2js.parseString(result.body, function (err, result) {
+                            self.pulled(result)
+                        });
+                    } else {
+                        console.log("# RESTDriver.pull/.end - unknown content_type", self.content_type)
+                        return
+                    }
+
+                    /*
+                     *  Schedule the next data pull
+                     */
+                    if (self.poll != null) {
+                        if (self.reloadTimerId) {
+                            clearTimeout(self.reloadTimerId);
+                        }
+
+                        self.reloadTimerId = setInterval(function() {
+                            self.pull()
+                        }, self.poll * 1000);
+                    }
                 })
             ;
         }
