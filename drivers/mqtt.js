@@ -181,7 +181,7 @@ MQTT.prototype.push = function(paramd) {
     var self = this;
 
     console.log("- MQTT.push", 
-        "\n  api", self.api, 
+        "\n  iri", self.iri, 
         "\n  initd", paramd.initd)
 
     return self;
@@ -197,7 +197,7 @@ MQTT.prototype.pull = function() {
     var self = this;
 
     console.log("- MQTT.pull", 
-        "\n  api", self.api, 
+        "\n  iri", self.iri, 
         "\n  initd", paramd.initd
     )
 

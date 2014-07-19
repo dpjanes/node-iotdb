@@ -65,8 +65,8 @@ ProtoDriver.prototype._init = function(initd) {
     if (!initd) {
         return
     }
-    if (initd.api) {
-        self.api = initd.api
+    if (initd.iri) {
+        self.iri = initd.iri
     }
 }
 

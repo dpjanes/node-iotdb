@@ -60,8 +60,8 @@ Net.prototype._init = function(initd) {
         return;
     }
 
-    if (initd.api) {
-        self.api = initd.api;
+    if (initd.iri) {
+        self.iri = initd.iri;
     }
 }
 
@@ -76,8 +76,8 @@ Net.prototype.identity = function(kitchen_sink) {
         identityd["driver"] = self.driver
 
         // once the driver is 'setup' this will have a value
-        if (self.api) {
-            identityd["api"] = self.api
+        if (self.iri) {
+            identityd["iri"] = self.iri
         }
 
         _.thing_id(identityd);
@@ -125,7 +125,7 @@ Net.prototype.push = function(paramd) {
     var self = this;
 
     console.log("- Net.push", 
-        "\n  api", self.api, 
+        "\n  iri", self.iri, 
         "\n  driverd", paramd.driverd, 
         "\n  initd", paramd.initd)
 
@@ -133,13 +133,13 @@ Net.prototype.push = function(paramd) {
         id: self.light,
         run: function() {
             unirest
-                .get(self.api)
+                .get(self.iri)
                 .query(paramd.driverd)
                 // .headers({'Accept': 'application/json'})
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# Net.push/.end", "not ok", "url", self.api, "result", result.text);
+                        console.log("# Net.push/.end", "not ok", "url", self.iri, "result", result.text);
                         return
                     }
 
@@ -163,7 +163,7 @@ Net.prototype.pull = function() {
     var self = this;
 
     console.log("- Net.pull", 
-        "\n  api", self.api, 
+        "\n  iri", self.iri, 
         "\n  initd", paramd.initd
     )
 

@@ -48,7 +48,7 @@ var HueDriver = function(upnp_device, light, username) {
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
         self.light = light;
-        self.api = "http://" + self.upnp_device.host + ":" + self.upnp_device.port;
+        self.iri = "http://" + self.upnp_device.host + ":" + self.upnp_device.port;
         self.username = username
     }
 
@@ -316,7 +316,7 @@ HueDriver.prototype.push = function(paramd) {
     var qitem = {
         id: self.light,
         run: function() {
-            var url = self.api + "/api/" + self.username + "/lights/" + self.light + "/state/";
+            var url = self.iri + "/api/" + self.username + "/lights/" + self.light + "/state/";
             console.log("- do", url);
             unirest
                 .put(url)
@@ -353,7 +353,7 @@ HueDriver.prototype.pull = function() {
     var qitem = {
         id: self.light,
         run: function() {
-            var url = self.api + "/api/" + self.username + "/lights/" + self.light;
+            var url = self.iri + "/api/" + self.username + "/lights/" + self.light;
             console.log("- do", url);
             unirest
                 .get(url)

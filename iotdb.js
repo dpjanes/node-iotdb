@@ -965,7 +965,7 @@ IOT.prototype._discover_bind = function(paramd) {
                 console.log("- IOT._discover_bind: unexpected state", callbackd.paramd)
             }
         });
-    } else if (paramd.initd.api) {
+    } else if (paramd.initd.iri) {
         // if you get here, you're making a JSON Driver connection
         var json_driver = require('./drivers/json');
         var driver = new json_driver.Driver()
@@ -987,7 +987,7 @@ IOT.prototype._discover_bind = function(paramd) {
             }
         })
     } else {
-        console.log("- IOT._discover_bind: ERROR: no model_code, model_iri or initd.api")
+        console.log("- IOT._discover_bind: ERROR: no model_code, model_iri or initd.iri")
     }
 }
 
@@ -997,7 +997,7 @@ IOT.prototype._discover_bind = function(paramd) {
  *  need something more fancy, use
  *  {@link IOT#discover IOT.discover}
  *
- *  @paramd {url} api
+ *  @paramd {url} iri
  *  The IRI of a JSON
  *
  *  @paramd {*} model
@@ -1005,21 +1005,21 @@ IOT.prototype._discover_bind = function(paramd) {
  *  the Model function or a Model exemplar.
  *
  */
-IOT.prototype.discover_json = function(api, model) {
+IOT.prototype.discover_json = function(iri, model) {
     var self = this;
 
     if (model) {
         return self._discover_bind({
             model: model,
             initd : {
-                api: api
+                iri: iri
             }
         })
     } else {
         return self._discover_bind({
             driver: "iot-driver:json",
             initd : {
-                api: api
+                iri: iri
             }
         })
     }

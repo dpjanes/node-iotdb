@@ -48,7 +48,7 @@ var FeedDriver = function(paramd) {
 
     self.verbose = paramd.verbose
     self.driver = _.expand(paramd.driver)
-    self.api = null
+    self.iri = null
     self.reload = 120
     self.seend = {}
     self.fresh = true
@@ -77,8 +77,8 @@ FeedDriver.prototype._init = function(initd) {
     if (!initd) {
         return
     }
-    if (initd.api !== undefined) {
-        self.api = initd.api
+    if (initd.iri !== undefined) {
+        self.iri = initd.iri
     }
     if (initd.fresh !== undefined) {
         self.fresh = initd.fresh
@@ -98,8 +98,8 @@ FeedDriver.prototype.identity = function(kitchen_sink) {
         var identityd = {}
         identityd["driver"] = self.driver
 
-        if (self.api) {
-            identityd["api"] = self.api
+        if (self.iri) {
+            identityd["iri"] = self.iri
         }
         _.thing_id(identityd);
         
@@ -169,9 +169,9 @@ FeedDriver.prototype.pull = function() {
 FeedDriver.prototype._fetch = function() {
     var self = this;
 
-    console.log("- FeedDriver._fetch", "api", self.api)
+    console.log("- FeedDriver._fetch", "iri", self.iri)
     unirest
-        .get(self.api)
+        .get(self.iri)
         .end(function(result) {
             if (result.error) {
                 console.log("# FeedDriver._fetch: can't get feed", result.error)
@@ -198,7 +198,7 @@ FeedDriver.prototype._process = function(body) {
     s.push(null);
 
     var fp = new FeedParser({
-        feedurl: self.api
+        feedurl: self.iri
     })
     fp.on('error', function() {
     })

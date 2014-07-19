@@ -64,7 +64,7 @@ iot.on_register_things(function() {
         model: "sample-light",
         driver: ":json",
         initd: {
-            api: "http://playground-home.iotdb.org/kitchen/light",
+            iri: "http://playground-home.iotdb.org/kitchen/light",
             mqtt_topic: "iot/kitchen/light/#",
             mqtt_json: true
         }
@@ -74,7 +74,7 @@ iot.on_register_things(function() {
         model: "sample-rgb",
         driver: ":json",
         initd: {
-            api: "http://playground-home.iotdb.org/basement/hue/1",
+            iri: "http://playground-home.iotdb.org/basement/hue/1",
             mqtt_topic: "iot/basement/hue/1/#",
             mqtt_json: true
         }

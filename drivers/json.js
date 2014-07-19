@@ -66,8 +66,8 @@ JSONDriver.prototype._init = function(initd) {
     if (!initd) {
         return
     }
-    if (initd.api) {
-        self.api = initd.api
+    if (initd.iri) {
+        self.iri = initd.iri
     }
 
     self.mqtt_init(initd)
@@ -84,8 +84,8 @@ JSONDriver.prototype.identity = function(kitchen_sink) {
         identityd["driver"] = self.driver
 
         // once the driver is 'setup' this will have a value
-        if (self.api) {
-            identityd["api"] = self.api
+        if (self.iri) {
+            identityd["iri"] = self.iri
         }
 
         _.thing_id(identityd);
@@ -138,7 +138,7 @@ JSONDriver.prototype.push = function(paramd) {
     var self = this;
 
     console.log("- JSONDriver.push", 
-        "\n  api", self.api, 
+        "\n  iri", self.iri, 
         "\n  driverd", paramd.driverd, 
         "\n  initd", paramd.initd)
 
@@ -146,14 +146,14 @@ JSONDriver.prototype.push = function(paramd) {
         id: self.light,
         run: function() {
             unirest
-                .put(self.api)
+                .put(self.iri)
                 .headers({'Accept': 'application/json'})
                 .type('json')
                 .send(paramd.driverd)
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# JSONDriver.push/.end", "not ok", "url", self.api, "result", result.text);
+                        console.log("# JSONDriver.push/.end", "not ok", "url", self.iri, "result", result.text);
                         return
                     }
 
@@ -177,19 +177,19 @@ JSONDriver.prototype.pull = function() {
     var self = this;
 
     console.log("- JSONDriver.pull", 
-        "\n  api", self.api
+        "\n  iri", self.iri
     )
 
     var qitem = {
         id: self.light,
         run: function() {
             unirest
-                .get(self.api)
+                .get(self.iri)
                 .headers({'Accept': 'application/json'})
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# JSONDriver.pull/.end - not ok", "\n  url", self.api, "\n  result", result.text);
+                        console.log("# JSONDriver.pull/.end - not ok", "\n  url", self.iri, "\n  result", result.text);
                         return
                     }
 
