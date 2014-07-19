@@ -41,14 +41,14 @@ var YunDriver = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: _.expand("iot-driver:yun"),
+        driver: _.expand("iot-driver:yun"),
         initd: {}
     })
 
     self.verbose = paramd.verbose
     self.api = null
     self.api_scrubbed = false
-    self.driver_iri = paramd.driver_iri
+    self.driver = paramd.driver
 
     self.pindd = {}
     self._init(paramd.initd)
@@ -95,7 +95,7 @@ YunDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
         if (self.api) {
             identityd["api"] = self.api
         }

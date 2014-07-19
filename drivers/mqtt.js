@@ -40,14 +40,14 @@ var MQTT = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: _.expand("iot-driver:mqtt"),
+        driver: _.expand("iot-driver:mqtt"),
         initd: {},
 
         discover_callback: null,
         device_index: -1
     })
 
-    self.driver_iri = paramd.driver_iri
+    self.driver = paramd.driver
 
     /*
      *  Will create more MQTT drivers / things
@@ -89,7 +89,7 @@ MQTT.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
 
         if (self.mqtt_broker) {
             identityd["mqtt_broker"] = self.mqtt_broker

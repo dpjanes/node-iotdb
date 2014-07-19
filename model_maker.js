@@ -191,7 +191,7 @@ ModelMaker.prototype.facet = function(_value) {
  *
  *  @param {string|dictionary} d
  *  If a string, we make a dictionary
- *  <code>{ "driver_iri" : @{link expand}(d) }</code>
+ *  <code>{ "driver" : @{link expand}(d) }</code>
  *  <p>
  *  If a dictionary, all the things in the dictionary must match.
  *  Normally all the values must be strings. However, if the value
@@ -571,8 +571,8 @@ ModelMaker.prototype.make = function() {
         this.__driver_out = self.__driver_out;
         if (paramd.driver_identity !== undefined) {
             this.driver_identityd = _.identity_expand(paramd.driver_identity);
-        } else if (paramd.driver_iri !== undefined) {
-            this.driver_identityd = _.identity_expand(paramd.driver_iri);
+        } else if (paramd.driver !== undefined) {
+            this.driver_identityd = _.identity_expand(paramd.driver);
         } else {
             this.driver_identityd = _.deepCopy(self.driver_identityd);
         }

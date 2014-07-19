@@ -82,11 +82,11 @@ var TwitterDriver = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:twitter"
+        driver: "iot-driver:twitter"
     })
 
     self.verbose = paramd.verbose
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
 
     self.search = null
 
@@ -151,7 +151,7 @@ TwitterDriver.prototype._helper_search = function(iot, search, callback) {
     })
     iot.discover({
         model: InternalTwitterMessage,
-        driver_iri: ":twitter",
+        driver: ":twitter",
         initd : {
             __internal: true,
             search: search,
@@ -186,7 +186,7 @@ TwitterDriver.prototype._helper_send = function(iot, text) {
         if (make) {
             iot.discover({
                 model: InternalTwitterMessage,
-                driver_iri: ":twitter",
+                driver: ":twitter",
                 initd : {
                     __internal: true,
                     tag: self.send_tag
@@ -221,7 +221,7 @@ TwitterDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
 
         if (self.search) {
             identityd["search"] = self.search

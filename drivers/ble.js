@@ -116,7 +116,7 @@ BLEDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = _.expand("iot-driver:ble")
+        identityd["driver"] = _.expand("iot-driver:ble")
         if (self.p && self.p.advertisement) {
             identityd["localName"] = self.p.advertisement.localName;
         }

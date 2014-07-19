@@ -100,7 +100,7 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
 
     if ((self.__identityd === undefined) || kitchen_sink) {
         var identityd = {}
-        identityd["driver_iri"] = _.expand("iot-driver:upnp")
+        identityd["driver"] = _.expand("iot-driver:upnp")
 
         if (self.upnp_device) {
             identityd["deviceType"] = self.upnp_device.deviceType

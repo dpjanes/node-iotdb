@@ -163,15 +163,15 @@ ThingArray.prototype.filter = function(d) {
             } else if (dpredicate == "_floor") {
                 dpredicate = _.expand("iot:place-floor")
             } else if (dpredicate == "_driver") {
-                var driver_iri_got = thing.identity().driver_iri
-                var driver_iri_want = dobject
+                var driver_got = thing.identity().driver
+                var driver_want = dobject
 
-                if (driver_iri_got != driver_iri_want) {
+                if (driver_got != driver_want) {
                     ok = false
                     break
                 }
                 // console.log("HERE:A", thing.identity(), )
-                // HERE:A { driver_iri: 'https://iotdb.org/pub/iot-driver#hue',
+                // HERE:A { driver: 'https://iotdb.org/pub/iot-driver#hue',
 
                 continue
             } else if (dpredicate == "_name") {
@@ -260,8 +260,8 @@ ThingArray.prototype.with_facet = function(facet) {
     return this.filter({ "iot:facet" : _.expand(facet) })
 }
 
-ThingArray.prototype.with_driver = function(driver_iri) {
-    return this.filter({ "_driver" : _.expand(driver_iri, "iot-driver:") })
+ThingArray.prototype.with_driver = function(driver) {
+    return this.filter({ "_driver" : _.expand(driver, "iot-driver:") })
 }
 
 ThingArray.prototype.with_model = function(model) {

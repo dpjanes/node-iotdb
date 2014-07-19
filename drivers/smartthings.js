@@ -41,12 +41,12 @@ var SmartThingsDriver = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:smartthings",
+        driver: "iot-driver:smartthings",
         initd: {}
     })
 
     self.verbose = paramd.verbose
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
 
     // smartthings values, setup in setup
     self.id = null;
@@ -104,7 +104,7 @@ SmartThingsDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
         if (self.id) {
             identityd["id"] = self.id
         }

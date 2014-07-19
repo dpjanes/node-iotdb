@@ -228,7 +228,7 @@ HueDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = _.expand("iot-driver:hue")
+        identityd["driver"] = _.expand("iot-driver:hue")
 
         if (self.upnp_device) {
             identityd["deviceType"] = self.upnp_device.deviceType

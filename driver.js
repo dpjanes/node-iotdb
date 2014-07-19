@@ -78,7 +78,7 @@ Driver.prototype.driver_construct = function() {
  *  <ul>
  *  <li>should consist of string values only (arrays of string values
  *  are sometimes useful
- *  <li>must contain "driver_iri", a URL
+ *  <li>must contain "driver", a URL
  *  <li>must contain "thing_id" (from helpers.thing_id)
  *  </ul>
  *

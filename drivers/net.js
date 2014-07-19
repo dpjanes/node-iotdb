@@ -39,12 +39,12 @@ var Net = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:net",
+        driver: "iot-driver:net",
         initd: {}
     })
 
     self.verbose = paramd.verbose;
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
 
     return self;
 }
@@ -73,7 +73,7 @@ Net.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
 
         // once the driver is 'setup' this will have a value
         if (self.api) {

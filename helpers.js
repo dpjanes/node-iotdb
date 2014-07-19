@@ -2005,7 +2005,7 @@ exports.identity_overlap = function(superd, subd) {
 
 /**
  *  This provides a shorthand for when you need
- *  to create a dictionary with only "driver_iri"
+ *  to create a dictionary with only "driver"
  *  as a key. 
  */
 exports.identity_expand = function(d) {
@@ -2013,11 +2013,11 @@ exports.identity_expand = function(d) {
         return d;
     } else if (exports.isString(d)) {
         return {
-            "driver_iri": exports.expand(d, "iot-driver:")
+            "driver": exports.expand(d, "iot-driver:")
         };
     } else {
-        if (d.driver_iri) {
-            d.driver_iri = exports.expand(d.driver_iri, "iot-driver:")
+        if (d.driver) {
+            d.driver = exports.expand(d.driver, "iot-driver:")
         }
         return d;
     }

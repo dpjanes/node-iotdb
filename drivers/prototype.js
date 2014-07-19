@@ -38,12 +38,12 @@ var ProtoDriver = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:proto",
+        driver: "iot-driver:proto",
         initd: {}
     })
 
     self.verbose = paramd.verbose
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
 
     self._init(paramd.initd)
 
@@ -78,7 +78,7 @@ ProtoDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
 
         _.thing_id(identityd);
         

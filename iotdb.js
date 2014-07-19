@@ -706,7 +706,7 @@ IOT.prototype.register_driver = function(driver) {
 
     var driver_exemplar = new driver()
     var driver_identity = driver_exemplar.identity();
-    if (!driver_identity.driver_iri) {
+    if (!driver_identity.driver) {
         console.log("# IOT.register_driver: ignoring driver - no identity", driver_exemplar.constructor.name)
         return;
     }
@@ -916,7 +916,7 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
  *  Bind a Model to a Driver.
  *
  *  @param {dictionary} paramd
- *  @param {dictionary|undefined} paramd.driver_iri
+ *  @param {dictionary|undefined} paramd.driver
  *  The Driver IRI. If not defined, it will be
  *  assumed the IRI of the Model (if available). If no
  *  Driver IRI can be found, we assume it's iot-driver:json
@@ -952,11 +952,11 @@ IOT.prototype._discover_bind = function(paramd) {
                     paramd = _.defaults(paramd, callbackd.model_exemplar.driver_identityd)
                 }
                 paramd = _.defaults(paramd, {
-                    driver_iri: "iot-driver:json",
+                    driver: "iot-driver:json",
                 })
 
                 var thing = callbackd.model_exemplar.make({
-                    driver_iri: _.expand(paramd.driver_iri),
+                    driver: _.expand(paramd.driver),
                     initd: paramd.initd
                 })
 
@@ -1017,7 +1017,7 @@ IOT.prototype.discover_json = function(api, model) {
         })
     } else {
         return self._discover_bind({
-            driver_iri: "iot-driver:json",
+            driver: "iot-driver:json",
             initd : {
                 api: api
             }

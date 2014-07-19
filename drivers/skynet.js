@@ -40,12 +40,12 @@ var SkyNet = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:skynet",
+        driver: "iot-driver:skynet",
         initd: {}
     })
 
     self.verbose = paramd.verbose
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
     self.connection = null
     self.device_uuid = null
     self.device_token = null
@@ -86,7 +86,7 @@ SkyNet.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
         if (self.device_uuid) {
             identityd["uuid"] = self.device_uuid
         }

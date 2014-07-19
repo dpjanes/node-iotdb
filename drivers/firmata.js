@@ -105,12 +105,12 @@ var FirmataDriver = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:firmata",
+        driver: "iot-driver:firmata",
         initd: {}
     })
 
     self.verbose = paramd.verbose
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
 
     self.api = null
     self.pindd = {}
@@ -240,7 +240,7 @@ FirmataDriver.prototype.identity = function(kitchen_sink) {
     if (self.__identityd === undefined) {
         var identityd = {}
         identityd["machine_id"] = machine_id
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
         if (self.api) {
             identityd["api"] = self.api
         }

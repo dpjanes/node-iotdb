@@ -39,12 +39,12 @@ var JSONDriver = function(paramd) {
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver_iri: "iot-driver:json",
+        driver: "iot-driver:json",
         initd: {}
     })
 
     self.verbose = paramd.verbose;
-    self.driver_iri = _.expand(paramd.driver_iri)
+    self.driver = _.expand(paramd.driver)
 
     self._init(paramd.initd)
 
@@ -81,7 +81,7 @@ JSONDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver_iri"] = self.driver_iri
+        identityd["driver"] = self.driver
 
         // once the driver is 'setup' this will have a value
         if (self.api) {
