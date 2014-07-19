@@ -300,6 +300,13 @@ RESTDriver.prototype.pull = function() {
     return self;
 }
 
+/**
+ *  See {@link Driver#handle_mqtt_message Driver.handle_mqtt_message}
+ */
+RESTDriver.prototype.handle_mqtt_message = function(in_topic, in_message) {
+    console.log("- RESTDriver.handle_mqtt_message: received update, pulling")
+    this.pull()
+}
 
 /*
  *  API
