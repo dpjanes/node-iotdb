@@ -1044,10 +1044,10 @@ IOT.prototype.discover_json = function(api, model) {
  *
  *  @protected
  */
-IOT.prototype._bind_driver = function(thing, driver) {
+IOT.prototype._bind_driver = function(thing, driver_instance) {
     var self = this;
 
-    thing.driver = driver;
+    thing.driver_instance = driver_instance;
     thing.initd = _.deepCopy(thing.initd)
 
     var paramd = {
@@ -1076,7 +1076,7 @@ IOT.prototype._bind_driver = function(thing, driver) {
      *  Now 'initd' is the combined thing's initd again
      */
     paramd.initd = thing.initd
-    driver.setup(paramd);
+    driver_instance.setup(paramd);
 
     return self;
 }

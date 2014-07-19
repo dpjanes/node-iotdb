@@ -111,7 +111,7 @@ var Model = function() {
  *  options are optional.
  *
  *  @param {dictionary} paramd
- *  @param {undefined|Driver} paramd.driver
+ *  @param {undefined|Driver} paramd.driver_instance
  *  The driver for this thing.
  *
  *  @param {*} paramd.api_*
@@ -747,10 +747,10 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
  *  An idenitity object
  */
 Model.prototype.identity = function(kitchen_sink) {
-    if (this.driver) {
-        return this.driver.identity(kitchen_sink)
+    if (this.driver_instance) {
+        return this.driver_instance.identity(kitchen_sink)
     } else {
-        console.log("# Model.identity: returning null because this.driver=null")
+        console.log("# Model.identity: returning null because this.driver_instance=null")
         return null;
     }
 }
@@ -843,12 +843,12 @@ Model.prototype.driver_out = function(paramd) {
 Model.prototype.pull = function() {
     var self = this;
 
-    if (self.driver === undefined) {
-        console.log("# Model.pull: no self.driver?");
+    if (self.driver_instance === undefined) {
+        console.log("# Model.pull: no self.driver_instance?");
         return;
     }
 
-    self.driver.pull();
+    self.driver_instance.pull();
 
     return self;
 }
@@ -931,14 +931,14 @@ Model.prototype._do_pushes = function(attributed) {
     // this magically
     self.__push_keys = _.keys(attributed)
 
-    if (!self.driver) {
+    if (!self.driver_instance) {
         // if there's a parent and this has no driver, it will handle it
         if (self.__parent_thing !== undefined) {
             // console.log("HERE:C", self.__push_keys)
             return
         }
 
-        console.log("- Model.push: no self.driver?");
+        console.log("- Model.push: no self.driver_instance?");
         return;
     }
 
@@ -948,11 +948,11 @@ Model.prototype._do_pushes = function(attributed) {
         thingd: self._deep_copy_state(self, true),
         libs : libs.libs
     }
-    // console.log("HERE:A.1", self.driver)
+    // console.log("HERE:A.1", self.driver_instance)
     // console.log("HERE:A.2", paramd)
     // console.log("HERE:A.3", _.keys(attributed))
     self.driver_out(paramd);
-    self.driver.push(paramd);
+    self.driver_instance.push(paramd);
 
     return self;
 }
