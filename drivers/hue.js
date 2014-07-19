@@ -37,6 +37,9 @@ var UPnPDriver = require('./upnp').Driver
 
 var queue = new FIFOQueue("HueDriver")
 
+var OFFSET_PUSH = 100000
+var OFFSET_PULL = 200000
+
 /**
  *  Typically this will be created by one of
  *  the discover_* functions
@@ -314,7 +317,7 @@ HueDriver.prototype.push = function(paramd) {
     console.log("- HueDriver.push", "putd", putd)
 
     var qitem = {
-        id: self.light,
+        id: self.light + OFFSET_PUSH,
         run: function() {
             var url = self.iri + "/api/" + self.username + "/lights/" + self.light + "/state/";
             console.log("- do", url);
@@ -351,7 +354,7 @@ HueDriver.prototype.pull = function() {
 
     console.log("- HueDriver.pull called");
     var qitem = {
-        id: self.light,
+        id: self.light + OFFSET_PULL,
         run: function() {
             var url = self.iri + "/api/" + self.username + "/lights/" + self.light;
             console.log("- do", url);
