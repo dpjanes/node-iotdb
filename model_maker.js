@@ -554,7 +554,7 @@ ModelMaker.prototype.make = function() {
         this.driver = ( paramd.driver !== undefined) ? paramd.driver : undefined;
         this.initd = ( paramd.initd !== undefined) ? paramd.initd : {};
 
-        var iot = require('./iotdb').iot
+        var iot = require('./iotdb').iot()
 
         this.code = self.__code;
         this.Model = new_thing

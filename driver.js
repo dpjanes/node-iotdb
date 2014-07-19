@@ -420,7 +420,7 @@ Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
 Driver.prototype.cfg_get = function(key, otherwise) {
     var self = this;
 
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
     if (!iot) {
         console.log("# Driver.cfg_get: 'iot' doesn't exist - perhaps create this driver _after 'new IOTDB'")
         return otherwise

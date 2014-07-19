@@ -10,13 +10,13 @@
  *  This is also the 'main' for the package
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,10 +57,27 @@ var EVENT_ON_READY_CHANGE = "iot_ready_change";
 /**
  *  Singleton
  */
-exports.iot = null;
+exports.instance = null;
 
 /**
- *  Manage things, drivers and connections to the 
+ */
+exports.iot = function() {
+    if (exports.instance == null) {
+        new IOT({
+            load_models: true,
+            load_things: true,
+            load_drivers: true,
+            load_stores: true,
+
+            end: null
+        })
+    }
+
+    return exports.instance
+}
+
+/**
+ *  Manage things, drivers and connections to the
  *  {@link https://iotdb.org/ IOTDB.org} running
  *  in a NodeJS application.
  *
@@ -76,17 +93,17 @@ exports.iot = null;
 var IOT = function(initd) {
     var self = this;
 
-    if (exports.iot == null) {
-        exports.iot = self;
+    if (exports.instance == null) {
+        exports.instance = self;
     }
-    
+
     self.configure(initd);
 };
 util.inherits(IOT, events.EventEmitter);
 
 /**
  *  This handles all the setup for clases IOT and IOTDB.
- *  It is automatically called and it seems unlikely 
+ *  It is automatically called and it seems unlikely
  *  you will ever have to call it.
  *
  *  @param {dict} initd
@@ -339,14 +356,14 @@ IOT.prototype.cfg_get_oauthd = function(iri, otherwise) {
 }
 
 /**
- *  Check paramd.require_* 
+ *  Check paramd.require_*
  */
 IOT.prototype._check_requirements = function() {
     var self = this;
 
     if (self.initd.require_username) {
-        if ((self.username === null) || 
-            (self.username === "") || 
+        if ((self.username === null) ||
+            (self.username === "") ||
             (self.username === undefined) ||
             (self.username === "nobody")) {
             throw "IOT._check_requirements: FAIL: require_username"
@@ -491,7 +508,7 @@ IOT.prototype.is_ready = function(key) {
  */
 IOT.prototype.on_ready = function(callback) {
     var self = this;
-    
+
     var doit = function() {
         if (callback) {
             callback(self)
@@ -509,7 +526,7 @@ IOT.prototype.on_ready = function(callback) {
 
 IOT.prototype.on_register_drivers = function(callback) {
     var self = this;
-    
+
     var doit = function() {
         if (callback) {
             try {
@@ -533,7 +550,7 @@ IOT.prototype.on_register_drivers = function(callback) {
 
 IOT.prototype.on_register_models = function(callback) {
     var self = this;
-    
+
     var doit = function() {
         if (callback) {
             try {
@@ -557,7 +574,7 @@ IOT.prototype.on_register_models = function(callback) {
 
 IOT.prototype.on_register_things = function(callback) {
     var self = this;
-    
+
     var doit = function() {
         if (callback) {
             callback(self)
@@ -575,7 +592,7 @@ IOT.prototype.on_register_things = function(callback) {
 
 IOT.prototype.on_graph_ready = function(callback) {
     var self = this;
-    
+
     if (self.readyd['graph_ready'] == 0) {
         callback(self)
     } else {
@@ -678,7 +695,7 @@ IOT.prototype.register_model = function(model) {
 }
 
 /**
- *  Register a {@link Driver}. 
+ *  Register a {@link Driver}.
  *
  *  @param {Driver} driver
  *
@@ -703,16 +720,16 @@ IOT.prototype.register_driver = function(driver) {
 }
 
 /**
- *  Very important function! This kicks off the work 
+ *  Very important function! This kicks off the work
  *  of Things finding Drivers and Drivers finding Things.
  *  <p>
  *  If called with no arguments, all the registered Drivers
- *  are asked to find things in whatever way they know 
+ *  are asked to find things in whatever way they know
  *  how (for example: UPnP does a UPnP LAN search, SmartThings
  *  polls the SmartThings API, Bluetooth Low Energy starts
  *  a device scan, and so forth
  *  <p>
- *  If called with a single IRI argument, we assume this is 
+ *  If called with a single IRI argument, we assume this is
  *  a Driver IRI and ask only that Driver (if it exists)
  *  to discover things. See {@link IOT#_discover_nearby}
  *  <p>
@@ -757,7 +774,7 @@ IOT.prototype.discover = function() {
 
 /**
  *  This will ask the registered {@link Drivers} if they
- *  can find devices 'nearby', i.e. on the LAN. 
+ *  can find devices 'nearby', i.e. on the LAN.
  *
  *  @param {undefined|dictionary} find_driver_identityd
  *  If undefined, do everything. Otherwise use
@@ -768,7 +785,7 @@ IOT.prototype.discover = function() {
  */
 IOT.prototype._discover_nearby = function(find_driver_identityd) {
     var self = this;
-    
+
     find_driver_identityd = _.identity_expand(find_driver_identityd);
 
     for (var bi = 0; bi < self.driver_exemplars.length; bi++) {
@@ -783,17 +800,17 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
         driver_exemplar.discover(discover_paramd, function(driver) {
             // see if this driver has already been handled
             var driver_identityd = driver.identity()
-            console.log("- IOT._discover_nearby", 
+            console.log("- IOT._discover_nearby",
                 "\n  driver.identityd", driver_identityd);
 
             var existing = self.thingd[driver_identityd.thing_id];
             if (existing !== undefined) {
-                console.log("# IOT._discover_nearby", 
+                console.log("# IOT._discover_nearby",
                     "thing already exists", driver_identityd.thing_id)
                 return;
             }
 
-            // placeholder 
+            // placeholder
             self.thingd[driver_identityd.thing_id] = null;
 
             // find a thing to mate with this driver
@@ -824,11 +841,11 @@ IOT.prototype._discover_nearby = function(find_driver_identityd) {
 }
 
 /**
- *  Add a {@link Thing} that's already described (but not 
+ *  Add a {@link Thing} that's already described (but not
  *  bound to a Driver.
  *  <p>
  *  This is correctly named. If it was <code>discover_model</code>
- *  there would be no expectation that <code>initd</code> 
+ *  there would be no expectation that <code>initd</code>
  *  etc. is already filled out
  *
  *  @param {Thing} model_exemplar
@@ -866,7 +883,7 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
                 console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)")
                 return;
             }
-            
+
             console.log("- IOT._discover_thing", "found Driver (bound)");
 
             var driver_identityd = driver.identity()
@@ -888,19 +905,19 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
     }
 
     console.log("# IOT._discover_thing", "NO driver found",
-        "\n  thing.driver_identityd=", thing_exemplar.driver_identityd, 
-        "\n  thing.initd=", thing_exemplar.initd, 
+        "\n  thing.driver_identityd=", thing_exemplar.driver_identityd,
+        "\n  thing.initd=", thing_exemplar.initd,
         "\n  thing.code=", thing_exemplar.code);
 
     return self;
 }
 
 /**
- *  Bind a Model to a Driver. 
- *  
+ *  Bind a Model to a Driver.
+ *
  *  @param {dictionary} paramd
  *  @param {dictionary|undefined} paramd.driver_iri
- *  The Driver IRI. If not defined, it will be 
+ *  The Driver IRI. If not defined, it will be
  *  assumed the IRI of the Model (if available). If no
  *  Driver IRI can be found, we assume it's iot-driver:json
  *
@@ -909,7 +926,7 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
  *  the Model function or a Model exemplar.
  *
  *  @param {dictionary} paramd.initd
- *  The <code>initd</code> data for the Model. 
+ *  The <code>initd</code> data for the Model.
  *
  *  @protected
  */
@@ -977,11 +994,11 @@ IOT.prototype._discover_bind = function(paramd) {
 /**
  *  Bind a Model to an API IRI. This is great
  *  for accessing simple JSON functionality. If you
- *  need something more fancy, use 
+ *  need something more fancy, use
  *  {@link IOT#discover IOT.discover}
  *
  *  @paramd {url} api
- *  The IRI of a JSON 
+ *  The IRI of a JSON
  *
  *  @paramd {*} model
  *  The code of a Model, the IOTDB IRI of a model,
@@ -1017,7 +1034,7 @@ IOT.prototype.discover_json = function(api, model) {
  *  been defined for this Model.
  *  <p>
  *  This then calls {@link Driver#setup Driver.driver_setup}
- *  to complete the binding. 
+ *  to complete the binding.
  *  <p>
  *  The {@link Driver#setup Driver.driver_setup} function
  *  is passed a callback that may be in the future be invoked
@@ -1089,7 +1106,7 @@ IOT.prototype.things = function() {
  *  into the graph.
  *
  *  @param {string|Thing} thing
- *  If a string, it is expected to be the 'thing_id' for 
+ *  If a string, it is expected to be the 'thing_id' for
  *  the Thing.
  */
 IOT.prototype.ask_device = function(thing, paramd, callback) {
@@ -1173,7 +1190,7 @@ IOT.prototype.ask_device = function(thing, paramd, callback) {
  *
  *  @param {dictionary} paramd
  *  @param {string} paramd.model_code
- *  The model_code of Model to return. 
+ *  The model_code of Model to return.
  *
  *  @param {string} paramd.model_iri
  *  The model_iri of Model to return
@@ -1227,7 +1244,7 @@ IOT.prototype.ask_model = function(paramd, callback) {
                     model_code: model_code,
                     model_exemplar: model_exemplar,
                     model_iri: model_iri,
-                    
+
                     error: null
                 })
             }
@@ -1278,7 +1295,7 @@ IOT.prototype.ask_model = function(paramd, callback) {
 }
 
 /**
- *  Return the IOTDB Model IRI for this Thing, based on the 
+ *  Return the IOTDB Model IRI for this Thing, based on the
  *  model_code. Does not depend on the Graph.
  *
  *  @param {*} model
@@ -1311,7 +1328,7 @@ IOT.prototype.model_code_iri = function(model) {
 }
 
 /**
- *  Disambiguate the model. 
+ *  Disambiguate the model.
  *
  *  <p>
  *  If there's a valid input, <code>model_code</code>
@@ -1348,7 +1365,7 @@ IOT.prototype._clarify_model = function(resultd, model) {
         resultd.model = model.Model
         resultd.model_code = resultd.model_exemplar.code
     } else {
-        console.log("# IOT._model: model was not a URL, string, exemplar or class", 
+        console.log("# IOT._model: model was not a URL, string, exemplar or class",
             "\n ", model)
     }
 }
@@ -1388,7 +1405,7 @@ IOT.prototype.get_model_exemplar = function(model_code) {
 }
 
 /**
- *  Given the IRI for a Model that has been 
+ *  Given the IRI for a Model that has been
  *  loaded into the graph, return an Thing class
  *  to work with it.
  *
@@ -1447,7 +1464,7 @@ IOT.prototype._build_model = function(model_iri) {
             console.log("unrecognized predicate", t.predicate)
         }
     }
-    
+
     if (at_types.indexOf("iot:model") == -1) {
         console.log("thing_from_jsonld:build_model: iot:model not in @types");
         return null;
@@ -1466,7 +1483,7 @@ IOT.prototype._build_attribute = function(attribute_iri) {
     a.code(_.iri_to_code(attribute_iri))
 
     var at_types = [];
-    
+
     var ts = self.gm.get_triples(attribute_iri, null, null, { compact_object: false })
     for (var ti in ts) {
         var t = ts[ti];
@@ -1481,12 +1498,12 @@ IOT.prototype._build_attribute = function(attribute_iri) {
             a.property_value(t.predicate, t.object)
         }
     }
-    
+
     if (at_types.indexOf("iot:attribute") == -1) {
         console.log("thing_from_jsonld:_build_attribute: iot:attribute not in @types");
         return null;
     }
-    
+
     return a.make()
 }
 
@@ -1511,16 +1528,16 @@ IOT.prototype._iotdb_device_get = function() {
 
         var identity = thing.identity();
         // console.log("C.3", identity)
-        console.log("- IOT._iotdb_device_get", 
-            "\n  IRI", thing.initd.api_iri, 
+        console.log("- IOT._iotdb_device_get",
+            "\n  IRI", thing.initd.api_iri,
             "\n  thing_id", identity.thing_id,
             // "\n  identity", identity,
             "\n  model_code", thing.code
         );
         self.ask_device(thing, null, function(callbackd) {
-            console.log("- IOT._iotdb_device_get: ask_device/callbackd", 
-                "\n  .iri", callbackd.device_iri, 
-                "\n  .deviced", callbackd.deviced, 
+            console.log("- IOT._iotdb_device_get: ask_device/callbackd",
+                "\n  .iri", callbackd.device_iri,
+                "\n  .deviced", callbackd.deviced,
                 "\n  .error", callbackd.error,
                 "\n  .auto_iotdb_device_create", self.initd.iotdb_device_create)
             if (_.isEmpty(callbackd.deviced) && self.initd.iotdb_device_create) {
@@ -1539,7 +1556,7 @@ IOT.prototype._iotdb_device_get = function() {
                     'iot:model': "/" + self.username + "/models/" + thing.code,
                     'iot:name': thing.code
                 }
-                var ndevice_iri = self.iotdb_prefix + "/" + self.username + 
+                var ndevice_iri = self.iotdb_prefix + "/" + self.username +
                     "/things/" + encodeURIComponent(identity.thing_id);
 
                 var headerd = {
@@ -1555,7 +1572,7 @@ IOT.prototype._iotdb_device_get = function() {
                     .type('json')
                     .send(ndeviced)
                     .end(function(result) {
-                        console.log("- IOT._iotdb_device_get: ask_device/auto_iotdb_device_create", 
+                        console.log("- IOT._iotdb_device_get: ask_device/auto_iotdb_device_create",
                             "\n  ndevice_iri", ndevice_iri,
                             "\n  body", result.body
                         )
@@ -1577,9 +1594,9 @@ IOT.prototype._load_drivers = function() {
     var filenames = cfg.cfg_find(self.envd, self.initd.drivers_path, /[.]js$/)
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
-            console.log("# IOT._load_drivers:", 
-                "\n  filename", paramd.filename, 
-                "\n  error", paramd.error, 
+            console.log("# IOT._load_drivers:",
+                "\n  filename", paramd.filename,
+                "\n  error", paramd.error,
                 "\n  exception", paramd.exception)
             console.trace()
             return
@@ -1665,7 +1682,7 @@ IOT.prototype.on_things = function(callback, paramd) {
     var nthings = 0
     var timeoutId = timers.setInterval(function() {
         var things = self.things()
-        if (things.length < paramd.min_things) { 
+        if (things.length < paramd.min_things) {
             console.log("- IOT.on_things: waiting for things to stabilize", things.length)
             return
         }

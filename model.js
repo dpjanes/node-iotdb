@@ -670,7 +670,7 @@ Model.prototype.on = function(find_key, callback) {
 Model.prototype.on_change = function(callback) {
     var self = this;
 
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
     if (iot) {
         iot.on("thing_changed", function(thing) {
             if (thing == self) {
@@ -1105,7 +1105,7 @@ Model.prototype._do_notifies = function(attributed) {
 
     // levels of hackdom here
     if (any) {
-        var iot = require('./iotdb').iot
+        var iot = require('./iotdb').iot()
         if (iot) {
             iot.emit("thing_changed", self)
         }
@@ -1278,7 +1278,7 @@ Model.prototype._find = function(find_key) {
 Model.prototype.device_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
     if (!iot) {
         console.log("# Model.device_iri: iot is null: perhaps not bound to a driver yet?")
         return null
@@ -1312,7 +1312,7 @@ Model.prototype.thing_iri = function() {
 Model.prototype.place_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
     if (!iot) {
         console.log("# Model.place_iri: iot is null: perhaps not bound to a driver yet?")
         return null
@@ -1341,7 +1341,7 @@ Model.prototype.place_iri = function() {
 Model.prototype.model_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
     if (!iot) {
         console.log("# Model.place: iot is null: perhaps not bound to a driver yet?")
         return null
@@ -1365,7 +1365,7 @@ Model.prototype.model_iri = function() {
 Model.prototype.model_code_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
     if (!iot) {
         console.log("# Model.place: iot is null: perhaps not bound to a driver yet?")
         return null
@@ -1380,7 +1380,7 @@ Model.prototype.meta_thing = function() {
     var self = this;
 
     if (self.__meta_thing === undefined) {
-        var iot = require('./iotdb').iot
+        var iot = require('./iotdb').iot()
         if (!iot) {
             console.log("# Model.meta_thing: no iotdb object")
             return undefined

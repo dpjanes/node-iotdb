@@ -139,7 +139,7 @@ ThingArray.prototype.filter = function(d) {
     var self = this;
 
     var out_items = new ThingArray();
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
 
     var place_predicates = [
         _.expand("iot:place-location"),
@@ -265,7 +265,7 @@ ThingArray.prototype.with_driver = function(driver_iri) {
 }
 
 ThingArray.prototype.with_model = function(model) {
-    var iot = require('./iotdb').iot
+    var iot = require('./iotdb').iot()
 
     var modeld = {}
     iot._clarify_model(modeld, model)
