@@ -62,7 +62,7 @@ iot.on_thing(function(iot, thing) {
 iot.on_register_things(function() {
     iot.discover({
         model: "sample-light",
-        driver: ":json",
+        driver: ":rest",
         initd: {
             iri: "http://playground-home.iotdb.org/kitchen/light",
             mqtt_topic: "iot/kitchen/light/#",
@@ -72,7 +72,7 @@ iot.on_register_things(function() {
 
     iot.discover({
         model: "sample-rgb",
-        driver: ":json",
+        driver: ":rest",
         initd: {
             iri: "http://playground-home.iotdb.org/basement/hue/1",
             mqtt_topic: "iot/basement/hue/1/#",

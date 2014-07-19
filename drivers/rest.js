@@ -29,17 +29,17 @@ var driver = require('../driver')
 var FIFOQueue = require('../queue').FIFOQueue
 var unirest = require('unirest');
 
-var queue = new FIFOQueue("JSONDriver");
+var queue = new FIFOQueue("RESTDriver");
 
 /**
  */
-var JSONDriver = function(paramd) {
+var RESTDriver = function(paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver: "iot-driver:json",
+        driver: "iot-driver:rest",
         initd: {}
     })
 
@@ -51,7 +51,7 @@ var JSONDriver = function(paramd) {
     return self;
 }
 
-JSONDriver.prototype = new driver.Driver;
+RESTDriver.prototype = new driver.Driver;
 
 /* --- class methods --- */
 
@@ -60,7 +60,7 @@ JSONDriver.prototype = new driver.Driver;
  *
  *  @protected
  */
-JSONDriver.prototype._init = function(initd) {
+RESTDriver.prototype._init = function(initd) {
     var self = this;
 
     if (!initd) {
@@ -76,7 +76,7 @@ JSONDriver.prototype._init = function(initd) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-JSONDriver.prototype.identity = function(kitchen_sink) {
+RESTDriver.prototype.identity = function(kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -102,7 +102,7 @@ JSONDriver.prototype.identity = function(kitchen_sink) {
  *  Record the actual API of the JSON. This
  *  is used in creating the proper identity
  */
-JSONDriver.prototype.setup = function(paramd) {
+RESTDriver.prototype.setup = function(paramd) {
     var self = this;
 
     /* chain */
@@ -120,13 +120,13 @@ JSONDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#discover Driver.discover}
  */
-JSONDriver.prototype.discover = function(paramd, discover_callback) {
+RESTDriver.prototype.discover = function(paramd, discover_callback) {
     if (paramd.initd === undefined) {
-        console.log("# JSONDriver.discover: no nearby discovery (not a problem)")
+        console.log("# RESTDriver.discover: no nearby discovery (not a problem)")
         return
     }
 
-    discover_callback(new JSONDriver());
+    discover_callback(new RESTDriver());
 }
 
 /**
@@ -134,10 +134,10 @@ JSONDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-JSONDriver.prototype.push = function(paramd) {
+RESTDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- JSONDriver.push", 
+    console.log("- RESTDriver.push", 
         "\n  iri", self.iri, 
         "\n  driverd", paramd.driverd, 
         "\n  initd", paramd.initd)
@@ -153,11 +153,11 @@ JSONDriver.prototype.push = function(paramd) {
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# JSONDriver.push/.end", "not ok", "url", self.iri, "result", result.text);
+                        console.log("# RESTDriver.push/.end", "not ok", "url", self.iri, "result", result.text);
                         return
                     }
 
-                    console.log("- JSONDriver.push/.end.body", result.body);
+                    console.log("- RESTDriver.push/.end.body", result.body);
                 })
             ;
         }
@@ -173,10 +173,10 @@ JSONDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-JSONDriver.prototype.pull = function() {
+RESTDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- JSONDriver.pull", 
+    console.log("- RESTDriver.pull", 
         "\n  iri", self.iri
     )
 
@@ -189,7 +189,7 @@ JSONDriver.prototype.pull = function() {
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# JSONDriver.pull/.end - not ok", "\n  url", self.iri, "\n  result", result.text);
+                        console.log("# RESTDriver.pull/.end - not ok", "\n  url", self.iri, "\n  result", result.text);
                         return
                     }
 
@@ -207,4 +207,4 @@ JSONDriver.prototype.pull = function() {
 /*
  *  API
  */
-exports.Driver = JSONDriver
+exports.Driver = RESTDriver

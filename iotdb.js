@@ -919,7 +919,7 @@ IOT.prototype._discover_thing = function(thing_exemplar) {
  *  @param {dictionary|undefined} paramd.driver
  *  The Driver IRI. If not defined, it will be
  *  assumed the IRI of the Model (if available). If no
- *  Driver IRI can be found, we assume it's iot-driver:json
+ *  Driver IRI can be found, we assume it's iot-driver:rest
  *
  *  @param {*} paramd.model
  *  The code of a Model, the IOTDB IRI of a model,
@@ -952,7 +952,7 @@ IOT.prototype._discover_bind = function(paramd) {
                     paramd = _.defaults(paramd, callbackd.model_exemplar.driver_identityd)
                 }
                 paramd = _.defaults(paramd, {
-                    driver: "iot-driver:json",
+                    driver: "iot-driver:rest",
                 })
 
                 var thing = callbackd.model_exemplar.make({
@@ -1017,7 +1017,7 @@ IOT.prototype.discover_json = function(iri, model) {
         })
     } else {
         return self._discover_bind({
-            driver: "iot-driver:json",
+            driver: "iot-driver:rest",
             initd : {
                 iri: iri
             }
