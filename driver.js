@@ -58,7 +58,7 @@ Driver.prototype.driver_construct = function() {
     self.verbose = false;
 
     // MQTT built in
-    self.mqtt_broker = self.cfg_get('mqtt_broker', null)
+    self.mqtt_host = self.cfg_get('mqtt_host', null)
     self.mqtt_port = self.cfg_get('mqtt_port', 1883)
     self.mqtt_topic = null
     self.mqtt_json = false
@@ -105,7 +105,7 @@ Driver.prototype.identity = function(kitchen_sink) {
 Driver.prototype.register = function(iot) {
     var self = this;
 
-    // self.mqtt_broker = self.cfg_get('mqtt_broker', "XXXXXXX")
+    // self.mqtt_host = self.cfg_get('mqtt_host', "XXXXXXX")
     // self.mqtt_port = self.cfg_get('mqtt_port', 1883)
 }
 
@@ -277,22 +277,22 @@ Driver.prototype.pulled = function(driverd) {
 Driver.prototype.mqtt_subscribe = function() {
     var self = this;
 
-    if (!(self.mqtt_broker && self.mqtt_port && self.mqtt_topic)) {
+    if (!(self.mqtt_host && self.mqtt_port && self.mqtt_topic)) {
         console.log("# Driver.mqtt_subscribe: missing info",
             "\n  unique_id", self.unique_id,
-            "\n  mqtt_broker", self.mqtt_broker,
+            "\n  mqtt_host", self.mqtt_host,
             "\n  mqtt_port", self.mqtt_port,
             "\n  mqtt_topic", self.mqtt_topic
         )
-        console.log("  HINT - you may need to define add 'mqtt_broker' to $HOME/.iotdb/keystore.json")
+        console.log("  HINT - you may need to define add 'mqtt_host' to $HOME/.iotdb/keystore.json")
     }
 
     self.mqtt_last_millis = (new Date).getTime()
 
-    var mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_broker)
+    var mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
 
     console.log("- Driver.mqtt_subscribe:",
-        "\n  mqtt_broker", self.mqtt_broker,
+        "\n  mqtt_host", self.mqtt_host,
         "\n  mqtt_port", self.mqtt_port,
         "\n  mqtt_topic", self.mqtt_topic,
         "\n  mqtt_device", self.mqtt_device
@@ -362,8 +362,8 @@ Driver.prototype.mqtt_init = function(initd) {
     if (!initd) {
         return
     }
-    if (initd.mqtt_broker) {
-        self.mqtt_broker = initd.mqtt_broker
+    if (initd.mqtt_host) {
+        self.mqtt_host = initd.mqtt_host
     }
     if (initd.mqtt_port) {
         self.mqtt_port = initd.mqtt_port

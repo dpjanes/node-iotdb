@@ -91,8 +91,8 @@ MQTT.prototype.identity = function(kitchen_sink) {
         var identityd = {}
         identityd["driver"] = self.driver
 
-        if (self.mqtt_broker) {
-            identityd["mqtt_broker"] = self.mqtt_broker
+        if (self.mqtt_host) {
+            identityd["mqtt_host"] = self.mqtt_host
         }
         if (self.mqtt_port) {
             identityd["mqtt_port"] = self.mqtt_port
@@ -230,7 +230,7 @@ MQTT.prototype.on_mqtt_message = function(in_topic, in_message) {
         var ndriver = new MQTT({
             initd: {
                 mqtt_topic: parts.join("/"),
-                mqtt_broker: self.mqtt_broker,
+                mqtt_host: self.mqtt_host,
                 mqtt_port: self.mqtt_port,
                 mqtt_json: self.mqtt_json,
                 mqtt_device: mqtt_device
