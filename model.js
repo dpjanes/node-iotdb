@@ -22,6 +22,8 @@
 
 "use strict"
 
+var assert = require("assert")
+
 var _ = require("./helpers")
 var attribute = require("./attribute")
 var meta_thing = require("./meta_thing")
@@ -671,6 +673,8 @@ Model.prototype.on = function(find_key, callback) {
  */
 Model.prototype.on_change = function(callback) {
     var self = this;
+
+    assert.ok(_.isFunction(callback))
 
     var iot = require('./iotdb').iot()
     if (iot) {

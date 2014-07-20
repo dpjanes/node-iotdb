@@ -154,10 +154,9 @@ SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message)
     try {
         var in_messaged = JSON.parse(in_message) 
         delete in_messaged['timestamp']
-
         self.pulled(in_messaged)
     } catch (x) {
-        console.log("# SmartThingsDriver.handle_mqtt_message: MQTT receive: exception ignored", x)
+        console.log("# SmartThingsDriver.handle_mqtt_message: MQTT receive: exception ignored", x, "\n ", x.stack)
     }
 
     console.log("- SmartThingsDriver.handle_mqtt_message: MQTT receive:", in_topic, in_message)

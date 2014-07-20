@@ -314,7 +314,7 @@ Driver.prototype.mqtt_subscribe = function() {
         self._mqtt_resubscribe()
     })
     mqtt_client.on('close', function() {
-        console.log("# Driver.mqtt_subscribe/close(error):", error)
+        console.log("# Driver.mqtt_subscribe/close(error):", arguments)
         self._mqtt_resubscribe()
     })
     mqtt_client.subscribe(self.mqtt_topic)

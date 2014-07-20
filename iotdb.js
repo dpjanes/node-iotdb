@@ -1881,6 +1881,8 @@ IOT.prototype.on_things = function(callback, paramd) {
 
         nthings = things.length
     }, paramd.time_delta);
+
+    return self
 }
 
 /* --- places section -- */

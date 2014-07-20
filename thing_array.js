@@ -255,10 +255,11 @@ ThingArray.prototype.on = function() {
  */
 ThingArray.prototype.on_change = function() {
     var self = this;
+    var av = arguments
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
-        item.on_change.apply(item, Array.prototype.slice.call(arguments));
+        item.on_change.apply(item, Array.prototype.slice.call(av));
     }
 
     /*
@@ -267,7 +268,7 @@ ThingArray.prototype.on_change = function() {
     var persist = this._persistds !== null
     if (persist) {
         events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
-            item.on_change.apply(item, Array.prototype.slice.call(arguments));
+            item.on_change.apply(item, Array.prototype.slice.call(av));
         })
     }
 
