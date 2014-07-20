@@ -20,18 +20,18 @@
     }
   }, 
   "@id": "", 
-  "@type": "iot:model", 
+  "@type": "iot:Model", 
   "iot-iotdb:model-validator": "function (paramd) {\n        \"use strict\";\n        for (var code in paramd.codes) {\n            var value = paramd.stated[code];\n            \n            if (code == \"temperature_f\") {\n                if (value < 150) {\n                    paramd.thingd[\"temperature_f\"] = 0;\n                    paramd.thingd[\"temperature_c\"] = 0;\n                } else {\n                    paramd.thingd[\"temperature_c\"] = Math.round(paramd.libs.temperature.f2c(value))\n                }\n            } else if (code == \"temperature_c\") {\n                if (value < paramd.libs.temperature.f2c(150)) {\n                    paramd.thingd[\"temperature_f\"] = 0;\n                    paramd.thingd[\"temperature_c\"] = 0;\n                } else {\n                    paramd.thingd[\"temperature_f\"] = Math.round(paramd.libs.temperature.c2f(value));\n                }\n            }\n        }\n    }", 
   "iot:attribute": [
     {
       "@id": "#on", 
-      "@type": "iot:attribute", 
+      "@type": "iot:Attribute", 
       "iot-js:type": "iot-js:boolean", 
       "iot:purpose": "iot-attribute:on"
     }, 
     {
       "@id": "#temperature_f", 
-      "@type": "iot:attribute", 
+      "@type": "iot:Attribute", 
       "iot-js:maximum": 500, 
       "iot-js:minimum": 0, 
       "iot-js:type": "iot-js:integer", 
@@ -40,7 +40,7 @@
     }, 
     {
       "@id": "#temperature_c", 
-      "@type": "iot:attribute", 
+      "@type": "iot:Attribute", 
       "iot-js:maximum": 260, 
       "iot-js:minimum": 0, 
       "iot-js:type": "iot-js:integer", 
@@ -49,14 +49,14 @@
     }, 
     {
       "@id": "#reading_c", 
-      "@type": "iot:attribute", 
+      "@type": "iot:Attribute", 
       "iot-js:type": "iot-js:integer", 
       "iot:purpose": "iot-attribute:reading", 
       "iot:unit": "iot-unit:temperature.si.celsius"
     }, 
     {
       "@id": "#reading_f", 
-      "@type": "iot:attribute", 
+      "@type": "iot:Attribute", 
       "iot-js:type": "iot-js:integer", 
       "iot:purpose": "iot-attribute:reading", 
       "iot:unit": "iot-unit:temperature.si.fahrenheit"

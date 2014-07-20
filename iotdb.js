@@ -1622,8 +1622,8 @@ IOT.prototype._build_model = function(model_iri) {
         }
     }
 
-    if (at_types.indexOf("iot:model") == -1) {
-        console.log("thing_from_jsonld:build_model: iot:model not in @types");
+    if (at_types.indexOf("iot:Model") == -1) {
+        console.log("thing_from_jsonld:build_model: iot:Model not in @types");
         return null;
     }
 
@@ -1656,8 +1656,8 @@ IOT.prototype._build_attribute = function(attribute_iri) {
         }
     }
 
-    if (at_types.indexOf("iot:attribute") == -1) {
-        console.log("thing_from_jsonld:_build_attribute: iot:attribute not in @types");
+    if (at_types.indexOf("iot:Attribute") == -1) {
+        console.log("thing_from_jsonld:_build_attribute: iot:Attribute not in @types");
         return null;
     }
 

@@ -247,7 +247,7 @@ Model.prototype.jsonld = function(paramd) {
         rd["@id"] = "#"
     }
 
-    rd["@type"] = _.expand("iot:model");
+    rd["@type"] = _.expand("iot:Model");
 
     if (self.name) {
         rd[_.expand("iot:name")] = self.name
@@ -1323,7 +1323,7 @@ Model.prototype.model_iri = function() {
         return null;
     }
 
-    return iot.gm.get_object(thing_iri, 'iot:model')
+    return iot.gm.get_object(thing_iri, 'iot:Model')
 }
 
 /**

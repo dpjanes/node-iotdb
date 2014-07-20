@@ -425,8 +425,8 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
 
     self.irid[iri] = GraphManager.IRI_LOADED
     
-    if (self.has_type(iri, "iot:device")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:device", iri)
+    if (self.has_type(iri, "iot:Thing")) {
+        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Thing", iri)
 
         self.iot.emit(GraphManager.EVENT_UPDATED_DEVICE, iri)
     } else if (self.has_type(iri, "iot:system")) {
@@ -438,11 +438,11 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
         devices.map(function(device) {
             self.load_iri(device);
         });
-    } else if (self.has_type(iri, "iot:place")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:place", iri)
+    } else if (self.has_type(iri, "iot:Place")) {
+        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Place", iri)
         self.iot.emit(GraphManager.EVENT_UPDATED_PLACE, iri)
-    } else if (self.has_type(iri, "iot:model")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:model", iri)
+    } else if (self.has_type(iri, "iot:Model")) {
+        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Model", iri)
         self.iot.emit(GraphManager.EVENT_UPDATED_MODEL, iri)
     } else if (self.has_type(iri, "iot:item")) {
         console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:item", iri)

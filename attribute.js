@@ -89,7 +89,7 @@ attribute.make_number()
  *  <p>
  *  Which makes the following {@link Attribute} dictionary.
  *  <pre>
-{ '@type': 'https://iotdb.org/iot#attribute',
+{ '@type': 'https://iotdb.org/iot#Attribute',
   '@id': '#temperature_f',
   'https://iotdb.org/iot#purpose': 'https://iotdb.org/attribute#temperature',
   'https://iotdb.org/iot#unit': 'https://iotdb.org/iot-unit#temperature.si.fahrenheit',
@@ -105,7 +105,7 @@ attribute.make_number()
 var Attribute = function() {
     var self = this;
 
-    self['@type'] = _.expand('iot:attribute');
+    self['@type'] = _.expand('iot:Attribute');
 }
 
 /**

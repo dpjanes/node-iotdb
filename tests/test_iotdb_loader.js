@@ -49,10 +49,10 @@ describe('test_iotdb_load_model:', function(){
         it('data looks correct', function(done){
             var iot = new iotdb.IOT(iotd)
             iot.on(iotdb.EVENT_UPDATED_MODEL, function(iri) {
-                var clockd = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:model',
+                var clockd = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:Model',
                   'iot:attribute': 'file:///abstract-clock#when-instant',
                   'iot:name': 'abstract-clock' }
-                var whend = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:attribute',
+                var whend = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:Attribute',
                   'iot:purpose': 'iot-attribute:when-instant',
                   'iot-js:format': 'iot-js:datetime',
                   'iot-js:type': 'iot-js:string' }
@@ -70,7 +70,7 @@ describe('test_iotdb_load_model:', function(){
         it('attribute serializes correctly', function(done){
             var iot = new iotdb.IOT(iotd)
             iot.on(iotdb.EVENT_UPDATED_MODEL, function(iri) {
-                var attributed = { '@type': 'https://iotdb.org/pub/iot#attribute',
+                var attributed = { '@type': 'https://iotdb.org/pub/iot#Attribute',
                   '@id': '#when-instant',
                   'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#when-instant',
                   'https://iotdb.org/pub/iot-js#format': 'https://iotdb.org/pub/iot-js#datetime',
@@ -183,7 +183,7 @@ describe('test_iotdb_load_model:', function(){
         it('attribute serializes correctly', function(done){
             var iot = new iotdb.IOT(iotd)
             iot.on(iotdb.EVENT_UPDATED_MODEL, function(iri) {
-                var attributed = { '@type': 'https://iotdb.org/pub/iot#attribute',
+                var attributed = { '@type': 'https://iotdb.org/pub/iot#Attribute',
                   '@id': '#temperature_c',
                   'https://iotdb.org/pub/iot-js#minimum': 0,
                   'https://iotdb.org/pub/iot-js#maximum': 260,

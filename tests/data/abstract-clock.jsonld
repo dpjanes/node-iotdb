@@ -18,10 +18,10 @@
     }
   }, 
   "@id": "", 
-  "@type": "iot:model", 
+  "@type": "iot:Model", 
   "iot:attribute": {
     "@id": "#when-instant", 
-    "@type": "iot:attribute", 
+    "@type": "iot:Attribute", 
     "iot-js:format": "iot-js:datetime", 
     "iot-js:type": "iot-js:string", 
     "iot:purpose": "iot-attribute:when-instant"

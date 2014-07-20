@@ -25,7 +25,7 @@ var iot_js_type = _.expand("iot-js:type");
 var iot_js_minimum = _.expand("iot-js:minimum");
 var iot_js_maximum = _.expand("iot-js:maximum");
 
-var iot_attribute = _.expand("iot:attribute");
+var iot_attribute = _.expand("iot:Attribute");
 var iot_purpose = _.expand("iot:purpose");
 
 /* --- tests --- */
@@ -102,7 +102,7 @@ describe('test_attribute_setup', function(){
     });
     it('complicated setup', function(){
         var d = { 
-            '@type': 'https://iotdb.org/pub/iot#attribute',
+            '@type': 'https://iotdb.org/pub/iot#Attribute',
             '@id': '#temperature_f',
             'https://iotdb.org/pub/iot#name': 'value',
             'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#temperature',
@@ -130,7 +130,7 @@ describe('test_attribute_setup', function(){
         assert.deepEqual(a, d);
     });
     it('IRI expansion', function(){
-        var d = { '@type': 'https://iotdb.org/pub/iot#attribute',
+        var d = { '@type': 'https://iotdb.org/pub/iot#Attribute',
           'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#value',
           '@id': '#value',
           'https://iotdb.org/pub/iot#name': 'value',
@@ -172,7 +172,7 @@ describe('test_attribute_setup', function(){
     it('multiples of same property', function(){
         {
             var d = {
-                '@type': 'https://iotdb.org/pub/iot#attribute',
+                '@type': 'https://iotdb.org/pub/iot#Attribute',
                 '@id': '#value',
                 'https://iotdb.org/pub/iot#name': 'value',
                 'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#on',
@@ -190,7 +190,7 @@ describe('test_attribute_setup', function(){
         }
         {
             var d = {
-                '@type': 'https://iotdb.org/pub/iot#attribute',
+                '@type': 'https://iotdb.org/pub/iot#Attribute',
                 '@id': '#value',
                 'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#value',
                 'https://iotdb.org/pub/iot#name': 'value',
