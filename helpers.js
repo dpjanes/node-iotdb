@@ -2300,7 +2300,6 @@ var _format = function(template, valueds) {
 }
 
 /**
- *  XXX - not finished. Need to do proper test
  */
 exports.instanceof_ThingArray = function(o) {
     if (o === undefined) {

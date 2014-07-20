@@ -1954,22 +1954,7 @@ IOT.prototype.places = function() {
 
 /* -------------- NEW STUFF Node-IOTDB-V2--------------- */
 
-/**
- *  
- */
-IOT.prototype.connect_iri = function(iri) {
-    return this.connect(iri, "iri")
-}
-
-IOT.prototype.connect_model = function(model) {
-    return this.connect(model, "model")
-}
-
-IOT.prototype.connect_driver = function(driver) {
-    return this.connect(_.expand(driver, "iot-driver:"), "driver")
-}
-
-IOT.prototype.connect = function(value, string_type) {
+IOT.prototype.connect = function(value) {
     var self = this
     var things = new thing_array.ThingArray({
         persist: true
@@ -1977,7 +1962,20 @@ IOT.prototype.connect = function(value, string_type) {
 
     if (_.isString(value)) {
         var connectd = {}
-        connectd[string_type ? string_type : "iri"] = value
+
+        if (value.match(/^:/) || value.match(/^iot-driver:/)) {
+            value = _.expand(value, "iot-driver:")
+        }
+
+        var driver_prefix = "https://iotdb.org/pub/iot-driver#"
+        if (value.substring(value, driver_prefix.length) == driver_prefix) {
+            connectd.driver = value
+        } else if (value.match(/^https?:\/\//)) {
+            connectd.iri = value
+        } else {
+            connectd.model = value
+        }
+        
         self._connect(connectd, things)
     } else if (_.isObject(value)) {
         self._connect(value, things)
