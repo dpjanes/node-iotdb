@@ -65,6 +65,7 @@ var ThingArray = function(paramd) {
 
 ThingArray.prototype = new Array;
 util.inherits(ThingArray, events.EventEmitter);
+ThingArray.prototype._instanceof_ThingArray = true
 
 /**
  *  Add a new thing to this ThingArray.

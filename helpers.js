@@ -2307,7 +2307,9 @@ exports.instanceof_ThingArray = function(o) {
         return false
     } else if (o === null) {
         return false
-    } else if (exports.isArray(o)) {
+    } else if (o._instanceof_ThingArray) {
         return true
+    } else {
+        return false
     }
 }

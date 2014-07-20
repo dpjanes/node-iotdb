@@ -827,7 +827,8 @@ IOT.prototype.discover = function() {
     if (av.length) {
         var last = av[av.length - 1]
         if (_.instanceof_ThingArray(last)) {
-            things = av.pop()
+            things = last
+            av.pop()
         }
     }
 
@@ -947,7 +948,7 @@ IOT.prototype._add_thing = function(thing, things) {
     self.thing_instanced[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
 
-    if (!_.isEmpty(things)) {
+    if (_.instanceof_ThingArray(things)) {
         things.push(thing)
     }
 
@@ -977,6 +978,10 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
     var self = this;
 
     console.log("- IOT._discover_thing", thing_exemplar.identity());
+    if (things === undefined) {
+        console.trace()
+        process.exit(0)
+    }
 
     for (var bi = 0; bi < self.driver_exemplars.length; bi++) {
         var driver_exemplar = self.driver_exemplars[bi];
@@ -1049,7 +1054,7 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
  *
  *  @protected
  */
-IOT.prototype._discover_bind = function(paramd) {
+IOT.prototype._discover_bind = function(paramd, things) {
     var self = this;
 
     paramd = _.defaults(paramd, {
@@ -1079,7 +1084,7 @@ IOT.prototype._discover_bind = function(paramd) {
                     initd: paramd.initd
                 })
 
-                self.discover(thing)
+                self.discover(thing, things)
             } else {
                 console.log("- IOT._discover_bind: unexpected state", callbackd.paramd)
             }
@@ -1100,7 +1105,7 @@ IOT.prototype._discover_bind = function(paramd) {
                 self._discover_bind({
                     model: model_iri,
                     initd: paramd.initd
-                })
+                }, things)
             } else {
                 console.log("- IOT._discover_bind: unexpected state: no iot:model?")
             }
@@ -1985,8 +1990,6 @@ IOT.prototype.connect = function(value, string_type) {
 
 IOT.prototype._connect = function(connectd, things) {
     var self = this
-
-    console.log(connectd)
 
     self.on_ready(function() {
         self._discover_bind(connectd, things)
