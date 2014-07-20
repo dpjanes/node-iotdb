@@ -2162,7 +2162,7 @@ exports.dump_things = function(iot, things) {
         console.log("  thing#:", ti + 1);
         console.log("  name:", thing.code);
         console.log("  thing_id:", thing.thing_id());
-        console.log("  thing-iri:", thing.device_iri());
+        console.log("  thing-iri:", thing.thing_iri());
         console.log("  model-iri:", thing.model_iri());
         console.log("  place-floor:", meta.get("iot:place-floor"));
         console.log("  place-location:", meta.get("iot:place-location"));

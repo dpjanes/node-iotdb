@@ -32,7 +32,7 @@ var MetaThing = function(iot, model) {
     self.iot = iot
     self.model = model
 
-    self.thing_iri = self.model.device_iri()
+    self.thing_iri = self.model.thing_iri()
 }
 
 /**

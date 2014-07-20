@@ -1071,7 +1071,7 @@ IOT.prototype._discover_bind = function(paramd) {
         });
     } else if (paramd.initd.iri) {
         // if you get here, you're making a JSON Driver connection
-        var json_driver = require('./drivers/json');
+        var json_driver = require('./drivers/rest');
         var driver = new json_driver.Driver()
         driver.setup({
             thing: null,
@@ -1079,7 +1079,7 @@ IOT.prototype._discover_bind = function(paramd) {
         })
 
         var thing_identity = driver.identity().thing_id
-        self.ask_device(thing_identity, null, function(callbackd) {
+        self._ask_thing(thing_identity, null, function(callbackd) {
             var model_iri = callbackd.deviced['iot:model']
             if (model_iri) {
                 self._discover_bind({
@@ -1213,7 +1213,7 @@ IOT.prototype.things = function() {
  *  If a string, it is expected to be the 'thing_id' for
  *  the Thing.
  */
-IOT.prototype.ask_device = function(thing, paramd, callback) {
+IOT.prototype._ask_thing = function(thing, paramd, callback) {
     var self = this;
 
     if (_.isFunction(paramd)) {
@@ -1221,27 +1221,27 @@ IOT.prototype.ask_device = function(thing, paramd, callback) {
         paramd = {}
     }
 
-    var device_iri = thing.device_iri(thing);
-    if (device_iri == null) {
+    var thing_iri = self.thing_iri(thing);
+    if (thing_iri == null) {
         if (callback) {
             callback({
                 // thing: thing,
-                device_iri: device_iri,
+                thing_iri: thing_iri,
                 paramd: paramd,
-                error: "IOT.ask_device: no device_iri, likely an unbound Thing"
+                error: "IOT._ask_thing: no thing_iri, likely an unbound Thing"
             })
         }
         return
     }
 
     // device already loaded
-    var deviced = self.gm.get_dictionary(device_iri)
+    var deviced = self.gm.get_dictionary(thing_iri)
     if (deviced && deviced.length) {
         if (callback) {
             callback({
                 deviced: null,
                 thing: thing,
-                device_iri: device_iri,
+                thing_iri: thing_iri,
                 paramd: paramd,
                 error: null,
             })
@@ -1251,17 +1251,17 @@ IOT.prototype.ask_device = function(thing, paramd, callback) {
 
     // do something when the model is found
     if (callback) {
-        var listener = function(_device_iri) {
-            if (_device_iri != device_iri) {
+        var listener = function(_thing_iri) {
+            if (_thing_iri != thing_iri) {
                 return;
             }
 
-            var deviced = self.gm.get_dictionary(device_iri)
+            var deviced = self.gm.get_dictionary(thing_iri)
             if (deviced) {
                 callback({
                     deviced: deviced,
                     thing: thing,
-                    device_iri: device_iri,
+                    thing_iri: thing_iri,
                     paramd: paramd,
                     error: null,
                 })
@@ -1269,7 +1269,7 @@ IOT.prototype.ask_device = function(thing, paramd, callback) {
                 callback({
                     deviced: null,
                     thing: thing,
-                    device_iri: device_iri,
+                    thing_iri: thing_iri,
                     paramd: paramd,
                     error: "device not found on IOTDB",
                 })
@@ -1284,7 +1284,7 @@ IOT.prototype.ask_device = function(thing, paramd, callback) {
     }
 
     self.on_graph_ready(function() {
-        self.gm.load_iri(device_iri)
+        self.gm.load_iri(thing_iri)
     })
 };
 
@@ -1429,6 +1429,39 @@ IOT.prototype.model_code_iri = function(model) {
     }
 
     return self.iotdb_prefix + "/" + self.username + "/models/" + _.identifier_to_dash_case(resultd.model_code)
+}
+
+/**
+ *  Return the IOTDB Thing IRI for this Thing
+ *
+ *  <p>
+ *  Note that the Thing must have been "discovered" by IOT
+ *  using IOT._discover_thing. Just creating a Thing object
+ *  and calling this will have an unhappy result, as it
+ *  is not bound to a driver_instance and thus does not have an identity
+ *
+ *  @param {string|Thing} self
+ *  If a string, it is expected to be the 'thing_id' for 
+ *  the Model.
+ *
+ *  @return {string}
+ *  The IRI on IOTDB to find this Device
+ */
+IOT.prototype.thing_iri = function(thing) {
+    var self = this;
+
+    var thing_id = null
+    if (_.isString(thing)) {
+        thing_id = thing
+    } else {
+        thing_id = thing.thing_id();
+        if (thing_id == null) {
+            console.log("# IOT.thing_iri: thing_id is null:perhaps not bound to a driver yet?")
+            return null;
+        }
+    }
+
+    return self.iotdb_prefix + "/" + self.username + "/things/" + encodeURIComponent(thing_id);
 }
 
 /**
@@ -1638,9 +1671,9 @@ IOT.prototype._iotdb_device_get = function() {
             // "\n  identity", identity,
             "\n  model_code", thing.code
         );
-        self.ask_device(thing, null, function(callbackd) {
-            console.log("- IOT._iotdb_device_get: ask_device/callbackd",
-                "\n  .iri", callbackd.device_iri,
+        self._ask_thing(thing, null, function(callbackd) {
+            console.log("- IOT._iotdb_device_get: _ask_thing/callbackd",
+                "\n  .iri", callbackd.thing_iri,
                 "\n  .deviced", callbackd.deviced,
                 "\n  .error", callbackd.error,
                 "\n  .auto_iotdb_device_create", self.initd.iotdb_device_create)
@@ -1660,7 +1693,7 @@ IOT.prototype._iotdb_device_get = function() {
                     'iot:model': "/" + self.username + "/models/" + thing.code,
                     'iot:name': thing.code
                 }
-                var ndevice_iri = self.iotdb_prefix + "/" + self.username +
+                var nthing_iri = self.iotdb_prefix + "/" + self.username +
                     "/things/" + encodeURIComponent(identity.thing_id);
 
                 var headerd = {
@@ -1671,13 +1704,13 @@ IOT.prototype._iotdb_device_get = function() {
                 }
 
                 unirest
-                    .put(ndevice_iri)
+                    .put(nthing_iri)
                     .headers(headerd)
                     .type('json')
                     .send(ndeviced)
                     .end(function(result) {
-                        console.log("- IOT._iotdb_device_get: ask_device/auto_iotdb_device_create",
-                            "\n  ndevice_iri", ndevice_iri,
+                        console.log("- IOT._iotdb_device_get: _ask_thing/auto_iotdb_device_create",
+                            "\n  nthing_iri", nthing_iri,
                             "\n  body", result.body
                         )
                     })
@@ -1897,6 +1930,61 @@ IOT.prototype.places = function() {
     }
 
     return pds;
+}
+
+/* -------------- NEW STUFF Node-IOTDB-V2--------------- */
+
+/**
+ *  
+ */
+IOT.prototype.connect_iri = function(iri) {
+    return this.connect(iri, "iri")
+}
+
+IOT.prototype.connect_model = function(model) {
+    return this.connect(model, "model")
+}
+
+IOT.prototype.connect_driver = function(driver) {
+    return this.connect(_.expand(driver, "iot-driver:"), "driver")
+}
+
+IOT.prototype.connect = function(value, string_type) {
+    var self = this
+    var things = new thing_array.ThingArray({
+        persist: true
+    })
+
+    if (_.isString(value)) {
+        var connectd = {}
+        connectd[string_type ? string_type : "iri"] = value
+        self._connect(connectd, things)
+    } else if (_.isObject(value)) {
+        self._connect(value, things)
+    } else {
+        console.log("# IOT.connect: unexpected argument type", value)
+    }
+
+    return things
+}
+
+IOT.prototype._connect = function(connectd, things) {
+    var self = this
+
+    console.log(connectd)
+
+    self.on_ready(function() {
+        self._discover_bind(connectd, things)
+    })
+
+    return things
+}
+
+/**
+ *  Print out info about a bunch of things
+ */
+IOT.prototype.dump = function(things) {
+    _.dump_things(this, things)
 }
 
 /*

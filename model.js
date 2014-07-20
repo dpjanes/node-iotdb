@@ -1262,41 +1262,10 @@ Model.prototype._find = function(find_key) {
 };
 
 /**
- *  Return the IOTDB Device IRI for this Thing
- *
- *  <p>
- *  Note that the Thing must have been "discovered" by IOT
- *  using IOT._discover_thing. Just creating a Thing object
- *  and calling this will have an unhappy result, as it
- *  is not bound to a driver and thus does not have an identity
- *
- *  @param {string|Thing} self
- *  If a string, it is expected to be the 'thing_id' for 
- *  the Model.
- *
- *  @return {string}
- *  The IRI on IOTDB to find this Device
+ *  Return the IOTDB Thing IRI for this Thing
  */
-Model.prototype.device_iri = function() {
-    var self = this;
-
-    var iot = require('./iotdb').iot()
-    if (!iot) {
-        console.log("# Model.device_iri: iot is null: perhaps not bound to a driver yet?")
-        return null
-    }
-
-    var thing_id = self.thing_id();
-    if (!thing_id == null) {
-        console.log("# IOT.device_iri: thing_id is null:perhaps not bound to a driver yet?")
-        return null;
-    }
-
-    return iot.iotdb_prefix + "/" + iot.username + "/things/" + encodeURIComponent(thing_id);
-}
-
 Model.prototype.thing_iri = function() {
-    return this.device_iri()
+    return require('./iotdb').iot().thing_iri(this)
 }
 
 /**
@@ -1320,12 +1289,12 @@ Model.prototype.place_iri = function() {
         return null
     }
 
-    var device_iri = self.device_iri()
-    if (!device_iri) {
+    var thing_iri = self.thing_iri()
+    if (!thing_iri) {
         return null;
     }
 
-    return iot.gm.get_object(device_iri, 'iot:place')
+    return iot.gm.get_object(thing_iri, 'iot:place')
 }
 
 /**
@@ -1349,12 +1318,12 @@ Model.prototype.model_iri = function() {
         return null
     }
 
-    var device_iri = self.device_iri()
-    if (!device_iri) {
+    var thing_iri = self.thing_iri()
+    if (!thing_iri) {
         return null;
     }
 
-    return iot.gm.get_object(device_iri, 'iot:model')
+    return iot.gm.get_object(thing_iri, 'iot:model')
 }
 
 /**
