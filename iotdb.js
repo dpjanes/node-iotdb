@@ -153,7 +153,7 @@ IOT.prototype.configure = function(paramd) {
 
     self.driver_exemplars = [];
     self.model_exemplard = {};
-    self.thingd = {}
+    self.thing_instanced = {}
     self.store_instanced = {}
 
     self.cfg_load_oauth()
@@ -654,8 +654,8 @@ IOT.prototype.on_thing = function(callback) {
     self.on(EVENT_NEW_THING, callback)
 
     // check for already registered things
-    for (var ti in self.thingd) {
-        var thing = self.thingd[ti];
+    for (var ti in self.thing_instanced) {
+        var thing = self.thing_instanced[ti];
         if (!thing) {
             continue
         }
@@ -664,6 +664,9 @@ IOT.prototype.on_thing = function(callback) {
     }
 }
 
+/**
+ *  Callback when IOTDB finds new Things with a particular Model
+ */
 IOT.prototype.on_thing_with_model = function(model, callback) {
     var self = this;
 
@@ -677,8 +680,8 @@ IOT.prototype.on_thing_with_model = function(model, callback) {
     })
 
     // check for already registered things
-    for (var ti in self.thingd) {
-        var thing = self.thingd[ti];
+    for (var ti in self.thing_instanced) {
+        var thing = self.thing_instanced[ti];
         if (!thing) {
             continue
         }
@@ -689,6 +692,9 @@ IOT.prototype.on_thing_with_model = function(model, callback) {
     }
 }
 
+/**
+ *  Callback when IOTDB finds new Things with a particular tag
+ */
 IOT.prototype.on_thing_with_tag = function(tag, callback) {
     var self = this;
 
@@ -699,8 +705,8 @@ IOT.prototype.on_thing_with_tag = function(tag, callback) {
     })
 
     // check for already registered things
-    for (var ti in self.thingd) {
-        var thing = self.thingd[ti];
+    for (var ti in self.thing_instanced) {
+        var thing = self.thing_instanced[ti];
         if (!thing) {
             continue
         }
@@ -809,22 +815,31 @@ IOT.prototype.store = function(store_id) {
  *  with expected elements <code>model</code> and <code>initd</code>.
  *  See @{link IOT#_discover_bind}
  */
-IOT.prototype.discover = function(things) {
+IOT.prototype.discover = function() {
     var self = this
 
     var thing_exemplar = null
     var driver_identityd = null
     var thing_bindd = null
+    var av = Array.prototype.slice.call(arguments);
 
-    if (arguments.length) {
-        if (_.isString(arguments[0])) {
-            driver_identityd = _.identity_expand(arguments[0]);
-        } else if (arguments[0].Model !== undefined) {
-            thing_exemplar = arguments[0]
-        } else if (_.isObject(arguments[0])) {
-            thing_bindd = arguments[0]
+    var things = undefined
+    if (av.length) {
+        var last = av[av.length - 1]
+        if (_.instanceof_ThingArray(last)) {
+            things = av.pop()
+        }
+    }
+
+    if (av.length) {
+        if (_.isString(av[0])) {
+            driver_identityd = _.identity_expand(av[0]);
+        } else if (av[0].Model !== undefined) {
+            thing_exemplar = av[0]
+        } else if (_.isObject(av[0])) {
+            thing_bindd = av[0]
         } else {
-            console.log("# IOT.discover: unexpected argument type", arguments[0])
+            console.log("# IOT.discover: unexpected argument type", av[0])
         }
     }
 
@@ -869,7 +884,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
             console.log("- IOT._discover_nearby",
                 "\n  driver.identityd", driver_identityd);
 
-            var existing = self.thingd[driver_identityd.thing_id];
+            var existing = self.thing_instanced[driver_identityd.thing_id];
             if (existing !== undefined) {
                 console.log("# IOT._discover_nearby",
                     "thing already exists", driver_identityd.thing_id)
@@ -877,7 +892,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
             }
 
             // placeholder
-            self.thingd[driver_identityd.thing_id] = null;
+            self.thing_instanced[driver_identityd.thing_id] = null;
 
             // find a thing to mate with this driver
             var found = false;
@@ -896,7 +911,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
                 found = true;
                 self._add_thing(thing, things)
                 /*
-                self.thingd[driver_identityd.thing_id] = thing;
+                self.thing_instanced[driver_identityd.thing_id] = thing;
                 self.emit(EVENT_NEW_THING, thing);
                 */
                 break;
@@ -920,7 +935,7 @@ IOT.prototype._add_thing = function(thing, things) {
         return;
     }
 
-    var existing = self.thingd[thing_id]
+    var existing = self.thing_instanced[thing_id]
     if (existing) {
         console.log("# IOT._add_thing", "Thing has already been registered",
             "\n  thing_id", thing_id,
@@ -929,10 +944,10 @@ IOT.prototype._add_thing = function(thing, things) {
         return;
     }
 
-    self.thingd[thing_id] = thing;
+    self.thing_instanced[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
 
-    if (things !== undefined) {
+    if (!_.isEmpty(things)) {
         things.push(thing)
     }
 
@@ -987,10 +1002,10 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
 
             console.log("- IOT._discover_thing", "found Driver (bound)");
 
-            self._add_thing(thing)
+            self._add_thing(thing, things)
             /*
             var driver_identityd = driver.identity()
-            var existing = self.thingd[driver_identityd.thing_id];
+            var existing = self.thing_instanced[driver_identityd.thing_id];
             if (existing !== undefined) {
                 console.log("# IOT._discover_thing: Thing has already been registered",
                     "\n  driver_identity", driver_identityd,
@@ -998,7 +1013,7 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
                 return;
             }
 
-            self.thingd[driver.identity().thing_id] = thing;
+            self.thing_instanced[driver.identity().thing_id] = thing;
 
             self.emit(EVENT_NEW_THING, thing);
             */
@@ -1193,8 +1208,8 @@ IOT.prototype.things = function() {
 
     var ts = new thing_array.ThingArray(self);
 
-    for (var key in self.thingd) {
-        var thing = self.thingd[key];
+    for (var key in self.thing_instanced) {
+        var thing = self.thing_instanced[key];
         if (!thing) {
             continue
         }

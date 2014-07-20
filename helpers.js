@@ -2298,3 +2298,16 @@ var _format = function(template, valueds) {
         return template
     }
 }
+
+/**
+ *  XXX - not finished. Need to do proper test
+ */
+exports.instanceof_ThingArray = function(o) {
+    if (o === undefined) {
+        return false
+    } else if (o === null) {
+        return false
+    } else if (exports.isArray(o)) {
+        return true
+    }
+}
