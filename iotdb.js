@@ -1002,7 +1002,9 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
             var driver_supported = thing.is_driver_supported(driver, true);
             if (!driver_supported) {
                 console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)")
-                return;
+                thing.driver_instance = null
+                driver.thing = null
+                return
             }
 
             console.log("- IOT._discover_thing", "found Driver (bound)");
@@ -1083,7 +1085,6 @@ IOT.prototype._discover_bind = function(paramd, things) {
                     driver: _.expand(paramd.driver),
                     initd: paramd.initd
                 })
-
                 self.discover(thing, things)
             } else {
                 console.log("- IOT._discover_bind: unexpected state", callbackd.paramd)

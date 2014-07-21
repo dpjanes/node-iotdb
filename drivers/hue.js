@@ -44,15 +44,20 @@ var OFFSET_PULL = 200000
  *  Typically this will be created by one of
  *  the discover_* functions
  */
-var HueDriver = function(upnp_device, light, username) {
+var HueDriver = function(paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
-    if (upnp_device !== undefined) {
-        self.upnp_device = upnp_device;
-        self.light = light;
+    if ((paramd !== undefined) && (paramd.upnp_device !== undefined)) {
+        self.upnp_device = paramd.upnp_device;
         self.iri = "http://" + self.upnp_device.host + ":" + self.upnp_device.port;
-        self.username = username
+
+        self.light = paramd.light;
+        self.username = paramd.username
+    }
+
+    if (paramd && paramd.metad) {
+        self.metad = paramd.metad
     }
 
     return self;
@@ -203,7 +208,18 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
 
             for (var light in result.body) {
                 console.log("- HueDriver._foundDevice", "make-light", light);
-                discover_callback(new HueDriver(upnp_device, light, account_value));
+                var md = result.body[light]
+                var metad = {
+                    "iot:name": md.name,
+                    "iot:number": light
+                }
+
+                discover_callback(new HueDriver({
+                    upnp_device: upnp_device, 
+                    light: light, 
+                    username: account_value,
+                    metad: metad
+                }))
             }
         })
     ;
@@ -388,6 +404,15 @@ HueDriver.prototype.pull = function() {
     }
     queue.add(qitem);
     return self;
+}
+
+/**
+ *  Request the Driver's metadata.
+ *  <p>
+ *  See {@link Driver#meta Driver.meta}
+ */
+HueDriver.prototype.meta = function() {
+    return self.metad
 }
 
 /* --- internals --- */

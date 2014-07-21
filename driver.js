@@ -242,6 +242,15 @@ Driver.prototype.pull = function() {
 }
 
 /**
+ *  Request the Driver's metadata.
+ *
+ *  @return {this}
+ */
+Driver.prototype.meta = function() {
+    return {}
+}
+
+/**
  *  This should only be called by subclases
  */
 Driver.prototype.pulled = function(driverd) {
@@ -269,6 +278,42 @@ Driver.prototype.pulled = function(driverd) {
         notify: true,
         push: false
     })
+}
+
+/**
+ *  This is the metadata for this Driver
+ *  This should only be called by subclases
+ */
+Driver.prototype.meta_pulled = function(metad) {
+    var self = this;
+
+    /* the driver didn't chain Driver.setup OR setup was never called */
+    if (!self.thing) {
+        console.log("# Driver.meta_pulled", "called, but no self.thing")
+        return
+    }
+
+    var paramd = {
+        thingd: {},
+        driverd: {},
+        initd: self.thing.initd,
+        meta_driverd: metad,
+        meta_thingd: {}
+    }
+
+    self.thing.driver_in(paramd)
+
+    console.log("- Driver.meta_pulled", 
+        "\n  meta_driverd", paramd.meta_driverd,
+        "\n  meta_thingd", paramd.meta_thingd
+    )
+
+    /*
+    self.thing.update(paramd.thingd, { 
+        notify: true,
+        push: false
+    })
+    */
 }
 
 /**

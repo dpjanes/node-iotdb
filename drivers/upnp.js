@@ -74,8 +74,7 @@ UPnPDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
     var self = this;
 
     console.log("- UPnPDriver._foundDevice", "deviceType", upnp_device.deviceType);
-    // console.log("- UPnPDriver._foundDevice", "\n", upnp_device);
-    discover_callback(new UPnPDriver(upnp_device));
+    discover_callback(new UPnPDriver(upnp_device))
 }
 
 UPnPDriver.prototype._service_by_urn = function(service_urn) {
@@ -222,6 +221,27 @@ UPnPDriver.prototype.pull = function() {
     return self;
 }
 
+/**
+ *  Request the Driver's metadata.
+ *  <p>
+ *  See {@link Driver#meta Driver.meta}
+ */
+UPnPDriver.prototype.meta = function() {
+    if (!self.upnp_device) {
+        return
+    }
+
+    var metad = {}
+
+    for (var key in self.upnp_device) {
+        var value = self.upnp_device[key]
+        if (_.isString(value) || _.isNumber(value) || _.isBoolean(value)) {
+            metad[key] = value
+        }
+    }
+
+    return metad
+}
 
 /*
  *  API
