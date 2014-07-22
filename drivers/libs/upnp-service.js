@@ -40,7 +40,7 @@ var UpnpService = function(device, desc) {
 	this.host = u.hostname;
 	this.port = u.port;
 	
-	this.subscriptionTimeout = 300; // 60;
+	this.subscriptionTimeout = 30; // 60;
 }
 
 util.inherits(UpnpService, EventEmitter);
@@ -82,6 +82,10 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 	var req = http.request(options, function(res) {
 		var buf = "";
 		res.on('data', function (chunk) { buf += chunk });
+        res.on('error', function(error) {
+            console.log("# UpnpService.callAction", "error receiving HTTP request", error)
+            callback(error, buf);
+        })
 		res.on('end', function () { 
 			if (res.statusCode !== 200) {
 			  callback(new Error("Invalid SOAP action"), buf);
@@ -91,6 +95,10 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 			}
 		});
 	});
+    req.on('error', function(error) {
+        console.log("# UpnpService.callAction", "error sending HTTP request", error)
+        callback(error, "");
+    })
   
 	req.end(s);
 }
@@ -134,6 +142,10 @@ UpnpService.prototype.subscribe = function(callback) {
 			} 
 		});
 	});
+    req.on('error', function(error) {
+        console.log("# UpnpService.subscribe", "error sending HTTP request", error)
+        callback(error, "");
+    })
   
 	req.end("");
 }
@@ -169,6 +181,10 @@ UpnpService.prototype._resubscribe = function(sid, callback) {
 			} 
 		});
 	});
+    req.on('error', function(error) {
+        console.log("# UpnpService._reubscribe", "error sending HTTP request", error)
+        callback(error, "");
+    })
 	req.end("");
 }
 
@@ -204,6 +220,10 @@ UpnpService.prototype.unsubscribe = function(sid, callback) {
 			} 
 		});
 	});
+    req.on('error', function(error) {
+        console.log("# UpnpService.unsubscribe", "error sending HTTP request", error)
+        callback(error, "");
+    })
 	req.end("");
 }
 
@@ -232,6 +252,10 @@ UpnpService.prototype._getServiceDesc = function(callback) {
 			} 
 		});
 	});
+    req.on('error', function(error) {
+        console.log("# UpnpService._getServiceDesc", "error sending HTTP request", error)
+        callback(error, "");
+    })
 	req.end("");
 }
 
@@ -253,11 +277,12 @@ Subscription.prototype._resubscribe = function() {
 	var self = this;
 	this.service._resubscribe(this.sid, function(err, buf) {
 		if (err) {
-			console.log("# ERROR:  problem re-subscribing: " + err + "\n" + buf);
+			console.log("# Subscription._resubscribe", "ERROR: problem re-subscribing: " + err + "\n" + buf);
 			// remove from eventhandler
 			self.service.device.controlPoint.eventHandler.removeSubscription(self);
 			clearTimeout(self.timer);
 			
+            this.service.emit("failed", "resubscribe", err);
 			// TODO maybe try a new subscription ???
 		}
 		else {

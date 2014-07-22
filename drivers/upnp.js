@@ -157,6 +157,9 @@ UPnPDriver.prototype.setup = function(paramd) {
                 console.log("- UPnPDriver.setup: service not found", service_urn);
             } else {
                 console.log("- UPnPDriver.setup: subscribe", service_urn);
+                service.on("failed", function(code, error) {
+                    console.log("- UPnPDriver.setup/on.failed", code, error)
+                })
                 service.on("stateChange", function(valued) {
                     var driverd = {};
                     driverd[service_urn] = valued;

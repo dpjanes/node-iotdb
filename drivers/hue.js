@@ -396,7 +396,10 @@ HueDriver.prototype.pull = function() {
                         }
 
                         self.pulled(driverd)
-                        console.log("- HueDriver.pull", "driverd=", driverd, "\n  state=", state)
+                        console.log("- HueDriver.pull", 
+                            "\n  light", self.light, 
+                            "\n  driverd", driverd, 
+                            "\n  state", state)
                     }
                 })
             ;

@@ -69,6 +69,7 @@ exports.iot = function() {
             load_things: true,
             load_drivers: true,
             load_stores: true,
+            iotdb_device_get: true,
 
             end: null
         })
@@ -1678,7 +1679,7 @@ IOT.prototype._iotdb_device_get = function() {
     var self = this;
 
     // console.log("C.1")
-    self.on(EVENT_NEW_THING, function(iot, thing) {
+    self.on(EVENT_NEW_THING, function(thing) {
         // MAGIC!
         if (thing.initd && thing.initd.__internal) {
             return
