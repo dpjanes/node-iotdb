@@ -412,7 +412,7 @@ HueDriver.prototype.pull = function() {
  *  See {@link Driver#meta Driver.meta}
  */
 HueDriver.prototype.meta = function() {
-    return self.metad
+    return this.metad
 }
 
 /* --- internals --- */

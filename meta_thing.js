@@ -26,13 +26,13 @@
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
  */
-var MetaThing = function(iot, model) {
+var MetaThing = function(iot, thing) {
     var self = this;
 
     self.iot = iot
-    self.model = model
+    self.thing = thing
 
-    self.thing_iri = self.model.thing_iri()
+    self.thing_iri = self.thing.thing_iri()
 }
 
 /**
@@ -68,6 +68,11 @@ MetaThing.prototype.get = function(key, otherwise) {
         console.log("# Thing.get: no iotdb object")
         return otherwise
     }
+
+    var metad = self.thing.driver_meta()
+    var value = metad[key]
+    console.log("HERE:XX.1", key, metad, value)
+    return value
 
     var object = self.iot.gm.get_object(self.thing_iri, key)
     if (object === null) {

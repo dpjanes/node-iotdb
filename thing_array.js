@@ -304,6 +304,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         _.expand("iot:place-floor"),
         _.expand("iot:place-placement"),
     ];
+    var thing_meta = undefined
 
     for (var dpredicate in d) {
         var dobject = d[dpredicate];
@@ -324,13 +325,16 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
             continue
         } else if (dpredicate == "_name") {
             dpredicate = _.expand("iot:name")
-            /*
-            if (thing.name != dobject) {
-                ok = false;
-                break;
+
+            if (thing_meta === undefined) {
+                thing_meta = thing.meta()
+            }
+
+            var name = thing_meta.get('iot:name')
+            if (name != dobject) {
+                return false
             }
             continue
-            */
         } else if (dpredicate == "_code") {
             if (thing.code != dobject) {
                 return false

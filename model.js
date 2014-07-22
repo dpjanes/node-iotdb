@@ -1350,14 +1350,16 @@ Model.prototype.model_code_iri = function() {
 }
 
 /**
+ *  Return an object to access and
+ *  manipulate the Metadata.
  */
-Model.prototype.meta_thing = function() {
+Model.prototype.meta = function() {
     var self = this;
 
     if (self.__meta_thing === undefined) {
         var iot = require('./iotdb').iot()
         if (!iot) {
-            console.log("# Model.meta_thing: no iotdb object")
+            console.log("# Model.meta: no iotdb object")
             return undefined
         }
 
@@ -1365,6 +1367,22 @@ Model.prototype.meta_thing = function() {
     }
 
     return self.__meta_thing
+}
+
+/**
+ *  Return the metadata of the driver
+ */
+Model.prototype.driver_meta = function() {
+    var self = this;
+
+    if (!self.driver_instance) {
+        return {}
+    }
+
+    var metad = self.driver_instance.meta()
+    console.log("? Model.driver_meta", "should be called thing.driver_in here")
+
+    return metad
 }
 
 /*
