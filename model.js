@@ -1370,6 +1370,18 @@ Model.prototype.meta = function() {
 }
 
 /**
+ */
+Model.prototype.reachable = function() {
+    var self = this
+
+    if (!self.driver_instance) {
+        return false
+    }
+
+    return self.driver_instance.reachable()
+}
+
+/**
  *  Return the metadata of the driver
  */
 Model.prototype.driver_meta = function() {

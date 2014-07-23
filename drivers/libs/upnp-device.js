@@ -1,3 +1,5 @@
+"use strict"
+
 var util = require('util'),
 	EventEmitter = require('events').EventEmitter,
 	http = require("http"),
@@ -20,6 +22,7 @@ var UpnpDevice = function(controlPoint, uuid, location, desc, localAddress) {
 	
 	this.uuid = uuid;
 	this.udn = desc.UDN[0];
+    this.last_seen = (new Date()).getTime();
 	
 	this.location = location;
 	
@@ -55,6 +58,12 @@ var UpnpDevice = function(controlPoint, uuid, location, desc, localAddress) {
 
 util.inherits(UpnpDevice, EventEmitter);
 
+/**
+ *  Update last_seen
+ */
+UpnpDevice.prototype.seen = function() {
+    this.last_seen = (new Date()).getTime();
+}
 
 /**
  * Get details of the device
@@ -107,7 +116,7 @@ UpnpDevice.prototype._handleDeviceInfo = function(desc) {
 				// eventSubUrl  : serviceDesc.eventSubURL[0],
 				// scpdUrl  : serviceDesc.SCPDURL[0]
 			// };
-			service = new UpnpService(this, serviceDesc);
+			var service = new UpnpService(this, serviceDesc);
 			this.services[service.serviceId] = service;
 			this.emit("service", service);		// notify listeners of service
 		}

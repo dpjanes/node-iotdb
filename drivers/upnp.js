@@ -30,6 +30,9 @@ var driver = require('../driver')
 var u = require("./libs/upnp-controlpoint");
 var UpnpControlPoint = u.UpnpControlPoint;
 
+var DELTA_SCRUB = 60 * 1000
+var DELTA_SEARCH = 20 * 1000
+
 /**
  *  Typically this will be created by one of
  *  the discover_* functions
@@ -40,6 +43,10 @@ var UPnPDriver = function(upnp_device) {
 
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
+        self.upnp_device.on("device-lost", function() {
+            console.log("UPnPDriver: device-lost message received")
+            self._forget_device()
+        })
     }
 
     return self;
@@ -48,13 +55,7 @@ var UPnPDriver = function(upnp_device) {
 UPnPDriver.prototype = new driver.Driver;
 
 /* --- class methods --- */
-UPnPDriver.cp = function() {
-    if (this.__cp === undefined) {
-        this.__cp = new UpnpControlPoint();
-    }
-
-    return this.__cp;
-}
+var cp = undefined;
 
 /**
  *  See {@link Driver#discover Driver.discover}
@@ -63,22 +64,78 @@ UPnPDriver.cp = function() {
 UPnPDriver.prototype.discover = function(paramd, discover_callback) {
     var self = this;
 
-    var cp = UPnPDriver.cp();
+    if (cp === undefined) {
+        cp = new UpnpControlPoint();
+
+        // we periodically kick off a new search to find devices that have come online
+        setInterval(function() {
+            cp.search()
+            cp.scrub(DELTA_SCRUB)
+        }, DELTA_SEARCH)
+    }
+
     cp.on("device", function(upnp_device) {
-        self._foundDevice(discover_callback, upnp_device);
+        self._found_device(discover_callback, upnp_device);
     });
+
+    // always search to speed up device discovery
     cp.search();
 }
 
-UPnPDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
+/**
+ *  See {@link Driver#reachable}
+ */
+UPnPDriver.prototype.reachable = function() {
+    var self = this
+
+    if (!self.upnp_device) {
+        return false
+    }
+
+    return true
+}
+
+/**
+ *  Forget about this connect. This will render
+ *  this Thing/Driver unreachable
+ */
+UPnPDriver.prototype._forget_device = function() {
+    var self = this
+
+    if (!self.upnp_device) {
+        return
+    }
+    
+    if (cp) {
+        cp.forget(self.upnp_device)
+    }
+
+    self.upnp_device = null
+    self.pulled()
+}
+
+/**
+ *  A new Driver can be made (maybe) with the upnp_device
+ */
+UPnPDriver.prototype._found_device = function(discover_callback, upnp_device) {
     var self = this;
 
-    console.log("- UPnPDriver._foundDevice", "deviceType", upnp_device.deviceType);
+    console.log("- UPnPDriver._found_device", "deviceType", upnp_device.deviceType);
     discover_callback(new UPnPDriver(upnp_device))
 }
 
+/**
+ */
 UPnPDriver.prototype._service_by_urn = function(service_urn) {
     var self = this;
+
+    if (!self.upnp_device) {
+        return null
+    }
+
+    if (!self.upnp_device.services) {
+        return null
+    }
 
     for (var s_name in self.upnp_device.services) {
         var service = self.upnp_device.services[s_name];
@@ -230,6 +287,8 @@ UPnPDriver.prototype.pull = function() {
  *  See {@link Driver#meta Driver.meta}
  */
 UPnPDriver.prototype.meta = function() {
+    var self = this
+
     if (!self.upnp_device) {
         return
     }

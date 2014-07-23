@@ -95,6 +95,16 @@ ThingArray.prototype.push = function(thing) {
 
 /**
  */
+ThingArray.prototype.splice = function() {
+    var self = this
+
+    Array.prototype.splice.apply(self, arguments)
+
+    return self
+}
+
+/**
+ */
 ThingArray.prototype._persist_command = function(f, av) {
     var self = this
 

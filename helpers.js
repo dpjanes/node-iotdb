@@ -2156,7 +2156,7 @@ exports.dump_things = function(iot, things) {
     console.log("#things", things.length);
     for (var ti = 0; ti < things.length; ti++) {
         var thing = things[ti];
-        var meta = thing.meta_thing()
+        var meta = thing.meta()
 
         console.log("")
         console.log("  thing#:", ti + 1);

@@ -1,3 +1,5 @@
+"use strict"
+
 var util = require('util'),
 	EventEmitter = require('events').EventEmitter,
 	http = require("http"),
@@ -54,7 +56,7 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 		console.log("- calling action : " + actionName + " " + JSON.stringify(args));
 	}
 	var argXml = "";
-	for (name in args) {
+	for (var name in args) {
 		argXml += "<" + name + ">" + args[name] + "</" + name + ">"; 
 	}
 	var content =  "<u:" + actionName + " xmlns:u=\""+this.serviceType+"\">" + argXml + "</u:" + actionName + ">";
@@ -282,7 +284,7 @@ Subscription.prototype._resubscribe = function() {
 			self.service.device.controlPoint.eventHandler.removeSubscription(self);
 			clearTimeout(self.timer);
 			
-            this.service.emit("failed", "resubscribe", err);
+            self.service.emit("failed", "resubscribe", err);
 			// TODO maybe try a new subscription ???
 		}
 		else {
@@ -310,10 +312,10 @@ exports.UpnpService = UpnpService;
 
 
 /* ---------------------------------------------------------------------------------- */
-const SOAP_ENV_PRE = "<?xml version=\"1.0\"?>\n<s:Envelope \
+var SOAP_ENV_PRE = "<?xml version=\"1.0\"?>\n<s:Envelope \
 xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" \
 s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>\n";
 
-const SOAP_ENV_POST = "</s:Body>\n</s:Envelope>\n";
+var SOAP_ENV_POST = "</s:Body>\n</s:Envelope>\n";
 
 

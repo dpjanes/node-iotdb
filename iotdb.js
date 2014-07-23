@@ -869,6 +869,7 @@ IOT.prototype.discover = function() {
 IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
     var self = this;
 
+    console.log("- IOT._discover_nearby")
     find_driver_identityd = _.identity_expand(find_driver_identityd);
 
     for (var bi = 0; bi < self.driver_exemplars.length; bi++) {
@@ -939,11 +940,26 @@ IOT.prototype._add_thing = function(thing, things) {
 
     var existing = self.thing_instanced[thing_id]
     if (existing) {
-        console.log("# IOT._add_thing", "Thing has already been registered",
-            "\n  thing_id", thing_id,
-            "\n  driver_identityd", thing.driver_identityd,
-            "\n  initd", thing.initd)
-        return;
+        if (existing.reachable()) {
+            console.log("# IOT._add_thing", "Thing has already been registered",
+                "\n  thing_id", thing_id,
+                "\n  driver_identityd", thing.driver_identityd,
+                "\n  initd", thing.initd)
+            return;
+        } else if (things) {
+            for (var ti in things) {
+                var othing = things[ti]
+                if (othing === existing) {
+                    console.log("# IOT._add_thing", "removing unreachable Thing",
+                        "\n  thing_id", thing_id,
+                        "\n  driver_identityd", existing.driver_identityd,
+                        "\n  initd", existing.initd
+                    )
+                    things.splice(ti, 1)
+                    break
+                }
+            }
+        }
     }
 
     self.thing_instanced[thing_id] = thing;

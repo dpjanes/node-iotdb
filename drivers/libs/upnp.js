@@ -1,3 +1,5 @@
+"use strict"
+
 var url     = require("url");
 var http    = require("http");
 var dgram   = require("dgram");
@@ -5,20 +7,20 @@ var util    = require("util");
 var events  = require("events");
 
 // HTTP parser
-const HTTP_PARSER_REQUEST = process.binding('http_parser').HTTPParser.REQUEST;
-const HTTP_PARSER_RESPONSE = process.binding('http_parser').HTTPParser.RESPONSE;
+var HTTP_PARSER_REQUEST = process.binding('http_parser').HTTPParser.REQUEST;
+var HTTP_PARSER_RESPONSE = process.binding('http_parser').HTTPParser.RESPONSE;
 
 // SSDP
-const SSDP_PORT = 1900;
-const BROADCAST_ADDR = "239.255.255.250";
-const SSDP_MSEARCH   = "M-SEARCH * HTTP/1.1\r\nHost:"+BROADCAST_ADDR+":"+SSDP_PORT+"\r\nST:%st\r\nMan:\"ssdp:discover\"\r\nMX:3\r\n\r\n";
-const SSDP_ALIVE = 'ssdp:alive';
-const SSDP_BYEBYE = 'ssdp:byebye';
-const SSDP_UPDATE = 'ssdp:update';
-const SSDP_ALL = 'ssdp:all';
+var SSDP_PORT = 1900;
+var BROADCAST_ADDR = "239.255.255.250";
+var SSDP_MSEARCH   = "M-SEARCH * HTTP/1.1\r\nHost:"+BROADCAST_ADDR+":"+SSDP_PORT+"\r\nST:%st\r\nMan:\"ssdp:discover\"\r\nMX:3\r\n\r\n";
+var SSDP_ALIVE = 'ssdp:alive';
+var SSDP_BYEBYE = 'ssdp:byebye';
+var SSDP_UPDATE = 'ssdp:update';
+var SSDP_ALL = 'ssdp:all';
 
 // Map SSDP notification sub type to emitted events 
-const UPNP_NTS_EVENTS = {
+var UPNP_NTS_EVENTS = {
   'ssdp:alive': 'DeviceAvailable',
   'ssdp:byebye': 'DeviceUnavailable',
   'ssdp:update': 'DeviceUpdate'
@@ -114,6 +116,8 @@ ControlPoint.prototype._initParsers = function() {
  *  The search target for the request (optional, defaults to "ssdp:all"). 
  */
 ControlPoint.prototype.search = function(st) {
+    console.log("- ControlPoint.search: XXX")
+
   if (typeof st !== 'string') {
     st = SSDP_ALL;
   }
@@ -145,11 +149,11 @@ ControlPoint.prototype.close = function() {
 /* TODO Move these stuff to a separated module/project */
 
 //some const strings - dont change
-const GW_ST    = "urn:schemas-upnp-org:device:InternetGatewayDevice:1";
-const WANIP = "urn:schemas-upnp-org:service:WANIPConnection:1";
-const OK    = "HTTP/1.1 200 OK";
-const SOAP_ENV_PRE = "<?xml version=\"1.0\"?>\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>";
-const SOAP_ENV_POST = "</s:Body></s:Envelope>";
+var GW_ST    = "urn:schemas-upnp-org:device:InternetGatewayDevice:1";
+var WANIP = "urn:schemas-upnp-org:service:WANIPConnection:1";
+var OK    = "HTTP/1.1 200 OK";
+var SOAP_ENV_PRE = "<?xml version=\"1.0\"?>\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>";
+var SOAP_ENV_POST = "</s:Body></s:Envelope>";
 
 function searchGateway(timeout, callback) {
   var clients = {};

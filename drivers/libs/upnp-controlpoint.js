@@ -1,4 +1,6 @@
 // var upnp = require("upnp-client"),
+"use strict"
+
 var upnp = require("./upnp"),
 	util = require('util'),
 	EventEmitter = require('events').EventEmitter,
@@ -75,9 +77,13 @@ var UpnpControlPoint = function() {
 	 */
 	this.ssdp.on("DeviceAvailable", function(device) {
 		var udn = getUUID(device.usn);
-			
 		
-		if (self.devices[udn]) {
+        // DPJ 
+        var o_device = self.devices[udn]
+		if (o_device) {
+            if (o_device.seen) {
+                o_device.seen()
+            }
 			return;
 		}
 		
@@ -110,6 +116,7 @@ var UpnpControlPoint = function() {
 		}
 		
 		self.emit("device-lost", udn);
+        device.emit("device-lost")
 
 		delete self.devices[udn];
 	});
@@ -136,7 +143,57 @@ var UpnpControlPoint = function() {
 
 util.inherits(UpnpControlPoint, EventEmitter);
 
+/**
+ *  Forget about a particular device, so it can be
+ *  rediscovered. This is useful sometimes when 
+ *  a connection is broken and you want to start
+ *  it up again from scratch
+ *
+ *  DPJ 2014-07-22
+ */
+UpnpControlPoint.prototype.forget = function(device) {
+    var self = this
 
+    var udn = device.udn.replace(/^uuid:/, '')
+    if (!self.devices[udn]) {
+        console.log("# UpnpControlPoint.forget", "device not known!", device.udn)
+        return
+    }
+
+    console.log("- UpnpControlPoint.forget", "forgetting device", device.udb)
+
+    delete self.devices[udn];
+
+    self.emit("device-lost", device.udn);
+    device.emit("device-lost")
+}
+
+/**
+ *  Forget all devices older than the given time in ms
+ *
+ *  DPJ 2014-07-22
+ */
+UpnpControlPoint.prototype.scrub = function(ms) {
+    var self = this
+
+    var now = (new Date()).getTime();
+    var forgets = []
+    for (var di in self.devices) {
+        var device = self.devices[di]
+        var delta = now - device.last_seen
+        if (delta > ms) {
+            console.log("- UpnpControlPoint.scrub", "will forget device", "\n  age", delta, "\n  device", device.udn)
+            forgets.push(device)
+        }
+    }
+
+    for (var di in forgets) {
+        self.forget(forgets[di])
+    }
+}
+
+/**
+ */
 UpnpControlPoint.prototype.search = function(s) {
 	if (s) {
 		//ssdp.search('urn:schemas-upnp-org:device:InternetGatewayDevice:1');
@@ -159,7 +216,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 	if (TRACE) {
 		console.log("- getting device details from " + location);
 	}
-	options = Url.parse(location);
+	var options = Url.parse(location);
 	var req = http.request(options, function(res) {
 		//res.setEncoding('utf8');
 		var resData = "";
@@ -270,11 +327,11 @@ EventHandler.prototype._serviceCallbackHandler = function(req, res) {
 					if (TRACE && DETAIL) {
 						console.log("event for sid " + subscription.sid + ": " + JSON.stringify(result));
 					}
-					values = {};
+					var values = {};
 					var properties = result["e:propertyset"]["e:property"];
 					for (var i=0; i<properties.length; i++) {
 						var prop = properties[i];
-						for (name in prop) {
+						for (var name in prop) {
 							values[name] = prop[name][0];
 						}
 					}
@@ -291,9 +348,8 @@ EventHandler.prototype._serviceCallbackHandler = function(req, res) {
 		catch (ex) {
 			if (ex.toString().startsWith("Error: Text data outside of root node.")) {
 				// ignore
-			}
-			else {
-				 console.log("# exception: " + ex);
+			} else {
+				 console.log("# UPnP:EventHandler._serviceCallbackHandler", "exception", ex);
 			}
 		}
 	});
