@@ -946,7 +946,14 @@ IOT.prototype._add_thing = function(thing, things) {
                 "\n  driver_identityd", thing.driver_identityd,
                 "\n  initd", thing.initd)
             return;
-        } else if (things) {
+        } else {
+            self._driver_swap(existing, thing)
+        }
+    }
+
+    /*
+        
+        if (things) {
             for (var ti in things) {
                 var othing = things[ti]
                 if (othing === existing) {
@@ -961,6 +968,7 @@ IOT.prototype._add_thing = function(thing, things) {
             }
         }
     }
+    */
 
     self.thing_instanced[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
@@ -972,6 +980,19 @@ IOT.prototype._add_thing = function(thing, things) {
     thing.pull()
 
     return true
+}
+
+/**
+ */
+IOT.prototype._driver_swap = function(existing_thing, new_thing) {
+    console.log("# IOT._driver_swap", 
+        "swapping the driver",
+        "\n  driver_identityd", existing_thing.driver_identityd
+    )
+
+    existing_thing.driver = new_thing.driver
+    new_thing.driver = null
+    existing_thing.pull()
 }
 
 /**

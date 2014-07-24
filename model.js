@@ -35,6 +35,7 @@ var VERBOSE = true;
 var iot_name = _.expand("iot:name")
 
 var EVENT_THING_CHANGED = "thing_changed"
+var EVENT_META_CHANGED = "meta_changed"
 
 /**
  *  Convenience function to make a ModelMaker instance
@@ -686,6 +687,33 @@ Model.prototype.on_change = function(callback) {
     }
 
     return self;
+}
+
+/**
+ *  On metadata change (including reachablity)
+ */
+Model.prototype.on_meta = function(callback) {
+    var self = this;
+
+    assert.ok(_.isFunction(callback))
+
+    var iot = require('./iotdb').iot()
+    if (iot) {
+        iot.on(EVENT_META_CHANGED, function(thing) {
+            if (thing == self) {
+                callback(self, [])
+            }
+        })
+    }
+
+    return self;
+}
+
+/*
+ *  Send a notification that the metadata has been changed
+ */
+Model.prototype.meta_changed = function() {
+    iot.emit(EVENT_META_CHANGED, this)
 }
 
 /* --- driver section --- */
