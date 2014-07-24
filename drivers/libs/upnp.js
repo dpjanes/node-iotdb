@@ -116,7 +116,7 @@ ControlPoint.prototype._initParsers = function() {
  *  The search target for the request (optional, defaults to "ssdp:all"). 
  */
 ControlPoint.prototype.search = function(st) {
-    console.log("- ControlPoint.search: XXX")
+    console.log("- ControlPoint.search", "called")
 
   if (typeof st !== 'string') {
     st = SSDP_ALL;

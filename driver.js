@@ -264,7 +264,7 @@ Driver.prototype.pulled = function(driverd) {
     var self = this;
 
     /* metadata update */
-    if ((self.driverd === undefined) || (self.driverd === null)) {
+    if ((driverd === undefined) || (driverd === null)) {
         console.log("? Driver.pulled: deal with metadata pull")
         return
     }
