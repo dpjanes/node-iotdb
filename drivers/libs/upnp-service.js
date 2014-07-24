@@ -133,8 +133,7 @@ UpnpService.prototype.subscribe = function(callback) {
 		res.on('end', function () { 
 			if (res.statusCode !== 200) {
 			  callback(new Error("Problem with subscription on " + service.serviceId), buf);
-			}
-			else {
+			} else {
 				console.log("- got subscription response: " + JSON.stringify(res.headers.sid));
 				var sid = res.headers.sid;
 				var subscription = new Subscription(self, sid, self.subscriptionTimeout);

@@ -200,6 +200,10 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
 UPnPDriver.prototype.setup = function(paramd) {
     var self = this;
 
+    if (!self.upnp_device) {
+        return
+    }
+
     console.log("- UPnDriver.setup", paramd.setupd);
 
     /* chain */
@@ -213,23 +217,38 @@ UPnPDriver.prototype.setup = function(paramd) {
             if (!service) {
                 console.log("- UPnPDriver.setup: service not found", service_urn);
             } else {
-                console.log("- UPnPDriver.setup: subscribe", service_urn);
-                service.on("failed", function(code, error) {
-                    console.log("- UPnPDriver.setup/on.failed", code, error)
-                })
-                service.on("stateChange", function(valued) {
+                var _on_failed = function(code, error) {
+                    console.log("- UPnPDriver.setup/_on_failed", code, error)
+                    self._forget_device()
+                    _remove_listeners()
+                }
+
+                var _on_stateChange = function(valued) {
                     var driverd = {};
                     driverd[service_urn] = valued;
 
                     self.pulled(driverd)
 
-                    console.log("- UPnPDriver.setup: stateChange", driverd);
-                });
-                service.subscribe(function(error, data) {
+                    console.log("- UPnPDriver.setup/_on_stateChange", driverd);
+                }
+
+                var _on_subscribe = function(error, data) {
                     if (error) {
-                        console.log("- UPnPDriver.setup: subscribe", service_urn, error);
+                        console.log("- UPnPDriver.setup/subscribe", service_urn, error);
+                        self._forget_device()
+                        _remove_listeners()
                     }
-                });
+                }
+
+                var _remove_listeners = function() {
+                    service.removeListener('failed', _on_failed);
+                    service.removeListener('stateChange', _on_stateChange);
+                }
+
+                console.log("- UPnPDriver.setup: subscribe", service_urn);
+                service.on("failed", _on_failed)
+                service.on("stateChange", _on_stateChange)
+                service.subscribe(_on_subscribe)
             }
         }
     }
@@ -237,11 +256,16 @@ UPnPDriver.prototype.setup = function(paramd) {
     return self;
 }
 
+
 /**
  *  See {@link Driver#push}
  */
 UPnPDriver.prototype.push = function(paramd) {
     var self = this;
+
+    if (!self.upnp_device) {
+        return
+    }
 
     console.log("- UPnPDriver.push called", paramd.driverd);
 
