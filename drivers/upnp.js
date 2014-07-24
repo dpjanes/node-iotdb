@@ -55,7 +55,21 @@ var UPnPDriver = function(upnp_device) {
 UPnPDriver.prototype = new driver.Driver;
 
 /* --- class methods --- */
-var cp = undefined;
+var _cp = undefined;
+
+UPnPDriver.cp = function() {
+    if (_cp === undefined) {
+        _cp = new UpnpControlPoint();
+
+        // we periodically kick off a new search to find devices that have come online
+        setInterval(function() {
+            _cp.search()
+            _cp.scrub(DELTA_SCRUB)
+        }, DELTA_SEARCH)
+    }
+
+    return _cp
+}
 
 /**
  *  See {@link Driver#discover Driver.discover}
@@ -64,15 +78,7 @@ var cp = undefined;
 UPnPDriver.prototype.discover = function(paramd, discover_callback) {
     var self = this;
 
-    if (cp === undefined) {
-        cp = new UpnpControlPoint();
-
-        // we periodically kick off a new search to find devices that have come online
-        setInterval(function() {
-            cp.search()
-            cp.scrub(DELTA_SCRUB)
-        }, DELTA_SEARCH)
-    }
+    var cp = self.cp()
 
     cp.on("device", function(upnp_device) {
         self._found_device(discover_callback, upnp_device);
@@ -106,8 +112,8 @@ UPnPDriver.prototype._forget_device = function() {
         return
     }
     
-    if (cp) {
-        cp.forget(self.upnp_device)
+    if (_cp) {
+        _cp.forget(self.upnp_device)
     }
 
     self.upnp_device = null
