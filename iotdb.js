@@ -938,6 +938,8 @@ IOT.prototype._add_thing = function(thing, things) {
         return;
     }
 
+    thing.__thing_id = thing_id // easier for debugging
+
     var existing = self.thing_instanced[thing_id]
     if (existing) {
         if (existing.reachable()) {
@@ -945,10 +947,11 @@ IOT.prototype._add_thing = function(thing, things) {
                 "\n  thing_id", thing_id,
                 "\n  driver_identityd", thing.driver_identityd,
                 "\n  initd", thing.initd)
-            return;
         } else {
             self._driver_swap(existing, thing)
         }
+
+        return
     }
 
     /*
@@ -993,6 +996,8 @@ IOT.prototype._driver_swap = function(existing_thing, new_thing) {
     existing_thing.driver = new_thing.driver
     new_thing.driver = null
     existing_thing.pull()
+
+    process.exit(0)
 }
 
 /**
@@ -1250,7 +1255,7 @@ IOT.prototype._bind_driver = function(thing, driver_instance) {
 IOT.prototype.things = function() {
     var self = this;
 
-    var ts = new thing_array.ThingArray(self);
+    var ts = new thing_array.ThingArray(self)
 
     for (var key in self.thing_instanced) {
         var thing = self.thing_instanced[key];
@@ -1296,6 +1301,7 @@ IOT.prototype._ask_thing = function(thing, paramd, callback) {
     // device already loaded
     var deviced = self.gm.get_dictionary(thing_iri)
     if (deviced && deviced.length) {
+        thing.meta_changed()
         if (callback) {
             callback({
                 deviced: null,
@@ -1317,6 +1323,7 @@ IOT.prototype._ask_thing = function(thing, paramd, callback) {
 
             var deviced = self.gm.get_dictionary(thing_iri)
             if (deviced) {
+                thing.meta_changed()
                 callback({
                     deviced: deviced,
                     thing: thing,
@@ -1723,11 +1730,9 @@ IOT.prototype._iotdb_device_get = function() {
         }
 
         var identity = thing.identity();
-        // console.log("C.3", identity)
         console.log("- IOT._iotdb_device_get",
             "\n  IRI", thing.initd.api_iri,
             "\n  thing_id", identity.thing_id,
-            // "\n  identity", identity,
             "\n  model_code", thing.code
         );
         self._ask_thing(thing, null, function(callbackd) {
@@ -2001,7 +2006,9 @@ IOT.prototype.connect = function(value) {
         persist: true
     })
 
-    if (_.isString(value)) {
+    if (value === undefined) {
+        self._discover_nearby(null, things)
+    } else if (_.isString(value)) {
         var connectd = {}
 
         if (value.match(/^:/) || value.match(/^iot-driver:/)) {

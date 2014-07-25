@@ -78,7 +78,7 @@ UPnPDriver.cp = function() {
 UPnPDriver.prototype.discover = function(paramd, discover_callback) {
     var self = this;
 
-    var cp = self.cp()
+    var cp = UPnPDriver.cp()
 
     cp.on("device", function(upnp_device) {
         self._found_device(discover_callback, upnp_device);

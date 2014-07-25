@@ -52,8 +52,12 @@ var UpnpControlPoint = function() {
 			console.log("- DeviceFound: " + udn);
 		}
 		
-		if (self.devices[udn]) {	
-			// already got this device
+        // DPJ 
+        var o_device = self.devices[udn]
+		if (o_device) {
+            if (o_device.seen) {
+                o_device.seen()
+            }
 			return;
 		}
 		
@@ -130,6 +134,14 @@ var UpnpControlPoint = function() {
 		if (TRACE) {
 			console.log("- DeviceUpdate");
 			console.log('\t' + JSON.stringify(device));
+		}
+		
+        // DPJ 
+        var o_device = self.devices[udn]
+		if (o_device) {
+            if (o_device.seen) {
+                o_device.seen()
+            }
 		}
 		
 		//self.devices[udn] = device;
@@ -244,6 +256,10 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 		});
 	});
 	req.on('socket', function(socket) {
+        if (!socket) {
+            console.log("# UpnpControlPoint._getDeviceDetails", "no socket?")
+            return
+        }
 		localAddress = socket.address().address;	// the local address used to communicate with the device. Used to determine callback URL. 
 	});
 	req.on('error', function(e) {

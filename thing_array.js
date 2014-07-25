@@ -286,6 +286,34 @@ ThingArray.prototype.on_change = function() {
 }
 
 /**
+ *  Call {@link Thing#on Model.on_meta} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.on_meta = function() {
+    var self = this;
+    var av = arguments
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        item.on_meta.apply(item, Array.prototype.slice.call(av));
+    }
+
+    /*
+     *  Apply to new things
+     */
+    var persist = this._persistds !== null
+    if (persist) {
+        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+            item.on_meta.apply(item, Array.prototype.slice.call(av));
+        })
+    }
+
+    return self;
+}
+
+/**
  *  This will be called whenever a new thing is added to this array
  *
  *  @return {this}

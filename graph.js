@@ -219,7 +219,6 @@ GraphManager.prototype.get_triples = function(subject, predicate, object, paramd
 
     var ts = self.graph.match(subject, predicate, object)
 
-    // console.log(ts)
     ts.map(function(t) {
         if (paramd.compact_subject) {
             t.subject = _.compact(t.subject);

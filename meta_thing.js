@@ -36,11 +36,14 @@ var MetaThing = function(iot, thing) {
 }
 
 /**
- *  Return a dictionary of the Thing data.
- *  Ignores the fact that objects can repeat
+ *  Return the metadata
  */
-MetaThing.prototype.dictionary = function() {
+MetaThing.prototype.state = function() {
     var self = this;
+
+    if (!self.iot.gm.has_subject(self.thing_iri)) {
+        return self.thing.driver_meta()
+    }
 
     var d = []
     var tds = self.iot.gm.get_triples(self.thing_iri, null, null)
@@ -69,10 +72,15 @@ MetaThing.prototype.get = function(key, otherwise) {
         return otherwise
     }
 
-    var metad = self.thing.driver_meta()
-    var value = metad[key]
-    console.log("HERE:XX.1", key, metad, value)
-    return value
+    if (!self.iot.gm.has_subject(self.thing_iri)) {
+        var metad = self.thing.driver_meta()
+        var value = metad[key]
+        if (value === undefined) {
+            return otherwise
+        } else {
+            return value
+        }
+    }
 
     var object = self.iot.gm.get_object(self.thing_iri, key)
     if (object === null) {

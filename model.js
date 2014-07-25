@@ -713,7 +713,10 @@ Model.prototype.on_meta = function(callback) {
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function() {
-    iot.emit(EVENT_META_CHANGED, this)
+    var iot = require('./iotdb').iot()
+    if (iot) {
+        iot.emit(EVENT_META_CHANGED, this)
+    }
 }
 
 /* --- driver section --- */
