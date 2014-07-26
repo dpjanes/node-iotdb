@@ -884,13 +884,20 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
         driver_exemplar.discover(discover_paramd, function(driver) {
             // see if this driver has already been handled
             var driver_identityd = driver.identity()
-            console.log("- IOT._discover_nearby",
-                "\n  driver.identityd", driver_identityd);
+            console.log("- IOT._discover_nearby", "\n  driver.identityd", driver_identityd);
 
             var existing = self.thing_instanced[driver_identityd.thing_id];
+            if (existing && !existing.reachable()) {
+                existing = null
+            }
             if (existing !== undefined) {
-                console.log("# IOT._discover_nearby",
-                    "thing already exists", driver_identityd.thing_id)
+                console.log("# IOT._discover_nearby", "thing already exists", driver_identityd.thing_id)
+                /*
+                if (existing && things) {
+                    console.log("BUT I ADDED IT TO THINGS", things.length)
+                    things.push(existing)
+                }
+                */
                 return;
             }
 
@@ -953,25 +960,6 @@ IOT.prototype._add_thing = function(thing, things) {
 
         return
     }
-
-    /*
-        
-        if (things) {
-            for (var ti in things) {
-                var othing = things[ti]
-                if (othing === existing) {
-                    console.log("# IOT._add_thing", "removing unreachable Thing",
-                        "\n  thing_id", thing_id,
-                        "\n  driver_identityd", existing.driver_identityd,
-                        "\n  initd", existing.initd
-                    )
-                    things.splice(ti, 1)
-                    break
-                }
-            }
-        }
-    }
-    */
 
     self.thing_instanced[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
@@ -1252,10 +1240,10 @@ IOT.prototype._bind_driver = function(thing, driver_instance) {
 /**
  *  Return all the things currently found as a {@link ThingArray}.
  */
-IOT.prototype.things = function() {
+IOT.prototype.things = function(paramd) {
     var self = this;
 
-    var ts = new thing_array.ThingArray(self)
+    var ts = new thing_array.ThingArray(self, paramd)
 
     for (var key in self.thing_instanced) {
         var thing = self.thing_instanced[key];
@@ -1264,6 +1252,12 @@ IOT.prototype.things = function() {
         }
 
         ts.push(thing);
+    }
+
+    if (paramd && paramd.persist) {
+        self.on(EVENT_NEW_THING, function(thing) {
+            ts.push(thing)
+        })
     }
 
     return ts;
@@ -2008,6 +2002,8 @@ IOT.prototype.connect = function(value) {
 
     if (value === undefined) {
         self._discover_nearby(null, things)
+
+        return self.things({ persist: true })
     } else if (_.isString(value)) {
         var connectd = {}
 

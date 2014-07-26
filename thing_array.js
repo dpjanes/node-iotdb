@@ -333,6 +333,28 @@ ThingArray.prototype.on_thing = function(callback) {
     return self;
 }
 
+/**
+ *  Call {@link Thing#update Model.meta} on
+ *  every item in the ThingArray and return
+ *  the result as an Array
+ *
+ *  @return 
+ */
+ThingArray.prototype.metas = function() {
+    var self = this;
+
+    var metas = []
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        metas.push(item.meta().state())
+    }
+
+    return metas;
+}
+
+/* --- */
+
 ThingArray.prototype._filter_test = function(d, iot, thing) {
     var thing_place_iri = thing.place_iri();
     var thing_thing_iri = thing.thing_iri();
