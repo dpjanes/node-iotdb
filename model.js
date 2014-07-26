@@ -1418,14 +1418,12 @@ Model.prototype.reachable = function() {
 Model.prototype.driver_meta = function() {
     var self = this;
 
-    if (!self.driver_instance) {
+    if (self.driver_instance) {
+        return self.driver_instance.meta()
+    } else {
         return {}
     }
 
-    var metad = self.driver_instance.meta()
-    console.log("? Model.driver_meta", "should be called thing.driver_in here")
-
-    return metad
 }
 
 /*

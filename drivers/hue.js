@@ -415,7 +415,7 @@ HueDriver.prototype.pull = function() {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-HueDriver.prototype.meta = function() {
+HueDriver.prototype.driver_meta = function() {
     return this.metad
 }
 

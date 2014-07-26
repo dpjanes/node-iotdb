@@ -316,7 +316,7 @@ UPnPDriver.prototype.pull = function() {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-UPnPDriver.prototype.meta = function() {
+UPnPDriver.prototype.driver_meta = function() {
     var self = this
 
     if (!self.upnp_device) {

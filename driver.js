@@ -24,6 +24,7 @@
 
 var mqtt = require('mqtt');
 var timers = require('timers');
+var _ = require('./helpers');
 
 var id_counter = 1
 
@@ -254,8 +255,41 @@ Driver.prototype.reachable = function() {
  *  @return {this}
  */
 Driver.prototype.meta = function() {
+    var self = this
+    var metad = _.deepCopy(self.driver_meta())
+
+    if (!self.thing) {
+        return metad
+    }
+
+    var paramd = {
+        thingd: {},
+        driverd: {},
+        initd: self.thing.initd,
+        metad: metad
+    }
+
+    self.thing.driver_in(paramd)
+
+    var nd = {}
+    for (var key in metad) {
+        if (key.indexOf(':') > -1) {
+            nd[_.expand(key)] = metad[key]
+        }
+    }
+
+    return nd
+}
+
+/**
+ *  Return the raw driver metadata. This
+ *  should be used mainly be 'meta' above,
+ *  which does all needed translation work
+ */
+Driver.prototype.driver_meta = function() {
     return {}
 }
+
 
 /**
  *  This should only be called by subclases
