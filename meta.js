@@ -1,5 +1,5 @@
 /*
- *  meta_thing.js
+ *  meta.js
  *
  *  David Janes
  *  IOTDB
@@ -26,7 +26,7 @@
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
  */
-var MetaThing = function(iot, thing) {
+var Meta = function(iot, thing) {
     var self = this;
 
     self.iot = iot
@@ -38,7 +38,7 @@ var MetaThing = function(iot, thing) {
 /**
  *  Return the metadata
  */
-MetaThing.prototype.state = function() {
+Meta.prototype.state = function() {
     var self = this;
 
     if (!self.iot.gm.has_subject(self.thing_iri)) {
@@ -64,7 +64,7 @@ MetaThing.prototype.state = function() {
 /**
  *  Returns Thing value for the key.
  */
-MetaThing.prototype.get = function(key, otherwise) {
+Meta.prototype.get = function(key, otherwise) {
     var self = this;
 
     if (!self.thing_iri) {
@@ -90,4 +90,4 @@ MetaThing.prototype.get = function(key, otherwise) {
     return object
 }
 
-exports.MetaThing = MetaThing
+exports.Meta = Meta

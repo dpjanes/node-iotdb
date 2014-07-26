@@ -26,7 +26,7 @@ var assert = require("assert")
 
 var _ = require("./helpers")
 var attribute = require("./attribute")
-var meta_thing = require("./meta_thing")
+var meta_thing = require("./meta")
 var model_maker = require("./model_maker")
 var libs = require("./libs/libs")
 
@@ -1394,7 +1394,7 @@ Model.prototype.meta = function() {
             return undefined
         }
 
-        self.__meta_thing = new meta_thing.MetaThing(iot, self)
+        self.__meta_thing = new meta_thing.Meta(iot, self)
     }
 
     return self.__meta_thing
