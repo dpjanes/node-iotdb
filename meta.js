@@ -22,6 +22,8 @@
 
 "use strict"
 
+var _ = require("./helpers.js")
+
 /**
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
@@ -41,24 +43,27 @@ var Meta = function(iot, thing) {
 Meta.prototype.state = function() {
     var self = this;
 
+    var metad = {}
+    metad[_.expand('iot:thing')] = self.thing_iri
+    metad[_.expand('iot:model')] = self.thing.model_code_iri()
+
     if (!self.iot.gm.has_subject(self.thing_iri)) {
-        return self.thing.driver_meta()
-    }
+        _.extend(metad, self.thing.driver_meta())
+    } else {
+        var tds = self.iot.gm.get_triples(self.thing_iri, null, null)
+        for (var tx in tds) {
+            var td = tds[tx]
+            if (td.predicate == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+                continue
+            } else if (td.predicate == 'rdfs:type') {
+                continue
+            }
 
-    var d = []
-    var tds = self.iot.gm.get_triples(self.thing_iri, null, null)
-    for (var tx in tds) {
-        var td = tds[tx]
-        if (td.predicate == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
-            continue
-        } else if (td.predicate == 'rdfs:type') {
-            continue
+            metad[td.predicate] = td.object_value
         }
-
-        d[td.predicate] = td.object_value
     }
 
-    return d
+    return metad
 }
 
 /**
@@ -68,7 +73,7 @@ Meta.prototype.get = function(key, otherwise) {
     var self = this;
 
     if (!self.thing_iri) {
-        console.log("# Thing.get: no iotdb object")
+        console.log("# Meta.get: no iotdb object")
         return otherwise
     }
 

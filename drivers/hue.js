@@ -58,6 +58,8 @@ var HueDriver = function(paramd) {
 
     if (paramd && paramd.metad) {
         self.metad = paramd.metad
+        self.metad[_.expand("schema:manufacturer")] = "http://philips.com/"
+        self.metad[_.expand("schema:model")] = "http://meethue.com/"
     }
 
     return self;
@@ -209,10 +211,9 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
             for (var light in result.body) {
                 console.log("- HueDriver._foundDevice", "make-light", light);
                 var md = result.body[light]
-                var metad = {
-                    "iot:name": md.name,
-                    "iot:number": light
-                }
+                var metad = {}
+                metad[_.expand("iot:name")] = md.name
+                metad[_.expand("iot:number")] = light
 
                 discover_callback(new HueDriver({
                     upnp_device: upnp_device, 
