@@ -213,7 +213,7 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
                 var md = result.body[light]
                 var metad = {}
                 metad[_.expand("iot:name")] = md.name
-                metad[_.expand("iot:number")] = light
+                metad[_.expand("iot:number")] = parseInt(light)
 
                 discover_callback(new HueDriver({
                     upnp_device: upnp_device, 

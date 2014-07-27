@@ -364,7 +364,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         _.expand("iot:place-floor"),
         _.expand("iot:place-placement"),
     ];
-    var thing_meta = undefined
+    var meta = thing.meta()
 
     for (var dpredicate in d) {
         var dobject = d[dpredicate];
@@ -384,13 +384,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
 
             continue
         } else if (dpredicate == "_name") {
-            dpredicate = _.expand("iot:name")
-
-            if (thing_meta === undefined) {
-                thing_meta = thing.meta()
-            }
-
-            var name = thing_meta.get('iot:name')
+            var name = meta.get('iot:name')
             if (name != dobject) {
                 return false
             }
@@ -407,7 +401,11 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
             continue
         }
 
-        dpredicate = _.expand(dpredicate);
+        // dpredicate = _.expand(dpredicate);
+        var value = meta.get(dpredicate)
+        if (value != dobject) {
+            return false
+        }
         
         /* XXX BROKEN FIX */
         /*
@@ -416,18 +414,18 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         }
         */
 
-        var subject_url = thing_thing_iri;
         /*
+        var subject_url = thing_thing_iri;
         if (place_predicates.indexOf(dpredicate) > -1) {
             subject_url = thing_place_iri;
         }
-         */
         
         var is_contained = iot.gm.contains_triple(subject_url, dpredicate, dobject)
-        // console.log(subject_url, dpredicate, dobject, is_contained);
+        console.log(subject_url, dpredicate, dobject, is_contained);
         if (!is_contained) {
             return false
         }
+         */
     }
 
     return true
@@ -487,6 +485,10 @@ ThingArray.prototype.with_code = function(code) {
 
 ThingArray.prototype.with_name = function(name) {
     return this.filter({ "_name" : name })
+}
+
+ThingArray.prototype.with_number = function(number) {
+    return this.filter({ "iot:number" : parseInt(number) })
 }
 
 ThingArray.prototype.with_tag = function(tag) {

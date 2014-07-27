@@ -1243,7 +1243,7 @@ IOT.prototype._bind_driver = function(thing, driver_instance) {
 IOT.prototype.things = function(paramd) {
     var self = this;
 
-    var ts = new thing_array.ThingArray(self, paramd)
+    var ts = new thing_array.ThingArray(paramd)
 
     for (var key in self.thing_instanced) {
         var thing = self.thing_instanced[key];

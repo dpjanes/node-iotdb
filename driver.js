@@ -299,7 +299,9 @@ Driver.prototype.pulled = function(driverd) {
 
     /* metadata update */
     if ((driverd === undefined) || (driverd === null)) {
-        console.log("? Driver.pulled: deal with metadata pull")
+        if (self.thing) {
+            thing.meta_changed()
+        }
         return
     }
 

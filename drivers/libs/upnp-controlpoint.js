@@ -256,11 +256,12 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 		});
 	});
 	req.on('socket', function(socket) {
-        if (!socket) {
-            console.log("# UpnpControlPoint._getDeviceDetails", "no socket?")
-            return
+        // the local address used to communicate with the device. Used to determine callback URL. 
+        try { 
+            localAddress = socket.address().address;	
+        } catch (x) {
+            console.log("# UpnpControlPoint._getDeviceDetails", "no socket?", x)
         }
-		localAddress = socket.address().address;	// the local address used to communicate with the device. Used to determine callback URL. 
 	});
 	req.on('error', function(e) {
 		console.log('- problem with request: ' + e.message);

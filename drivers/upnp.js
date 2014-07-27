@@ -44,7 +44,7 @@ var UPnPDriver = function(upnp_device) {
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
         self.upnp_device.on("device-lost", function() {
-            console.log("UPnPDriver: device-lost message received")
+            console.log("- UPnPDriver". "device-lost message received: will forget and try to rediscover")
             self._forget_device()
         })
     }

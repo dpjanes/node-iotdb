@@ -77,6 +77,8 @@ Meta.prototype.get = function(key, otherwise) {
         return otherwise
     }
 
+    key = _.expand(key)
+
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         var metad = self.thing.driver_meta()
         var value = metad[key]
