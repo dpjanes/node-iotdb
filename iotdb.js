@@ -888,7 +888,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
 
             var existing = self.thing_instanced[driver_identityd.thing_id];
             if (existing && !existing.reachable()) {
-                existing = null
+                existing = undefined
             }
             if (existing !== undefined) {
                 console.log("# IOT._discover_nearby", "thing already exists", driver_identityd.thing_id)

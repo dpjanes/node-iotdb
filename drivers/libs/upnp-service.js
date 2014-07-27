@@ -21,7 +21,7 @@ var UpnpService = function(device, desc) {
     EventEmitter.call(this);
 
 	if (TRACE && DETAIL) {
-		console.log("- creating service object for: " + JSON.stringify(desc)); 
+		console.log("- UPnP:UpnpService", "creating service object", JSON.stringify(desc)); 
 	}
 
 	this.device = device;
@@ -53,7 +53,7 @@ util.inherits(UpnpService, EventEmitter);
  */
 UpnpService.prototype.callAction = function(actionName, args, callback) {
 	if (TRACE) {
-		console.log("- calling action : " + actionName + " " + JSON.stringify(args));
+		console.log("- UPnP:UpnpService.callAction", "calling action", actionName, JSON.stringify(args));
 	}
 	var argXml = "";
 	for (var name in args) {
@@ -71,7 +71,7 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 	}
 	
 	if (TRACE && DETAIL) {
-		console.log("- sending SOAP request " + JSON.stringify(options) + "\n" + s);
+		console.log("- UPnP:UpnpService.callAction", "- sending SOAP request " + JSON.stringify(options) + "\n" + s);
 	}
 
 	options.headers = {
@@ -85,7 +85,7 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 		var buf = "";
 		res.on('data', function (chunk) { buf += chunk });
         res.on('error', function(error) {
-            console.log("# UpnpService.callAction", "error receiving HTTP request", error)
+            console.log("# UPnP:UpnpService.callAction", "error receiving HTTP request", error)
             callback(error, buf);
         })
 		res.on('end', function () { 
@@ -124,7 +124,7 @@ UpnpService.prototype.subscribe = function(callback) {
 	};
 	
 	if (TRACE) {
-		console.log("- subscribing: " + JSON.stringify(options));
+		console.log("- UPnP:UpnpService.subscribe", "subscribing: " + JSON.stringify(options));
 	}
 	
 	var req = http.request(options, function(res) {
@@ -134,7 +134,7 @@ UpnpService.prototype.subscribe = function(callback) {
 			if (res.statusCode !== 200) {
 			  callback(new Error("Problem with subscription on " + service.serviceId), buf);
 			} else {
-				console.log("- got subscription response: " + JSON.stringify(res.headers.sid));
+				console.log("# UPnP:UpnpService.subscribe", "response", JSON.stringify(res.headers.sid));
 				var sid = res.headers.sid;
 				var subscription = new Subscription(self, sid, self.subscriptionTimeout);
 				self.device.controlPoint.eventHandler.addSubscription(subscription);
@@ -144,7 +144,7 @@ UpnpService.prototype.subscribe = function(callback) {
 		});
 	});
     req.on('error', function(error) {
-        console.log("# UpnpService.subscribe", "error sending HTTP request", error)
+        console.log("# UPnP:UpnpService.subscribe", "error sending HTTP request", error)
         callback(error, "");
     })
   
@@ -173,17 +173,18 @@ UpnpService.prototype._resubscribe = function(sid, callback) {
 		res.on('data', function (chunk) { buf += chunk });
 		res.on('end', function () { 
 			if (res.statusCode !== 200) {
-				console.log("# Problem with re-subscription on " + sid + " : " + buf);
+				console.log("# UPnP:UpnpService._resubscribe", "Problem with re-subscription", sid, buf);
 				callback(new Error("Problem with re-subscription on " + sid), buf);
 			}
 			else {
-				console.log("- re-subscription success: " + self.device.udn + " : " + self.serviceId);
+				console.log("- UPnP:UpnpService._resubscribe", "re-subscription success", 
+                    self.device.udn, self.serviceId);
 				callback(null, buf);
 			} 
 		});
 	});
     req.on('error', function(error) {
-        console.log("# UpnpService._reubscribe", "error sending HTTP request", error)
+        console.log("# UPnP:UpnpService._resubscribe", "error sending HTTP request", error)
         callback(error, "");
     })
 	req.end("");
@@ -222,7 +223,7 @@ UpnpService.prototype.unsubscribe = function(sid, callback) {
 		});
 	});
     req.on('error', function(error) {
-        console.log("# UpnpService.unsubscribe", "error sending HTTP request", error)
+        console.log("# UPnP:UpnpService.unsubscribe", "error sending HTTP request", error)
         callback(error, "");
     })
 	req.end("");
@@ -254,7 +255,7 @@ UpnpService.prototype._getServiceDesc = function(callback) {
 		});
 	});
     req.on('error', function(error) {
-        console.log("# UpnpService._getServiceDesc", "error sending HTTP request", error)
+        console.log("# UPnP:UpnpService._getServiceDesc", "error sending HTTP request", error)
         callback(error, "");
     })
 	req.end("");
@@ -278,7 +279,7 @@ Subscription.prototype._resubscribe = function() {
 	var self = this;
 	this.service._resubscribe(this.sid, function(err, buf) {
 		if (err) {
-			console.log("# Subscription._resubscribe", "ERROR: problem re-subscribing: " + err + "\n" + buf);
+            console.log("# UPnP:Subscription._resubscribe", "ERROR: problem re-subscribing", err, "\n  ", buf);
 			// remove from eventhandler
 			self.service.device.controlPoint.eventHandler.removeSubscription(self);
 			clearTimeout(self.timer);
@@ -302,7 +303,7 @@ Subscription.prototype.unsubscribe = function() {
 
 Subscription.prototype.handleEvent = function(event) {
 	if (TRACE && DETAIL) {
-		console.log("- subscription event: " + JSON.stringify(event));
+        console.log("# UPnP:Subscription.handleEvent", "subscription event", JSON.stringify(event));
 	}
 	this.service.emit("stateChange", event);
 }

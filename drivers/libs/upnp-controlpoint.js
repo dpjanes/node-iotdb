@@ -226,7 +226,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 	var self = this;
 	var localAddress = "127.0.0.1";		// will determine which local address is used to talk with the device.
 	if (TRACE) {
-		console.log("- getting device details from " + location);
+		console.log("- Upnp:UpnpControlPoint._getDeviceDetails", "getting device details", location);
 	}
 	var options = Url.parse(location);
 	var req = http.request(options, function(res) {
@@ -237,12 +237,13 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 		});
 		res.on('end', function () {
 			if (res.statusCode != 200) {
-				console.log("- problem getting device details: " + res.statusCode + " : " + resData);
+				console.log("- Upnp:UpnpControlPoint._getDeviceDetails",
+                    "problem getting device details", res.statusCode, resData);
 				return;
 			}
 			xml2js.parseString(resData, function(err, result) {
                 if (!result.root) {
-                    console.log("# UpnpControlPoint._getDeviceDetails: result.root (not a big issue)");
+                    console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "result.root (not a big issue)");
                     return;
                 }
 
@@ -260,7 +261,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
         try { 
             localAddress = socket.address().address;	
         } catch (x) {
-            console.log("# UpnpControlPoint._getDeviceDetails", "no socket?", x)
+            console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "no socket?", x)
         }
 	});
 	req.on('error', function(e) {
