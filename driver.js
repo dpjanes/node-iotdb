@@ -300,7 +300,7 @@ Driver.prototype.pulled = function(driverd) {
     /* metadata update */
     if ((driverd === undefined) || (driverd === null)) {
         if (self.thing) {
-            thing.meta_changed()
+            self.thing.meta_changed()
         }
         return
     }

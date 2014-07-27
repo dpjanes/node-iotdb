@@ -1792,8 +1792,9 @@ IOT.prototype._load_drivers = function() {
             console.log("# IOT._load_drivers:",
                 "\n  filename", paramd.filename,
                 "\n  error", paramd.error,
-                "\n  exception", paramd.exception)
-            console.trace()
+                "\n  exception", paramd.exception,
+                "\n  stack", paramd.exception.stack
+                )
             return
         }
 
