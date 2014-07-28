@@ -30,7 +30,8 @@ var util = require('util');
 
 /* --- constants --- */
 var VERBOSE = true;
-var EVENT_NEW_THING = 'EVENT_NEW_THING'
+var EVENT_THING_NEW = 'EVENT_THING_NEW'
+var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED'
 var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED'
 
 /**
@@ -75,7 +76,8 @@ ThingArray.prototype.push = function(thing, paramd) {
     var self = this
 
     paramd = _.defaults(paramd, {
-        emit: true
+        emit_pushed: true,
+        emit_new: true
     })
 
     Array.prototype.push.call(self, thing);
@@ -83,8 +85,11 @@ ThingArray.prototype.push = function(thing, paramd) {
     /*
      *  event dispatch
      */
-    if (paramd.emit) {
-        self.emit(EVENT_NEW_THING, thing)
+    if (paramd.emit_pushed) {
+        self.emit(EVENT_THING_PUSHED, thing)
+    }
+    if (paramd.emit_new) {
+        self.emit(EVENT_THING_NEW, thing)
     }
 
     /*
@@ -230,7 +235,7 @@ ThingArray.prototype.pull = function() {
      */
     var persist = this._persistds !== null
     if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
             item.pull.apply(item, Array.prototype.slice.call(arguments));
         })
     }
@@ -256,7 +261,7 @@ ThingArray.prototype.on = function() {
      */
     var persist = this._persistds !== null
     if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
             item.on.apply(item, Array.prototype.slice.call(arguments));
         })
     }
@@ -284,7 +289,7 @@ ThingArray.prototype.on_change = function() {
      */
     var persist = this._persistds !== null
     if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
             item.on_change.apply(item, Array.prototype.slice.call(av));
         })
     }
@@ -312,7 +317,7 @@ ThingArray.prototype.on_meta = function() {
      */
     var persist = this._persistds !== null
     if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(item) {
+        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
             item.on_meta.apply(item, Array.prototype.slice.call(av));
         })
     }
@@ -333,7 +338,7 @@ ThingArray.prototype.on_thing = function(callback) {
         callback(item)
     }
 
-    events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(thing) {
+    events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(thing) {
         callback(thing)
     })
 
@@ -347,8 +352,9 @@ ThingArray.prototype.on_thing = function(callback) {
  *
  *  @return 
  */
-ThingArray.prototype.metas = function() {
+ThingArray.prototype.metas = function(paramd) {
     var self = this;
+    var paramd = _.defaults(paramd, {})
 
     var metas = []
 
@@ -504,7 +510,7 @@ ThingArray.prototype.filter = function(d) {
                     delete oidd[thing_id]
                 } else {
                     // console.log("! ThingArray.filter/things_changed: found a new match", thing_id)
-                    out_items.push(thing, { emit: false })
+                    out_items.push(thing, { emit_pushed: false })
                     is_updated = true
                 }
             }
@@ -533,10 +539,10 @@ ThingArray.prototype.filter = function(d) {
 
         /*
          *  Things being added propagates downstream. Note how
-         *  above with { emit: false } we stop this from being
+         *  above with { emit_pushed: false } we stop this from being
          *  unnecessarily being called
          */
-        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(thing) {
+        events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function(thing) {
             out_items.things_changed()
         })
     }

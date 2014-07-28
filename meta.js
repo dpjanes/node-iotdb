@@ -23,6 +23,7 @@
 "use strict"
 
 var _ = require("./helpers.js")
+var assert = require("assert")
 
 /**
  *  This represents the Thing data in the graph.
@@ -82,7 +83,7 @@ Meta.prototype.state = function() {
  */
 Meta.prototype.get = function(key, otherwise) {
     var self = this;
-    assert(self.thing_iri)
+    assert.ok(self.thing_iri)
 
     key = _.expand(key)
 
@@ -120,7 +121,7 @@ Meta.prototype.get = function(key, otherwise) {
  */
 Meta.prototype.set = function(key, value) {
     var self = this;
-    assert(self.thing_iri)
+    assert.ok(self.thing_iri)
 
     key = _.expand(key)
 
