@@ -1243,6 +1243,10 @@ IOT.prototype._bind_driver = function(thing, driver_instance) {
 IOT.prototype.things = function(paramd) {
     var self = this;
 
+    var paramd = _.defaults(paramd, {
+        persist: false
+    })
+
     var ts = new thing_array.ThingArray(paramd)
 
     for (var key in self.thing_instanced) {
@@ -1252,11 +1256,26 @@ IOT.prototype.things = function(paramd) {
         }
 
         ts.push(thing);
+
+        if (paramd.persist) {
+            thing.on_meta(function() {
+                ts.things_changed()
+            })
+        }
     }
 
-    if (paramd && paramd.persist) {
+    if (paramd.persist) {
         self.on(EVENT_NEW_THING, function(thing) {
+            if (!thing) {
+                return
+            }
+
             ts.push(thing)
+            ts.things_changed()
+
+            thing.on_meta(function() {
+                ts.things_changed()
+            })
         })
     }
 
@@ -2015,13 +2034,28 @@ IOT.prototype.connect = function(value) {
         var driver_prefix = "https://iotdb.org/pub/iot-driver#"
         if (value.substring(value, driver_prefix.length) == driver_prefix) {
             connectd.driver = value
+            self._connect(connectd, things)
         } else if (value.match(/^https?:\/\//)) {
             connectd.iri = value
+            self._connect(connectd, things)
         } else {
             connectd.model = value
+            self._connect(connectd, things)
+            return self.things({ persist: true }).with_model(value)
         }
         
-        self._connect(connectd, things)
+        /*
+
+        console.log("YYY.1")
+        if (connectd.driver) {
+            console.log("YYY.2.1")
+        } else if (connectd.iri) {
+            console.log("YYY.2.2")
+        } else if (connectd.model) {
+            console.log("YYY.2.3")
+        }
+        console.log("YYY.99")
+        */
     } else if (_.isObject(value)) {
         self._connect(value, things)
     } else {

@@ -35,6 +35,9 @@ var Meta = function(iot, thing) {
     self.thing = thing
 
     self.thing_iri = self.thing.thing_iri()
+
+    // updated metadata
+    self.updated = {}
 }
 
 /**
@@ -63,21 +66,30 @@ Meta.prototype.state = function() {
         }
     }
 
+    _.extend(metad, self.updated)
+
     return metad
 }
 
 /**
- *  Returns Thing value for the key.
+ *  Returns meta value for the key. 
+ *
+ *  @param {string} key
+ *  An IRI or expandable string 
+ *
+ *  @param {*} otherwise
+ *  The value to return if the key is not for
  */
 Meta.prototype.get = function(key, otherwise) {
     var self = this;
-
-    if (!self.thing_iri) {
-        console.log("# Meta.get: no iotdb object")
-        return otherwise
-    }
+    assert(self.thing_iri)
 
     key = _.expand(key)
+
+    var object = self.updated[key]
+    if (object !== undefined) {
+        return object
+    }
 
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         var metad = self.thing.driver_meta()
@@ -95,6 +107,25 @@ Meta.prototype.get = function(key, otherwise) {
     }
 
     return object
+}
+
+/**
+ *  Set a metavalue
+ *
+ *  @param {string} key
+ *  An IRI or expandable string 
+ *
+ *  @param {*} value
+ *  Value to set (should be simple or an Array of simple). Not expanded.
+ */
+Meta.prototype.set = function(key, value) {
+    var self = this;
+    assert(self.thing_iri)
+
+    key = _.expand(key)
+
+    self.updated[key] = value
+    self.thing.meta_changed()
 }
 
 exports.Meta = Meta

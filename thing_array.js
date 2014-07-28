@@ -31,6 +31,7 @@ var util = require('util');
 /* --- constants --- */
 var VERBOSE = true;
 var EVENT_NEW_THING = 'EVENT_NEW_THING'
+var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED'
 
 /**
  *  An array for holding {@link Thing}s. When the
@@ -70,15 +71,21 @@ ThingArray.prototype._instanceof_ThingArray = true
 /**
  *  Add a new thing to this ThingArray.
  */
-ThingArray.prototype.push = function(thing) {
+ThingArray.prototype.push = function(thing, paramd) {
     var self = this
+
+    paramd = _.defaults(paramd, {
+        emit: true
+    })
 
     Array.prototype.push.call(self, thing);
 
     /*
      *  event dispatch
      */
-    self.emit(EVENT_NEW_THING, thing)
+    if (paramd.emit) {
+        self.emit(EVENT_NEW_THING, thing)
+    }
 
     /*
      *  Do persistent commands
@@ -259,7 +266,7 @@ ThingArray.prototype.on = function() {
 
 /**
  *  Call {@link Thing#on Model.on_change} on
- *  every item in the ThingArray.
+ *  every item in the ThingArray. 
  *
  *  @return {this}
  */
@@ -314,7 +321,7 @@ ThingArray.prototype.on_meta = function() {
 }
 
 /**
- *  This will be called whenever a new thing is added to this array
+ *  The callback will be called whenever a new thing is added to this array
  *
  *  @return {this}
  */
@@ -352,6 +359,17 @@ ThingArray.prototype.metas = function() {
 
     return metas;
 }
+
+/**
+ *  Somehow or another, the underlying things were changed.
+ *  This will bring all downstream ThingArrays into order
+ */
+ThingArray.prototype.things_changed = function() {
+    var self = this;
+
+    self.emit(EVENT_THINGS_CHANGED)
+}
+
 
 /* --- */
 
@@ -455,12 +473,71 @@ ThingArray.prototype.filter = function(d) {
     }
 
     /*
+     *  When 'Things Changed' && persist: update the list.
      */
     if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(thing) {
-            if (self._filter_test(d, iot, thing)) {
-                out_items.push(thing);
+        events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function() {
+            // existing things by ID
+            var oidd = {}
+
+            for (var oi = 0; oi < out_items.length; oi++) {
+                var o = out_items[oi]
+                oidd[o.thing_id()] = 1
             }
+
+            // find new things matching
+            var is_updated = false
+
+            // console.log("! ThingArray.filter/things_changed: oidd (A)", oidd)
+            // console.log("! ThingArray.filter/things_changed: filter", d)
+
+            for (var ii = 0; ii < self.length; ii++) {
+                var thing = self[ii];
+                var thing_id = thing.thing_id()
+
+                if (!self._filter_test(d, iot, thing)) {
+                    continue
+                }
+
+                if (oidd[thing_id]) {
+                    // console.log("! ThingArray.filter/things_changed: pass", thing_id)
+                    delete oidd[thing_id]
+                } else {
+                    // console.log("! ThingArray.filter/things_changed: found a new match", thing_id)
+                    out_items.push(thing, { emit: false })
+                    is_updated = true
+                }
+            }
+
+            // console.log("! ThingArray.filter/things_changed: oidd (B)", oidd)
+
+            // remove things that no longer match
+            for (var oi = 0; oi < out_items.length; oi++) {
+                var o = out_items[oi]
+                if (!oidd[o.thing_id()]) {
+                    continue
+                }
+
+                // console.log("! ThingArray.filter/things_changed: remove old match", o.thing_id())
+                out_items.splice(oi--, 1)
+                is_updated = true
+            }
+
+            /*
+             *  notify downstream - note that we always do this because
+             *  even though this list may not have changed, filters 
+             *  downstream may have changed
+             */
+            out_items.things_changed()
+        })
+
+        /*
+         *  Things being added propagates downstream. Note how
+         *  above with { emit: false } we stop this from being
+         *  unnecessarily being called
+         */
+        events.EventEmitter.prototype.on.call(self, EVENT_NEW_THING, function(thing) {
+            out_items.things_changed()
         })
     }
 

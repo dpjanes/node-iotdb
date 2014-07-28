@@ -34,6 +34,7 @@ var libs = require("./libs/libs")
 var VERBOSE = true;
 var iot_name = _.expand("iot:name")
 
+var EVENT_THINGS_CHANGED = "things_changed"
 var EVENT_THING_CHANGED = "thing_changed"
 var EVENT_META_CHANGED = "meta_changed"
 
