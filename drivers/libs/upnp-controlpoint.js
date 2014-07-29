@@ -92,12 +92,7 @@ var UpnpControlPoint = function() {
 		}
 		
 		if (TRACE) {
-			console.log("- DeviceAvailable");
-			//console.log('\t' + JSON.stringify(device));
-			console.log('\t' + udn + " : " + device.nt);
-			// console.log('\t' + device.usn); 		// Unique Service Name.  A unique ID for the device
-			//console.log('\t' + device.nt); 		// Notification Type  e.g. "urn:schemas-upnp-org:device:InternetGatewayDevice:1"
-			//console.log('\t' + device.location); 		// Location -> "http://192.168.0.1/root.sxml"
+			console.log("- UPnP:UPnPControlPoint/on.DeviceAvailable", udn, device.nt)
 		}
 
 		self.devices[udn] = "holding";
@@ -111,12 +106,11 @@ var UpnpControlPoint = function() {
 	/**
 	 * Device left the building
 	 */
-	this.ssdp.on("DeviceUnavailable", function(dev) {
-		var udn = getUUID(dev.usn);
+	this.ssdp.on("DeviceUnavailable", function(device) {
+		var udn = getUUID(device.usn);
 			
 		if (TRACE) {
-			console.log("- DeviceUnavailable");
-			console.log('\t' + JSON.stringify(dev));
+			console.log("- UPnP:UPnPControlPoint/on.DeviceUnavailable", JSON.stringify(device));
 		}
 		
 		self.emit("device-lost", udn);
@@ -132,8 +126,7 @@ var UpnpControlPoint = function() {
 		var udn = getUUID(device.usn);
 			
 		if (TRACE) {
-			console.log("- DeviceUpdate");
-			console.log('\t' + JSON.stringify(device));
+			console.log("- UPnP:UPnPControlPoint/on.DeviceUpdate", JSON.stringify(device));
 		}
 		
         // DPJ 
@@ -168,11 +161,11 @@ UpnpControlPoint.prototype.forget = function(device) {
 
     var udn = device.udn.replace(/^uuid:/, '')
     if (!self.devices[udn]) {
-        console.log("# UpnpControlPoint.forget", "device not known!", device.udn)
+        console.log("# UPnP:UpnpControlPoint.forget", "device not known!", device.udn)
         return
     }
 
-    console.log("- UpnpControlPoint.forget", "forgetting device", device.udb)
+    console.log("- UPnP:UpnpControlPoint.forget", "forgetting device", device.udb)
 
     delete self.devices[udn];
 
@@ -194,7 +187,7 @@ UpnpControlPoint.prototype.scrub = function(ms) {
         var device = self.devices[di]
         var delta = now - device.last_seen
         if (delta > ms) {
-            console.log("- UpnpControlPoint.scrub", "will forget device", "\n  age", delta, "\n  device", device.udn)
+            console.log("- UPnP:UpnpControlPoint.scrub", "will forget device", "\n  age", delta, "\n  device", device.udn)
             forgets.push(device)
         }
     }

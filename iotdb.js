@@ -234,6 +234,9 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         stores_path: [
             "$IOTDB_INSTALL/stores"
         ],
+        models_modules: [
+            "iotdb-models"
+        ],
         models_path: [
             "$IOTDB_PROJECT/models"
         ],
@@ -470,6 +473,7 @@ IOT.prototype.ready_delta = function(key, delta) {
             self.emit(EVENT_ON_REGISTER_THINGS)
         }
         if ((key == 'load_models') && self.initd.load_models) {
+            self._load_model_modules()
             self._load_models()
         }
         if ((key == 'load_things') && self.initd.load_things) {
@@ -494,7 +498,7 @@ IOT.prototype.ready_delta = function(key, delta) {
                     return
                 }
 
-                self.discover()
+                self._discover()
             }
         }
     }
@@ -1862,6 +1866,25 @@ IOT.prototype._load_stores = function() {
             console.log("- IOT._load_stores:", "missing exports.Store?", "\n ", paramd.filename);
         }
     })
+}
+
+/**
+ *  Automatically load all Models from modules. Set 'IOT.paramd.load_model_modules'
+ *
+ *  @protected
+ */
+IOT.prototype._load_model_modules = function() {
+    var self = this
+    console.log("- IOT._load_model_modules", "modules", self.initd.model_modules)
+
+    for (var mi in self.initd.models_modules) {
+        var model_module = self.initd.models_modules[mi]
+        var module = require(model_module)
+        for (var i in module.models) {
+            var model = module.models[i]
+            self.register_model(model)
+        }
+    }
 }
 
 /**

@@ -369,10 +369,12 @@ Driver.prototype.mqtt_subscribe = function() {
     })
     mqtt_client.on('error', function(error) {
         console.log("# Driver.mqtt_subscribe/on(error):", error)
+        mqtt_client.removeAllListeners()
         self._mqtt_resubscribe()
     })
     mqtt_client.on('close', function() {
         console.log("# Driver.mqtt_subscribe/close(error):", arguments)
+        mqtt_client.removeAllListeners()
         self._mqtt_resubscribe()
     })
     mqtt_client.subscribe(self.mqtt_topic)
