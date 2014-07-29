@@ -369,6 +369,8 @@ IOT.prototype.cfg_get_oauthd = function(iri, otherwise) {
 
 /**
  *  Check paramd.require_*
+ *
+ *  @protected
  */
 IOT.prototype._check_requirements = function() {
     var self = this;
@@ -815,8 +817,10 @@ IOT.prototype.store = function(store_id) {
  *  If called with a dictionary, we assume it's bind description
  *  with expected elements <code>model</code> and <code>initd</code>.
  *  See @{link IOT#_discover_bind}
+ *
+ *  @protected
  */
-IOT.prototype.discover = function() {
+IOT.prototype._discover = function() {
     var self = this
 
     var thing_exemplar = null
@@ -1116,7 +1120,7 @@ IOT.prototype._discover_bind = function(paramd, things) {
                     driver: _.expand(paramd.driver),
                     initd: paramd.initd
                 })
-                self.discover(thing, things)
+                self._discover(thing, things)
             } else {
                 console.log("- IOT._discover_bind: unexpected state", callbackd.paramd)
             }
@@ -1161,7 +1165,7 @@ IOT.prototype._discover_bind = function(paramd, things) {
  *  the Model function or a Model exemplar.
  *
  */
-IOT.prototype.discover_json = function(iri, model) {
+IOT.prototype._discover_json = function(iri, model) {
     var self = this;
 
     if (model) {
@@ -1289,6 +1293,8 @@ IOT.prototype.things = function(paramd) {
  *  @param {string|Thing} thing
  *  If a string, it is expected to be the 'thing_id' for
  *  the Thing.
+ *
+ *  @protected
  */
 IOT.prototype._ask_thing = function(thing, paramd, callback) {
     var self = this;
@@ -1550,6 +1556,8 @@ IOT.prototype.thing_iri = function(thing) {
  *  If there's a valid input, <code>model_code</code>
  *  will always come back in <code>resultd</code>
  *  and it will always be in proper dash-case
+ *
+ *  @protected
  */
 IOT.prototype._clarify_model = function(resultd, model) {
     var self = this;
@@ -2035,27 +2043,16 @@ IOT.prototype.connect = function(value) {
         if (value.substring(value, driver_prefix.length) == driver_prefix) {
             connectd.driver = value
             self._connect(connectd, things)
+            // XXX - set up thing_array
         } else if (value.match(/^https?:\/\//)) {
             connectd.iri = value
             self._connect(connectd, things)
+            // XXX - set up thing_array
         } else {
             connectd.model = value
             self._connect(connectd, things)
             return self.things({ persist: true }).with_model(value)
         }
-        
-        /*
-
-        console.log("YYY.1")
-        if (connectd.driver) {
-            console.log("YYY.2.1")
-        } else if (connectd.iri) {
-            console.log("YYY.2.2")
-        } else if (connectd.model) {
-            console.log("YYY.2.3")
-        }
-        console.log("YYY.99")
-        */
     } else if (_.isObject(value)) {
         self._connect(value, things)
     } else {
@@ -2065,6 +2062,9 @@ IOT.prototype.connect = function(value) {
     return things
 }
 
+/**
+ *  @protected
+ */
 IOT.prototype._connect = function(connectd, things) {
     var self = this
 
