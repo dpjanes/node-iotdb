@@ -177,8 +177,10 @@ UpnpService.prototype._resubscribe = function(sid, callback) {
 				callback(new Error("Problem with re-subscription on " + sid), buf);
 			}
 			else {
-				console.log("- UPnP:UpnpService._resubscribe", "re-subscription success", 
-                    self.device.udn, self.serviceId);
+                if (TRACE && DETAIL) {
+                    console.log("- UPnP:UpnpService._resubscribe", 
+                        "re-subscription success", self.device.udn, self.serviceId);
+                }
 				callback(null, buf);
 			} 
 		});

@@ -57,6 +57,7 @@ Driver.prototype.driver_construct = function() {
     self.unique_id = id_counter++;
     self.thing = null;
     self.verbose = false;
+    self.driver = null;     // should be redefined in subclasses
 
     // MQTT built in
     self.mqtt_host = self.cfg_get('mqtt_host', null)
@@ -258,18 +259,20 @@ Driver.prototype.meta = function() {
     var self = this
     var metad = _.deepCopy(self.driver_meta())
 
-    if (!self.thing) {
-        return metad
+    if (self.driver) {
+        metad["iot:driver"] = self.driver
     }
 
-    var paramd = {
-        thingd: {},
-        driverd: {},
-        initd: self.thing.initd,
-        metad: metad
-    }
+    if (self.thing) {
+        var paramd = {
+            thingd: {},
+            driverd: {},
+            initd: self.thing.initd,
+            metad: metad
+        }
 
-    self.thing.driver_in(paramd)
+        self.thing.driver_in(paramd)
+    }
 
     var nd = {}
     for (var key in metad) {

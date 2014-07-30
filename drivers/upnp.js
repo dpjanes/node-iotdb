@@ -41,6 +41,8 @@ var UPnPDriver = function(upnp_device) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
+    self.driver = _.expand("iot-driver:upnp")
+
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
         self.upnp_device.on("device-lost", function() {
@@ -162,7 +164,7 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
 
     if ((self.__identityd === undefined) || kitchen_sink) {
         var identityd = {}
-        identityd["driver"] = _.expand("iot-driver:upnp")
+        identityd["driver"] = self.driver
 
         if (self.upnp_device) {
             identityd["deviceType"] = self.upnp_device.deviceType

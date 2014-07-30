@@ -42,7 +42,8 @@ var SmartThingsDriver = function(paramd) {
     paramd = _.defaults(paramd, {
         verbose: false,
         driver: "iot-driver:smartthings",
-        initd: {}
+        initd: {},
+        metad: {}
     })
 
     self.verbose = paramd.verbose
@@ -52,6 +53,12 @@ var SmartThingsDriver = function(paramd) {
     self.id = null;
     self.type = null;
     self._init(paramd.initd)
+
+    self.metad = {}
+    if (paramd && paramd.metad) {
+        self.metad = _.extend(paramd.metad)
+    }
+    self.metad["schema:manufacturer"] = "http://www.smartthings.com/"
 
     return self;
 }
@@ -174,7 +181,10 @@ SmartThingsDriver.prototype.discover = function(paramd, discover_callback) {
             var driver = new SmartThingsDriver({
                 initd: {
                     type: device.type,
-                    id: device.id
+                    id: device.id,
+                },
+                metad: {
+                    "iot:name": device.label
                 }
             })
 
@@ -239,6 +249,15 @@ SmartThingsDriver.prototype.pull = function() {
     console.log("- SmartThingsDriver.pull")
 
     return self;
+}
+
+/**
+ *  Request the Driver's metadata.
+ *  <p>
+ *  See {@link Driver#meta Driver.meta}
+ */
+SmartThingsDriver.prototype.driver_meta = function() {
+    return this.metad
 }
 
 

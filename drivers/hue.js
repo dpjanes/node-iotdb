@@ -48,6 +48,8 @@ var HueDriver = function(paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
+    self.driver = _.expand("iot-driver:hue")
+
     if ((paramd !== undefined) && (paramd.upnp_device !== undefined)) {
         self.upnp_device = paramd.upnp_device;
         self.iri = "http://" + self.upnp_device.host + ":" + self.upnp_device.port;
@@ -56,11 +58,12 @@ var HueDriver = function(paramd) {
         self.username = paramd.username
     }
 
+    self.metad = {}
     if (paramd && paramd.metad) {
-        self.metad = paramd.metad
-        self.metad[_.expand("schema:manufacturer")] = "http://philips.com/"
-        self.metad[_.expand("schema:model")] = "http://meethue.com/"
+        self.metad = _.extend(paramd.metad)
     }
+    self.metad[_.expand("schema:manufacturer")] = "http://philips.com/"
+    self.metad[_.expand("schema:model")] = "http://meethue.com/"
 
     return self;
 }
@@ -248,7 +251,7 @@ HueDriver.prototype.identity = function(kitchen_sink) {
 
     if (self.__identityd === undefined) {
         var identityd = {}
-        identityd["driver"] = _.expand("iot-driver:hue")
+        identityd["driver"] = self.driver
 
         if (self.upnp_device) {
             identityd["deviceType"] = self.upnp_device.deviceType

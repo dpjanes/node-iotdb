@@ -23,86 +23,66 @@
 var iotdb = require("iotdb")
 
 /**
- *  This code creates the IOTDB object. The IOTDB
- *  object manages all the Models, Drivers and Things
- *  and is responsible for querying the IOTDB.org
- *  website for additional data
- *
- *  You can add a dictionary to parameterize
- *  this or just change the file '.iotdb/iotdb.json'
+ *  Global IOT object. This will return
+ *  a singleton
  */
-var iot = new iotdb.IOT({
-    discover: true
-})
+var iot = iotdb.iot()
 
 /**
- *  This code is called every time a new Thing
- *  is discovered by the IOTDB object.
- *
- *  In this particular fragment:
- *  - Thing.pull asynchronously queries the Thing for
- *    it's current state
- *  - The 'on_change' function prints out the state
- *    every time it changes.
+ *  Connect to everything. Things will
+ *  be updated whenever there are new things.
  */
-iot.on_thing(function(iot, thing) {
-    thing.pull()
-    thing.on_change(function() {
-        console.log("+ thing.state", thing.state())
+var things = iot.connect()
+// var things = iot.connect('HueLight')
+// var things = iot.connect('WeMoSwitch')
+
+/** ---- everything below here is an example ----- **/
+
+/**
+ *  Example - makes list of Things that are
+ *  only WeMos named 'WeMo Switch 1'. Will
+ *  also turn them all on _whenever they are
+ *  discovered_
+ */
+var wemos = things
+    .with_model('WeMoSwitch')
+    .with_name('WeMo Switch 1')
+    .set(':on', true)
+
+/**
+ *  Example - callback invoked whenever 
+ *  a new Thing is discovered. We 
+ *  then setup some callbacks on that thing
+ */
+things.on_thing(function(thing) {
+    console.log("+ new thing", thing.thing_id())
+
+    /**
+     *  Example - callback is invoked whenever
+     *  the metadata for this thing changes
+     */
+    thing.on_meta(function(thing) {
+        console.log("+ meta changed", thing.meta().state())
     })
 })
 
 /**
- *  This code is called to allow you to explicitly 
- *  add Thing(s) to the IOTDB object. 
- *
- *  If you're writing code that's going to control
- *  Philips Hues or Belkin WeMos, you don't need 
- *  to do this. These are automatically discovered 
- *  by 'iot.discover()' and don't need to explicitly
- *  hooked up.
- *
- *  In the code sample below, 
+ *  Example - callback is invoked whenever
+ *  _any_ thing is changed
  */
-iot.on_register_things(function() {
-    /*
-    iot.discover({
-        model: "sample-light",
-        driver_iri: ":json",
-        initd: {
-            api: "http://playground-home.iotdb.org/kitchen/light",
-            mqtt_topic: "iot/kitchen/light/#",
-            mqtt_json: true
-        }
-    })
-
-    iot.discover({
-        model: "sample-rgb",
-        driver_iri: ":json",
-        initd: {
-            api: "http://playground-home.iotdb.org/basement/hue/1",
-            mqtt_topic: "iot/basement/hue/1/#",
-            mqtt_json: true
-        }
-    })
-    */
+things.on_change(function(thing, attribute, value) {
+    console.log("+ thing.changed", thing.thing_id(), attribute.get_code(), value)
 })
 
-
 /**
- *  This code is called when the number of Things
- *  "stabilizes". 
- *
- *  In this code fragment, we just dump out what we found
+ *  Example - change Hue Light color whenever
+ *  a door opens
  */
-iot.on_things(function(iot, things) {
-    iot._.dump_things(iot, things)
+var contacts = iot.connect("SmartThingsContact")
+// var contacts = things.with_model("SmartThingsContact")
+var lights = iot.connect("HueLight")
+// var lights = things.with_model("HueLight")
+    
+contacts.on_change(function(thing) {
+    lights.set(':color', thing.get(':open') ? 'red' : 'green')
 })
-
-
-/**
- *  This lets you access the 'iot' object if you 
- *  require this file into another Node JS file.
- */
-exports.iot = iot
-

@@ -27,12 +27,15 @@ var attribute = require("./attribute")
 var model = require("./model")
 var events = require('events');
 var util = require('util');
+var assert = require('assert');
 
 /* --- constants --- */
 var VERBOSE = true;
 var EVENT_THING_NEW = 'EVENT_THING_NEW'
 var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED'
 var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED'
+
+var KEY_SETTER = 'SETTER'
 
 /**
  *  An array for holding {@link Thing}s. When the
@@ -51,8 +54,8 @@ var ThingArray = function(paramd) {
 
     paramd = _.defaults(paramd, {})
 
-    self.depth = 0
     self.length = 0
+    self.transaction_depth = 0
 
     /*
      *  If paramd.persist is true, create an array for peristing commands
@@ -93,16 +96,53 @@ ThingArray.prototype.push = function(thing, paramd) {
     }
 
     /*
-     *  Do persistent commands
+     *  Do persistent commands. Always within a transaction
      */
-    if (self._persistds != null) {
+    if ((self._persistds != null) && (self._persistds.length > 0)) {
+        thing.start()
+
         for (var pi in self._persistds) {
             var pd = self._persistds[pi]
             pd.f.apply(thing, Array.prototype.slice.call(pd.av));
         }
+
+        thing.end()
     }
 
     return self
+}
+
+/**
+ *  @param {string} key - if used, only the latest command
+ *  will be persisted with this key
+ */
+ThingArray.prototype._persist_command = function(f, av, key) {
+    var self = this
+
+    if (self._persistds === null) {
+        return
+    }
+
+    var persistd = {
+        f: f,
+        av: av,
+        key: key
+    }
+
+    /*
+     *  If not in a transaction, there can only be one Setter
+     */
+    if ((self.transaction_depth === 0) && (key == KEY_SETTER)) {
+        for (var pi = 0; pi < self._persistds.length; pi++) {
+            var _persistd = self._persistds[pi]
+            if (_persistd.key == KEY_SETTER) {
+                self._persistds.splice(pi--, 1)
+            }
+        }
+        
+    }
+
+    self._persistds.push(persistd)
 }
 
 /**
@@ -115,25 +155,6 @@ ThingArray.prototype.splice = function() {
     return self
 }
 
-/**
- */
-ThingArray.prototype._persist_command = function(f, av) {
-    var self = this
-
-    if (self._persistds === null) {
-        return
-    }
-
-    if (self.depth === 0) {
-        self.perists = []
-    }
-
-    self._persistds.push({
-        f: f,
-        av: av
-    })
-}
-
 
 /**
  *  Call {@link Thing#start Model.start} on
@@ -143,10 +164,14 @@ ThingArray.prototype._persist_command = function(f, av) {
  */
 ThingArray.prototype.start = function() {
     var self = this;
+
+    self.transaction_depth++
+
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.start.apply(item, Array.prototype.slice.call(arguments));
     }
+
     return self;
 }
 
@@ -158,6 +183,10 @@ ThingArray.prototype.start = function() {
  */
 ThingArray.prototype.end = function() {
     var self = this;
+
+    self.transaction_depth--
+    assert.ok(self.transaction_depth >= 0)
+
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.end.apply(item, Array.prototype.slice.call(arguments));
@@ -170,7 +199,7 @@ ThingArray.prototype.end = function() {
  *  every item in the ThingArray.
  *
  *  @return {this}
- */
+ *
 ThingArray.prototype.get = function() {
     var self = this;
     for (var ii = 0; ii < self.length; ii++) {
@@ -179,6 +208,7 @@ ThingArray.prototype.get = function() {
     }
     return self;
 }
+ */
 
 /**
  *  Call {@link Thing#set Model.set} on
@@ -193,7 +223,7 @@ ThingArray.prototype.set = function() {
         item.set.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.set, arguments)
+    self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER)
 
     return self;
 }
@@ -211,7 +241,7 @@ ThingArray.prototype.update = function() {
         item.update.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.update, arguments)
+    self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER)
 
     return self;
 }
