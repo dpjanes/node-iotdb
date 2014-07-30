@@ -257,11 +257,14 @@ Driver.prototype.reachable = function() {
  */
 Driver.prototype.meta = function() {
     var self = this
-    var metad = _.deepCopy(self.driver_meta())
+
+    var metad = self.driver_meta()
+    metad = metad ? _.deepCopy(metad) : {}
 
     if (self.driver) {
         metad["iot:driver"] = self.driver
     }
+    metad["iot:reachable"] = self.reachable() ? true : false
 
     if (self.thing) {
         var paramd = {

@@ -9,6 +9,8 @@ var upnp = require("./upnp"),
 	xml2js = require('xml2js'),
 	UpnpDevice = require("./upnp-device").UpnpDevice;
 
+var _ = require('../../helpers')
+
 var TRACE = false;
 var DETAIL = false;
 
@@ -114,7 +116,9 @@ var UpnpControlPoint = function() {
 		}
 		
 		self.emit("device-lost", udn);
-        device.emit("device-lost")
+        if (device.emit) {
+            device.emit("device-lost")
+        }
 
 		delete self.devices[udn];
 	});
@@ -161,16 +165,16 @@ UpnpControlPoint.prototype.forget = function(device) {
 
     var udn = device.udn.replace(/^uuid:/, '')
     if (!self.devices[udn]) {
-        console.log("# UPnP:UpnpControlPoint.forget", "device not known!", device.udn)
+        console.log("# UPnP:UpnpControlPoint.forget", "device not known!", device.udn, _.keys(self.devices))
         return
     }
 
-    console.log("- UPnP:UpnpControlPoint.forget", "forgetting device", device.udb)
+    console.log("- UPnP:UpnpControlPoint.forget", "forgetting device", device.udn)
 
     delete self.devices[udn];
 
     self.emit("device-lost", device.udn);
-    device.emit("device-lost")
+    device.forget()
 }
 
 /**
@@ -187,7 +191,8 @@ UpnpControlPoint.prototype.scrub = function(ms) {
         var device = self.devices[di]
         var delta = now - device.last_seen
         if (delta > ms) {
-            console.log("- UPnP:UpnpControlPoint.scrub", "will forget device", "\n  age", delta, "\n  device", device.udn)
+            console.log("- UPnP:UpnpControlPoint.scrub", 
+                "will forget device", "\n  age", delta, "\n  device", device.udn)
             forgets.push(device)
         }
     }
@@ -258,7 +263,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
         }
 	});
 	req.on('error', function(e) {
-		console.log('- problem with request: ' + e.message);
+		console.log("# Upnp:UpnpControlPoint._getDeviceDetails", 'problem with request', e.message);
 	});
 	req.end();
 }

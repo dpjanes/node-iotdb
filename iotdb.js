@@ -895,22 +895,15 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
             console.log("- IOT._discover_nearby", "\n  driver.identityd", driver_identityd);
 
             var existing = self.thing_instanced[driver_identityd.thing_id];
-            if (existing && !existing.reachable()) {
-                existing = undefined
-            }
-            if (existing !== undefined) {
-                console.log("# IOT._discover_nearby", "thing already exists", driver_identityd.thing_id)
-                /*
-                if (existing && things) {
-                    console.log("BUT I ADDED IT TO THINGS", things.length)
-                    things.push(existing)
+            if (existing) {
+                if (existing.reachable()) {
+                    console.log("# IOT._discover_nearby", "thing already exists", driver_identityd.thing_id)
+                    return
                 }
-                */
-                return;
+            } else {
+                // placeholder
+                self.thing_instanced[driver_identityd.thing_id] = null;
             }
-
-            // placeholder
-            self.thing_instanced[driver_identityd.thing_id] = null;
 
             // find a thing to mate with this driver
             var found = false;
@@ -928,10 +921,7 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
 
                 found = true;
                 self._add_thing(thing, things)
-                /*
-                self.thing_instanced[driver_identityd.thing_id] = thing;
-                self.emit(EVENT_NEW_THING, thing);
-                */
+
                 break;
             }
 
@@ -984,16 +974,14 @@ IOT.prototype._add_thing = function(thing, things) {
 /**
  */
 IOT.prototype._driver_swap = function(existing_thing, new_thing) {
-    console.log("# IOT._driver_swap", 
+    console.log("- IOT._driver_swap", 
         "swapping the driver",
         "\n  driver_identityd", existing_thing.driver_identityd
     )
 
-    existing_thing.driver = new_thing.driver
-    new_thing.driver = null
+    existing_thing.driver_instance = new_thing.driver_instance
+    new_thing.driver_instance = null
     existing_thing.pull()
-
-    process.exit(0)
 }
 
 /**

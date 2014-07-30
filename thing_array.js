@@ -78,6 +78,21 @@ ThingArray.prototype._instanceof_ThingArray = true
 ThingArray.prototype.push = function(thing, paramd) {
     var self = this
 
+    /*
+     *  If the Thing is already in the array
+     *  we do nothing. There may be a deeper bug 
+     *  causing this to happen, but I can't find it
+     */
+    for (var ti = 0; ti < self.length; ti++) {
+        var t = self[ti];
+        if (t === thing) {
+            console.log("# ThingArray.push", "preventing same Thing from being pushed", thing.thing_id())
+            return
+        }
+    }
+
+    /*
+     */
     paramd = _.defaults(paramd, {
         emit_pushed: true,
         emit_new: true

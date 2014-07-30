@@ -26,6 +26,7 @@ var UpnpService = function(device, desc) {
 
 	this.device = device;
 
+    this.forgotten = false
 	this.serviceType = desc.serviceType[0];
 	this.serviceId   = desc.serviceId[0];
 	this.controlUrl  = desc.controlURL[0];
@@ -48,10 +49,25 @@ var UpnpService = function(device, desc) {
 util.inherits(UpnpService, EventEmitter);
 
 /**
+ *  forget about this device (called from upnp-device.forget)
+ */
+UpnpService.prototype.forget = function() {
+    var self = this
+
+    console.log("- UPnP:UpnpService.forget", this.serviceType, this.serviceId)
+    self.forgotten = true
+    // self.removeAllListeners()
+}
+
+/**
  * Call an action on a service.
  * args is a java object of name, value pairs. e.g. { BinaryState : v }
  */
 UpnpService.prototype.callAction = function(actionName, args, callback) {
+    if (this.forgotten) {
+        retrurn
+    }
+
 	if (TRACE) {
 		console.log("- UPnP:UpnpService.callAction", "calling action", actionName, JSON.stringify(args));
 	}
@@ -106,6 +122,10 @@ UpnpService.prototype.callAction = function(actionName, args, callback) {
 }
 
 UpnpService.prototype.subscribe = function(callback) {
+    if (this.forgotten) {
+        retrurn
+    }
+
 	var self = this;
 	// TODO determine IP address for service to callback on.
 	var callbackUrl = "http://" + this.device.localAddress + ":" + this.device.controlPoint.eventHandler.serverPort + "/listener";
@@ -124,7 +144,7 @@ UpnpService.prototype.subscribe = function(callback) {
 	};
 	
 	if (TRACE) {
-		console.log("- UPnP:UpnpService.subscribe", "subscribing: " + JSON.stringify(options));
+		console.log("- UPnP:UpnpService.subscribe", "subscribing", JSON.stringify(options));
 	}
 	
 	var req = http.request(options, function(res) {
@@ -155,6 +175,10 @@ UpnpService.prototype.subscribe = function(callback) {
  * 
  */
 UpnpService.prototype._resubscribe = function(sid, callback) {
+    if (this.forgotten) {
+        retrurn
+    }
+
 	var self = this;
 	var options = {
 	  	method  : "SUBSCRIBE",
@@ -167,6 +191,10 @@ UpnpService.prototype._resubscribe = function(sid, callback) {
 		"sid"      : sid,
 		"timeout"  : "Second-" + this.subscriptionTimeout,
 	};
+
+	if (TRACE && DETAIL) {
+		console.log("- UPnP:UpnpService.resubscribe", "resubscribing", JSON.stringify(options));
+	}
 	
 	var req = http.request(options, function(res) {
 		var buf = "";
@@ -279,17 +307,43 @@ var Subscription = function(service, sid, timeout) {
 
 Subscription.prototype._resubscribe = function() {
 	var self = this;
+
+    if (self.service.forgotten) {
+        try {
+            this.unsubscribe()
+        } catch (x) {
+        }
+
+        try {
+            self.service.device.controlPoint.eventHandler.removeSubscription(self);
+        } catch (x) {
+        }
+
+        clearTimeout(self.timer);
+        return
+    }
+
 	this.service._resubscribe(this.sid, function(err, buf) {
+        if (self.service.forgotten) {
+			clearTimeout(self.timer);
+            return
+        }
+
 		if (err) {
             console.log("# UPnP:Subscription._resubscribe", "ERROR: problem re-subscribing", err, "\n  ", buf);
-			// remove from eventhandler
-			self.service.device.controlPoint.eventHandler.removeSubscription(self);
+            try {
+                self.service.device.controlPoint.eventHandler.removeSubscription(self);
+            } catch (x) {
+            }
 			clearTimeout(self.timer);
+
+            console.log("# UPnP:Subscription._resubscribe", "attempting to subscribe from scratch")
+            self.service.subscribe(function(err, buf) {
+            })
 			
-            self.service.emit("failed", "resubscribe", err);
+            // self.service.emit("failed", "resubscribe", err);
 			// TODO maybe try a new subscription ???
-		}
-		else {
+		} else {
 			// cool
 			self.timer = setTimeout(function() { 
 				self._resubscribe();
@@ -304,6 +358,10 @@ Subscription.prototype.unsubscribe = function() {
 }
 
 Subscription.prototype.handleEvent = function(event) {
+    if (this.service.forgotten) {
+        return
+    }
+
 	if (TRACE && DETAIL) {
         console.log("# UPnP:Subscription.handleEvent", "subscription event", JSON.stringify(event));
 	}

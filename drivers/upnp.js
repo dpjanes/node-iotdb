@@ -82,9 +82,12 @@ UPnPDriver.prototype.discover = function(paramd, discover_callback) {
 
     var cp = UPnPDriver.cp()
 
-    cp.on("device", function(upnp_device) {
-        self._found_device(discover_callback, upnp_device);
-    });
+    if (!self.__subscribe_device) {
+        self.__subscribe_device =true
+        cp.on("device", function(upnp_device) {
+            self._found_device(discover_callback, upnp_device);
+        });
+    }
 
     // always search to speed up device discovery
     cp.search();

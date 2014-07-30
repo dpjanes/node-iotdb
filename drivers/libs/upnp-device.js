@@ -22,6 +22,8 @@ var UpnpDevice = function(controlPoint, uuid, location, desc, localAddress) {
 	
 	this.uuid = uuid;
 	this.udn = desc.UDN[0];
+
+    this.forgotten = false
     this.last_seen = (new Date()).getTime();
 	
 	this.location = location;
@@ -66,6 +68,39 @@ UpnpDevice.prototype.seen = function() {
 }
 
 /**
+ *  forget about this device (called from upnp.forget)
+ */
+UpnpDevice.prototype.forget = function() {
+    var self = this
+
+    if (!self.emit) {
+        return
+    }
+
+    self.forgotten = true
+    self.emit("device-lost")
+    // self.removeAllListeners()
+
+    for (var si in self.services) {
+        var service = self.services[si]
+        if (service && service.forget) {
+            service.forget()
+        }
+    }
+
+    for (var di in self.devices) {
+        var device = self.devices[di]
+        if (device && device.forget) {
+            device.forget()
+        }
+    }
+
+    // clear data
+	this.devices = {}
+	this.services = {}
+}
+
+/**
  * Get details of the device
  */
 UpnpDevice.prototype._getDeviceDetails = function(callback) {
@@ -99,6 +134,10 @@ UpnpDevice.prototype._getDeviceDetails = function(callback) {
 }
 
 UpnpDevice.prototype._handleDeviceInfo = function(desc) {
+    if (this.forgotten) {
+        return
+    }
+
 	this.deviceType = desc.deviceType[0];
 	
 	if (desc.deviceList) {
