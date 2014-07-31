@@ -405,7 +405,7 @@ IOT.prototype._check_requirements = function() {
  *  given to the first argument seen.
  *
  *  <p>
- *  The dictionary { cfg: self.keystored }} is
+ *  The dictionary { cfg: self.keystored } is
  *  always inserted at the end
  */
 IOT.prototype.format = function() {
@@ -2065,7 +2065,14 @@ IOT.prototype.connect = function(value) {
             return self.things({ persist: true }).with_model(value)
         }
     } else if (_.isObject(value)) {
+        for (var key in value) {
+            var v = value[key]
+            if (_.isString(v) && v.indexOf('{{') > -1) {
+                value[key] = self.format(v)
+            }
+        }
         self._connect(value, things)
+
     } else {
         console.log("# IOT.connect: unexpected argument type", value)
     }
