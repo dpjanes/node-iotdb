@@ -2034,8 +2034,7 @@ var _identifier_to_parts = function(identifier) {
 
     var splits = identifier;
     var splits = splits.replace(/([-_])/g, ' ')
-    // var splits = splits.replace(/([A-Z]+$)/g, ' $1')
-    var splits = splits.replace(/([A-Z]+)([A-Z][^A-Z]|$)/g, ' $1 $2')
+    var splits = splits.replace(/([A-Z]+)([A-Z][^A-Z0-9]|$)/g, ' $1 $2')
     var splits = splits.replace(/([A-Z]+)([^A-Z])/g, ' $1$2')
     var splits = splits.toLowerCase()
 

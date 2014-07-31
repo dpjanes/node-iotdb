@@ -25,7 +25,8 @@ var inputs = [
     "TestID",
     "Test_ID",
     "Test-ID",
-    "Good10Good"
+    "Good10Good",
+    "FirmataDHT11"
 ]
 /* --- tests --- */
 describe('test_helpers_identifier:', function(){
@@ -41,7 +42,8 @@ describe('test_helpers_identifier:', function(){
           'TestId',
           'TestId',
           'TestId' ,
-          'Good10Good'
+          'Good10Good',
+          'FirmataDht11'
           ];
         var gots = []
         for (var ii in inputs) {
@@ -61,7 +63,8 @@ describe('test_helpers_identifier:', function(){
           'test_id',
           'test_id',
           'test_id' ,
-          'good10_good'
+          'good10_good',
+          'firmata_dht11'
           ];
         var gots = []
         for (var ii in inputs) {
@@ -81,7 +84,8 @@ describe('test_helpers_identifier:', function(){
           'test-id',
           'test-id',
           'test-id',
-          'good10-good'
+          'good10-good',
+          'firmata-dht11'
           ];
         var gots = []
         for (var ii in inputs) {
