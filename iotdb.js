@@ -297,12 +297,32 @@ IOT.prototype.cfg_load_keystore = function() {
 IOT.prototype.cfg_get = function(key, otherwise) {
     var self = this;
 
+    var d = self.keystored
+    var subkeys = key.split('/')
+    var lastkey = subkeys[subkeys.length - 1]
+
+    for (var ski = 0; ski < subkeys.length - 1; ski++) {
+        var subkey = subkeys[ski];
+        var subd = d[subkey]
+        if (subd === undefined) {
+            return undefined
+        } else if (_.isObject(subd)) {
+            d = subd
+        } else {
+            return undefined
+        }
+    }
+
+    return d[lastkey]
+
+    /*
     var value = self.keystored[key]
     if (value === undefined) {
         return otherwise
     } else {
         return value
     }
+    */
 }
 
 /**

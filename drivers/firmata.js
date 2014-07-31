@@ -481,7 +481,37 @@ FirmataDriver.prototype.setup = function(paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
+    /* get values from settings */
+    if (paramd.thing) {
+        var iot = require('../iotdb').iot()
+        // var code = _.identifier_to_camel_case(paramd.thing.code)
+        var code = paramd.thing.code
+
+        if (paramd.initd.pin === undefined) {
+            var key = "firmata/" + code + "/pin"
+            var value = iot.cfg_get(key)
+            if (value !== undefined) {
+                paramd.initd.pin = parseInt(value)
+            }
+        }
+
+        if (paramd.initd.api === undefined) {
+            var key = "firmata/" + code + "/tty"
+            var value = iot.cfg_get(key)
+            if (value !== undefined) {
+                paramd.initd.api = value
+            } else {
+                var key = "firmata/tty"
+                var value = iot.cfg_get(key)
+                if (value !== undefined) {
+                    paramd.initd.api = value
+                }
+            }
+        }
+    }
+
     self._init(paramd.initd)
+
 
     if (!self.api) {
         console.log("# FirmataDriver.setup: self.api not set - can't do anything")
