@@ -112,7 +112,7 @@ var FirmataDriver = function(paramd) {
     self.verbose = paramd.verbose
     self.driver = _.expand(paramd.driver)
 
-    self.api = null
+    self.tty = null
     self.pindd = {}
     self.board = null
     self.sysex = 10
@@ -134,8 +134,8 @@ FirmataDriver.prototype = new driver.Driver;
 FirmataDriver.prototype._init = function(initd) {
     var self = this;
 
-    if (initd.api) {
-        self.api = initd.api
+    if (initd.tty) {
+        self.tty = initd.tty
     }
 
     if (initd.pins && initd.pins.length) {
@@ -241,8 +241,8 @@ FirmataDriver.prototype.identity = function(kitchen_sink) {
         var identityd = {}
         identityd["machine_id"] = machine_id
         identityd["driver"] = self.driver
-        if (self.api) {
-            identityd["api"] = self.api
+        if (self.tty) {
+            identityd["tty"] = self.tty
         }
         if (self.pindd) {
             var codes = Object.keys(self.pindd)
@@ -495,16 +495,16 @@ FirmataDriver.prototype.setup = function(paramd) {
             }
         }
 
-        if (paramd.initd.api === undefined) {
+        if (paramd.initd.tty === undefined) {
             var key = "firmata/" + code + "/tty"
             var value = iot.cfg_get(key)
             if (value !== undefined) {
-                paramd.initd.api = value
+                paramd.initd.tty = value
             } else {
                 var key = "firmata/tty"
                 var value = iot.cfg_get(key)
                 if (value !== undefined) {
-                    paramd.initd.api = value
+                    paramd.initd.tty = value
                 }
             }
         }
@@ -513,21 +513,21 @@ FirmataDriver.prototype.setup = function(paramd) {
     self._init(paramd.initd)
 
 
-    if (!self.api) {
-        console.log("# FirmataDriver.setup: self.api not set - can't do anything")
+    if (!self.tty) {
+        console.log("# FirmataDriver.setup: self.tty not set - can't do anything")
         return
     }
 
-    self.board = boardd[self.api]
+    self.board = boardd[self.tty]
     if (self.board === undefined) {
         console.log("- FirmataDriver.setup: create board",
-            "\n  api", self.api
+            "\n  tty", self.tty
         )
 
-        self.board = new firmata.Board(self.api, function(error) {
+        self.board = new firmata.Board(self.tty, function(error) {
             if (error) {
                 console.log("# FirmataDriver.setup/board: couldn't connect to board",
-                    "\n  api", self.api,
+                    "\n  tty", self.tty,
                     "\n  error", error
                 )
                 self.board.iotdb_ready = false
@@ -539,12 +539,12 @@ FirmataDriver.prototype.setup = function(paramd) {
             self.board.iotdb_queue.resume()
         })
 
-        self.board.iotdb_queue = new FIFOQueue("FirmataDriver:" + self.api);
+        self.board.iotdb_queue = new FIFOQueue("FirmataDriver:" + self.tty);
         if (!self.board.iotdb_ready) {
             self.board.iotdb_queue.pause()
         }
 
-        boardd[self.api] = self.board
+        boardd[self.tty] = self.board
     }
 
     self.queue = self.board.iotdb_queue
