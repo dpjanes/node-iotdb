@@ -253,7 +253,22 @@ if (ad._.length == 0) {
         }
     })
 
-    keystored[key] = value
+    var d = keystored
+    var subkeys = key.split('/')
+    var lastkey = subkeys[subkeys.length - 1]
+
+    for (var ski = 0; ski < subkeys.length - 1; ski++) {
+        var subkey = subkeys[ski];
+        var subd = d[subkey]
+        if (!_.isObject(subd)) {
+            subd = {}
+            d[subkey] = subd
+        }
+
+        d = subd
+    }
+
+    d[lastkey] = value
 
     fs.writeFile(filename, JSON.stringify(keystored, null, 2))
     console.log(name + ": added key/value to keystore",
