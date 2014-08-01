@@ -112,6 +112,8 @@ var FirmataDriver = function(paramd) {
     self.verbose = paramd.verbose
     self.driver = _.expand(paramd.driver)
 
+    self.firmata_ready = false
+
     self.tty = null
     self.pindd = {}
     self.board = null
@@ -534,15 +536,19 @@ FirmataDriver.prototype.setup = function(paramd) {
                 return;
             }
 
-            self.board.iotdb_ready = true
-            self.board.iotdb_sysex = 10;
-            self.board.iotdb_queue.resume()
         })
 
         self.board.iotdb_queue = new FIFOQueue("FirmataDriver:" + self.tty);
         if (!self.board.iotdb_ready) {
             self.board.iotdb_queue.pause()
         }
+
+        self.board.on('ready', function() {
+            self.board.iotdb_ready = true
+            self.board.iotdb_sysex = 10;
+            self.board.iotdb_queue.resume()
+        })
+
 
         boardd[self.tty] = self.board
     }
@@ -557,6 +563,27 @@ FirmataDriver.prototype.setup = function(paramd) {
     }
 
     return self;
+}
+
+/**
+ *  See {@link Driver#reachable}
+ */
+FirmataDriver.prototype.reachable = function() {
+    var self = this
+
+    if (!self.board) {
+        return false
+    }
+
+    if (!self.board.iotdb_ready) {
+        return false
+    }
+
+    if (!self.queue) {
+        return false
+    }
+
+    return true
 }
 
 /*
@@ -596,9 +623,15 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
 FirmataDriver.prototype.push = function(paramd) {
     var self = this;
 
-    if (!self.queue) {
-        console.log("# FirmataDriver.push", "no queue? may be in setup phase")
+    if (!self.reachable()) {
+        if (!self.__reachable_message) {
+            console.log("# FirmataDriver.push", "firmata not reachable just yet")
+            self.__reachable_message = true
+        }
+
         return
+    } else {
+        self.__reachable_message = undefined
     }
 
     console.log("- FirmataDriver.push", 

@@ -275,7 +275,6 @@ IOT.prototype.cfg_load_keystore = function() {
     // load all the oauth files - priority is given to first found
     var filenames = cfg.cfg_find(self.envd, self.initd.cfg_path, "keystore.json")
     filenames.reverse()
-    console.log("FILENAMES", filenames)
 
     cfg.cfg_load_json(filenames, function(paramd) {
         if (paramd.error) {
@@ -284,14 +283,6 @@ IOT.prototype.cfg_load_keystore = function() {
         }
 
         _.smart_extend(self.keystored, paramd.doc)
-        /*
-        for (var key in paramd.doc) {
-            if (self.keystored[key] === undefined) {
-                self.keystored[key] = paramd.doc[key]
-            }
-
-        }
-        */
     })
 
     self.ready_delta('keystored', -1)
