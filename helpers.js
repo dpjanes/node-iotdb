@@ -2147,6 +2147,35 @@ exports.defaults = function(paramd, defaultd) {
 }
 
 /**
+ *  Like extend, except dictionaries get merged.
+ *  This also only uses JSON-like params, functions
+ *  are not copied
+ */
+exports.smart_extend = function(od) {
+    each(slice.call(arguments, 1), function(xd) {
+        if (!exports.isObject(xd)) {
+            return
+        }
+
+        for (var key in xd) {
+            var xvalue = xd[key]
+            var ovalue = od[key]
+
+            if (exports.isObject(ovalue) && exports.isObject(xvalue)) {
+                exports.smart_extend(ovalue, xvalue)
+            } else if (xvalue === undefined) {
+            } else if (exports.isFunction(xvalue)) {
+            } else if (exports.isNaN(xvalue)) {
+            } else {
+                od[key] = xvalue
+            }
+        }
+    })
+
+    return od;
+};
+
+/**
  *  Get a 'code' (like a model_code) from a URL. Basically
  *  the last path component in either the hash or in the path itself
  *
