@@ -596,6 +596,11 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
 FirmataDriver.prototype.push = function(paramd) {
     var self = this;
 
+    if (!self.queue) {
+        console.log("# FirmataDriver.push", "no queue? may be in setup phase")
+        return
+    }
+
     console.log("- FirmataDriver.push", 
         "\n  driverd", paramd.driverd, 
         "\n  initd", paramd.initd)

@@ -277,6 +277,7 @@ ThingArray.prototype.pull = function() {
 
     /*
      *  Apply to new things
+     *  XXX - why isn't this using _persist_command
      */
     var persist = this._persistds !== null
     if (persist) {
@@ -284,6 +285,25 @@ ThingArray.prototype.pull = function() {
             item.pull.apply(item, Array.prototype.slice.call(arguments));
         })
     }
+
+    return self;
+}
+
+/**
+ *  Call {@link Thing#pull Model.tag} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.tag = function() {
+    var self = this;
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        item.tag.apply(item, Array.prototype.slice.call(arguments));
+    }
+
+    self._persist_command(model.Model.prototype.tag, arguments)
 
     return self;
 }

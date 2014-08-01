@@ -1707,6 +1707,21 @@ exports.ld_remove = function(d, key, value) {
     }
 }
 
+exports.ld_add = function(d, key, value) {
+    var existing = d[key];
+    if (existing === undefined) {
+        d[key] = value
+    } else if (exports.isArray(existing)) {
+        if (existing.indexOf(value) == -1) {
+            existing.push(value)
+        }
+    } else {
+        if (existing != value) {
+            d[key] = [ existing, value ]
+        }
+    }
+}
+
 /*
  *  From:
  *  http://stackoverflow.com/a/1573141/96338
@@ -2167,6 +2182,10 @@ exports.dump_things = function(iot, things) {
         console.log("  place-location:", meta.get("iot:place-location"));
         console.log("  place-room:", meta.get("iot:place-room"));
         console.log("  place-iri:", meta.get("iot:place"));
+
+        if (thing.initd.tag) {
+            console.log("  tags:", thing.initd.tag)
+        }
     }
 }
 

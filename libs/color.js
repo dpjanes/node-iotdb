@@ -48,26 +48,28 @@ Color.prototype.parseColor = function(value) {
 
     if (!value) {
         console.trace()
-        return
+        return self
     }
 
     var match = value.match(/^#?([0-9A-Za-z]{2})([0-9A-Za-z]{2})([0-9A-Za-z]{2})$/)
     if (match) {
         self.set_rgb_255(parseInt(match[1], 16), parseInt(match[2], 16), parseInt(match[3], 16));
-        return
+        return self
     }
 
     var match = value.match(/^hsl\(([.\d]+),([.\d]+),([.\d]+)\);*$/)
     if (match) {
         self.set_hsl(parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3]));
-        return
+        return self
     }
 
     var match = value.match(/^rgb\(([\d]+),([\d]+),([\d]+)\);*$/)
     if (match) {
         self.set_rgb_255(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-        return
+        return self
     }
+
+    return self
 }
 
 Color.prototype.set_rgb_1 = function(r, g, b) {
@@ -77,6 +79,8 @@ Color.prototype.set_rgb_1 = function(r, g, b) {
     if (g !== undefined) self.g = g;
     if (b !== undefined) self.b = b;
     self._rgb_to_hsl();
+
+    return self
 }
 
 Color.prototype.set_rgb_255 = function(r, g, b) {
@@ -88,6 +92,8 @@ Color.prototype.set_rgb_255 = function(r, g, b) {
     if (b !== undefined) self.b = b / 255.0;
 
     self._rgb_to_hsl();
+
+    return self
 }
 
 Color.prototype.set_hsl = function(h, s, l) {
@@ -97,6 +103,8 @@ Color.prototype.set_hsl = function(h, s, l) {
     if (s !== undefined) self.s = s;
     if (l !== undefined) self.l = l;
     self._hsl_to_rgb();
+
+    return self
 }
 
 Color.prototype.get_hex = function() {

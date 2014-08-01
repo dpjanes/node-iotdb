@@ -203,6 +203,9 @@ Model.prototype.freeze = function() {
  *  Tags are for locally identitfying devices
  */
 Model.prototype.has_tag = function(tag) {
+    return _.ld_contains(this.initd, "tag", tag)
+
+    /*
     var self = this;
 
     if (_.isArray(self.initd.tag) && (self.initd.tag.indexOf(tag) > -1)) {
@@ -212,6 +215,7 @@ Model.prototype.has_tag = function(tag) {
     } else {
         return false
     }
+    */
 }
 
 /**
@@ -1399,6 +1403,21 @@ Model.prototype.meta = function() {
     }
 
     return self.__meta_thing
+}
+
+/**
+ *  Add a tag to this Model. Tags are temporary
+ *  labels, they are not persisted to IOTDB 
+ *  (or the metadata in general).
+ *
+ *  @param {string} tag
+ */
+Model.prototype.tag = function(tag) {
+    var self = this
+
+    assert.ok(_.isString(tag))
+
+    _.ld_add(self.initd, "tag", tag)
 }
 
 /**
