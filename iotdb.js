@@ -69,8 +69,8 @@ exports.iot = function() {
             load_things: true,
             load_drivers: true,
             load_stores: true,
-            iotdb_device_get: true,
-            iotdb_device_create: false,
+            iotdb_thing_get: true,
+            iotdb_thing_create: false,
 
             end: null
         })
@@ -138,7 +138,7 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('on_register_things', 1)
     self.ready_delta('load_things', 1)
 
-    self.ready_delta('iotdb_device_get', 1)
+    self.ready_delta('iotdb_thing_get', 1)
     self.ready_delta('iotdb_places_get', 1)
 
     self.username = self.initd.username
@@ -170,7 +170,7 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('load_models', -1)
     self.ready_delta('on_register_things', -1)
     self.ready_delta('load_things', -1)
-    self.ready_delta('iotdb_device_get', -1)
+    self.ready_delta('iotdb_thing_get', -1)
     self.ready_delta('iotdb_places_get', -1)
     self.ready_delta('configure', -1)
 }
@@ -251,8 +251,8 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         load_models: false,
         load_things: false,
         iotdb_places_get: false,
-        iotdb_device_get: false,
-        iotdb_device_create: false,
+        iotdb_thing_get: false,
+        iotdb_thing_create: false,
 
         require_username: false,
         require_iotdb_ouath: false,
@@ -497,8 +497,8 @@ IOT.prototype.ready_delta = function(key, delta) {
         if ((key == 'load_things') && self.initd.load_things) {
             self._load_things()
         }
-        if ((key == 'iotdb_device_get') && self.initd.iotdb_device_get) {
-            self._iotdb_device_get()
+        if ((key == 'iotdb_thing_get') && self.initd.iotdb_thing_get) {
+            self._iotdb_thing_get()
         }
         if ((key == 'iotdb_places_get') && self.initd.iotdb_places_get) {
             self.iotdb_places_get()
@@ -1743,14 +1743,14 @@ IOT.prototype._build_attribute = function(attribute_iri) {
 
 /**
  *  Whenenver a new Thing is added, automatically
- *  look up its Device, Place and Mode info
+ *  look up its Thing, Place and Model info
  *
- *  If 'self.initd.auto_iotdb_device_create' is True,
+ *  If 'self.initd.iotdb_thing_create' is True,
  *  we auto-register a device
  *
  *  @protected
  */
-IOT.prototype._iotdb_device_get = function() {
+IOT.prototype._iotdb_thing_get = function() {
     var self = this;
 
     // console.log("C.1")
@@ -1761,18 +1761,18 @@ IOT.prototype._iotdb_device_get = function() {
         }
 
         var identity = thing.identity();
-        console.log("- IOT._iotdb_device_get",
+        console.log("- IOT._iotdb_thing_get",
             "\n  IRI", thing.initd.api_iri,
             "\n  thing_id", identity.thing_id,
             "\n  model_code", thing.code
         );
         self._ask_thing(thing, null, function(callbackd) {
-            console.log("- IOT._iotdb_device_get: _ask_thing/callbackd",
+            console.log("- IOT._iotdb_thing_get: _ask_thing/callbackd",
                 "\n  .iri", callbackd.thing_iri,
                 "\n  .deviced", callbackd.deviced,
                 "\n  .error", callbackd.error,
-                "\n  .auto_iotdb_device_create", self.initd.iotdb_device_create)
-            if (_.isEmpty(callbackd.deviced) && self.initd.iotdb_device_create) {
+                "\n  .iotdb_thing_create", self.initd.iotdb_thing_create)
+            if (_.isEmpty(callbackd.deviced) && self.initd.iotdb_thing_create) {
                 // console.log("C.5")
                 var inits = [];
                 for (var key in identity) {
@@ -1804,7 +1804,7 @@ IOT.prototype._iotdb_device_get = function() {
                     .type('json')
                     .send(ndeviced)
                     .end(function(result) {
-                        console.log("- IOT._iotdb_device_get: _ask_thing/auto_iotdb_device_create",
+                        console.log("- IOT._iotdb_thing_get: _ask_thing/iotdb_thing_create",
                             "\n  nthing_iri", nthing_iri,
                             "\n  body", result.body
                         )
