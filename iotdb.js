@@ -70,6 +70,7 @@ exports.iot = function() {
             load_drivers: true,
             load_stores: true,
             iotdb_device_get: true,
+            iotdb_device_create: false,
 
             end: null
         })

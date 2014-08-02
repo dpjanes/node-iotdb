@@ -142,22 +142,16 @@ TwitterDriver.prototype._helper_search = function(iot, search, callback) {
 
     console.log("+ TwitterDriver._helper_search")
 
-    var tag = "twitter-search-" + node_uuid.v4()
-
-    iot.on_thing_with_tag(tag, function(iot, thing) {
-        thing.on_change(function(thing, attributes) {
+    iot
+        .connect({
+            model: InternalTwitterMessage,
+            driver: ":twitter",
+            __internal: true,
+            search: search
+        })
+        .on_change(function(attributes) {
             callback(thing)
         })
-    })
-    iot.discover({
-        model: InternalTwitterMessage,
-        driver: ":twitter",
-        initd : {
-            __internal: true,
-            search: search,
-            tag: tag
-        }
-    })
 }
 
 TwitterDriver.prototype._helper_send = function(iot, text) {
@@ -165,35 +159,18 @@ TwitterDriver.prototype._helper_send = function(iot, text) {
 
     console.log("+ TwitterDriver._helper_send")
 
-    if (self.send_twitter) {
-        self.send_twitter.update({
-            text: text
-        })
-    } else {
-        var make = false
-        if (!self.send_tag) {
-            self.send_tag = "twitter-send-" + node_uuid.v4()
-            make = true
-        }
-
-        iot.on_thing_with_tag(self.send_tag, function(iot, thing) {
-            self.send_twitter = thing
-            self.send_twitter.update({
-                text: text
-            })
-        })
-
-        if (make) {
-            iot.discover({
+    if (!self.send_twitter) {
+        self.send_twitter = iot
+            .connect({
                 model: InternalTwitterMessage,
                 driver: ":twitter",
-                initd : {
-                    __internal: true,
-                    tag: self.send_tag
-                }
+                __internal: true
             })
-        }
     }
+
+    self.send_twitter.update({
+        text: text
+    })
 }
 
 
