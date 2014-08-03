@@ -136,18 +136,25 @@ var help = function(subcommand) {
         console.log("")
         console.log("Type '" + name + " help <subcommand>' for help on a specific subcommand.")
         console.log("")
-        console.log("Available subcommands are:")
-        console.log("  new-project      - create a new IOTDB project")
-        console.log("  update-project   - update an IOTDB project")
-        console.log("  upload-model     - upload a Model to IOTDB")
-        console.log("  download-model   - download a Model from IOTDB")
-        console.log("  jsonld-model     - print a Model's JSON-LD representation")
-        console.log("  configure-driver - configure a Driver (like a Philips Hue)")
+        console.log("Most important subcommands")
+        console.log("  oauth-iotdb      - add IOTDB OAuth info")
+        console.log("                     run once per folder or set globally for all") 
+        console.log("                     projects with '--global'")
         console.log("  machine-id       - assign a machine id")
+        console.log("                     run once per computer and you're done")
+        console.log("")
+        console.log("Other subcommands are:")
         console.log("  set              - set a value in the keystore")
-        console.log("  oauth-iotdb      - get OAuth info directly from IOTDB")
+        console.log("  configure-driver - configure a Driver (like a Philips Hue)")
+        console.log("  new-project      - create a new IOTDB project")
+        console.log("  update-project   - update an IOTDB project settings")
+        console.log("  upload-model     - upload a Model to IOTDB")
         console.log("  oauth-json       - store OAuth info using JSON record")
         console.log("  oauth-token      - store OAuth info if you have a token")
+        console.log("")
+        console.log("A few other subcommands")
+        console.log("  download-model   - download a Model from IOTDB")
+        console.log("  jsonld-model     - print a Model's JSON-LD representation")
         console.log("  camel-case       - convert arguments to CamelCase")
         console.log("  dash-case        - convert arguments to dash-case")
         console.log("  underscore-case  - convert arguments to underscore_case")
@@ -159,7 +166,9 @@ var help = function(subcommand) {
     console.log(" --global              : the global project directory, $HOME")
 }
 
-var ad = require('minimist')(process.argv.slice(2));
+var ad = require('minimist')(process.argv.slice(2), {
+    boolean: "global"
+});
 
 if (ad._.length && (ad._[0] == "machine-id")) {
     ad.global = true
@@ -201,8 +210,9 @@ var iotdb_nothingd = {
     discover: false,
     load_drivers: false,
     load_models: false,
-    iotdb_device_get: false,
-    iotdb_device_create: false
+    load_things: false,
+    iotdb_thing_get: false,
+    iotdb_thing_create: false
 }
 
 /**
@@ -315,39 +325,42 @@ if (ad._.length == 0) {
         }
     }
 
+    /*
     var p_discover = {
-        description: "Automatically ask IOTDB for device info [y/n]",
-        message: "If 'y', when devices are discovered, the software will " +
-            "query IOTDB.org for information such as what room it's in, a name, etc.",
-        pattern: /^[yn]/,
-        required: true
-    }
-    if (iotdbd.discover !== undefined) {
-        p_discover['default'] = iotdbd.discover ? 'y' : 'n'
-    }
-
-    var p_iotdb_device_get = {
-        description: "Automatically tell IOTDB about new devices [y/n]",
-        message: "If 'y', when devices are discovered and they're _not_ already " +
-            "in IOTDB.org, we'll add them. You can then use website to add additional info.",
-        pattern: /^[yn]/,
-        required: true
-    }
-    if (iotdbd.iotdb_device_get !== undefined) {
-        p_iotdb_device_get['default'] = iotdbd.iotdb_device_get ? 'y' : 'n'
-    }
-
-    var p_iotdb_device_create = {
         description: "Automatically discover devices on the LAN [y/n]",
         message: "If 'y', 'iot.discover()' will be called for you. Usually this will " +
             "discover things like WeMos, Hues, etc.",
         pattern: /^[yn]/,
         required: true
     }
-    if (iotdbd.iotdb_device_create !== undefined) {
-        p_iotdb_device_create['default'] = iotdbd.iotdb_device_create ? 'y' : 'n'
+    if (iotdbd.discover !== undefined) {
+        p_iotdb_thing_create['default'] = iotdbd.iotdb_thing_create ? 'y' : 'n'
+    }
+    */
+
+    var p_iotdb_thing_get = {
+        description: "Automatically tell IOTDB about new devices [y/n]",
+        message: "If 'y', when devices are discovered and they're _not_ already " +
+            "in IOTDB.org, we'll add them. You can then use website to add additional info.",
+        pattern: /^[yn]/,
+        required: true
+    }
+    if (iotdbd.iotdb_thing_get !== undefined) {
+        p_iotdb_thing_get['default'] = iotdbd.iotdb_thing_get ? 'y' : 'n'
     }
 
+    var p_iotdb_thing_create = {
+        description: "Automatically ask IOTDB for device info [y/n]",
+        message: "If 'y', when devices are discovered, the software will " +
+            "query IOTDB.org for information such as what room it's in, a name, etc.",
+        pattern: /^[yn]/,
+        required: true
+    }
+    if (iotdbd.iotdb_thing_create !== undefined) {
+        p_discover['default'] = iotdbd.discover ? 'y' : 'n'
+    }
+
+    /*
     var p_twitter = {
         description: "Make Twitter available [y/n]",
         message: "If 'y', 'iot.twitter' will be available",
@@ -359,26 +372,27 @@ if (ad._.length == 0) {
     } else {
         p_twitter['default'] = 'y'
     }
+    */
 
     if (is_development) {
         var schema = {
             properties: {
                 username: p_username,
                 hostname: p_hostname,
-                discover: p_discover,
-                iotdb_device_get: p_iotdb_device_get,
-                iotdb_device_create: p_iotdb_device_create,
-                twitter: p_twitter
+                // discover: p_discover,
+                iotdb_thing_get: p_iotdb_thing_get,
+                iotdb_thing_create: p_iotdb_thing_create,
+                // twitter: p_twitter
             }
         }
     } else {
         var schema = {
             properties: {
                 username: p_username,
-                discover: p_discover,
-                iotdb_device_get: p_iotdb_device_get,
-                iotdb_device_create: p_iotdb_device_create,
-                twitter: p_twitter
+                // discover: p_discover,
+                iotdb_thing_get: p_iotdb_thing_get,
+                iotdb_thing_create: p_iotdb_thing_create,
+                // twitter: p_twitter
             }
         }
     }
@@ -392,8 +406,8 @@ if (ad._.length == 0) {
             discover: false,
             load_drivers: true,
             load_models: true,
-            iotdb_device_get: false,
-            iotdb_device_create: false,
+            iotdb_thing_get: false,
+            iotdb_thing_create: false,
             twitter: false,
         }
 
@@ -406,11 +420,11 @@ if (ad._.length == 0) {
         if (resultd.discover === 'y') {
             iotdbd.discover = true
         }
-        if (resultd.iotdb_device_get === 'y') {
-            iotdbd.iotdb_device_get = true
+        if (resultd.iotdb_thing_get === 'y') {
+            iotdbd.iotdb_thing_get = true
         }
-        if (resultd.iotdb_device_create === 'y') {
-            iotdbd.iotdb_device_create = true
+        if (resultd.iotdb_thing_create === 'y') {
+            iotdbd.iotdb_thing_create = true
         }
         if (resultd.twitter === 'y') {
             iotdbd.twitter = true
@@ -433,23 +447,26 @@ if (ad._.length == 0) {
 } else if (ad._[0] == "oauth-iotdb") {
     var iot = new iotdb.IOT(iotdb_nothingd)
     iot.on_ready(function() {
+        var p = {}
         var schema = {
-            properties: {
-                iotdb: {
-                    message: "",
-                    required: true,
-                    default: iot.initd.iotdb_prefix
-                },
-                username: {
-                    message: "",
-                    required: true
-                },
-                password: {
-                    hidden: true,
-                    required: true
-                }
+            properties: p
+        }
+
+        if (is_development) {
+            p['iotdb'] = {
+                message: "",
+                required: true,
+                default: iot.initd.iotdb_prefix
             }
-        };
+        }
+        p['username'] = {
+            message: "",
+            required: true
+        }
+        p['password'] = {
+            hidden: true,
+            required: true
+        }
 
         prompt.message = "oauth-iotdb"
         prompt.start();
@@ -472,10 +489,19 @@ if (ad._.length == 0) {
                     if (result.ok) {
                         var resultd = result.body
                         // process.stdout.write(JSON.stringify(resultd, null, 2))
+
+                        /*
+                         *  Update oauth.json
+                         */
+                        {
                         var oauthdd = {}
 
                         var filename = ".iotdb/oauth.json"
                         cfg.cfg_load_json([ filename ], function(paramd) {
+                            if (!paramd.doc) {
+                                return
+                            }
+
                             for (var api_location in paramd.doc) {
                                 oauthdd[api_location] = paramd.doc[api_location]
                             }
@@ -490,6 +516,44 @@ if (ad._.length == 0) {
                         fs.writeFile(filename, JSON.stringify(oauthdd, null, 2))
 
                         console.log(name + ": added oauth info for:", key)
+                        }
+
+                        /*
+                         *  Update iotdb.json
+                         */
+                        {
+                            var d = {}
+
+                            var filename = ".iotdb/iotdb.json"
+                            cfg.cfg_load_json([ filename ], function(paramd) {
+                                if (!paramd.doc) {
+                                    return
+                                }
+
+                                d = paramd.doc
+                            })
+
+                            var any = false
+
+                            if (d.username === undefined) {
+                                d.username = resultd.username
+                                any = true
+                            }
+                            if (d.iotdb_thing_get === undefined) {
+                                d.iotdb_thing_get = true
+                                any = true
+                            }
+                            if (d.iotdb_thing_create === undefined) {
+                                d.iotdb_thing_create = true
+                                any = true
+                            }
+
+                            if (any) {
+                                fs.writeFile(filename, JSON.stringify(d, null, 2))
+
+                                console.log(name + ": updated", filename, "\n ", JSON.stringify(d, null, 2))
+                            }
+                        }
                     } else {
                         console.log("error", result.error)
                     }
@@ -796,11 +860,11 @@ if (ad._.length == 0) {
         envd: {
             IOTDB_PROJECT: process.cwd()
         },
-        discover: false,
-        load_drivers: true,
-        load_models: false,
-        iotdb_device_get: false,
-        iotdb_device_create: false,
+        // discover: false,
+        // load_drivers: true,
+        // load_models: false,
+        iotdb_thing_get: false,
+        iotdb_thing_create: false,
     })
     iot.on_ready(function() {
         var driver_iri = _.expand("iot-driver:" + ad._[1])

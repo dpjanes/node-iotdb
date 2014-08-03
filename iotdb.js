@@ -69,7 +69,7 @@ exports.iot = function() {
             load_things: true,
             load_drivers: true,
             load_stores: true,
-            iotdb_thing_get: true,
+            iotdb_thing_get: false,
             iotdb_thing_create: false,
 
             end: null
