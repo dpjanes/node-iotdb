@@ -401,12 +401,21 @@ IOT.prototype.cfg_get_oauthd = function(iri, otherwise) {
 IOT.prototype._check_requirements = function() {
     var self = this;
 
-    if (self.initd.require_username) {
-        if ((self.username === null) ||
-            (self.username === "") ||
-            (self.username === undefined) ||
-            (self.username === "nobody")) {
+    if ((self.username === null) ||
+        (self.username === "") ||
+        (self.username === undefined) ||
+        (self.username === "nobody")) {
+        if (self.initd.require_username) {
             throw "IOT._check_requirements: FAIL: require_username"
+        } else {
+            console.log("############################## ")
+            console.log("# IOT._check_requirements: no iot.username")
+            console.log("# - this is highly recommended (but not required")
+            console.log("# - run this command")
+            console.log("#")
+            console.log("#   iotdb-control iotdb-oauth")
+            console.log("#")
+            console.log("############################## ")
         }
     }
 
