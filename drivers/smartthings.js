@@ -136,12 +136,24 @@ SmartThingsDriver.prototype.setup = function(paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
+
+    var iot = require('../iotdb').iot()
+    if (!iot.username || (iot.username == "nobody")) {
+        console.log("############################## ")
+        console.log("# SmartThings.setup: iot.username is not assigned")
+        console.log("# - cannot use SmartThings with MQTT until this is done")
+        console.log("# - messages will not be received")
+        console.log("# - run this command and enter your iotdb username")
+        console.log("# iotdb-control update-project")
+        console.log("############################## ")
+    }
+
     if (paramd.initd) {
         self._init(paramd.initd)
     }
 
     if (self.type && self.id) {
-        self.mqtt_topic = "u/nobody/st/" + self.type + "/" + self.id;
+        self.mqtt_topic = "u/" + iot.username + "/st/" + self.type + "/" + self.id;
         self.mqtt_subscribe()
     }
 

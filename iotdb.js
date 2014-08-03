@@ -303,15 +303,20 @@ IOT.prototype.cfg_get = function(key, otherwise) {
         var subkey = subkeys[ski];
         var subd = d[subkey]
         if (subd === undefined) {
-            return undefined
+            return otherwise
         } else if (_.isObject(subd)) {
             d = subd
         } else {
-            return undefined
+            return otherwise
         }
     }
 
-    return d[lastkey]
+    var value = d[lastkey]
+    if (value === undefined) {
+        return otherwise
+    }
+
+    return value
 
     /*
     var value = self.keystored[key]
@@ -998,8 +1003,10 @@ IOT.prototype._driver_swap = function(existing_thing, new_thing) {
     )
 
     existing_thing.driver_instance = new_thing.driver_instance
-    new_thing.driver_instance = null
     existing_thing.pull()
+
+    new_thing.driver_instance.disconnect()
+    new_thing.driver_instance = null
 }
 
 /**
@@ -1048,7 +1055,7 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
             if (!driver_supported) {
                 console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)")
                 thing.driver_instance = null
-                driver.thing = null
+                driver.disconnect()
                 return
             }
 

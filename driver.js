@@ -59,6 +59,8 @@ Driver.prototype.driver_construct = function() {
     self.verbose = false;
     self.driver = null;     // should be redefined in subclasses
 
+    self.disconnected = false
+
     // MQTT built in
     self.mqtt_host = self.cfg_get('mqtt_host', null)
     self.mqtt_port = self.cfg_get('mqtt_port', 1883)
@@ -66,6 +68,7 @@ Driver.prototype.driver_construct = function() {
     self.mqtt_json = false
     self.mqtt_device = ""
 
+    self.mqtt_client = null
     self.mqtt_last_millis = 0
     self.mqtt_timer_id = 0
 }
@@ -194,6 +197,28 @@ Driver.prototype.setup = function(paramd) {
     }
 
     return self;
+}
+
+/**
+ *  Disconnect this driver. Clear up every connection,
+ *  it's not going to be used again.
+ *  <p>
+ *  Always chain to
+ *  driver.Driver.prototype.disconnect.call(self);
+ *
+ *  @return {this}
+ */
+Driver.prototype.disconnect = function() {
+    var self = this
+
+    self.disconnected = true
+
+    if (self.mqtt_client) {
+        self.mqtt_client.end()
+        self.mqtt_client = null
+    }
+
+    self.thing = null
 }
 
 /**
@@ -353,7 +378,8 @@ Driver.prototype.mqtt_subscribe = function() {
 
     self.mqtt_last_millis = (new Date).getTime()
 
-    var mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
+    self.mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
+    mqtt_client = self.mqtt_client
 
     console.log("- Driver.mqtt_subscribe:",
         "\n  mqtt_host", self.mqtt_host,
@@ -392,6 +418,9 @@ Driver.prototype.mqtt_subscribe = function() {
 Driver.prototype._mqtt_resubscribe = function() {
     var self = this
 
+    if (self.disconnected) {
+        return
+    }
     if (self.mqtt_timer_id) {
         return
     }
