@@ -127,6 +127,8 @@ SmartThingsDriver.prototype.identity = function(kitchen_sink) {
     return self.__identityd;
 }
 
+var __message_no_username = false
+
 /**
  *  See {@link Driver#setup Driver.setup}
  */
@@ -139,13 +141,21 @@ SmartThingsDriver.prototype.setup = function(paramd) {
 
     var iot = require('../iotdb').iot()
     if (!iot.username || (iot.username == "nobody")) {
-        console.log("############################## ")
-        console.log("# SmartThings.setup: iot.username is not assigned")
-        console.log("# - cannot use SmartThings with MQTT until this is done")
-        console.log("# - messages will not be received")
-        console.log("# - run this command and enter your iotdb username")
-        console.log("# iotdb-control update-project")
-        console.log("############################## ")
+        if (!__message_no_username) {
+            __message_no_username = true
+
+            console.log("############################## ")
+            console.log("# SmartThings.setup: iot.username is not assigned")
+            console.log("# - cannot use SmartThings with MQTT until this is done")
+            console.log("# - updates will not be received!")
+            console.log("# - run this command")
+            console.log("#")
+            console.log("#   iotdb-control iotdb-oauth")
+            console.log("#")
+            console.log("############################## ")
+        }
+
+        return
     }
 
     if (paramd.initd) {

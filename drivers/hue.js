@@ -171,6 +171,8 @@ HueDriver.prototype.discover = function(paramd, discover_callback) {
     cp.search();
 }
 
+var __message_configure = false
+
 /**
  *  This does the work of creating a new device and calling the callback
  *  (which is usally IOT)
@@ -193,11 +195,17 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
     var account_key = "HueDriver:" + upnp_device.uuid
     var account_value = self.cfg_get(account_key)
     if (!account_value) {
-        console.log("# HueDriver._foundDevice: This Philips Hue Hub is not set up yet")
-        console.log("  Please enter the following command and follow the instructions given")
-        console.log("")
-        console.log("  iotdb-control configure-driver hue --project=$HOME")
-        console.log("")
+        if (!__message_configure) {
+            __message_configure = true
+
+            console.log("############################## ")
+            console.log("# HueDriver._foundDevice: This Philips Hue Hub is not set up yet")
+            console.log("# Please enter the following command and follow the instructions given")
+            console.log("#")
+            console.log("#   iotdb-control configure-driver hue --project=$HOME")
+            console.log("#")
+            console.log("############################## ")
+        }
         return
     }
 
