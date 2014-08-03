@@ -419,6 +419,17 @@ IOT.prototype._check_requirements = function() {
         }
     }
 
+    if (!self.keystored.machine_id) {
+        console.log("############################## ")
+        console.log("# IOT._check_requirements: no 'machine_id'")
+        console.log("# - this is highly recommended, but only required for some drivers")
+        console.log("# - run this command")
+        console.log("#")
+        console.log("#   iotdb-control machine-id")
+        console.log("#")
+        console.log("############################## ")
+    }
+
     if (self.initd.require_iotdb_oauth) {
         if (_.isEmpty(self.iotdb_oauthd)) {
             console.log("# IOT._check_requrements",
