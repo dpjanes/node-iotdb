@@ -151,7 +151,7 @@ Model.prototype.isa = function(classf) {
 
 /**
  */
-Model.prototype.code = function() {
+Model.prototype.get_code = function() {
     return this.code;
 }
 
@@ -449,7 +449,7 @@ Model.prototype.set = function(find_key, new_value) {
 
     var rd = self._find(find_key);
     if (rd === undefined) {
-        console.log("# Model.set: ERROR: attribute '" + find_key + "' not found")
+        console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code)
         return self;
     }
 

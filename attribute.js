@@ -831,7 +831,7 @@ exports.Attribute = Attribute;
 exports.make = function(purpose, code, name) {
     assert.ok(_.isString(purpose))
     code = (code === undefined) ? purpose : code
-    code = code === undefined ? purpose : code
+    code = code === undefined ? purpose.replace(/^.*[.]/) : code
     name = name === undefined ? code.replace(/^:+/, '') : name
 
     var attribute = new Attribute();

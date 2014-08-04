@@ -600,11 +600,14 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
     if (machine_id === undefined) {
         machine_id = self.cfg_get("machine_id", null)
         if (!machine_id) {
+            console.log("############################## ")
             console.log("# FirmataDriver.discover: setup is not complete - cannot run")
-            console.log("  Please enter the following command first")
-            console.log("")
-            console.log("  iotdb-control machine-id")
-            console.log("")
+            console.log("# Please enter the following command first")
+            console.log("#")
+            console.log("#   iotdb-control machine-id")
+            console.log("#")
+            console.log("############################## ")
+
             return
         }
     } else if (!machine_id) {

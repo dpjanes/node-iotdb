@@ -297,6 +297,11 @@ if (ad._.length == 0) {
         envd.FILE_JS = 'project.js'
     }
 
+    if (ad._.length) {
+        console.log("use --project <project> to specify the project name")
+        process.exit(1)
+    }
+
     // load existing data
     var iotdbd = {}
     cfg.cfg_load_json([ envd.FILE_IOTDB ], function(paramd) {
