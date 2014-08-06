@@ -47,11 +47,17 @@ then
         python -c "
 import json
 
+## dependency on iotdb-models latest version
+filename = '../iotdb-models/package.json'
+jd = json.load(open(filename))
+models_version = jd['version']
+
 filename = 'package.json'
 jd = json.load(open(filename))
 versions = jd['version'].split('.')
 versions[-1] = '%d' % ( int(versions[-1]) + 1, )
 jd['version'] = '.'.join(versions)
+jd['dependencies']['iotdb-models'] = '>=%s' % models_version
 json.dump(jd, open(filename, 'w'), sort_keys=True, indent=4)
 print 'new package version:', jd['version']
 " || exit 1

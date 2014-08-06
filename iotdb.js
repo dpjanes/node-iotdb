@@ -62,9 +62,9 @@ exports.instance = null;
 
 /**
  */
-exports.iot = function() {
+exports.iot = function(paramd) {
     if (exports.instance == null) {
-        new IOT({
+        paramd = _.defaults(paramd, {
             load_models: true,
             load_things: true,
             load_drivers: true,
@@ -74,6 +74,7 @@ exports.iot = function() {
 
             end: null
         })
+        new IOT(paramd)
     }
 
     return exports.instance
@@ -1857,7 +1858,7 @@ IOT.prototype._load_drivers = function() {
                 "\n  filename", paramd.filename,
                 "\n  error", paramd.error,
                 "\n  exception", paramd.exception,
-                "\n  stack", paramd.exception.stack
+                "\n  stack", paramd.exception ? paramd.exception.stack : null
                 )
             return
         }
