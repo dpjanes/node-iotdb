@@ -113,14 +113,16 @@ TwitterDriver.prototype.register = function(iot) {
 
     driver.Driver.prototype.register.call(self, iot);
 
-    twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com")
-    if (!twitter_oauthd) {
+    twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com", null)
+    if (twitter_oauthd == null) {
+        console.log("############################## ")
         console.log("# TwitterDriver._setup_poll: no OAuth information found for Twitter")
-        console.log("  This means we cannot access twitter until this is set up")
-        console.log("")
-        console.log("  Please follow the instructions at:")
-        console.log("  https://iotdb.org/docs/node/twitter")
-        console.log("")
+        console.log("# - This means we cannot access twitter until this is set up")
+        console.log("#")
+        console.log("# - Please follow the instructions at:")
+        console.log("#   https://iotdb.org/docs/node/twitter")
+        console.log("#")
+        console.log("############################## ")
         return
     }
     

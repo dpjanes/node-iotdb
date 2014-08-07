@@ -202,7 +202,7 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
             console.log("# HueDriver._foundDevice: This Philips Hue Hub is not set up yet")
             console.log("# Please enter the following command and follow the instructions given")
             console.log("#")
-            console.log("#   iotdb-control configure-driver hue --project=$HOME")
+            console.log("#   iotdb-control configure-driver hue --global")
             console.log("#")
             console.log("############################## ")
         }

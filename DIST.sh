@@ -35,15 +35,6 @@ then
         fi
         mkdir "${NPM_IOTDB_DST}" || exit 1
 
-        tar cf - \
-            --exclude "xx*" \
-            --exclude "yy*" \
-            README.md \
-            LICENSE.txt \
-            *.js *.json \
-            libs/*js drivers/*js drivers/libs/*.js bin/data/* bin/iotdb-control |
-        ( cd "${NPM_IOTDB_DST}" && tar xvf - )
-
         python -c "
 import json
 
@@ -61,6 +52,15 @@ jd['dependencies']['iotdb-models'] = '>=%s' % models_version
 json.dump(jd, open(filename, 'w'), sort_keys=True, indent=4)
 print 'new package version:', jd['version']
 " || exit 1
+
+        tar cf - \
+            --exclude "xx*" \
+            --exclude "yy*" \
+            README.md \
+            LICENSE.txt \
+            *.js *.json \
+            libs/*js drivers/*js stores/*js drivers/libs/*.js bin/data/* bin/iotdb-control |
+        ( cd "${NPM_IOTDB_DST}" && tar xvf - )
 
         ## cp dist/*.* "${NPM_IOTDB_DST}" || exit 1
 

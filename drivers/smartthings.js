@@ -98,7 +98,17 @@ SmartThingsDriver.prototype.register = function(iot) {
 
     if (st == null) {
         st = new SmartThings()
-        st.load_settings(iot.cfg_get_oauthd("https://graph.api.smartthings.com/"))
+
+        var oauthd = iot.cfg_get_oauthd("https://graph.api.smartthings.com/", null)
+        if (oauthd == null) {
+            console.log("############################## ")
+            console.log("# SmartThingsDriver.register: SmartThings not configured")
+            console.log("# (instructions coming)")
+            console.log("############################## ")
+            return
+        }
+
+        st.load_settings(oauthd)
         st.request_endpoint()
     }
 }

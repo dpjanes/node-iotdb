@@ -371,10 +371,10 @@ IOT.prototype.cfg_load_oauth = function() {
     self.iotdb_oauth_key = self.username.toLowerCase() + "@" + node_url.parse(self.initd.iotdb_prefix).host
     self.iotdb_oauthd = self.oauthdd[self.iotdb_oauth_key]
     if (_.isEmpty(self.iotdb_oauthd)) {
+        console.log("# IOT.cfg_load_oauth: no IOTDB OAuth info", "\n  username", self.iotdb_oauth_key)
+    } else {
         console.log("- IOT.cfg_load_oauth: IOTDB OAuth info discovered")
         self.iotdb_oauthd = {}
-    } else {
-        console.log("# IOT.cfg_load_oauth: no IOTDB OAuth info")
     }
 
     self.ready_delta('oauthd', -1)
@@ -414,7 +414,7 @@ IOT.prototype._check_requirements = function() {
             console.log("# - this is highly recommended (but not required")
             console.log("# - run this command")
             console.log("#")
-            console.log("#   iotdb-control iotdb-oauth")
+            console.log("#   iotdb-control iotdb-oauth --global")
             console.log("#")
             console.log("############################## ")
         }

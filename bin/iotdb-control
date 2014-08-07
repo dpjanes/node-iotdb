@@ -297,7 +297,7 @@ if (ad._.length == 0) {
         envd.FILE_JS = 'project.js'
     }
 
-    if (ad._.length) {
+    if (ad._.length > 1) {
         console.log("use --project <project> to specify the project name")
         process.exit(1)
     }
@@ -476,6 +476,9 @@ if (ad._.length == 0) {
         prompt.message = "oauth-iotdb"
         prompt.start();
         prompt.get(schema, function (err, result) {
+            if (!result.iotdb) {
+                result.iotdb = iot.initd.iotdb_prefix
+            }
             var iri = result.iotdb + "/" + result.username + "/apps/"
             // console.log("HERE:A", iri)
             unirest
@@ -866,8 +869,9 @@ if (ad._.length == 0) {
             IOTDB_PROJECT: process.cwd()
         },
         // discover: false,
-        // load_drivers: true,
-        // load_models: false,
+        load_drivers: true,
+        load_models: false,
+        load_things: false,
         iotdb_thing_get: false,
         iotdb_thing_create: false,
     })
@@ -876,17 +880,17 @@ if (ad._.length == 0) {
         var found = false;
 
         for (var bi = 0; bi < iot.driver_exemplars.length; bi++) {
-            var driver = iot.driver_exemplars[bi];
-            var identityd = driver.identity()
+            var driver_exemplar = iot.driver_exemplars[bi];
+            var identityd = driver_exemplar.identity()
             if (!identityd) {
                 continue
             }
-            if (identityd.driver_iri != driver_iri) {
+            if (identityd.driver != driver_iri) {
                 continue
             }
 
             console.log("+ NOTE: you may have to ^C out of this after we're finished")
-            driver.configure(ad, function(updated) {
+            driver_exemplar.configure(ad, function(updated) {
                 for (var key in updated) {
                     keystored[key] = updated[key]
                 }
