@@ -210,26 +210,10 @@ ThingArray.prototype.end = function() {
 }
 
 /**
- *  Call IOT.connect() and join all the resulting 
- *  items into this ThingArray. This lets several
- *  connect() calls be chained.
- *
- *  <pre>
-    things = iot
-       .connect('SomeThing')
-       .connect('AnotherThing')
-
-    things = iot
-        .connect('HueLight')
-        .with_name('Hue Light 1')
-        .connect('WeMoSwitch')
-   </pre>
- *
- *  @return {this}
+ *  Merge another array into this one
  */
-ThingArray.prototype.connect = function() {
+ThingArray.prototype.merge = function(new_items) {
     var self = this
-    var iot = require('./iotdb').iot()
 
     var _merger = function(srcs, out_items) {
         /**
@@ -281,17 +265,12 @@ ThingArray.prototype.connect = function() {
     }
 
     /*
-     *  Do the actual connect
-     */
-    var connect_items = iot.connect.apply(iot, Array.prototype.slice.call(arguments));
-
-    /*
-     *  Merge right now ... 'out_items' is what is returned, not 'connect_items'
+     *  Merge (XXX: not sure if should always be persist)
      */
     var out_items = new ThingArray({ persist: true })
     var srcs = [
         self,
-        connect_items
+        new_items
     ]
 
     _merger(srcs, out_items)
@@ -311,6 +290,31 @@ ThingArray.prototype.connect = function() {
     }
 
     return out_items;
+}
+
+/**
+ *  Call IOT.connect() and join all the resulting 
+ *  items into this ThingArray. This lets several
+ *  connect() calls be chained.
+ *
+ *  <pre>
+    things = iot
+       .connect('SomeThing')
+       .connect('AnotherThing')
+
+    things = iot
+        .connect('HueLight')
+        .with_name('Hue Light 1')
+        .connect('WeMoSwitch')
+   </pre>
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.connect = function() {
+    var self = this
+    var iot = require('./iotdb').iot()
+
+    return  self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
 }
 
 /**
