@@ -210,20 +210,108 @@ ThingArray.prototype.end = function() {
 }
 
 /**
- *  Call {@link Thing#get Model.get} on
- *  every item in the ThingArray.
+ *  Call IOT.connect() and join all the resulting 
+ *  items into this ThingArray. This lets several
+ *  connect() calls be chained.
+ *
+ *  <pre>
+    things = iot
+       .connect('SomeThing')
+       .connect('AnotherThing')
+
+    things = iot
+        .connect('HueLight')
+        .with_name('Hue Light 1')
+        .connect('WeMoSwitch')
+   </pre>
  *
  *  @return {this}
- *
-ThingArray.prototype.get = function() {
-    var self = this;
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.get.apply(item, Array.prototype.slice.call(arguments));
-    }
-    return self;
-}
  */
+ThingArray.prototype.connect = function() {
+    var self = this
+    var iot = require('./iotdb').iot()
+
+    var _merger = function(srcs, out_items) {
+        /**
+         *  Existing things
+         */
+        var oidd = {}
+
+        for (var oi = 0; oi < out_items.length; oi++) {
+            var o = out_items[oi]
+            oidd[o.thing_id()] = 1
+        }
+
+        /**
+         *  New things, from any of the srcs
+         */
+        for (var si in srcs) {
+            var src = srcs[si]
+
+            for (var ii = 0; ii < src.length; ii++) {
+                var thing = src[ii];
+                var thing_id = thing.thing_id()
+
+                if (oidd[thing_id]) {
+                    delete oidd[thing_id]
+                } else {
+                    out_items.push(thing, { emit_pushed: false })
+                }
+            }
+        }
+
+        /**
+         *  remove things that no longer match
+         */
+        for (var oi = 0; oi < out_items.length; oi++) {
+            var o = out_items[oi]
+            if (!oidd[o.thing_id()]) {
+                continue
+            }
+
+            out_items.splice(oi--, 1)
+        }
+
+        /*
+         *  notify downstream - note that we always do this because
+         *  even though this list may not have changed, filters 
+         *  downstream may have changed
+         */
+        out_items.things_changed()
+    }
+
+    /*
+     *  Do the actual connect
+     */
+    var connect_items = iot.connect.apply(iot, Array.prototype.slice.call(arguments));
+
+    /*
+     *  Merge right now ... 'out_items' is what is returned, not 'connect_items'
+     */
+    var out_items = new ThingArray({ persist: true })
+    var srcs = [
+        self,
+        connect_items
+    ]
+
+    _merger(srcs, out_items)
+
+    /*
+     *  Persist the merging
+     */
+    for (var si in srcs) {
+        var src = srcs[si]
+        if (src._persistds === null) {
+            continue
+        }
+
+        events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, function() {
+            _merger(srcs, out_items)
+        })
+    }
+
+    return out_items;
+}
 
 /**
  *  Call {@link Thing#set Model.set} on
