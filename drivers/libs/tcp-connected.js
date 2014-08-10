@@ -184,8 +184,9 @@ TCPConnected.prototype.TurnOnRoomByName = function (name){
 }
 
 TCPConnected.prototype.TurnOffRoomByName = function (name, cb){
-	console.log("Turn Off Room");
-	rid = this.GetRIDByName(name);
+    var self = this
+	// console.log("Turn Off Room");
+	var rid = this.GetRIDByName(name);
 	
 	var RoomCommand = util.format(RoomSendCommand,rid,0);
 	var payload = util.format(RequestString,'RoomSendCommand',encodeURIComponent(RoomCommand));
