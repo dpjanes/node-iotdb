@@ -173,12 +173,43 @@ TCPConnectedDriver.prototype.push = function(paramd) {
         "\n  initd", paramd.initd)
 
     var cp = TCPConnectedDriver.cp();
+    var pulled = null
 
-    if (paramd.driverd.on) {
+    if (paramd.driverd.brightness === undefined) {
+    } else if (paramd.driverd.brightness > 0) {
+        if (!paramd.driverd.on) {
+            paramd.driverd.on = true
+
+            pulled = {
+                on: true
+            }
+        }
+    } else if (paramd.driverd.brightness === 0) {
+        if (paramd.driverd.on !== false) {
+            paramd.driverd.on = false
+
+            pulled = {
+                on: false
+            }
+        }
+    }
+
+    if (paramd.driverd.brightness !== undefined) {
+        var b = paramd.driverd.brightness * 100
+        b = Math.min(100, b)
+        b = Math.max(0, b)
+        cp.SetRoomLevelByName(self.room.name, b)
+    }
+
+    if (paramd.driverd.on === undefined) {
+    } else if (paramd.driverd.on === true) {
         cp.TurnOnRoomByName(self.room);
-        cp.SetRoomLevelByName(self.room.name, 100);
-    } else {
+    } else if (paramd.driverd.on === false) {
         cp.TurnOffRoomByName(self.room);
+    }
+
+    if (pulled) {
+        self.pulled(pulled)
     }
 
     return self;
