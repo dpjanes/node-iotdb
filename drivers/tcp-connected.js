@@ -57,6 +57,9 @@ var TCPConnectedDriver = function(paramd) {
     if (paramd && paramd.metad) {
         self.metad = _.extend(paramd.metad)
     }
+    if (self.name) {
+        self.metad[_.expand("iot:name")] = self.name
+    }
     self.metad[_.expand("schema:manufacturer")] = "http://www.tcpi.com/"
 
     return self;
