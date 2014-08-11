@@ -177,7 +177,7 @@ ModelMaker.prototype.product = function(value) {
 /**
  */
 ModelMaker.prototype.facet = function(_value) {
-    this.__facets.push(_.expand(_value, "iot:facet"))
+    this.__facets.push(_.expand(_value, "iot-facet:"))
     return this;
 }
 
@@ -569,6 +569,7 @@ ModelMaker.prototype.make = function() {
         this.__driver_setup = self.__driver_setup;
         this.__driver_in = self.__driver_in;
         this.__driver_out = self.__driver_out;
+        this.__facets = self.__facets;
         if (paramd.driver_identity !== undefined) {
             this.driver_identityd = _.identity_expand(paramd.driver_identity);
         } else if (paramd.driver !== undefined) {

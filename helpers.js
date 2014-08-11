@@ -1722,6 +1722,14 @@ exports.ld_add = function(d, key, value) {
     }
 }
 
+exports.ld_extend = function(d, key, values) {
+    for (var vi in values) {
+        var value = values[vi]
+        exports.ld_add(d, key, value)
+    }
+}
+
+
 /*
  *  From:
  *  http://stackoverflow.com/a/1573141/96338

@@ -580,33 +580,19 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
                 return false
             }
             continue
+        } else {
+            dpredicate = _.expand(dpredicate);
         }
 
-        // dpredicate = _.expand(dpredicate);
+
         var value = meta.get(dpredicate)
-        if (value != dobject) {
-            return false
+        if (value === undefined) {
+            return false;
+        } else if (_.isArray(value)) {
+            return value.indexOf(dobject) > -1;
+        } else {
+            return value == dobject;
         }
-        
-        /* XXX BROKEN FIX */
-        /*
-        if (dpredicate == _.expand("iot:place-placement")) {
-            continue
-        }
-        */
-
-        /*
-        var subject_url = thing_thing_iri;
-        if (place_predicates.indexOf(dpredicate) > -1) {
-            subject_url = thing_place_iri;
-        }
-        
-        var is_contained = iot.gm.contains_triple(subject_url, dpredicate, dobject)
-        console.log(subject_url, dpredicate, dobject, is_contained);
-        if (!is_contained) {
-            return false
-        }
-         */
     }
 
     return true
@@ -736,10 +722,7 @@ ThingArray.prototype.with_tag = function(tag) {
 }
 
 ThingArray.prototype.with_facet = function(facet) {
-    if (facet.substring(0, 1) == '_') {
-        facet = "iot-facet:" + facet.substring(1)
-    }
-    return this.filter({ "iot:facet" : _.expand(facet) })
+    return this.filter({ "iot:facet" : _.expand(facet, "iot-facet:") })
 }
 
 ThingArray.prototype.with_driver = function(driver) {

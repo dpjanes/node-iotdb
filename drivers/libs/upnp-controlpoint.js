@@ -240,8 +240,12 @@ UpnpControlPoint.prototype._getDeviceDetails = function(udn, location, callback)
 				return;
 			}
 			xml2js.parseString(resData, function(err, result) {
+                if (!result) {
+                    console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "!result (not a big issue)");
+                    return;
+                }
                 if (!result.root) {
-                    console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "result.root (not a big issue)");
+                    console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "!result.root (not a big issue)");
                     return;
                 }
 
