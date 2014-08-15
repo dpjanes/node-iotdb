@@ -39,6 +39,9 @@ var VERBOSE = true;
  *  - Dweet.io
  */
 var Store = function() {
+    var self = this
+
+    self.things = null
 }
 
 /**
@@ -90,10 +93,28 @@ Store.prototype.track = function(paramd) {
         console.log("# Store.track", "impossible state")
         assert(0)
     }
+
+    /*
+     *  Magically track changes to the ThingArray
+     */
+    self.things = paramd.things.filter()
+    self.things._things_changed  = self.things.things_changed
+    self.things.things_changed = function() {
+        self.things._things_changed()
+        self.things_changed()
+    }
     
     console.log("# Store.track: NOT IMPLEMENETED", paramd)
 }
 
+/*
+ *  This is called whenever underlying things are changed.
+ *  This is magically hooked up in 'track'
+ */
+Store.prototype.things_changed = function() {
+    var self = this
+    console.log("# Store.track", "THINGS CHANGED", self.things.length)
+}
 
 /*
  *  API
