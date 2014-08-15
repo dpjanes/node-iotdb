@@ -58,7 +58,7 @@ TCPConnected.prototype._request = function(payload, callback) {
         .send(payload)
         .end(function(result) {
             if (!result.ok) {
-                console.log("# TCPConnected._request", "error", error)
+                console.log("# TCPConnected._request", "error", result.error)
                 callback(result.error, null)
             } else if (result.body) {
                 xml2js.parseString(result.body, function(error, result) {
@@ -106,18 +106,18 @@ TCPConnected.prototype.GetState = function (cb){
 	var payload = util.format(RequestString,'GWRBatch',encodeURIComponent(GetStateString));
 
     self._request(payload, function(error, xml) {
-        self.rooms = xml['gwrcmd']['gdata']['gip']['room'];
-        if (typeof(self.rooms["rid"]) !== 'undefined'){
-            self.rooms = [ self.rooms ];
+        if (xml) {
+            try {
+                self.rooms = xml['gwrcmd']['gdata']['gip']['room'];
+                if (typeof(self.rooms["rid"]) !== 'undefined'){
+                    self.rooms = [ self.rooms ];
+                }
+            }
+            catch (err) {
+                var error = {error:'Unkown Error'}
+            }
         }
-        if (error) {
-            return cb(error);
-        }
-        try {
-            var state = result['s:Body']['u:GetBinaryStateResponse'].BinaryState
-            } catch (err) {
-            var error = {error:'Unkown Error'}
-        }
+
         cb(error||null,self.rooms);
     })
 }

@@ -2356,12 +2356,26 @@ var _format = function(template, valueds) {
 
 /**
  */
-exports.instanceof_ThingArray = function(o) {
+exports.isThingArray = function(o) {
     if (o === undefined) {
         return false
     } else if (o === null) {
         return false
     } else if (o._instanceof_ThingArray) {
+        return true
+    } else {
+        return false
+    }
+}
+
+/**
+ */
+exports.isModel = function(o) {
+    if (o === undefined) {
+        return false
+    } else if (o === null) {
+        return false
+    } else if (o.Model) {
         return true
     } else {
         return false

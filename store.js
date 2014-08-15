@@ -22,8 +22,9 @@
 
 "use strict"
 
+var assert = require('assert')
 var _ = require("./helpers")
-var attribute = require("./attribute")
+var ThingArray = require("./thing_array").ThingArray
 
 /* --- constants --- */
 var VERBOSE = true;
@@ -44,10 +45,50 @@ var Store = function() {
  *  Track all changes to the thing(s) using the store
  */
 Store.prototype.track = function(paramd) {
-    if (_.isObject(paramd) && paramd.Model) {
+    var self = this
+
+    /*
+     *  Bash arguments - phase 1
+     */
+    if (_.isModel(paramd)) {
         paramd = {
-            thing: paramd
+            things: [ paramd ]
         }
+    } else if (_.isThingArray(paramd)) {
+        paramd = {
+            things: paramd
+        }
+    } else if (_.isArray(paramd)) {
+        paramd = {
+            things: paramd
+        }
+    } else if (paramd.thing) {
+        paramd.things = [ paramd.thing ]
+        delete paramd["thing"]
+    } else if (paramd.things) {
+    } else {
+        console.log("# Store.track", "expected 'paramd.things'")
+        return
+    }
+
+    /*
+     *  Bash arguments - phase 2
+     */
+    assert.ok(paramd.things !== undefined)
+
+    var src = null
+    
+    if (_.isThingArray(paramd.things)) {
+        src = paramd
+    } else if (_.isArray(paramd)) {
+        src = new ThingArray()
+        for (var ti in paramd) {
+            src.push(paramd[ti])
+        }
+        paramd = {}
+    } else {
+        console.log("# Store.track", "impossible state")
+        assert(0)
     }
     
     console.log("# Store.track: NOT IMPLEMENETED", paramd)

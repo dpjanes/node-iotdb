@@ -37,7 +37,7 @@ var DweetStore = function(paramd) {
 }
 
 DweetStore.prototype = new store.Store;
-DweetStore.prototype.store = "iot-store:dweet.io"
+DweetStore.prototype.store_id = "iot-store:dweet.io"
 
 /*
  *  API

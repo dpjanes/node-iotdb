@@ -827,8 +827,8 @@ IOT.prototype.register_driver = function(driver) {
 IOT.prototype.register_store = function(store_class) {
     var self = this;
 
-    self.store_instanced[_.expand(store_class.prototype.store, "iot-store:")] = new store_class()
-    console.log("- IOT.register_store:", store_class.prototype.name)
+    self.store_instanced[_.expand(store_class.prototype.store_id, "iot-store:")] = new store_class()
+    console.log("- IOT.register_store:", store_class.prototype.store_id)
 
     return self;
 }
@@ -839,7 +839,12 @@ IOT.prototype.register_store = function(store_class) {
 IOT.prototype.store = function(store_id) {
     var self = this
 
-    return  self.store_instanced[_.expand(store_id, "iot-store:")]
+    var store = self.store_instanced[_.expand(store_id, "iot-store:")]
+    if (!store) {
+        console.log("# IOT.store", "store not found", store_id)
+    }
+
+    return store
 }
 
 /**
@@ -879,7 +884,7 @@ IOT.prototype._discover = function() {
     var things = undefined
     if (av.length) {
         var last = av[av.length - 1]
-        if (_.instanceof_ThingArray(last)) {
+        if (_.isThingArray(last)) {
             things = last
             av.pop()
         }
@@ -888,7 +893,7 @@ IOT.prototype._discover = function() {
     if (av.length) {
         if (_.isString(av[0])) {
             driver_identityd = _.identity_expand(av[0]);
-        } else if (av[0].Model !== undefined) {
+        } else if (_.isModel(av[0])) {
             thing_exemplar = av[0]
         } else if (_.isObject(av[0])) {
             thing_bindd = av[0]
@@ -1006,7 +1011,7 @@ IOT.prototype._add_thing = function(thing, things) {
     self.thing_instanced[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
 
-    if (_.instanceof_ThingArray(things)) {
+    if (_.isThingArray(things)) {
         things.push(thing)
     }
 
