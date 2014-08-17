@@ -237,6 +237,9 @@ SmartThingsDriver.prototype._request_all_devices = function() {
     var dtypes = [
         "switch",
         "contact",
+        "battery",
+        "temperature",
+        "threeAxis",
         "motion"
     ]
 

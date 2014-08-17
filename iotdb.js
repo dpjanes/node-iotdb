@@ -391,6 +391,8 @@ IOT.prototype.cfg_get_oauthd = function(iri, otherwise) {
     var api_location = node_url.parse(iri).host
     var oauthd = self.oauthdd[api_location]
 
+    // console.log("HERE:XXX", api_location, self.oauthdd)
+
     return oauthd ? oauthd : otherwise;
 }
 
