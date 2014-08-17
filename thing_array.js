@@ -36,6 +36,7 @@ var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED'
 var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED'
 
 var KEY_SETTER = 'SETTER'
+var array_id = 0
 
 /**
  *  An array for holding {@link Thing}s. When the
@@ -54,6 +55,7 @@ var ThingArray = function(paramd) {
 
     paramd = _.defaults(paramd, {})
 
+    self.array_id = '__thing_array_' + array_id++
     self.length = 0
     self.transaction_depth = 0
 
@@ -98,6 +100,7 @@ ThingArray.prototype.push = function(thing, paramd) {
         emit_new: true
     })
 
+    thing[self.array_id] = self
     Array.prototype.push.call(self, thing);
 
     /*
@@ -162,12 +165,37 @@ ThingArray.prototype._persist_command = function(f, av, key) {
 
 /**
  */
-ThingArray.prototype.splice = function() {
+ThingArray.prototype.splice = function(index, howmany, add1) {
     var self = this
+
+    // sorry
+    assert.ok(add1 === undefined)
+
+    if (howmany) {
+        for (var i = 0; i < howmany; i++) {
+            var x = index + i
+            if (x < self.length) {
+                delete self[x][self.array_id]
+            }
+        }
+    }
 
     Array.prototype.splice.apply(self, arguments)
 
     return self
+}
+
+/**
+ *  Return true iff thing is in this
+ */
+ThingArray.prototype.contains = function(thing) {
+    if (!thing) {
+        return false
+    } else if (_.isModel(thing)) {
+        return false
+    } else {
+        return thing[self.array_id] = self
+    }
 }
 
 

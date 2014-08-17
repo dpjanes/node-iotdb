@@ -177,7 +177,16 @@ ModelMaker.prototype.product = function(value) {
 /**
  */
 ModelMaker.prototype.facet = function(_value) {
-    this.__facets.push(_.expand(_value, "iot-facet:"))
+    if (_value.match(/^:.*[.]/)) {
+        var parts = _value.split(".")
+        for (var pi = 0; pi < parts.length; pi++) {
+            var sub = parts.slice(0, pi + 1).join(".")
+            this.__facets.push(_.expand(sub, "iot-facet:"))
+        }
+    } else {
+        this.__facets.push(_.expand(_value, "iot-facet:"))
+    }
+
     return this;
 }
 
