@@ -196,7 +196,7 @@ IOT.prototype.cfg_load_paramd = function(initd) {
 
     self.envd = cfg.cfg_envd(initd.envd)
 
-    var filenames = cfg.cfg_find(self.envd, initd.cfg_path, "iotdb.json", { max: 1 })
+    var filenames = cfg.cfg_find(self.envd, initd.cfg_path, "iotdb.json")
     cfg.cfg_load_json(filenames, function(d) {
         if (d.error) {
             console.log("# IOT.cfg_load_paramd:", d.error, d.exception)
@@ -229,8 +229,8 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         envd: {},
 
         cfg_path: [
+            "$IOTDB_PROJECT/.iotdb",
             "$IOTDB_CFG",
-            "$IOTDB_PROJECT/.iotdb"
         ],
         drivers_path: [
             "$IOTDB_INSTALL/drivers"

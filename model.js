@@ -994,7 +994,10 @@ Model.prototype._do_pushes = function(attributed) {
     // console.log("HERE:A.2", paramd)
     // console.log("HERE:A.3", _.keys(attributed))
     self.driver_out(paramd);
-    self.driver_instance.push(paramd);
+
+    if (!_.isEmpty(paramd.driverd)) {
+        self.driver_instance.push(paramd);
+    }
 
     return self;
 }

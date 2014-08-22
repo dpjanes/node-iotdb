@@ -9,7 +9,7 @@
     "dependencies": {
         "feedparser": ">=0.16.6", 
         "firmata": ">=0.3.3", 
-        "iotdb-models": ">=0.0.14", 
+        "iotdb-models": ">=0.0.15", 
         "jsonld": ">=0.1.25", 
         "minimist": ">=0.0.5", 
         "mqtt": ">=0.3.7", 
@@ -40,5 +40,5 @@
         "type": "git", 
         "url": "https://github.com/dpjanes/node-iotdb"
     }, 
-    "version": "0.2.11"
+    "version": "0.2.12"
 }

@@ -53,7 +53,7 @@ DweetStore.prototype.on_change = function(thing) {
     var meta = thing.meta()
     var dweet_name = meta.get(key_name, null)
     if (dweet_name === null) {
-        dweet_name = thing.thing_id()
+        dweet_name = thing.get_code() + ":" + thing.thing_id().replace(/^.*:/, '')
         meta.set(key_name, dweet_name)
         console.log("- DweetStore.on_change", "assigned Thing a Dweet name", dweet_name)
         // console.log("- XXX", thing.meta().state())
