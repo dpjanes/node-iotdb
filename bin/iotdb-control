@@ -922,6 +922,86 @@ if (ad._.length == 0) {
         var a = ad._[ai]
         console.log(_.identifier_to_dash_case(a))
     }
+} else if (ad._[0] == "list-drivers") {
+    var paramd = iotdb_nothingd
+    paramd.load_drivers = true
+
+    var iot = new iotdb.IOT(paramd)
+
+    for (var di in iot.driver_exemplars) {
+        var driver = iot.driver_exemplars[di]
+        console.log("+", _.compact(driver.identity().driver))
+    }
+} else if ((ad._[0] == "enable-driver") || (ad._[0] == "disable-driver")) {
+    /*
+     *  Find out the existing drivers
+     */
+    var paramd = iotdb_nothingd
+    paramd.load_drivers = true
+
+    var iot = new iotdb.IOT(paramd)
+
+    var drivers = []
+    for (var di in iot.driver_exemplars) {
+        var driver = iot.driver_exemplars[di]
+        drivers.push(_.compact(driver.identity().driver))
+    }
+
+    /*
+     *  Load iotdb.json
+     */
+    var FILE_IOTDB = ".iotdb/iotdb.json"
+
+    var iotdbd = {}
+    cfg.cfg_load_json([ FILE_IOTDB ], function(paramd) {
+        for (var key in paramd.doc) {
+            iotdbd[key] = paramd.doc[key]
+        }
+    })
+
+    if (iotdbd.drivers_disabled === undefined) {
+        iotdbd.drivers_disabled = []
+    }
+
+    /*
+     *  Enable / disable
+     */
+    var changed = false
+
+    for (var ai = 1; ai < ad._.length; ai++) {
+        var driver = _.compact(_.expand(ad._[ai], "iot-driver:"))
+        if (drivers.indexOf(driver) == -1) {
+            console.log("# driver not found", driver)
+        } else if (ad._[0] == "enable-driver") {
+            var x = iotdbd.drivers_disabled.indexOf(driver)
+            if (x != -1) {
+                console.log("+ enabled", driver)
+                iotdbd.drivers_disabled.splice(x, 1)
+                changed = true
+            } else {
+                console.log("# already enabled", driver)
+            }
+        } else if (ad._[0] == "disable-driver") {
+            var x = iotdbd.drivers_disabled.indexOf(driver)
+            if (x == -1) {
+                console.log("+ disabled", driver)
+                iotdbd.drivers_disabled.push(driver)
+                changed = true
+            } else {
+                console.log("# already disabled", driver)
+            }
+        } else {
+            assert.ok(false)
+        }
+    }
+
+    /*
+     *  Save changes
+     */
+    if (changed) {
+        fs.writeFileSync(FILE_IOTDB, JSON.stringify(iotdbd, null, 2) + "\n")
+    }
+
 } else {
     console.log(name + ": unknown command: " + ad._[0])
     console.log()

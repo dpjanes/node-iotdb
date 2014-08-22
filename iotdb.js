@@ -120,6 +120,7 @@ IOT.prototype.configure = function(paramd) {
     events.EventEmitter.call(self);
 
     self.cfg_load_paramd(paramd)
+    self.setMaxListeners(self.initd.max_listeners);
 
     self.readyd = {}
     self.ready_once = false
@@ -224,6 +225,7 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         cfg_root: path.join(process.env['HOME'], ".iotdb"),
         iotdb_prefix: "https://iotdb.org",
 
+        max_listeners: 1024,
         envd: {},
 
         cfg_path: [
@@ -807,8 +809,21 @@ IOT.prototype.register_driver = function(driver) {
     var driver_exemplar = new driver()
     var driver_identity = driver_exemplar.identity();
     if (!driver_identity.driver) {
-        console.log("# IOT.register_driver: ignoring driver - no identity", driver_exemplar.constructor.name)
+        console.log("# IOT.register_driver",
+            "ignoring driver - no identity", 
+            driver_exemplar.constructor.name)
         return;
+    }
+
+    if (self.initd.drivers_disabled) {
+        var name = _.compact(driver_identity.driver)
+        var x = self.initd.drivers_disabled.indexOf(name)
+        if (x != -1) {
+            console.log("# IOT.register_driver",
+                "ignoring driver - disabled in iotdb.json", 
+                driver_exemplar.constructor.name)
+            return
+        }
     }
 
     driver_exemplar.register(self)

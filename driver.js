@@ -24,9 +24,12 @@
 
 var mqtt = require('mqtt');
 var timers = require('timers');
+var events = require('events');
+var util = require('util');
 var _ = require('./helpers');
 
 var id_counter = 1
+var EVENT_DISCONNECT = 'disconnect'
 
 /**
  *  Base class for all Drivers. It does nothing
@@ -45,7 +48,12 @@ var id_counter = 1
  *  @constructor
  */
 var Driver = function() {
+    // WE REALLY NEED TO FIX UP MQTT
+    events.EventEmitter.call(this);
+    this.setMaxListeners(25);
 }
+
+util.inherits(Driver, events.EventEmitter);
 
 /**
  *  Every subclass must call this in their constructor
@@ -68,7 +76,9 @@ Driver.prototype.driver_construct = function() {
     self.mqtt_json = false
     self.mqtt_device = ""
 
+    /*
     self.mqtt_client = null
+     */
     self.mqtt_last_millis = 0
     self.mqtt_timer_id = 0
 }
@@ -97,6 +107,16 @@ Driver.prototype.driver_construct = function() {
  */
 Driver.prototype.identity = function(kitchen_sink) {
     return {};
+}
+
+Driver.prototype.thing_id = function() {
+    var self = this
+    var d = self.identity()
+    if (d) {
+        return d.thing_id;
+    } else {
+        return null
+    }
 }
 
 /**
@@ -212,11 +232,14 @@ Driver.prototype.disconnect = function() {
     var self = this
 
     self.disconnected = true
+    self.emit(EVENT_DISCONNECT)
 
+    /*
     if (self.mqtt_client) {
         self.mqtt_client.end()
         self.mqtt_client = null
     }
+    */
 
     self.thing = null
 }
@@ -378,16 +401,18 @@ Driver.prototype.mqtt_subscribe = function() {
 
     self.mqtt_last_millis = (new Date).getTime()
 
-    self.mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
-    mqtt_client = self.mqtt_client
+    mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
+    mqtt_client.setMaxListeners(25);
 
     console.log("- Driver.mqtt_subscribe:",
         "\n  mqtt_host", self.mqtt_host,
         "\n  mqtt_port", self.mqtt_port,
         "\n  mqtt_topic", self.mqtt_topic,
-        "\n  mqtt_device", self.mqtt_device
+        "\n  mqtt_device", self.mqtt_device,
+        "\n  thing_id", self.thing_id()
     )
-    mqtt_client.on('message', function(in_topic, in_message) {
+
+    var on_message = function(in_topic, in_message) {
         console.log("- Driver.mqtt_subscribe/on(message): MQTT receive:", in_topic, in_message)
 
         try {
@@ -395,23 +420,42 @@ Driver.prototype.mqtt_subscribe = function() {
         } catch (x) {
             console.log("# Driver.mqtt_subscribe/on(message): MQTT receive: exception ignored", x)
         }
+    }
+    mqtt_client.on('message', on_message)
+
+    self.on(EVENT_DISCONNECT, function() {
+        // console.log("# Driver.mqtt_subscribe/DISCONNECT", "thing_id", self.thing_id())
+        mqtt_client.removeListener('message', on_message)
     })
-    mqtt_client.on('connect', function() {
-        // console.log("- Driver.mqtt_subscribe/on(connect)")
-    })
-    mqtt_client.on('error', function(error) {
-        console.log("# Driver.mqtt_subscribe/on(error):", error)
-        mqtt_client.removeAllListeners()
-        self._mqtt_resubscribe()
-    })
-    mqtt_client.on('close', function(error) {
-        if (error) {
-            console.log("# Driver.mqtt_subscribe/close(error):", arguments)
-            mqtt_client.removeAllListeners()
-            self._mqtt_resubscribe()
-        }
-    })
+
     mqtt_client.subscribe(self.mqtt_topic)
+}
+
+var md = {}
+
+/**
+ *  We cache MQTT clients - the new version of MQTT automatically reconnects
+ */
+Driver.prototype._mqtt_client = function(mqtt_port, mqtt_host) {
+    var key = "mqtt://" + host + ":" + port
+    var mqtt_client = md[key]
+    if (!mqtt_client) {
+        mqtt_client = mqtt.createClient(mqtt_port, mqtt_host)
+        mqtt_client.setMaxListeners(25);
+        md[key] = mqtt_client
+
+        mqtt_client.on('connect', function() {
+            console.log("- Driver._mqtt_client/on(connect)")
+        })
+        mqtt_client.on('error', function(error) {
+            console.log("# Driver._mqtt_client/on(error)")
+        })
+        mqtt_client.on('close', function(error) {
+            console.log("# Driver._mqtt_client/on(close)")
+        })
+    }
+
+    return mqtt_client
 }
 
 /**

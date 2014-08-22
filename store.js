@@ -103,13 +103,16 @@ Store.prototype.track = function(paramd) {
         self.things._things_changed()
         self.things_changed()
     }
-    self.things.on_change(self.on_change)
+
+    self.things.on_change(function(thing) {
+        self.on_change(thing)
+    })
     
-    console.log("# Store.track: NOT IMPLEMENETED", paramd)
+    // console.log("# Store.track: NOT IMPLEMENETED", paramd)
 }
 
 /*
- *  This is called whenever underlying things are changed.
+ *  This is called whenever underlying Array of things are changed.
  *  This is magically hooked up in 'track'
  */
 Store.prototype.things_changed = function() {
@@ -121,7 +124,7 @@ Store.prototype.things_changed = function() {
  */
 Store.prototype.on_change = function(thing) {
     var self = this
-    console.log("# Store.track", "THING CHANGED", thing)
+    console.log("# Store.track", "THING CHANGED - this should be redefined by a subclass", thing)
 }
 
 /*

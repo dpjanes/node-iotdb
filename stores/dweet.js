@@ -27,17 +27,74 @@
 var iotdb = require('iotdb');
 var _ = require("../helpers");
 var store = require('../store')
+var dweetClient = require("node-dweetio");
+
+var key_name = _.expand("iot-store:dweet.io/name")
 
 /**
  */
 var DweetStore = function(paramd) {
     var self = this;
 
+    self.__dweetio = null;
+
     return self;
 }
 
 DweetStore.prototype = new store.Store;
 DweetStore.prototype.store_id = "iot-store:dweet.io"
+
+/*
+ *  See {@link Store#on_change Store.on_change}
+ */
+DweetStore.prototype.on_change = function(thing) {
+    var self = this
+
+    var meta = thing.meta()
+    var dweet_name = meta.get(key_name, null)
+    if (dweet_name === null) {
+        dweet_name = thing.thing_id()
+        meta.set(key_name, dweet_name)
+        console.log("- DweetStore.on_change", "assigned Thing a Dweet name", dweet_name)
+        // console.log("- XXX", thing.meta().state())
+    }
+
+    var dweetio = self.dweetio()
+
+    var stated = thing.state()
+    var meta = thing.meta()
+    var model_iri = meta.get('iot:model')
+    if (model_iri) {
+        stated['@context'] = model_iri
+        stated['@type'] = model_iri.replace(/^.*\//, '')
+
+        var thing_iri = meta.get('iot:thing')
+        if (thing_iri) {
+            stated['iot:thing'] = thing_iri
+        }
+    }
+
+    dweetio.dweet_for(dweet_name, stated, function(error, dweet){
+        if (error) {
+            console.log("- DweetStore.on_change/dweet_for", "dweet failed", error)
+            return
+        }
+
+        console.log("- DweetStore.on_change/dweet_for", "updated", dweet_name)
+    });
+}
+
+/**
+ */
+DweetStore.prototype.dweetio = function() {
+    var self = this
+
+    if (self.__dweetio == null) {
+        self.__dweetio = new dweetClient();
+    }
+
+    return self.__dweetio
+}
 
 /*
  *  API
