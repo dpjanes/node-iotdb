@@ -216,7 +216,8 @@ SmartThingsDriver.prototype.discover = function(paramd, discover_callback) {
                     id: device.id,
                 },
                 metad: {
-                    "iot:name": device.label
+                    "iot:name": device.label,
+                    "iot:dsid": _.expand("iot-driver:smartthings/" + device.id)
                 }
             })
 

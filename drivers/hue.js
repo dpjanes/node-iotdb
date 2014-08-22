@@ -226,6 +226,10 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
                 metad[_.expand("iot:name")] = md.name
                 metad[_.expand("iot:number")] = parseInt(light)
 
+                if (upnp_device.udn) {
+                    metad["iot:dsid"] = _.expand("iot-driver:hue/" + upnp_device.udn + "/" + light)
+                }
+
                 discover_callback(new HueDriver({
                     upnp_device: upnp_device, 
                     light: light, 

@@ -970,9 +970,7 @@ if (ad._.length == 0) {
 
     for (var ai = 1; ai < ad._.length; ai++) {
         var driver = _.compact(_.expand(ad._[ai], "iot-driver:"))
-        if (drivers.indexOf(driver) == -1) {
-            console.log("# driver not found", driver)
-        } else if (ad._[0] == "enable-driver") {
+        if (ad._[0] == "enable-driver") {
             var x = iotdbd.drivers_disabled.indexOf(driver)
             if (x != -1) {
                 console.log("+ enabled", driver)

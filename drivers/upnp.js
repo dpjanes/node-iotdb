@@ -337,6 +337,10 @@ UPnPDriver.prototype.driver_meta = function() {
         }
     }
 
+    if (self.upnp_device.udn) {
+        metad["iot:dsid"] = _.expand("iot-driver:upnp/" + self.upnp_device.udn)
+    }
+
     return metad
 }
 

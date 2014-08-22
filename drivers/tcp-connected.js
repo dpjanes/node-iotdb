@@ -62,6 +62,16 @@ var TCPConnectedDriver = function(paramd) {
     }
     self.metad[_.expand("schema:manufacturer")] = "http://www.tcpi.com/"
 
+    /*
+     *  Might consider 'network_id' in future? because multiple
+     *  machines can see this same lamp and we're going 
+     *  with room based naming
+     */
+    var machine_id = self.cfg_get("machine_id", null)
+    if (machine_id && self.name) {
+        self.metad["iot:dsid"] = _.expand("iot-driver:tcp-connected/" + machine_id + "/" + self.name)
+    }
+
     return self;
 }
 
@@ -76,6 +86,10 @@ TCPConnectedDriver.cp = function() {
     }
 
     return _cp
+}
+
+TCPConnectedDriver.prototype.driver_meta = function() {
+    return this.metad
 }
 
 /**
@@ -102,7 +116,7 @@ TCPConnectedDriver.prototype.identity = function(kitchen_sink) {
         identityd["driver"] = self.driver
 
         if (self.room) {
-            identityd["did"] = self.room
+            identityd["did"] = self.name
             identityd["name"] = self.name
         }
 
