@@ -143,6 +143,8 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('iotdb_thing_get', 1)
     self.ready_delta('iotdb_places_get', 1)
 
+    self.ready_delta('load_meta', 1)
+
     self.username = self.initd.username
     self.cfg_root = self.initd.cfg_root
 
@@ -174,6 +176,7 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('load_things', -1)
     self.ready_delta('iotdb_thing_get', -1)
     self.ready_delta('iotdb_places_get', -1)
+    self.ready_delta('load_meta', -1)
     self.ready_delta('configure', -1)
 }
 
@@ -247,6 +250,7 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         things_path: [
             "$IOTDB_PROJECT/things"
         ],
+        meta_dir: "$IOTDB_PROJECT/.iotdb/meta",
 
         discover: false,
         load_drivers: false,
@@ -1025,6 +1029,28 @@ IOT.prototype._add_thing = function(thing, things) {
         return
     }
 
+    /*
+     *  Load file persisted metadata
+     *  XXX - this shouldn't happen when talking to IOTDB
+     *  for persistence
+     *  XXX - this is all horrible
+     */
+    if (self.initd.meta_dir) {
+        var meta_dir = cfg.cfg_expand(self.envd, self.initd.meta_dir)
+
+        var file_meta = path.join(meta_dir, thing_id.replace(/^.*:/, '') + ".json")
+        cfg.cfg_load_json([ file_meta ], function(d) {
+            if (d.error) {
+                return
+            }
+
+            thing.meta().updated = d.doc
+        })
+    }
+
+    /*
+     *  Load file
+     */
     self.thing_instanced[thing_id] = thing;
     self.emit(EVENT_NEW_THING, thing);
 
@@ -2101,6 +2127,10 @@ IOT.prototype.places = function() {
 
 /* -------------- NEW STUFF Node-IOTDB-V2--------------- */
 
+/**
+ *  Connect to devices. This is the most important 
+ *  function in IOT
+ */
 IOT.prototype.connect = function(value) {
     var self = this
     var things = new thing_array.ThingArray({
@@ -2146,6 +2176,40 @@ IOT.prototype.connect = function(value) {
     }
 
     return things
+}
+
+/**
+ *  Persist all changes to metadata.
+ *  <p>
+ *  Tons of work needed here
+ */
+IOT.prototype.meta_save = function() {
+    var self = this
+
+    if (!self.initd.meta_dir) {
+        console.log("# IOT.meta_save", "no initd.meta_dir")
+        return
+    }
+
+    var meta_dir = cfg.cfg_expand(self.envd, self.initd.meta_dir)
+    try {
+        fs.mkdirSync(meta_dir)
+    } catch (err) {
+    }
+
+    var self = this
+    for (var thing_id in self.thing_instanced) {
+        var thing = self.thing_instanced[thing_id]
+        var meta = thing.meta()
+        if (_.isEmpty(meta.updated)) {
+            continue
+        }
+
+        var file_meta = path.join(meta_dir, thing_id.replace(/^.*:/, '') + ".json")
+        fs.writeFileSync(file_meta, JSON.stringify(meta.updated, null, 2) + "\n")
+
+        console.log("- IOT.meta_save", "wrote", file_meta)
+    }
 }
 
 /**

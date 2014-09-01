@@ -46,6 +46,7 @@ exports.namespaced = {
     "iot-ble" : "https://iotdb.org/pub/iot-ble#",
     "iot-unit" : "https://iotdb.org/pub/iot-unit#",
     "iot-driver" : "https://iotdb.org/pub/iot-driver#",
+    "iot-store" : "https://iotdb.org/pub/iot-store#",
     "iot-placement" : "https://iotdb.org/pub/iot-placement#"
 };
 
