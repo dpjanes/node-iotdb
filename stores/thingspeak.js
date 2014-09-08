@@ -3,9 +3,9 @@
  *
  *  David Janes
  *  IOTDB.org
- *  2014-01-02
+ *  2014-09-02
  *
- *  Connect to ThingSpeak / thingspeak.com"
+ *  Connect to ThingSpeak / thingspeak.com
  *
  *  Copyright [2013-2014] [David P. Janes]
  *  
@@ -27,10 +27,7 @@
 var iotdb = require('iotdb');
 var _ = require("../helpers");
 var store = require('../store')
-// var thingspeakClient = require("node-thingspeak");
-var ThingSpeakClient = require('thingspeakclient');
-
-// var key_name = _.expand("iot-store:thingspeak.io/name")
+var unirest = require('unirest')
 
 /**
  */
@@ -58,24 +55,70 @@ ThingSpeakStore.prototype.on_change = function(thing) {
     var self = this
 
     var meta = thing.meta()
+
+    // not actually needed
     var channel_id = meta.get(ts_channel_id, null)
     if (channel_id === null) {
         self._warn(thing, "Thing not configured - no 'channel_id'")
         return
     }
 
-    /*
-    var thingspeak = self._thingspeak()
-    thingspeak.thingspeak_for(thingspeak_name, thing.state(), function(error, thingspeak){
-        if (error) {
-            console.log("- ThingSpeakStore.on_change/thingspeak_for", "thingspeak failed", error)
-            return
+    // thingspeak just uses WriteKey WTF?
+    var write_key = meta.get(ts_channel_write_key, null)
+    if (write_key === null) {
+        self._warn(thing, "Thing not configured - no 'write_key'")
+        return
+    }
+
+    var url = 'http://api.thingspeak.com/update'
+    var payloadd = {
+        key: write_key
+    }
+
+    // changed values
+    var any = false
+    for (var field = 1; field <= 8; field++) {
+        var code = meta.get(ts_channel_fields + "/" + field, "")
+        if (_.isEmpty(code)) {
+            continue
         }
 
-        console.log("- ThingSpeakStore.on_change/thingspeak_for", "updated", thingspeak_name)
-    });
-     
+        var value = thing.get(code, null)
+        if (value === undefined) {
+        } else if (value === null) {
+        } else if (_.isBoolean(value)) {
+            payloadd["field" + field] = value ? 1 : 0
+            any = true
+        } else if (_.isNumber(value)) {
+            payloadd["field" + field] = "" + value
+            any = true
+        } else {
+            console.log("# ThingSpeakStore.on_change", "ThingSpeak can only store number-like values",
+                "Ignoring:", code)
+        }
+    }
+
+    if (!any) {
+        return
+    }
+
+    /*
+     *  XXX - Major issue here: ThingSpeak can only take value
+     *  changes every 15 seconds. We should handle this somehow
      */
+    unirest
+        .post(url)
+        .send(payloadd)
+        .end(function(result) {
+            if (!result.ok) {
+                console.log("# ThingSpeakStore.on_change", "not ok", "url", url, "result", result.text);
+            } else if (result.body && result.body.length && result.body[0].error) {
+                console.log("# ThingSpeakStore.on_change", "not ok", "url", url, "result", result.body);
+            } else {
+                console.log("- ThingSpeakStore.on_change", result.body);
+            }
+        })
+    ;
 }
 
 /**
@@ -90,11 +133,20 @@ ThingSpeakStore.prototype.on_change = function(thing) {
  *  <li>Fields you want to save to ThingSpeak
  *  </ul>
  */
-ThingSpeakStore.prototype.configure_thing = function(thing, callback) {
+ThingSpeakStore.prototype.configure_thing = function(thing, ad, callback) {
     var prompt = require('prompt')
     var promptdd = {}
 
     var meta = thing.meta()
+
+    // figure out all available codes
+    var codes = []
+    var ads = thing.attributes()
+    for (var adi in ads) {
+        var attribute = ads[adi]
+        var code = attribute.get_code()
+        codes.push(code)
+    }
 
     {
         var promptd = {
@@ -135,6 +187,32 @@ ThingSpeakStore.prototype.configure_thing = function(thing, callback) {
         promptdd['read_key'] = promptd
     }
 
+    {
+        var cd = {}
+        for (var field = 1; field <= 8; field++) {
+            var code = meta.get(ts_channel_fields + "/" + field, null)
+            if (code) {
+                cd[code] = field
+            }
+        }
+
+        for (var ci in codes) {
+            var code = codes[ci]
+            {
+                var promptd = {
+                    description: "Field for Thing." + code + " [1-8]",
+                    pattern: /^[1-8]$/,
+                    required: false
+                }
+                var v = cd[code]
+                if (v !== null) {
+                    promptd['default'] = v
+                }
+                promptdd['code_' + code] = promptd
+            }
+        }
+    }
+
     prompt.message = "ThingSpeak"
     prompt.start();
     prompt.get({
@@ -148,26 +226,38 @@ ThingSpeakStore.prototype.configure_thing = function(thing, callback) {
         meta.set(ts_channel_id, resultd.channel_id)
         meta.set(ts_channel_write_key, resultd.write_key)
         meta.set(ts_channel_read_key, resultd.read_key)
-        meta.set(ts_channel_fields, [])
+
+        var fd = {}
+        for (var ci in codes) {
+            var code = codes[ci]
+            var field = resultd['code_' + code]
+            if (field) {
+                meta.set(ts_channel_fields + "/" + field, code)
+                fd[field] = code
+            }
+        }
+
+        for (var field = 1; field <= 8; field++) {
+            if (!fd[field]) {
+                meta.set(ts_channel_fields + "/" + field, "")
+            }
+        }
 
         callback(null)
+
+        console.log("##############################")
+        console.log("# ThingSpeakStore.configure_thing")
+        console.log("# Please go to the following URL:")
+        console.log("  https://thingspeak.com/channels/" + resultd.channel_id)
+        console.log("")
+        console.log("# Then enter (clearing all other fields):")
+        for (var field = 1; field <= 8; field++) {
+            if (fd[field]) {
+                console.log("  Field " + field + ": " + fd[field])
+            }
+        }
+        console.log("##############################")
     })
-}
-
-/**
- *  One shared client
- *  @protected
- */
-ThingSpeakStore.prototype._thingspeak = function() {
-    var self = this
-
-    if (self.__thingspeak == null) {
-        self.__thingspeak = new ThingSpeakClient({
-            server: self.api
-        });
-    }
-
-    return self.__thingspeak
 }
 
 var warned = {}
@@ -184,7 +274,11 @@ ThingSpeakStore.prototype._warn = function(thing, message) {
     console.log("# ThingSpeakStore.on_change", message ? message : "")
     console.log("# configure using:")
     console.log("#")
-    console.log("#   iotdb-control configure-store-thing", ":thingspeak", thing.thing_id())
+    console.log("#   iotdb-control configure-store-thing", 
+        "--store", ":thingspeak", 
+        "--thing", thing.thing_id(),
+        "--model", thing.get_code()
+    )
     console.log("#")
     console.log("##############################")
 }

@@ -127,6 +127,12 @@ Store.prototype.on_change = function(thing) {
     console.log("# Store.track", "THING CHANGED - this should be redefined by a subclass", thing)
 }
 
+/**
+ */
+Store.prototype.configure_thing = function(thing, ad, callback) {
+    console.log("# Store.configure_thing", "warning: this thing does not need to be configured")
+}
+
 /*
  *  API
  */

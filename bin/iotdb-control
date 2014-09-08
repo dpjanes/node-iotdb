@@ -913,24 +913,27 @@ if (ad._.length == 0) {
         }
     })
 } else if (ad._[0] == "configure-store-thing") {
-    if (ad._.length != 3) {
-        console.log("required arguments -- <store_id> <thing_id>")
+    if (_.isEmpty(ad.store)) {
+        console.log("missing argument: --store <store_iri>")
+        console.log("")
+        help("configure-store-thing")
+        process.exit(1)
+    }
+    if (_.isEmpty(ad.thing)) {
+        console.log("missing argument: --thing <thing_id>")
         console.log("")
         help("configure-store-thing")
         process.exit(1)
     }
 
-    var store_name = ad._[1]
-    var store = null
-    var thing_id = ad._[2]
-    var thing = null
-    var model_code = "smart-things-contact"
+    var store = undefind
+    var thing = undefind
+    var model_code = undefind
 
     var iot = new iotdb.IOT({
         envd: {
             IOTDB_PROJECT: process.cwd()
         },
-        // discover: false,
         load_drivers: true,
         load_models: true,
         load_stores: true,
@@ -939,15 +942,15 @@ if (ad._.length == 0) {
         iotdb_thing_create: false,
     })
     iot.on_thing(function(t) {
-        if (t.thing_id() !== thing_id) {
+        if (t.thing_id() !== ad.thing) {
             return
         }
 
         thing = t
     })
     iot.on_ready(function() {
-        store = iot.store(store_name)
-        iot.connect(model_code)
+        store = iot.store(ad.store)
+        iot.connect(ad.model)
     })
 
     var count = 0
@@ -957,16 +960,14 @@ if (ad._.length == 0) {
             clearTimeout(timeoutId)
             console.log("+ found it")
 
-            store.configure_thing(thing, function(error, result) {
+            store.configure_thing(thing, ad, function(error, result) {
                 iot.meta_save()
-                // console.log("HERE:XXX", thing.meta().state())
             })
         } else if (count > 5) {
             console.log("+ could not find this Thing -- quitting, sorry")
             process.exit(1)
         } else {
-            clearTimeout(timeoutId)
-            console.log("+ waiting for Thing")
+            console.log("+ waiting for Thing…")
         }
 
     }, 2500)

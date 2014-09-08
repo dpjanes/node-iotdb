@@ -2,7 +2,7 @@
  *  iotdb.js
  *
  *  David Janes
- *  IOT.org
+ *  IOTDB.org
  *  2013-12-01
  *
  *  NodeJS IOTDB control
@@ -2200,6 +2200,10 @@ IOT.prototype.meta_save = function() {
     var self = this
     for (var thing_id in self.thing_instanced) {
         var thing = self.thing_instanced[thing_id]
+        if (!thing) {
+            continue
+        }
+
         var meta = thing.meta()
         if (_.isEmpty(meta.updated)) {
             continue
