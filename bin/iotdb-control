@@ -926,9 +926,9 @@ if (ad._.length == 0) {
         process.exit(1)
     }
 
-    var store = undefind
-    var thing = undefind
-    var model_code = undefind
+    var store = undefined
+    var thing = undefined
+    var model_code = undefined
 
     var iot = new iotdb.IOT({
         envd: {
