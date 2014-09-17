@@ -29,7 +29,7 @@ var _ = require("../helpers");
 var store = require('../store')
 var dweetClient = require("node-dweetio");
 
-var key_name = _.expand("iot-store:dweet.io/name")
+var key_name = _.expand("iot-store:dweet/name")
 
 /**
  */
@@ -42,7 +42,7 @@ var DweetStore = function(paramd) {
 }
 
 DweetStore.prototype = new store.Store;
-DweetStore.prototype.store_id = "iot-store:dweet.io"
+DweetStore.prototype.store_id = "iot-store:dweet"
 
 /*
  *  See {@link Store#on_change Store.on_change}

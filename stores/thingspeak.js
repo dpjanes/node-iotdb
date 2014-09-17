@@ -111,11 +111,14 @@ ThingSpeakStore.prototype.on_change = function(thing) {
         .send(payloadd)
         .end(function(result) {
             if (!result.ok) {
-                console.log("# ThingSpeakStore.on_change", "not ok", "url", url, "result", result.text);
+                console.log("# ThingSpeakStore.on_change", "not ok", 
+                    "url", url, "result", result.text);
             } else if (result.body && result.body.length && result.body[0].error) {
-                console.log("# ThingSpeakStore.on_change", "not ok", "url", url, "result", result.body);
+                console.log("# ThingSpeakStore.on_change", 
+                    "not ok", "url", url, "result", result.body);
             } else {
-                console.log("- ThingSpeakStore.on_change", result.body);
+                console.log("- ThingSpeakStore.on_change", "ok",
+                    "thing_id", thing.thing_id())
             }
         })
     ;

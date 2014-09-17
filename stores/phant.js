@@ -221,13 +221,19 @@ PhantStore.prototype.configure_thing = function(thing, ad, callback) {
             metad.alias = thing.thing_id().replace(/:/g, '_')
 
             phant.update(streamd, metad, function(error) {
-                if (error) {
-                    console.error("# PhantStore.configure_thing/update", error)
-                    return
-                }
-
-                console.warn("- PhantStore.configure_thing/update", "finished")
                 callback(null)
+
+                console.log("##############################")
+                console.log("# Please make sure the Phant Store stream")
+                console.log("# is configured correctly.")
+                console.log("#")
+                console.log("# URL: %s/edit/%s", streamd.manageUrl, resultd.private_key)
+                console.log("# Fields: %s", metad.fields)
+                console.log("# Title (recommended): %s", metad.title)
+                console.log("# Stream Alias (recommended): %s", metad.alias)
+                console.log("#")
+                console.log("##############################")
+
             })
         })
     })
