@@ -2172,6 +2172,51 @@ IOT.prototype.dump = function(things) {
     _.dump_things(this, things)
 }
 
+/**
+ *	Info on what got loaded
+ */
+IOT.prototype.health = function() {
+	var self = this;
+
+	console.log("#####################")
+    console.log("# drivers:")
+    console.log("#")
+
+	for (var di in self.driver_exemplars) {
+		var d = self.driver_exemplars[di]
+		console.log("#  ", _.compact(d.driver))
+	}
+	
+    console.log("#")
+    console.log("# stores:")
+    console.log("#")
+
+	console.log("XXX", self.store_instanced)
+	for (var si in self.store_instanced) {
+		var s = self.store_instanced[si]
+		console.log("#  ", _s.name)
+	}
+	
+
+	/*
+	var keys = _.keys(
+	keys.sort()
+	kk
+
+	for (var ki in keys) {
+		var key = keys[ki]
+	}
+	*/
+
+	/*
+    self.model_exemplard = {};
+    self.thing_instanced = {}
+    self.store_instanced = {}
+	console.log("# Drivers")
+	*/
+	console.log("#####################")
+}
+
 /*
  *  API
  */

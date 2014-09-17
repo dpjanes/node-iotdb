@@ -165,7 +165,6 @@ exports.cfg_find = function(envd, paths, name, paramd) {
  *
  *  @param {array} filenames
  *  An array of filenames, as returned by {@link cfg_find}.
- *  If there are no filenames, the callback will be invoked with an error.
  *
  *  @param {function} callback
  *  Callback with a single dictionary argument <code>paramd</code>. 
@@ -184,9 +183,6 @@ exports.cfg_load_json = function(filenames, callback) {
     var first_doc = null;
 
     if (!filenames.length) {
-        callback({
-            error: "no filenames"
-        })
     } else {
         for (var fi in filenames) {
             try {
@@ -221,7 +217,6 @@ exports.cfg_load_json = function(filenames, callback) {
  *
  *  @param {array} filenames
  *  An array of filenames, as returned by {@link cfg_find}.
- *  If there are no filenames, the callback will be invoked with an error.
  *
  *  @param {string} encoding
  *  OPTIONAL The encoding. If not specified, we use 'utf-8'
@@ -248,9 +243,6 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
     }
 
     if (!filenames.length) {
-        callback({
-            error: "no filenames"
-        })
     } else {
         for (var fi in filenames) {
             try {
@@ -285,7 +277,6 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
  *
  *  @param {array} filenames
  *  An array of filenames, as returned by {@link cfg_find}.
- *  If there are no filenames, the callback will be invoked with an error.
  *
  *  @param {string} encoding
  *  OPTIONAL The encoding. If not specified, we use 'utf-8'
@@ -307,9 +298,6 @@ exports.cfg_load_js = function(filenames, callback) {
     var first_doc = null;
 
     if (!filenames.length) {
-        callback({
-            error: "no filenames"
-        })
     } else {
         for (var fi in filenames) {
             try {
