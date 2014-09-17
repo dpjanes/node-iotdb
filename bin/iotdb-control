@@ -146,6 +146,8 @@ var help = function(subcommand) {
         console.log("Other subcommands are:")
         console.log("  set              - set a value in the keystore")
         console.log("  configure-driver - configure a Driver (like a Philips Hue)")
+        console.log("  configure-store-thing")
+        console.log("                   - configure a particular Thing for a store")
         console.log("  new-project      - create a new IOTDB project")
         console.log("  update-project   - update an IOTDB project settings")
         console.log("  upload-model     - upload a Model to IOTDB")
@@ -158,6 +160,9 @@ var help = function(subcommand) {
         console.log("  camel-case       - convert arguments to CamelCase")
         console.log("  dash-case        - convert arguments to dash-case")
         console.log("  underscore-case  - convert arguments to underscore_case")
+        console.log("  drivers          - list all the drivers")
+        console.log("  enable-driver    - enable a driver")
+        console.log("  disable-driver   - disable a driver")
 
     }
     console.log("")
@@ -907,6 +912,66 @@ if (ad._.length == 0) {
             process.exit(1)
         }
     })
+} else if (ad._[0] == "configure-store-thing") {
+    if (_.isEmpty(ad.store)) {
+        console.log("missing argument: --store <store_iri>")
+        console.log("")
+        help("configure-store-thing")
+        process.exit(1)
+    }
+    if (_.isEmpty(ad.thing)) {
+        console.log("missing argument: --thing <thing_id>")
+        console.log("")
+        help("configure-store-thing")
+        process.exit(1)
+    }
+
+    var store = undefined
+    var thing = undefined
+    var model_code = undefined
+
+    var iot = new iotdb.IOT({
+        envd: {
+            IOTDB_PROJECT: process.cwd()
+        },
+        load_drivers: true,
+        load_models: true,
+        load_stores: true,
+        load_things: true,
+        iotdb_thing_get: false,
+        iotdb_thing_create: false,
+    })
+    iot.on_thing(function(t) {
+        if (t.thing_id() !== ad.thing) {
+            return
+        }
+
+        thing = t
+    })
+    iot.on_ready(function() {
+        store = iot.store(ad.store)
+        iot.connect(ad.model)
+    })
+
+    var count = 0
+    var timeoutId = setInterval(function() {
+        count += 1
+        if (thing) {
+            clearTimeout(timeoutId)
+            console.log("+ found it")
+
+            store.configure_thing(thing, ad, function(error, result) {
+                iot.meta_save()
+            })
+        } else if (count > 5) {
+            console.log("+ could not find this Thing -- quitting, sorry")
+            process.exit(1)
+        } else {
+            console.log("+ waiting for Thing…")
+        }
+
+    }, 2500)
+
 } else if (ad._[0] == "camel-case") {
     for (var ai = 1; ai < ad._.length; ai++) {
         var a = ad._[ai]

@@ -89,13 +89,6 @@ Meta.prototype.get = function(key, otherwise) {
 
     key = _.expand(key)
 
-    /*
-    var object = self.updated[key]
-    if (object !== undefined) {
-        return object
-    }
-    */
-
     var stated = self.state()
     var value = stated[key]
     if (value !== undefined) {
@@ -103,29 +96,6 @@ Meta.prototype.get = function(key, otherwise) {
     } else {
         return otherwise
     }
-
-    /*
-    console.log("HERE:B.2", key)
-
-    if (!self.iot.gm.has_subject(self.thing_iri)) {
-        var metad = self.thing.driver_meta()
-        console.log("HERE:B.2", key)
-        var value = metad[key]
-        if (value === undefined) {
-            return otherwise
-        } else {
-            return value
-        }
-    }
-
-    console.log("HERE:B.3", key)
-    var object = self.iot.gm.get_object(self.thing_iri, key)
-    if (object === null) {
-        return otherwise
-    }
-
-    return object
-    */
 }
 
 /**
