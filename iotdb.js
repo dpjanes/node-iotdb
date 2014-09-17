@@ -34,6 +34,7 @@ var util = require('util');
 var path = require('path');
 var fs = require('fs');
 var unirest = require('unirest');
+var assert = require('assert');
 var node_url = require('url')
 
 var graph = require('./graph');
@@ -161,6 +162,7 @@ IOT.prototype.configure = function(paramd) {
     self.model_exemplard = {};
     self.thing_instanced = {}
     self.store_instanced = {}
+	self.issueds = []
 
     self.cfg_load_oauth()
     self.cfg_load_keystore()
@@ -425,6 +427,12 @@ IOT.prototype._check_requirements = function() {
             console.log("#   iotdb-control iotdb-oauth --global")
             console.log("#")
             console.log("############################## ")
+
+			self.report_issue({
+				section: "iotdb",
+				name: "username",
+				message: "set with $ iotdb-control iotdb-oauth --global"
+			})
         }
     }
 
@@ -437,6 +445,12 @@ IOT.prototype._check_requirements = function() {
         console.log("#   iotdb-control machine-id")
         console.log("#")
         console.log("############################## ")
+
+		self.report_issue({
+			section: "iotdb",
+			name: "machine_id",
+			message: "set with $ iotdb-control machine-id"
+		})
     }
 
     if (self.initd.require_iotdb_oauth) {
@@ -1908,15 +1922,29 @@ IOT.prototype._load_drivers = function() {
                 "\n  exception", paramd.exception,
                 "\n  stack", paramd.exception ? paramd.exception.stack : null
                 )
+
+			if (paramd.exception) {
+				self.report_issue({
+					section: "drivers", 
+					name: path.basename(paramd.filename),
+					exception: paramd.exception
+				})
+			} else if (paramd.message) {
+				self.report_issue({
+					section: "drivers", 
+					name: path.basename(paramd.filename),
+					message: paramd.exception
+				})
+			}
             return
         }
 
         var module = paramd.doc
         if (module.Driver) {
-            console.log("- IOT._load_drivers:", "found Driver", "\n ", paramd.filename);
+            console.log("- IOT._load_drivers", "found Driver", "\n ", paramd.filename);
             self.register_driver(module.Driver);
         } else {
-            console.log("- IOT._load_drivers:", "missing exports.Driver?", "\n ", paramd.filename);
+            console.log("- IOT._load_drivers", "missing exports.Driver?", "\n ", paramd.filename);
         }
     })
 }
@@ -1936,7 +1964,21 @@ IOT.prototype._load_stores = function() {
                 "\n  filename", paramd.filename, 
                 "\n  error", paramd.error, 
                 "\n  exception", paramd.exception)
-            console.trace()
+
+			if (paramd.exception) {
+				self.report_issue({
+					section: "stores", 
+					name: path.basename(paramd.filename),
+					exception: paramd.exception
+				})
+			} else if (paramd.message) {
+				self.report_issue({
+					section: "stores", 
+					name: path.basename(paramd.filename),
+					message: paramd.exception
+				})
+			}
+
             return
         }
 
@@ -2247,7 +2289,9 @@ IOT.prototype.health = function() {
 	var self = this;
 
 	console.log("#####################")
-    console.log("# drivers:")
+
+	// drivers
+    console.log("# available drivers:")
     console.log("#")
 
 	for (var di in self.driver_exemplars) {
@@ -2256,13 +2300,42 @@ IOT.prototype.health = function() {
 	}
 	
     console.log("#")
-    console.log("# stores:")
+
+	// stores
+    console.log("# available stores:")
     console.log("#")
 
-	console.log("XXX", self.store_instanced)
-	for (var si in self.store_instanced) {
-		var s = self.store_instanced[si]
-		console.log("#  ", _s.name)
+	for (var sname in self.store_instanced) {
+		var s = self.store_instanced[sname]
+		console.log("#  ", _.compact(sname))
+	}
+    console.log("#")
+
+	// issues
+	if (self.issueds) {
+		var sections = {}
+		for (var ii in self.issueds) {
+			sections[self.issueds[ii].section] = 1
+		}
+		sections = _.keys(sections)
+		sections.sort()
+
+		for (var si in sections) {
+			var section = sections[si]
+			console.log("# issue with %s:", section)
+			console.log("#")
+
+			for (var ii in self.issueds) {
+				var issued = self.issueds[ii]
+				if (issued.section != section) {
+					continue
+				}
+
+				console.log("#   %s: %s", issued.name, issued.message)
+			}
+
+			console.log("#")
+		}
 	}
 	
 
@@ -2283,6 +2356,23 @@ IOT.prototype.health = function() {
 	console.log("# Drivers")
 	*/
 	console.log("#####################")
+}
+
+IOT.prototype.report_issue = function(issued) {
+	var self = this
+
+	assert.ok(issued.section)
+	assert.ok(issued.name)
+
+	if (issued.exception && _.isEmpty(issued.message)) {
+		if (!_.isEmpty(issued.exception.message)) {
+			issued.message = issued.exception.message
+		} else {
+			issued.message = "" + issued.exception
+		}
+	}
+
+	self.issueds.push(issued)
 }
 
 /*

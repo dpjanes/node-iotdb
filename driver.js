@@ -556,6 +556,20 @@ Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
 }
 
 /**
+ *  Helper function to report an issue
+ */
+Driver.prototype.report_issue = function() {
+    var self = this;
+
+    var iot = require('./iotdb').iot()
+    if (!iot) {
+		return
+    }
+
+    return iot.report_issue.apply(iot, arguments)
+}
+
+/**
  *  Helper function to gGet a value from the IOT.Keystore
  */
 Driver.prototype.cfg_get = function(key, otherwise) {

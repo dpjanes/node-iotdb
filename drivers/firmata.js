@@ -608,6 +608,12 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
             console.log("#")
             console.log("############################## ")
 
+			self.report_issue({
+				section: "drivers",
+				name: "twitter",
+				message: "configure with $ iotdb-control machine-id"
+			})
+
             return
         }
     } else if (!machine_id) {

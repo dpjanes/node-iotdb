@@ -205,6 +205,12 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
             console.log("#   iotdb-control configure-driver hue --global")
             console.log("#")
             console.log("############################## ")
+			
+			self.report_issue({
+				section: "drivers",
+				name: "hue",
+				message: "configure with: $ iotdb-control configure-driver hue --global"
+			})
         }
         return
     }

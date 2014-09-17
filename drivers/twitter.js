@@ -123,6 +123,12 @@ TwitterDriver.prototype.register = function(iot) {
         console.log("#   https://iotdb.org/docs/node/twitter")
         console.log("#")
         console.log("############################## ")
+
+		self.report_issue({
+			section: "drivers",
+			name: "twitter",
+			message: "configure with instuctions: https://iotdb.org/docs/node/twitter"
+		})
         return
     }
     

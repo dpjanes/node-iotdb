@@ -105,6 +105,12 @@ SmartThingsDriver.prototype.register = function(iot) {
             console.log("# SmartThingsDriver.register: SmartThings not configured")
             console.log("# (instructions coming)")
             console.log("############################## ")
+
+			self.report_issue({
+				section: "drivers",
+				name: "smartthings",
+				message: "not configured (instructions coming)"
+			})
             return
         }
 
