@@ -35,14 +35,20 @@ if (process.env.NODE_DEBUG && /upnp/.test(process.env.NODE_DEBUG)) {
 }
 
 function ControlPoint() {
-  events.EventEmitter.call(this);
-  this.server = dgram.createSocket('udp4');
-  var self = this;
-  this.server.on('message', function(msg, rinfo) {self.onRequestMessage(msg, rinfo);});
-  this._initParsers();
-  this.server.bind(SSDP_PORT, function () {
-    this.server.addMembership(BROADCAST_ADDR); //fixed issue #2
-  }.bind(this));
+	var self = this
+
+	events.EventEmitter.call(this);
+	this.server = dgram.createSocket('udp4', function() {
+		// console.log("- UPnP:ControlPoint/createSocket", arguments)
+	});
+
+	this.server.on('message', function(msg, rinfo) {
+		self.onRequestMessage(msg, rinfo);
+	});
+	this._initParsers();
+	this.server.bind(SSDP_PORT, function () {
+		this.server.addMembership(BROADCAST_ADDR); //fixed issue #2
+	}.bind(this));
 }
 util.inherits(ControlPoint, events.EventEmitter);
 exports.ControlPoint = ControlPoint;
@@ -128,7 +134,14 @@ ControlPoint.prototype.search = function(st) {
   client.bind(); // So that we get a port so we can listen before sending
 
   // Broadcast request
-  client.send(message, 0, message.length, SSDP_PORT, BROADCAST_ADDR);
+  // console.log("- UPnP:ControlPoint.search", "sending", message)
+  client.send(message, 0, message.length, SSDP_PORT, BROADCAST_ADDR, function(err, bytes) {
+  	if (err) {
+		console.log("# UPnP:ControlPoint.search/client.send", "err", err)
+	} else {
+		// console.log("- UPnP:ControlPoint.search/client.send", "bytes sent", bytes)
+	}
+  });
   debug('REQUEST SEARCH ' + st);
 
   // MX is set to 3, wait for 1 additional sec. before closing the client

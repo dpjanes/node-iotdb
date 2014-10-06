@@ -162,7 +162,7 @@ IOT.prototype.configure = function(paramd) {
     self.model_exemplard = {};
     self.thing_instanced = {}
     self.store_instanced = {}
-	self.issueds = []
+    self.issueds = []
 
     self.cfg_load_oauth()
     self.cfg_load_keystore()
@@ -428,11 +428,11 @@ IOT.prototype._check_requirements = function() {
             console.log("#")
             console.log("############################## ")
 
-			self.report_issue({
-				section: "iotdb",
-				name: "username",
-				message: "set with $ iotdb-control iotdb-oauth --global"
-			})
+            self.report_issue({
+                section: "iotdb",
+                name: "username",
+                message: "set with $ iotdb-control iotdb-oauth --global"
+            })
         }
     }
 
@@ -446,11 +446,11 @@ IOT.prototype._check_requirements = function() {
         console.log("#")
         console.log("############################## ")
 
-		self.report_issue({
-			section: "iotdb",
-			name: "machine_id",
-			message: "set with $ iotdb-control machine-id"
-		})
+        self.report_issue({
+            section: "iotdb",
+            name: "machine_id",
+            message: "set with $ iotdb-control machine-id"
+        })
     }
 
     if (self.initd.require_iotdb_oauth) {
@@ -1923,19 +1923,19 @@ IOT.prototype._load_drivers = function() {
                 "\n  stack", paramd.exception ? paramd.exception.stack : null
                 )
 
-			if (paramd.exception) {
-				self.report_issue({
-					section: "drivers", 
-					name: path.basename(paramd.filename),
-					exception: paramd.exception
-				})
-			} else if (paramd.message) {
-				self.report_issue({
-					section: "drivers", 
-					name: path.basename(paramd.filename),
-					message: paramd.exception
-				})
-			}
+            if (paramd.exception) {
+                self.report_issue({
+                    section: "drivers", 
+                    name: path.basename(paramd.filename),
+                    exception: paramd.exception
+                })
+            } else if (paramd.message) {
+                self.report_issue({
+                    section: "drivers", 
+                    name: path.basename(paramd.filename),
+                    message: paramd.exception
+                })
+            }
             return
         }
 
@@ -1965,19 +1965,19 @@ IOT.prototype._load_stores = function() {
                 "\n  error", paramd.error, 
                 "\n  exception", paramd.exception)
 
-			if (paramd.exception) {
-				self.report_issue({
-					section: "stores", 
-					name: path.basename(paramd.filename),
-					exception: paramd.exception
-				})
-			} else if (paramd.message) {
-				self.report_issue({
-					section: "stores", 
-					name: path.basename(paramd.filename),
-					message: paramd.exception
-				})
-			}
+            if (paramd.exception) {
+                self.report_issue({
+                    section: "stores", 
+                    name: path.basename(paramd.filename),
+                    exception: paramd.exception
+                })
+            } else if (paramd.message) {
+                self.report_issue({
+                    section: "stores", 
+                    name: path.basename(paramd.filename),
+                    message: paramd.exception
+                })
+            }
 
             return
         }
@@ -2283,96 +2283,109 @@ IOT.prototype.dump = function(things) {
 }
 
 /**
- *	Info on what got loaded
+ *  Info on what got loaded
  */
 IOT.prototype.health = function() {
-	var self = this;
+    var self = this;
 
-	console.log("#####################")
+    console.log("#####################")
 
-	// drivers
+    // drivers
     console.log("# available drivers:")
     console.log("#")
 
-	for (var di in self.driver_exemplars) {
-		var d = self.driver_exemplars[di]
-		console.log("#  ", _.compact(d.driver))
-	}
-	
+    for (var di in self.driver_exemplars) {
+        var d = self.driver_exemplars[di]
+        console.log("#  ", _.compact(d.driver))
+    }
+    
     console.log("#")
 
-	// stores
+    // stores
     console.log("# available stores:")
     console.log("#")
 
-	for (var sname in self.store_instanced) {
-		var s = self.store_instanced[sname]
-		console.log("#  ", _.compact(sname))
-	}
+    for (var sname in self.store_instanced) {
+        console.log("#  ", _.compact(sname))
+    }
     console.log("#")
 
-	// issues
-	if (self.issueds) {
-		var sections = {}
-		for (var ii in self.issueds) {
-			sections[self.issueds[ii].section] = 1
-		}
-		sections = _.keys(sections)
-		sections.sort()
+    // models
+    console.log("# available models:")
+    console.log("#")
 
-		for (var si in sections) {
-			var section = sections[si]
-			console.log("# issue with %s:", section)
-			console.log("#")
+    var mnames = []
+    for (var mname in self.model_exemplard) {
+        mnames.push(_.compact(mname))
+    }
+    mnames.sort()
+    for (var mi in mnames) {
+        console.log("#  ", mnames[mi])
+    }
+    console.log("#")
 
-			for (var ii in self.issueds) {
-				var issued = self.issueds[ii]
-				if (issued.section != section) {
-					continue
-				}
+    // issues
+    if (self.issueds) {
+        var sections = {}
+        for (var ii in self.issueds) {
+            sections[self.issueds[ii].section] = 1
+        }
+        sections = _.keys(sections)
+        sections.sort()
 
-				console.log("#   %s: %s", issued.name, issued.message)
-			}
+        for (var si in sections) {
+            var section = sections[si]
+            console.log("# issue with %s:", section)
+            console.log("#")
 
-			console.log("#")
-		}
-	}
-	
+            for (var ii in self.issueds) {
+                var issued = self.issueds[ii]
+                if (issued.section != section) {
+                    continue
+                }
 
-	/*
-	var keys = _.keys(
-	keys.sort()
-	kk
+                console.log("#   %s: %s", issued.name, issued.message)
+            }
 
-	for (var ki in keys) {
-		var key = keys[ki]
-	}
-	*/
+            console.log("#")
+        }
+    }
+    
 
-	/*
+    /*
+    var keys = _.keys(
+    keys.sort()
+    kk
+
+    for (var ki in keys) {
+        var key = keys[ki]
+    }
+    */
+
+    /*
     self.model_exemplard = {};
     self.thing_instanced = {}
     self.store_instanced = {}
-	console.log("# Drivers")
-	*/
-	console.log("#####################")
+    console.log("# Drivers")
+    */
+    console.log("#####################")
 }
 
 IOT.prototype.report_issue = function(issued) {
-	var self = this
+    var self = this
 
-	assert.ok(issued.section)
-	assert.ok(issued.name)
+    assert.ok(issued.section)
+    assert.ok(issued.name)
 
-	if (issued.exception && _.isEmpty(issued.message)) {
-		if (!_.isEmpty(issued.exception.message)) {
-			issued.message = issued.exception.message
-		} else {
-			issued.message = "" + issued.exception
-		}
-	}
+    if (issued.exception && _.isEmpty(issued.message)) {
+        if (!_.isEmpty(issued.exception.message)) {
+            issued.message = issued.exception.message
+        } else {
+            issued.message = "" + issued.exception
+        }
+    }
 
-	self.issueds.push(issued)
+    self.issueds.push(issued)
 }
 
 /*
