@@ -72,6 +72,7 @@ exports.iot = function(paramd) {
             load_stores: true,
             iotdb_thing_get: false,
             iotdb_thing_create: false,
+            show_health: true,
 
             end: null
         })
@@ -262,6 +263,7 @@ IOT.prototype.cfg_load_paramd = function(initd) {
         iotdb_places_get: false,
         iotdb_thing_get: false,
         iotdb_thing_create: false,
+        show_health: false,
 
         require_username: false,
         require_iotdb_ouath: false,
@@ -558,6 +560,10 @@ IOT.prototype.ready_delta = function(key, delta) {
                 self.__ready_once = true
             }
             self.emit(EVENT_ON_READY)
+
+            if (self.initd.show_health) {
+                self.health()
+            }
 
             if (self.initd.discover) {
                 if (self._auto_discovered) {
