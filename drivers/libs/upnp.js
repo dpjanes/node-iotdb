@@ -35,20 +35,20 @@ if (process.env.NODE_DEBUG && /upnp/.test(process.env.NODE_DEBUG)) {
 }
 
 function ControlPoint() {
-	var self = this
+    var self = this
 
-	events.EventEmitter.call(this);
-	this.server = dgram.createSocket('udp4', function() {
-		// console.log("- UPnP:ControlPoint/createSocket", arguments)
-	});
+    events.EventEmitter.call(this);
+    this.server = dgram.createSocket('udp4', function() {
+        // console.log("- UPnP:ControlPoint/createSocket", arguments)
+    });
 
-	this.server.on('message', function(msg, rinfo) {
-		self.onRequestMessage(msg, rinfo);
-	});
-	this._initParsers();
-	this.server.bind(SSDP_PORT, function () {
-		this.server.addMembership(BROADCAST_ADDR); //fixed issue #2
-	}.bind(this));
+    this.server.on('message', function(msg, rinfo) {
+        self.onRequestMessage(msg, rinfo);
+    });
+    this._initParsers();
+    this.server.bind(SSDP_PORT, function () {
+        this.server.addMembership(BROADCAST_ADDR); //fixed issue #2
+    }.bind(this));
 }
 util.inherits(ControlPoint, events.EventEmitter);
 exports.ControlPoint = ControlPoint;
@@ -79,7 +79,7 @@ ControlPoint.prototype.onResponseMessage = function(msg, rinfo){
     //console.log("rinfo: " + JSON.stringify(rinfo));
     //console.log("msg: " + msg);
 
-  this.responseParser.reinitialize(HTTP_PARSER_RESPONSE);	// reinitialise the HTTP parser
+  this.responseParser.reinitialize(HTTP_PARSER_RESPONSE);   // reinitialise the HTTP parser
   var ret = this.responseParser.execute(msg, 0, msg.length);
   if (!(ret instanceof Error)) {
     var res = this.responseParser.incoming;
@@ -136,11 +136,11 @@ ControlPoint.prototype.search = function(st) {
   // Broadcast request
   // console.log("- UPnP:ControlPoint.search", "sending", message)
   client.send(message, 0, message.length, SSDP_PORT, BROADCAST_ADDR, function(err, bytes) {
-  	if (err) {
-		console.log("# UPnP:ControlPoint.search/client.send", "err", err)
-	} else {
-		// console.log("- UPnP:ControlPoint.search/client.send", "bytes sent", bytes)
-	}
+    if (err) {
+        console.log("# UPnP:ControlPoint.search/client.send", "err", err)
+    } else {
+        // console.log("- UPnP:ControlPoint.search/client.send", "bytes sent", bytes)
+    }
   });
   debug('REQUEST SEARCH ' + st);
 

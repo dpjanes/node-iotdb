@@ -61,7 +61,7 @@ var _cp = undefined;
 
 UPnPDriver.cp = function() {
     if (_cp === undefined) {
-		console.log("- UPnpDriver.cp", "made UpnpControlPoint")
+        console.log("- UPnpDriver.cp", "made UpnpControlPoint")
         _cp = new UpnpControlPoint();
 
         // we periodically kick off a new search to find devices that have come online
