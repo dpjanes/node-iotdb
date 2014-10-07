@@ -881,7 +881,7 @@ if (ad._.length == 0) {
         iotdb_thing_create: false,
     })
     iot.on_ready(function() {
-        var driver_iri = _.expand("iot-driver:" + ad._[1])
+        var driver_iri = _.expand(ad._[1], "iot-driver:")
         var found = false;
 
         for (var bi = 0; bi < iot.driver_exemplars.length; bi++) {

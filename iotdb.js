@@ -844,8 +844,8 @@ IOT.prototype.register_driver = function(driver) {
         var x = self.initd.drivers_disabled.indexOf(name)
         if (x != -1) {
             console.log("# IOT.register_driver",
-                "ignoring driver - disabled in iotdb.json", 
-                driver_exemplar.constructor.name)
+                "ignoring driver - disabled in iotdb.json (use iotdb-control to change)", 
+                "\n  driver:", name)
             return
         }
     }
@@ -1204,7 +1204,9 @@ IOT.prototype._discover_bind = function(paramd, things) {
         initd: _.deepCopy(paramd) // !!!! - ie we use the paramd as the initd
     })
 
-    self._clarify_model(paramd, paramd.model)
+    if (paramd.model) {
+        self._clarify_model(paramd, paramd.model)
+    }
 
     if (paramd.model_code) {
         paramd.model_code = _.identifier_to_dash_case(paramd.model_code)
@@ -1228,7 +1230,7 @@ IOT.prototype._discover_bind = function(paramd, things) {
                 })
                 self._discover(thing, things)
             } else {
-                console.log("- IOT._discover_bind: unexpected state", callbackd.paramd)
+                console.log("# IOT._discover_bind: unexpected state", callbackd.paramd)
             }
         });
     } else if (paramd.initd.iri) {
@@ -1249,11 +1251,14 @@ IOT.prototype._discover_bind = function(paramd, things) {
                     initd: paramd.initd
                 }, things)
             } else {
-                console.log("- IOT._discover_bind: unexpected state: no iot:model?")
+                console.log("# IOT._discover_bind: unexpected state: no iot:model?")
             }
         })
+    } else if (paramd.initd.driver) {
+        // console.log("# IOT._discover_bind: ERROR: initd.driver not supported yet", paramd.initd.driver)
+        return self._discover_nearby(_.identity_expand(paramd.initd.driver), things)
     } else {
-        console.log("- IOT._discover_bind: ERROR: no model_code, model_iri or initd.iri")
+        console.log("# IOT._discover_bind: ERROR: no model_code, model_iri or initd.iri")
     }
 }
 
@@ -2356,24 +2361,7 @@ IOT.prototype.health = function() {
             console.log("#")
         }
     }
-    
 
-    /*
-    var keys = _.keys(
-    keys.sort()
-    kk
-
-    for (var ki in keys) {
-        var key = keys[ki]
-    }
-    */
-
-    /*
-    self.model_exemplard = {};
-    self.thing_instanced = {}
-    self.store_instanced = {}
-    console.log("# Drivers")
-    */
     console.log("#####################")
 }
 

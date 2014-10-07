@@ -29,6 +29,7 @@ var driver = require('../driver')
 var FIFOQueue = require('../queue').FIFOQueue
 var noble = require('noble');
 var util = require('util');
+var fs = require('fs');
 var events = require('events');
 
 var n = null;
@@ -72,6 +73,7 @@ var BLEDriver = function(paramd) {
             }
 
             console.log("- BLEDriver: characteristics discovered")
+            self.emit("found-characteristics")
 
             if (self.subscribes) {
                 for (var si in self.subscribes) {
@@ -146,6 +148,204 @@ BLEDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
+}
+
+/**
+ */
+BLEDriver.prototype.configure = function(ad, callback) {
+    var self = this;
+
+    if (ad['make-models']) {
+        self._discover_drivers()
+    } else {
+        console.log("# BLEDriver.configure: try adding '--make-models'")
+        process.exit(1)
+    }
+}
+
+/**
+ */
+BLEDriver.prototype._discover_drivers = function(driver) {
+    var self = this
+
+    // Folder for discovered devices
+    var discover_folder = ".ble"
+    try {
+        fs.mkdirSync(discover_folder)
+    } catch (err) {
+    }
+
+    self.discover({}, function(driver) {
+        self._discover_driver(driver, {
+            discover_folder: discover_folder
+        })
+    })
+}
+
+/**
+ */
+BLEDriver.prototype._discover_driver = function(driver, paramd) {
+    var self = this
+
+    paramd.dirname = paramd.discover_folder + "/" + driver.p.uuid
+    try {
+        fs.mkdirSync(paramd.dirname)
+    } catch (err) {
+    }
+
+    paramd.filename = paramd.discover_folder + "/" + driver.p.uuid + "/" + driver.s.uuid;
+
+    driver.on("found-characteristics", function() {
+        self._write_driver(driver, paramd)
+    })
+}
+
+BLEDriver.prototype._write_driver = function(driver, paramd) {
+    var iotdb = require('../iotdb')
+
+    var lines = []
+
+    lines.push(util.format("/*"))
+    lines.push(util.format(" * Note: this was automatically created"))
+    lines.push(util.format(" * and really should be used as a reference"))
+    lines.push(util.format(" * than anything else. The attribute 'a*' codes"))
+    lines.push(util.format(" * should be renamed to something more useful at"))
+    lines.push(util.format(" * least but make sure you rename the corresponding"))
+    lines.push(util.format(" * values in driver_in/driver_out"))
+    lines.push(util.format(" *"))
+    lines.push(util.format(" * Peripheral UUID: %s", driver.p.uuid))
+
+    if (driver.p.advertisement && driver.p.advertisement.localName) {
+        lines.push(util.format(" * Advertisement Name: %s", driver.p.advertisement.localName))
+    }
+
+    lines.push(util.format(" * Service UUID: %s", driver.s.uuid))
+    if (driver.s.name) {
+        lines.push(util.format(" * Service Name: %s", driver.s.name))
+    }
+    if (driver.s.type) {
+        lines.push(util.format(" * Service Type: %s", driver.s.type))
+    }
+    lines.push(util.format(" */"))
+    lines.push(util.format(""))
+    lines.push(util.format("'use strict'"))
+    lines.push(util.format("var iotdb = require('iotdb')"))
+
+    lines.push(util.format("exports.Model = iotdb.make_model('BLE_%s')", driver.s.uuid))
+    lines.push(util.format("    .driver_identity({"))
+    lines.push(util.format("        driver_iri: 'iot-driver:ble',"))
+    if (driver.p.advertisement && driver.p.advertisement.localName) {
+        lines.push(util.format("        localName: '%s',", driver.p.advertisement.localName))
+    }
+    lines.push(util.format("        serviceUuid: '%s'", driver.s.uuid))
+    lines.push(util.format("    })"))
+
+    var code_mapping = []
+    var notifys = []
+    var reads = []
+    var writes = []
+
+    var count = 0
+    for (var cuuid in driver.cd) {
+        count += 1
+        var c = driver.cd[cuuid]
+
+        lines.push(util.format("    .attribute("))
+        lines.push(util.format("        iotdb.make_integer(':value')"))
+        lines.push(util.format("            .code('a%d')", count))
+        code_mapping.push([ 'a' + count, c.uuid ])
+        if (c.name) { 
+            lines.push(util.format("            .name('%s')", c.name));
+        } else {
+            lines.push(util.format("            .name('%s')", c.uuid));
+        }
+        if (c.type) { 
+            lines.push(util.format("            .description('BLE type %s')", c.type));
+        }
+
+        var is_read = false
+        var is_write = false
+        var is_notify = false
+        for (var pi in c.properties) {
+            var property = c.properties[pi]
+            if (property == "read") {
+                is_read = true
+            } else if (property == "write") {
+                is_write = true
+            } else if (property == "writeWithoutResponse") {
+                is_write = true
+            } else if (property == "indicate") {
+                is_notify = true
+            } else if (property == "notify") {
+                is_notify = true
+            } else {
+                console.log("UNKNOWN", property)
+            }
+        }
+
+        if (is_read) {
+            lines.push(util.format("            .reading()"))
+        }
+        if (is_write) {
+            lines.push(util.format("            .control()"))
+        }
+        if (is_notify) {
+            notifys.push(c.uuid)
+        }
+
+        lines.push(util.format("    )"))
+    }
+
+    // notifications
+    lines.push(util.format("    .driver_setup(function(paramd) {"))
+    lines.push(util.format("        paramd.setupd = {"))
+    lines.push(            "            subscribes: [")
+    for (var ni in notifys) {
+        lines.push(util.format("               '%s'%s", notifys[ni], ni < (notifys.length - 1) ? "," : ""))
+    }
+    lines.push(            "            ]")
+    lines.push(util.format("        };"))
+    lines.push(util.format("    })"))
+
+    // values going to the BLE thing
+    lines.push(util.format("    .driver_out(function(paramd) {"))
+    for (var wi in writes) {
+        var attr = writes[wi][0];
+        var uuid = writes[wi][1];
+        lines.push(util.format("        if (paramd.thingd['%s'] !== undefined) {", attr))
+        lines.push(util.format("        }"))
+    }
+    lines.push(util.format("    })"))
+
+    // values from the BLE thing
+    lines.push(util.format("    .driver_in(function(paramd) {"))
+    for (var ri in reads) {
+        var attr = reads[ri][0];
+        var uuid = reads[ri][1];
+        lines.push(util.format("        if (paramd.driverd['%s'] !== undefined) {", uuid))
+        lines.push(util.format("            paramd.thingd['%s'] = paramd.driverd['%s'].readUInt8()", attr, uuid))
+        lines.push(util.format("        }"))
+    }
+    lines.push(util.format("    })"))
+
+    lines.push(util.format("    .make();"))
+
+    console.log("- BLEDriver", "wrote", paramd.filename)
+    fs.writeFileSync(paramd.filename, lines.join("\n") + "\n")
+
+/*
+  uuid: '2a19',
+  name: 'Battery Level',
+  type: 'org.bluetooth.characteristic.battery_level',
+  properties: [ 'read', 'notify' ],
+  descriptors: null }
+*/
+
+
+    // console.log("D", driver)
+    // console.log("P.A", driver.p.advertisement)
+
+    // var model = iotdb.make_model('BLE_' + driver.p.uuid)
 }
 
 /**
