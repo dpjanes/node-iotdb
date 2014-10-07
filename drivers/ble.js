@@ -22,7 +22,7 @@
  *  limitations under the License.
  */
 
-"use strict"
+// "use strict"
 
 var _ = require("../helpers");
 var driver = require('../driver')
@@ -204,6 +204,8 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
     var iotdb = require('../iotdb')
 
     var lines = []
+
+    console.log(util.inspect(driver, true, 10))
 
     lines.push(util.format("/*"))
     lines.push(util.format(" * Note: this was automatically created"))
@@ -425,7 +427,11 @@ BLEDriver.prototype.push = function(paramd) {
 
                 var value = paramd.driverd[uuid]
                 if (value) {
-                    c.write(new Buffer(value))
+                    if (Buffer.isBuffer(value)) {
+                        c.write(value)
+                    } else {
+                        c.write(new Buffer(value))
+                    }
                 }
             }
 

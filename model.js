@@ -761,8 +761,11 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
         return self.__driver_supported(driver);
     } else if (self.driver_identityd !== null) {
         var match_identityd = driver.identity(true);
-        // console.log("HERE:THING (superd)", match_identityd)
-        // console.log("HERE:DRIVER (subd)", self.driver_identityd);
+        /*
+        console.log("---")
+        console.log("HERE:THING (superd)", match_identityd)
+        console.log("HERE:DRIVER (subd)", self.driver_identityd);
+         */
         if (_.identity_overlap(match_identityd, self.driver_identityd)) {
             return true;
         }
@@ -984,11 +987,22 @@ Model.prototype._do_pushes = function(attributed) {
         return;
     }
 
+    if (self.__thing_scratchd === undefined) {
+        self.__thing_scratchd = {}
+    }
+    if (Model.__model_scratchd === undefined) {
+        Model.__model_scratchd = {}
+    }
+
     var paramd = {
         initd: self.initd,
         driverd: {},
         thingd: self._deep_copy_state(self, true),
-        libs : libs.libs
+        libs : libs.libs,
+        scratchd: {
+            thingd: self.__thing_scratchd,
+            modeld: Model.__model_scratchd,
+        }
     }
     // console.log("HERE:A.1", self.driver_instance)
     // console.log("HERE:A.2", paramd)

@@ -654,7 +654,7 @@ ThingArray.prototype.filter = function(d) {
     }
 
     if (out_items.length == 0) {
-        console.log("# ThingArray.filter: warning - nothing matched", d)
+        // console.log("# ThingArray.filter: warning - nothing matched", d)
     }
 
     /*

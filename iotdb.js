@@ -558,12 +558,12 @@ IOT.prototype.ready_delta = function(key, delta) {
             if (!self.__ready_once) {
                 console.log("- IOT.on_ready: READY!")
                 self.__ready_once = true
+
+                if (self.initd.show_health) {
+                    self.health()
+                }
             }
             self.emit(EVENT_ON_READY)
-
-            if (self.initd.show_health) {
-                self.health()
-            }
 
             if (self.initd.discover) {
                 if (self._auto_discovered) {
@@ -1118,7 +1118,6 @@ IOT.prototype._driver_swap = function(existing_thing, new_thing) {
 IOT.prototype._discover_thing = function(thing_exemplar, things) {
     var self = this;
 
-    console.log("- IOT._discover_thing", thing_exemplar.identity());
     if (things === undefined) {
         console.trace()
         process.exit(0)
@@ -1228,6 +1227,7 @@ IOT.prototype._discover_bind = function(paramd, things) {
                     driver: _.expand(paramd.driver),
                     initd: paramd.initd
                 })
+                // XXX - THIS SHOULD BE CHANGED to _discover_thing
                 self._discover(thing, things)
             } else {
                 console.log("# IOT._discover_bind: unexpected state", callbackd.paramd)
