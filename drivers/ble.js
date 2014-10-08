@@ -61,8 +61,26 @@ var BLEDriver = function(paramd) {
     events.EventEmitter.call(self);
 
     /* */
+    if (self.p) {
+        self.p.__driver_count++
+
+        self.p.on('disconnect', function() {
+            if (!self.p) {
+                return
+            }
+
+            console.log("- BLEDriver", "disconnected")
+            self.disconnect()
+        });
+    }
+
+    /* */
     if (self.s) {
         self.s.discoverCharacteristics(null, function(err, cs) {
+            if (!self.p || !self.s) {
+                return
+            }
+
             self.cd = {}
             if (cs) {
                 for (var ci in cs) {
@@ -159,6 +177,29 @@ BLEDriver.prototype.configure = function(ad, callback) {
         console.log("# BLEDriver.configure: try adding '--make-models'")
         process.exit(1)
     }
+}
+
+/**
+ *  Handle disconnects
+ */
+BLEDriver.prototype.disconnect = function() {
+    var self = this;
+
+    driver.Driver.prototype.disconnect.call(self)
+
+    if (self.s) {
+        console.log("- BLEDriver.disconnect", "uuid", self.s.uuid)
+    }
+    if (self.p) {
+        if (--self.p.__driver_count <= 0) {
+            p_active[self.p.uuid] = false
+            self.p.disconnect()
+            self.p.removeAllListeners()
+        }
+    }
+
+    self.p = null;
+    self.s = null;
 }
 
 /**
@@ -351,6 +392,21 @@ BLEDriver.prototype.setup = function(paramd) {
 }
 
 /**
+ *  See {@link Driver#reachable}
+ */
+BLEDriver.prototype.reachable = function() {
+    var self = this
+
+    if (!self.p) {
+        return false
+    }
+
+    return true
+}
+
+var p_active = {}
+
+/**
  *  See {@link Driver#discover Driver.discover}
  */
 BLEDriver.prototype.discover = function(paramd, discover_callback) {
@@ -363,6 +419,14 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
     
     n = noble;
     n.on('discover', function(p) {
+        if (p_active[p.uuid]) {
+            return
+        } else {
+            p_active[p.uuid] = true
+        }
+
+        p.__driver_count = 0
+
         console.log("- p-discover", 
             "uuid", p.uuid, 
             "localName", p.advertisement.localName, 
@@ -375,6 +439,7 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
         });
         p.on('servicesDiscover', function(ss) {
             console.log("- p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
+            p.__driver_count++
             ss.map(function(s) {
                 console.log("- p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
                 discover_callback(new BLEDriver({
@@ -383,13 +448,17 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
                     s: s
                 }))
             });
+            if (--p.__driver_count <= 0) {
+                p.disconnect()
+                p_active[p.uuid] = false
+            }
         });
         console.log("- BLEDriver.discover_nearby", "calling p.connect", "p-uuid", p.uuid);
         p.connect();
     });
 
     console.log("- BLEDriver.discover_nearby", "n.startScanning");
-    n.startScanning();
+    n.startScanning([], true);
 }
 
 /**
@@ -399,6 +468,9 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
  */
 BLEDriver.prototype.push = function(paramd) {
     var self = this;
+    if (!self.p) {
+        return
+    }
 
     var qitem = {
         run: function() {
@@ -436,6 +508,10 @@ BLEDriver.prototype.push = function(paramd) {
  */
 BLEDriver.prototype.pull = function() {
     var self = this;
+
+    if (!self.p) {
+        return
+    }
 
     /*
      *  Some BLE devices (Bean Temperature) will do

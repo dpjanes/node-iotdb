@@ -1091,10 +1091,13 @@ IOT.prototype._driver_swap = function(existing_thing, new_thing) {
         "\n  driver_identityd", existing_thing.driver_identityd
     )
 
+    if (existing_thing.driver_instance) {
+        existing_thing.driver_instance.disconnect()
+    }
+
     existing_thing.driver_instance = new_thing.driver_instance
     existing_thing.pull()
 
-    new_thing.driver_instance.disconnect()
     new_thing.driver_instance = null
 }
 
