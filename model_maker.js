@@ -430,7 +430,7 @@ ModelMaker.prototype.validator = function(validator) {
 /**
  *  Return an object that is passed to the {@link Driver}
  *  in the function {@link Driver#setup setup} as 
- *  <code>param.setupd</code>.
+ *  <code>param.initd</code>.
  *
  *  <p>
  *  XXX documentation fix needed!
@@ -571,6 +571,7 @@ ModelMaker.prototype.make = function() {
         this.name = (self.__name !== null) ? self.__name : self.__code;
         this.description = self.__description;
         this.help = self.__help;
+        this.__scratchd = {}
         this.__push_keys = [];
         this.__parent_thing = null;
         this.__is_thing = true;

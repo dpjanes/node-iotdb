@@ -216,12 +216,12 @@ UPnPDriver.prototype.setup = function(paramd) {
         return
     }
 
-    console.log("- UPnDriver.setup", paramd.setupd);
+    console.log("- UPnDriver.setup", paramd.initd);
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    var service_urns = paramd.setupd['subscribe'];
+    var service_urns = paramd.initd.subscribes
     if (service_urns) {
         for (var sui = 0; sui < service_urns.length; sui++) {
             var service_urn = service_urns[sui];

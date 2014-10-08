@@ -69,6 +69,10 @@ Driver.prototype.driver_construct = function() {
 
     self.disconnected = false
 
+    // poll built it
+    self.poll_delta = 0
+    self.poll_timer_id = null
+
     // MQTT built in
     self.mqtt_host = self.cfg_get('mqtt_host', null)
     self.mqtt_port = self.cfg_get('mqtt_port', 1883)
@@ -191,19 +195,14 @@ Driver.prototype.discover = function(paramd, discover_callback) {
  *  @param {Thing} paramd.thing
  *  the thing that this being setup
  *
- *  @param {dictionary} paramd.setupd
- *  this is filled in by {@link Thing#setup_driver Model.setup_driver}. 
- *  Typically
- *  it will have instructions for setting up the driver,
- *  saying what you want monitored, what aspects of the driver
- *  you are working with and so forth
- *
  *  @param {dictionary} paramd.initd
  *  Invariant data that can be passed from the Model.
  *  Take it or leave it (see {@link JSONDriver})
- *
- *  @param {dictionary} paramd.device_setupd
- *  this MAY be filled in by the driver, but is currently unused
+ *  In can also b ffilled in by 
+ *  {@link Thing#setup_driver Model.setup_driver}. 
+ *  Typically it will have instructions for setting up the driver,
+ *  saying what you want monitored, what aspects of the driver
+ *  you are working with and so forth
  *
  *  @return {this}
  */
@@ -553,6 +552,41 @@ Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
             mqtt_message: in_message
         })
     }
+}
+
+/**
+ *  Initialize polling
+ */
+Driver.prototype.poll_init = function(initd) {
+    var self = this;
+
+    if (!initd) {
+        return
+    }
+    if (initd.poll) {
+        self.poll_delta = initd.poll
+    }
+}
+
+/**
+ *  Reschedule polling
+ */
+Driver.prototype.poll_reschedule = function() {
+    var self = this;
+
+    if (!self.poll_delta) {
+        return
+    }
+
+    if (self.poll_timer_id) {
+        clearTimeout(self.poll_timer_id);
+    }
+
+    self.poll_timer_id = setInterval(function() {
+        if (self.thing) {
+            self.thing.pull()
+        }
+    }, self.poll_delta * 1000);
 }
 
 /**

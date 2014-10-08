@@ -811,7 +811,7 @@ Model.prototype.thing_id = function() {
 }
 
 /**
- *  Call a thing to fill in <code>paramd.setupd</code>
+ *  Call a thing to fill in <code>paramd.initd</code>
  *  <p>
  *  Usually called from 
  *  {@link IOT#discover_nearby IOT.discover_nearby} or 
@@ -892,7 +892,23 @@ Model.prototype.pull = function() {
         console.log("# Model.pull: no self.driver_instance?");
         return;
     }
+    
+    /* --- allow model opportunity to send a message */
+    var paramd = {
+        is_pull: true,
+        initd: self.initd,
+        driverd: {},
+        thingd: {},
+        libs : libs.libs,
+        scratchd: self.__scratchd
+    }
+    self.driver_out(paramd);
 
+    if (!_.isEmpty(paramd.driverd)) {
+        self.driver_instance.push(paramd);
+    }
+
+    /* --- tell driver to pull --- */
     self.driver_instance.pull();
 
     return self;
@@ -973,7 +989,7 @@ Model.prototype._deep_copy_state = function(thing, use_push_keys) {
 Model.prototype._do_pushes = function(attributed) {
     var self = this;
 
-    // this magically
+    // this magically does things to '__deep_copy_state'
     self.__push_keys = _.keys(attributed)
 
     if (!self.driver_instance) {
@@ -987,26 +1003,13 @@ Model.prototype._do_pushes = function(attributed) {
         return;
     }
 
-    if (self.__thing_scratchd === undefined) {
-        self.__thing_scratchd = {}
-    }
-    if (Model.__model_scratchd === undefined) {
-        Model.__model_scratchd = {}
-    }
-
     var paramd = {
         initd: self.initd,
         driverd: {},
         thingd: self._deep_copy_state(self, true),
         libs : libs.libs,
-        scratchd: {
-            thingd: self.__thing_scratchd,
-            modeld: Model.__model_scratchd,
-        }
+        scratchd: self.__scratchd
     }
-    // console.log("HERE:A.1", self.driver_instance)
-    // console.log("HERE:A.2", paramd)
-    // console.log("HERE:A.3", _.keys(attributed))
     self.driver_out(paramd);
 
     if (!_.isEmpty(paramd.driverd)) {

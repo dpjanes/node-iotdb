@@ -1323,7 +1323,6 @@ IOT.prototype._bind_driver = function(thing, driver_instance) {
 
     var paramd = {
         thing: thing,
-        setupd: {},
         initd: {}
     }
 

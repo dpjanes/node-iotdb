@@ -49,13 +49,10 @@ var FeedDriver = function(paramd) {
     self.verbose = paramd.verbose
     self.driver = _.expand(paramd.driver)
     self.iri = null
-    self.reload = 120
     self.seend = {}
     self.fresh = true
     self.track_links = true
     self.started = new Date()
-
-    self.reloadTimerId = null;
 
     self._init(paramd.initd)
 
@@ -74,6 +71,10 @@ FeedDriver.prototype = new driver.Driver;
 FeedDriver.prototype._init = function(initd) {
     var self = this;
 
+    initd = _.defaults(initd, {
+        poll: 120
+    })
+
     if (!initd) {
         return
     }
@@ -86,6 +87,8 @@ FeedDriver.prototype._init = function(initd) {
     if (initd.track_links !== undefined) {
         self.track_links = initd.track_links
     }
+
+    self.poll_init(initd)
 }
 
 /**
@@ -179,13 +182,7 @@ FeedDriver.prototype._fetch = function() {
                 self._process(result.body)
             }
 
-            if (self.reloadTimerId) {
-                timers.clearTimeout(self.reloadTimerId);
-            }
-
-            self.reloadTimerId = timers.setInterval(function() {
-                self._fetch()
-            }, self.reload * 1000);
+            self.poll_reschedule()
         })
 }
 

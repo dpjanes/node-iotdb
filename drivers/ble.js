@@ -53,7 +53,6 @@ var BLEDriver = function(paramd) {
 
     self.driver = _.expand("iot-driver:ble")
     self.subscribes = null
-    self.to_thing_callback = null
 
     /* */
     self.queue = new FIFOQueue("BLEDriver");
@@ -72,7 +71,7 @@ var BLEDriver = function(paramd) {
                 }
             }
 
-            console.log("- BLEDriver: characteristics discovered")
+            console.log("- BLEDriver", "characteristics discovered")
             self.emit("found-characteristics")
 
             if (self.subscribes) {
@@ -80,20 +79,19 @@ var BLEDriver = function(paramd) {
                     var subscribe_uuid = self.subscribes[si];
                     var c = self.cd[subscribe_uuid]
                     if (c) {
-                        console.log("- BLEDriver:", "subscribe", subscribe_uuid)
+                        console.log("- BLEDriver", "subscribe", subscribe_uuid)
                         c.on('read', function(data, isNotification) {
-                            console.log("- BLEDriver:", "notified", data)
-                            if (self.to_thing_callback) {
-                                var driverd = {};
-                                driverd[subscribe_uuid] = data;
+                            var driverd = {};
+                            driverd[subscribe_uuid] = Array.prototype.slice.call(data, 0);
 
-                                self.to_thing_callback(driverd)
+                            self.pulled(driverd)
 
-                                console.log("- UPnPDriver.setup: stateChange", driverd);
-                            }
+                            console.log("- BLEDriver/on(read)", "notified", driverd);
                         })
                         c.notify(true, function(err) {
-                            console.log("- BLEDriver:", "notify", err)
+                            if (err) {
+                                console.log("- BLEDriver/notify", "err", err)
+                            }
                         })
                     }
                 }
@@ -300,13 +298,11 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
 
     // notifications
     lines.push(util.format("    .driver_setup(function(paramd) {"))
-    lines.push(util.format("        paramd.setupd = {"))
-    lines.push(            "            subscribes: [")
+    lines.push(util.format("        paramd.initd.subscribes = ["))
     for (var ni in notifys) {
-        lines.push(util.format("               '%s'%s", notifys[ni], ni < (notifys.length - 1) ? "," : ""))
+        lines.push(util.format("           '%s'%s", notifys[ni], ni < (notifys.length - 1) ? "," : ""))
     }
-    lines.push(            "            ]")
-    lines.push(util.format("        };"))
+    lines.push(            "        ]")
     lines.push(util.format("    })"))
 
     // values going to the BLE thing
@@ -332,35 +328,24 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
 
     lines.push(util.format("    .make();"))
 
-    console.log("- BLEDriver", "wrote", paramd.filename)
+    console.log("- BLEDriver._write_driver", "wrote", paramd.filename)
     fs.writeFileSync(paramd.filename, lines.join("\n") + "\n")
-
-/*
-  uuid: '2a19',
-  name: 'Battery Level',
-  type: 'org.bluetooth.characteristic.battery_level',
-  properties: [ 'read', 'notify' ],
-  descriptors: null }
-*/
-
-
-    // console.log("D", driver)
-    // console.log("P.A", driver.p.advertisement)
-
-    // var model = iotdb.make_model('BLE_' + driver.p.uuid)
 }
 
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-BLEDriver.prototype.setup = function(paramd, to_thing_callback) {
+BLEDriver.prototype.setup = function(paramd) {
     var self = this;
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    self.subscribes = paramd.setupd.subscribes;
-    self.to_thing_callback = to_thing_callback
+    if (paramd.initd) {
+        self.subscribes = paramd.initd.subscribes;
+        self.poll_init(paramd.initd)
+    }
+
 
     return self;
 }
@@ -417,11 +402,11 @@ BLEDriver.prototype.push = function(paramd) {
 
     var qitem = {
         run: function() {
-            console.log("- BLEDriver.push", paramd.driverd, paramd.initd)
+            console.log("- BLEDriver.push", paramd.driverd)
             for (var uuid in paramd.driverd) {
                 var c = self.cd[uuid]
                 if (!c) {
-                    console.log("- BLEDriver.push: uuid not found", uuid)
+                    console.log("- BLEDriver.push", "uuid not found", uuid)
                     continue
                 }
 
@@ -451,6 +436,13 @@ BLEDriver.prototype.push = function(paramd) {
  */
 BLEDriver.prototype.pull = function() {
     var self = this;
+
+    /*
+     *  Some BLE devices (Bean Temperature) will do
+     *  pulls that are actually pushes for requests.
+     *  This gets called as part of the process
+     */
+    self.poll_reschedule()
 
     return self;
 }

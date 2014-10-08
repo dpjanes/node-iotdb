@@ -51,7 +51,6 @@ var RESTDriver = function(paramd) {
     self.driver = _.expand(paramd.driver)
     self.iri = null
     self.content_type = "application/json"
-    self.poll = null
 
     self._init(paramd.initd)
 
@@ -79,10 +78,8 @@ RESTDriver.prototype._init = function(initd) {
     if (initd.content_type) {
         self.content_type = initd.content_type
     }
-    if (initd.poll) {
-        self.poll = initd.poll
-    }
 
+    self.poll_init(initd)
     self.mqtt_init(initd)
 }
 
@@ -282,15 +279,7 @@ RESTDriver.prototype.pull = function() {
                     /*
                      *  Schedule the next data pull
                      */
-                    if (self.poll != null) {
-                        if (self.reloadTimerId) {
-                            clearTimeout(self.reloadTimerId);
-                        }
-
-                        self.reloadTimerId = setInterval(function() {
-                            self.pull()
-                        }, self.poll * 1000);
-                    }
+                    self.poll_reschedule()
                 })
             ;
         }

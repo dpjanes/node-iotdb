@@ -91,10 +91,7 @@ var TwitterDriver = function(paramd) {
     self.search = null
 
     self.twitter = null
-    self.reload = 120
     self.seend = {}
-
-    self.reloadTimerId = null;
 
     self._init(paramd.initd)
 
@@ -116,7 +113,7 @@ TwitterDriver.prototype.register = function(iot) {
     twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com", null)
     if (twitter_oauthd == null) {
         console.log("############################## ")
-        console.log("# TwitterDriver._setup_poll: no OAuth information found for Twitter")
+        console.log("# TwitterDriver.register: no OAuth information found for Twitter")
         console.log("# - This means we cannot access twitter until this is set up")
         console.log("#")
         console.log("# - Please follow the instructions at:")
@@ -230,7 +227,7 @@ TwitterDriver.prototype.setup = function(paramd) {
     driver.Driver.prototype.setup.call(self, paramd);
 
     self._init(paramd.initd)
-    self._setup_poll()
+    self._setup_search()
 
     return self;
 }
@@ -279,7 +276,7 @@ TwitterDriver.prototype.pull = function() {
 }
 
 /* --- Internals --- */
-TwitterDriver.prototype._setup_poll = function() {
+TwitterDriver.prototype._setup_search = function() {
     var self = this;
 
     if (self.twitter) {
@@ -292,10 +289,10 @@ TwitterDriver.prototype._setup_poll = function() {
     self.twitter = new node_twitter(twitter_oauthd)
 
     if (self.search){
-        console.log("- TwitterDriver._setup_poll", "\n  search:", self.search)
+        console.log("- TwitterDriver._setup_search", "\n  search:", self.search)
         self.twitter.stream('filter', {track: self.search}, function(stream) {
             stream.on('error', function(e) {
-                console.log("- TwitterDriver._setup_poll", "\n  error:", e)
+                console.log("- TwitterDriver._setup_search", "\n  error:", e)
             })
             stream.on('data', function(s) {
                 self.pulled(s)

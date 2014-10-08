@@ -310,7 +310,7 @@ HueDriver.prototype.identity = function(kitchen_sink) {
  */
 HueDriver.prototype.setup = function(paramd) {
     var self = this;
-    console.log("- UPnDriver.setup", paramd.setupd);
+    console.log("- UPnDriver.setup");
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
