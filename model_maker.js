@@ -568,6 +568,7 @@ ModelMaker.prototype.make = function() {
         this.code = self.__code;
         this.Model = new_thing
 
+        this.__emitter = new events.EventEmitter()
         this.name = (self.__name !== null) ? self.__name : self.__code;
         this.description = self.__description;
         this.help = self.__help;

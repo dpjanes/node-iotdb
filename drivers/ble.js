@@ -136,6 +136,7 @@ BLEDriver.prototype.identity = function(kitchen_sink) {
     if (self.__identityd === undefined) {
         var identityd = {}
         identityd["driver"] = self.driver
+
         if (self.p && self.p.advertisement) {
             identityd["localName"] = self.p.advertisement.localName;
         }
@@ -402,6 +403,28 @@ BLEDriver.prototype.reachable = function() {
     }
 
     return true
+}
+
+/**
+ *  Request the Driver's metadata.
+ *  <p>
+ *  See {@link Driver#meta Driver.meta}
+ */
+BLEDriver.prototype.driver_meta = function() {
+    var self = this
+
+    if (!self.p) {
+        return
+    }
+
+    var metad = {}
+    metad["iot:dsid"] = _.expand("iot-driver:ble/" + self.p.uuid)
+
+    if (self.p.advertisement && self.p.advertisement.localName) {
+        metad["iot:name"] = self.p.advertisement.localName
+    }
+
+    return metad
 }
 
 var p_active = {}

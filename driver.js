@@ -233,13 +233,12 @@ Driver.prototype.disconnect = function() {
     self.disconnected = true
     self.emit(EVENT_DISCONNECT)
 
-    /*
-    if (self.mqtt_client) {
-        self.mqtt_client.end()
-        self.mqtt_client = null
+    if (self.thing) {
+        var the_thing = self.thing
+        process.nextTick(function() {
+            the_thing.meta_changed()
+        })
     }
-    */
-
     self.thing = null
 }
 

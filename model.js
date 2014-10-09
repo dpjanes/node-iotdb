@@ -682,14 +682,9 @@ Model.prototype.on_change = function(callback) {
 
     assert.ok(_.isFunction(callback))
 
-    var iot = require('./iotdb').iot()
-    if (iot) {
-        iot.on(EVENT_THING_CHANGED, function(thing) {
-            if (thing == self) {
-                callback(self, [])
-            }
-        })
-    }
+    self.__emitter.on(EVENT_THING_CHANGED, function(thing) {
+        callback(self, [])
+    })
 
     return self;
 }
@@ -702,14 +697,9 @@ Model.prototype.on_meta = function(callback) {
 
     assert.ok(_.isFunction(callback))
 
-    var iot = require('./iotdb').iot()
-    if (iot) {
-        iot.on(EVENT_META_CHANGED, function(thing) {
-            if (thing == self) {
-                callback(self, [])
-            }
-        })
-    }
+    self.__emitter.on(EVENT_META_CHANGED, function(thing) {
+        callback(self, [])
+    })
 
     return self;
 }
@@ -718,10 +708,7 @@ Model.prototype.on_meta = function(callback) {
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function() {
-    var iot = require('./iotdb').iot()
-    if (iot) {
-        iot.emit(EVENT_META_CHANGED, this)
-    }
+    this.__emitter.emit(EVENT_META_CHANGED, true)
 }
 
 /* --- driver section --- */
@@ -1167,10 +1154,7 @@ Model.prototype._do_notifies = function(attributed) {
 
     // levels of hackdom here
     if (any) {
-        var iot = require('./iotdb').iot()
-        if (iot) {
-            iot.emit(EVENT_THING_CHANGED, self)
-        }
+        this.__emitter.emit(EVENT_THING_CHANGED, self)
     }
 }
 

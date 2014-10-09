@@ -401,8 +401,6 @@ IOT.prototype.cfg_get_oauthd = function(iri, otherwise) {
     var api_location = node_url.parse(iri).host
     var oauthd = self.oauthdd[api_location]
 
-    // console.log("HERE:XXX", api_location, self.oauthdd)
-
     return oauthd ? oauthd : otherwise;
 }
 
@@ -1096,7 +1094,12 @@ IOT.prototype._driver_swap = function(existing_thing, new_thing) {
     }
 
     existing_thing.driver_instance = new_thing.driver_instance
+    new_thing.driver_instance.thing = existing_thing // jesus wept
+
     existing_thing.pull()
+    process.nextTick(function() {
+        existing_thing.meta_changed()
+    })
 
     new_thing.driver_instance = null
 }
