@@ -29,6 +29,7 @@ var temperature = require("./temperature")
 var parse_link = require("./parse_link")
 
 exports.libs = {
+    log: console.log,
     Color: color.Color,
     temperature: temperature.temperature,
     http: {

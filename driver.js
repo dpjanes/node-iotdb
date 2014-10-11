@@ -27,6 +27,7 @@ var timers = require('timers');
 var events = require('events');
 var util = require('util');
 var _ = require('./helpers');
+var libs = require("./libs/libs")
 
 var id_counter = 1
 var EVENT_DISCONNECT = 'disconnect'
@@ -243,6 +244,19 @@ Driver.prototype.disconnect = function() {
 }
 
 /**
+ *  Like disconnect, except the application is going down.
+ *  Return how long you'd like to wait until exiting.
+ *  May be called multiple times.
+ *
+ *  No need to chain if you know what you are doing
+ */
+Driver.prototype.shutdown = function() {
+    this.disconnect()
+
+    return 0
+}
+
+/**
  *  Push a new Driver state. This is typically called
  *  from {@link Thing#_do_pushes}.
  *
@@ -366,7 +380,8 @@ Driver.prototype.pulled = function(driverd) {
     var paramd = {
         thingd: {},
         driverd: driverd,
-        initd: self.thing.initd
+        initd: self.thing.initd,
+        libs: libs.libs
     }
 
     self.thing.driver_in(paramd)

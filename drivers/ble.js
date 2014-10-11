@@ -98,17 +98,22 @@ var BLEDriver = function(paramd) {
                     var c = self.cd[subscribe_uuid]
                     if (c) {
                         console.log("- BLEDriver", "subscribe", subscribe_uuid)
+                        c.on('notify', function(data, isNotification) {
+                            console.log("- BLEDriver/on(notify)", "notified", data);
+                        });
                         c.on('read', function(data, isNotification) {
                             var driverd = {};
                             driverd[subscribe_uuid] = Array.prototype.slice.call(data, 0);
 
                             self.pulled(driverd)
 
-                            console.log("- BLEDriver/on(read)", "notified", driverd);
+                            console.log("- BLEDriver/on(read)", "read", driverd) // , isNotification, c.notify);
                         })
                         c.notify(true, function(err) {
                             if (err) {
                                 console.log("- BLEDriver/notify", "err", err)
+                            } else {
+                                console.log("- BLEDriver/notify", "notify set up correctly")
                             }
                         })
                     }
@@ -201,6 +206,24 @@ BLEDriver.prototype.disconnect = function() {
 
     self.p = null;
     self.s = null;
+}
+
+/**
+ *  Handle shutdown
+ */
+BLEDriver.prototype.shutdown = function() {
+    var self = this
+
+    if (self.p) {
+        self.p.disconnect()
+        self.p.removeAllListeners()
+        self.p = null
+        self.s = null
+    }
+
+    noble.stopScanning()
+
+    return 2000
 }
 
 /**
@@ -462,6 +485,12 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
         });
         p.on('servicesDiscover', function(ss) {
             console.log("- p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
+            if (ss.length === 0) {
+                p.disconnect()
+                p_active[p.uuid] = false
+                return
+            }
+
             p.__driver_count++
             ss.map(function(s) {
                 console.log("- p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
@@ -471,10 +500,14 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
                     s: s
                 }))
             });
+
+            /* not sure what to do if there's no services - don't
+             * want it to keep getting rediscovered!
             if (--p.__driver_count <= 0) {
                 p.disconnect()
                 p_active[p.uuid] = false
             }
+             */
         });
         console.log("- BLEDriver.discover_nearby", "calling p.connect", "p-uuid", p.uuid);
         p.connect();

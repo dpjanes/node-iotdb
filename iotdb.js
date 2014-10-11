@@ -149,6 +149,7 @@ IOT.prototype.configure = function(paramd) {
 
     self.username = self.initd.username
     self.cfg_root = self.initd.cfg_root
+    self.shutting_down = false
 
     self.iotdb_prefix = self.initd.iotdb_prefix
     self.iotdb_oauthd = {}
@@ -181,6 +182,44 @@ IOT.prototype.configure = function(paramd) {
     self.ready_delta('iotdb_places_get', -1)
     self.ready_delta('load_meta', -1)
     self.ready_delta('configure', -1)
+
+    /* cleanup code */
+    process.on('exit', self._exit_cleanup.bind(self,{from:'exit'}));
+    process.on('SIGINT', self._exit_cleanup.bind(self, {from:'SIGINT',exit:true,cleanup:true}));
+    // process.on('uncaughtException', self._exit_cleanup.bind(self, {from:'exception',exit:true,cleanup:true}));
+}
+
+IOT.prototype._exit_cleanup = function(paramd, err) {
+    var self = this
+
+    self.shutting_down = true
+    console.log("- IOT._exit_cleanup", paramd, err)
+
+    var time_wait = 0
+    if (paramd.cleanup) {
+        for (var tid in self.thing_instanced) {
+            var thing = self.thing_instanced[tid]
+            if (!thing || !thing.driver_instance) {
+                continue
+            }
+
+            var driver_instance = thing.driver_instance
+            thing.driver_instance = null
+
+            var time_needed = driver_instance.shutdown()
+            time_wait = Math.max(time_wait, time_needed)
+        }
+    }
+
+    if (paramd.exit) {
+        if (time_wait === 0) {
+            process.exit(0)
+        } else {
+            console.log("# IOT._exit_cleanup: exiting in", time_wait / 1000.0)
+            setTimeout(process.exit, time_wait);
+        }
+    }
+
 }
 
 /**
@@ -978,6 +1017,12 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
         var discover_paramd = {
         }
         driver_exemplar.discover(discover_paramd, function(driver) {
+            if (self.shutting_down) {
+                console.log("# IOT._discover_nearby", "ignoring this Driver because shutting down")
+                driver.disconnect()
+                return
+            }
+
             // see if this driver has already been handled
             var driver_identityd = driver.identity()
             console.log("- IOT._discover_nearby", "\n  driver.identityd", driver_identityd);
@@ -1139,6 +1184,12 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
             initd: thing_exemplar.initd
         }
         driver_exemplar.discover(discover_paramd, function(driver) {
+            if (self.shutting_down) {
+                console.log("# IOT._discover_thing", "ignoring this Driver because shutting down")
+                driver.disconnect()
+                return
+            }
+
             var thing = thing_exemplar.make({
                 initd: thing_exemplar.initd
             });

@@ -875,7 +875,7 @@ Model.prototype.driver_out = function(paramd) {
 Model.prototype.pull = function() {
     var self = this;
 
-    if (self.driver_instance === undefined) {
+    if (!self.driver_instance) {
         console.log("# Model.pull: no self.driver_instance?");
         return;
     }
