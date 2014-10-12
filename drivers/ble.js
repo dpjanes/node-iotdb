@@ -62,14 +62,12 @@ var BLEDriver = function(paramd) {
 
     /* */
     if (self.p) {
-        self.p.__driver_count++
-
         self.p.on('disconnect', function() {
             if (!self.p) {
                 return
             }
 
-            console.log("- BLEDriver", "disconnected")
+            console.log("- BLEDriver/on(disconnect)", "disconnected")
             self.disconnect()
         });
     }
@@ -191,18 +189,8 @@ BLEDriver.prototype.configure = function(ad, callback) {
 BLEDriver.prototype.disconnect = function() {
     var self = this;
 
+    console.log("- BLEDriver.disconnect", "uuid", self.s ? self.s.uuid : null)
     driver.Driver.prototype.disconnect.call(self)
-
-    if (self.s) {
-        console.log("- BLEDriver.disconnect", "uuid", self.s.uuid)
-    }
-    if (self.p) {
-        if (--self.p.__driver_count <= 0) {
-            p_active[self.p.uuid] = false
-            self.p.disconnect()
-            self.p.removeAllListeners()
-        }
-    }
 
     self.p = null;
     self.s = null;
@@ -411,6 +399,10 @@ BLEDriver.prototype.setup = function(paramd) {
         self.poll_init(paramd.initd)
     }
 
+    if (self.p) {
+        self.p.__driver_reconnectable = true
+    }
+
 
     return self;
 }
@@ -465,55 +457,69 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
     
     n = noble;
     n.on('discover', function(p) {
-        if (p_active[p.uuid]) {
+        if (p.__driver_connected) {
             return
-        } else {
-            p_active[p.uuid] = true
         }
 
-        p.__driver_count = 0
-
-        console.log("- p-discover", 
-            "uuid", p.uuid, 
-            "localName", p.advertisement.localName, 
-            "advertisement", p.advertisement.manufacturerData ? p.advertisement.manufacturerData.toString('hex') : null
+        console.log("- BLEDriver.discover", "p-discover", 
+            "\n  uuid", p.uuid, 
+            "\n  localName", p.advertisement.localName, 
+            "\n  advertisement", p.advertisement.manufacturerData ? p.advertisement.manufacturerData.toString('hex') : null,
+            "\n  connected", p.__driver_connected ? true : false,
+            "\n  discovered", p.__driver_discovered ? true : false
         );
 
+        if (!p.__driver_discovered) {
+            p.__driver_discovered = true
+        }
+
         p.on('connect', function() {
-            console.log("- p-connect", "uuid", p.uuid);
+            if (p.__driver_connected) {
+                return
+            }
+            console.log("- BLEDriver.discover", "p-connect", "uuid", p.uuid);
+
+            p.__driver_connected = true
+            p.__driver_services = false
             p.discoverServices();
         });
-        p.on('servicesDiscover', function(ss) {
-            console.log("- p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
-            if (ss.length === 0) {
-                p.disconnect()
-                p_active[p.uuid] = false
+        p.on('disconnect', function() {
+            if (!p.__driver_connected) {
                 return
             }
 
-            p.__driver_count++
+            console.log("- BLEDriver.discover", "p-disconnect", "uuid", p.uuid);
+            p.__driver_connected = false
+        });
+        p.on('servicesDiscover', function(ss) {
+            if (!p.__driver_connected) {
+                return
+            }
+            if (p.__driver_services) {
+                return
+            }
+            p.__driver_services = true
+
+            console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
+            if (ss.length === 0) {
+                p.disconnect()
+                return
+            }
+
             ss.map(function(s) {
-                console.log("- p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
+                console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
                 discover_callback(new BLEDriver({
                     verbose: self.verbose,
                     p: p,
                     s: s
                 }))
             });
-
-            /* not sure what to do if there's no services - don't
-             * want it to keep getting rediscovered!
-            if (--p.__driver_count <= 0) {
-                p.disconnect()
-                p_active[p.uuid] = false
-            }
-             */
         });
-        console.log("- BLEDriver.discover_nearby", "calling p.connect", "p-uuid", p.uuid);
+
         p.connect();
     });
 
-    console.log("- BLEDriver.discover_nearby", "n.startScanning");
+    console.log("- BLEDriver.discover", "n.startScanning");
     n.startScanning([], true);
 }
 
