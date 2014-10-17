@@ -7,8 +7,6 @@
         "url": "https://github.com/dpjanes/node-iotdb/issues"
     }, 
     "dependencies": {
-        "feedparser": ">=0.16.6", 
-        "firmata": ">=0.3.3", 
         "iotdb-models": ">=0.0.16", 
         "jsonld": ">=0.1.25", 
         "minimist": ">=0.0.5", 
@@ -16,7 +14,6 @@
         "node-uuid": ">=1.4.1", 
         "prompt": ">=0.2.12", 
         "rdf": ">=2.1.2", 
-        "twitter": ">=0.2.9", 
         "unirest": ">=0.1.9", 
         "xml2js": ">=0.4.0"
     }, 
@@ -40,5 +37,5 @@
         "type": "git", 
         "url": "https://github.com/dpjanes/node-iotdb"
     }, 
-    "version": "0.2.16"
+    "version": "0.2.17"
 }

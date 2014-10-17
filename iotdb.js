@@ -37,6 +37,12 @@ var unirest = require('unirest');
 var assert = require('assert');
 var node_url = require('url')
 
+var bunyan = require('bunyan')
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'IOT',
+})
+
 var graph = require('./graph');
 var thing_array = require('./thing_array');
 var libs = require('./libs/libs');
@@ -193,7 +199,12 @@ IOT.prototype._exit_cleanup = function(paramd, err) {
     var self = this
 
     self.shutting_down = true
-    console.log("- IOT._exit_cleanup", paramd, err)
+    // console.log("- IOT._exit_cleanup", paramd, err)
+    logger.info({
+        method: "_exit_cleanup",
+        paramd: paramd,
+        err: err
+    }, "start")
 
     var time_wait = 0
     if (paramd.cleanup) {
@@ -215,7 +226,11 @@ IOT.prototype._exit_cleanup = function(paramd, err) {
         if (time_wait === 0) {
             process.exit(0)
         } else {
-            console.log("# IOT._exit_cleanup: exiting in", time_wait / 1000.0)
+            // console.log("# IOT._exit_cleanup: exiting in", time_wait / 1000.0)
+            logger.info({
+                method: "_exit_cleanup",
+                exiting_in: time_wait / 1000.0
+            }, "delaying exit")
             setTimeout(process.exit, time_wait);
         }
     }
@@ -1004,7 +1019,10 @@ IOT.prototype._discover = function() {
 IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
     var self = this;
 
-    console.log("- IOT._discover_nearby")
+    // console.log("- IOT._discover_nearby")
+    logger.info({
+        method: "_discover_nearby"
+    }, "start")
     find_driver_identityd = _.identity_expand(find_driver_identityd);
 
     for (var bi = 0; bi < self.driver_exemplars.length; bi++) {
@@ -1025,7 +1043,11 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
 
             // see if this driver has already been handled
             var driver_identityd = driver.identity()
-            console.log("- IOT._discover_nearby", "\n  driver.identityd", driver_identityd);
+            // console.log("- IOT._discover_nearby", "\n  driver.identityd", driver_identityd);
+            logger.info({
+                method: "_discover_nearby",
+                "driver.indentityd": driver_identityd
+            }, "this driver was discovered")
 
             var existing = self.thing_instanced[driver_identityd.thing_id];
             if (existing) {

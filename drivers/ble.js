@@ -32,6 +32,12 @@ var util = require('util');
 var fs = require('fs');
 var events = require('events');
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'BLEDriver',
+})
+
 var n = null;
 
 /**
@@ -67,7 +73,9 @@ var BLEDriver = function(paramd) {
                 return
             }
 
-            console.log("- BLEDriver/on(disconnect)", "disconnected")
+            logger.info({
+                method: "/on(disconnect)"
+            }, "disconnected")
             self.disconnect()
         });
     }
@@ -87,7 +95,10 @@ var BLEDriver = function(paramd) {
                 }
             }
 
-            console.log("- BLEDriver", "characteristics discovered")
+            // console.log("- BLEDriver", "characteristics discovered")
+            logger.info({
+                method: "/discoverCharacteristics"
+            }, "characteristics discovered")
             self.emit("found-characteristics")
 
             if (self.subscribes) {
@@ -95,9 +106,17 @@ var BLEDriver = function(paramd) {
                     var subscribe_uuid = self.subscribes[si];
                     var c = self.cd[subscribe_uuid]
                     if (c) {
-                        console.log("- BLEDriver", "subscribe", subscribe_uuid)
+                        // console.log("- BLEDriver", "subscribe", subscribe_uuid)
+                        logger.info({
+                            method: "/discoverCharacteristics",
+                            subscribe_uuid: subscribe_uuid
+                        }, "subscribe")
                         c.on('notify', function(data, isNotification) {
-                            console.log("- BLEDriver/on(notify)", "notified", data);
+                            // console.log("- BLEDriver/on(notify)", "notified", data);
+                            logger.info({
+                                method: "/on(notify)",
+                                data: data
+                            }, "called")
                         });
                         c.on('read', function(data, isNotification) {
                             var driverd = {};
@@ -105,14 +124,24 @@ var BLEDriver = function(paramd) {
 
                             self.pulled(driverd)
 
-                            console.log("- BLEDriver/on(read)", "read", driverd) // , isNotification, c.notify);
+                            // console.log("- BLEDriver/on(read)", "read", driverd) // , isNotification, c.notify);
+                            logger.info({
+                                method: "/on(read)",
+                                driverd: driverd
+                            }, "called")
                         })
                         c.notify(true, function(err) {
+                            /*
                             if (err) {
                                 console.log("- BLEDriver/notify", "err", err)
                             } else {
                                 console.log("- BLEDriver/notify", "notify set up correctly")
                             }
+                            */
+                            logger.info({
+                                method: "/notify",
+                                err: err
+                            }, "called")
                         })
                     }
                 }
@@ -189,7 +218,11 @@ BLEDriver.prototype.configure = function(ad, callback) {
 BLEDriver.prototype.disconnect = function() {
     var self = this;
 
-    console.log("- BLEDriver.disconnect", "uuid", self.s ? self.s.uuid : null)
+    // console.log("- BLEDriver.disconnect", "uuid", self.s ? self.s.uuid : null)
+    logger.info({
+        method: "disconnect",
+        uuid: self.s ? self.s.uuid : null
+    }, "start")
     driver.Driver.prototype.disconnect.call(self)
 
     self.p = null;
@@ -461,6 +494,7 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             return
         }
 
+        /*
         console.log("- BLEDriver.discover", "p-discover", 
             "\n  uuid", p.uuid, 
             "\n  localName", p.advertisement.localName, 
@@ -468,6 +502,15 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             "\n  connected", p.__driver_connected ? true : false,
             "\n  discovered", p.__driver_discovered ? true : false
         );
+        */
+        logger.info({
+            method: "discover/on(discover)",
+            "p-uuid": p.uuid, 
+            "localName": p.advertisement.localName, 
+            "advertisement": p.advertisement.manufacturerData ? p.advertisement.manufacturerData.toString('hex') : null,
+            "connected": p.__driver_connected ? true : false,
+            "discovered": p.__driver_discovered ? true : false
+        }, "p.discover")
 
         if (!p.__driver_discovered) {
             p.__driver_discovered = true
@@ -477,7 +520,11 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             if (p.__driver_connected) {
                 return
             }
-            console.log("- BLEDriver.discover", "p-connect", "uuid", p.uuid);
+            // console.log("- BLEDriver.discover", "p-connect", "uuid", p.uuid);
+            logger.info({
+                method: "discover/on(connect)",
+                "p-uuid": p.uuid, 
+            }, "p.connect")
 
             p.__driver_connected = true
             p.__driver_services = false
@@ -488,7 +535,11 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
                 return
             }
 
-            console.log("- BLEDriver.discover", "p-disconnect", "uuid", p.uuid);
+            // console.log("- BLEDriver.discover", "p-disconnect", "uuid", p.uuid);
+            logger.info({
+                method: "discover/on(disconnect)",
+                "p-uuid": p.uuid, 
+            }, "p.disconnect")
             p.__driver_connected = false
         });
         p.on('servicesDiscover', function(ss) {
@@ -500,14 +551,25 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             }
             p.__driver_services = true
 
-            console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
+            // console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
+            logger.info({
+                method: "discover/on(servicesDiscover)",
+                "p-uuid": p.uuid, 
+                "#ss": ss.length
+            }, "p.serviceDiscover")
             if (ss.length === 0) {
                 p.disconnect()
                 return
             }
 
             ss.map(function(s) {
-                console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
+                // console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
+                logger.info({
+                    method: "discover/on(servicesDiscover)",
+                    "p-uuid": p.uuid, 
+                    "s-uuid": s.uuid
+                }, "p.serviceDiscover")
+
                 discover_callback(new BLEDriver({
                     verbose: self.verbose,
                     p: p,
@@ -519,7 +581,10 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
         p.connect();
     });
 
-    console.log("- BLEDriver.discover", "n.startScanning");
+    logger.info({
+        method: "discover"
+    }, "n.startScanning")
+    // console.log("- BLEDriver.discover", "n.startScanning");
     n.startScanning([], true);
 }
 
@@ -536,11 +601,19 @@ BLEDriver.prototype.push = function(paramd) {
 
     var qitem = {
         run: function() {
-            console.log("- BLEDriver.push", paramd.driverd)
+            // console.log("- BLEDriver.push", paramd.driverd)
+            logger.info({
+                method: "push",
+                driverd: paramd.driverd
+            }, "start")
             for (var uuid in paramd.driverd) {
                 var c = self.cd[uuid]
                 if (!c) {
-                    console.log("- BLEDriver.push", "uuid not found", uuid)
+                    // console.log("- BLEDriver.push", "uuid not found", uuid)
+                    logger.error({
+                        method: "push",
+                        uuid: uuid
+                    }, "uuid not found")
                     continue
                 }
 
