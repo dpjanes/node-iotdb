@@ -365,7 +365,12 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
             } else if (property == "notify") {
                 is_notify = true
             } else {
-                console.log("UNKNOWN", property)
+                // console.log("UNKNOWN", property)
+                logger.error({
+                    method: "_write_driver",
+                    property: property,
+                    cause: "probably not serious, but could be revisited in BLEDriver"
+                }, "unknown property")
             }
         }
 
