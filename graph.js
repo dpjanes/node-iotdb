@@ -37,7 +37,7 @@ var node_url = require('url');
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'IOT',
+    module: 'graph',
 });
 
 var GraphManager = function(iot) {
@@ -446,11 +446,19 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
     self.irid[iri] = GraphManager.IRI_LOADED
     
     if (self.has_type(iri, "iot:Thing")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Thing", iri)
+        // console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Thing", iri)
+        logger.info({
+            method: "_onUpdatedGraph",
+            iri: iri
+        }, "got iot:Thing");
 
         self.iot.emit(GraphManager.EVENT_UPDATED_DEVICE, iri)
     } else if (self.has_type(iri, "iot:system")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:system", iri)
+        // console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:system", iri)
+        logger.info({
+            method: "_onUpdatedGraph",
+            iri: iri
+        }, "got iot:system");
 
         var devices = self.get_objects(
             self.iot.iotdb_prefix + "/" + self.iot.username + "/things/uuid", 
@@ -459,22 +467,40 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
             self.load_iri(device);
         });
     } else if (self.has_type(iri, "iot:Place")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Place", iri)
+        // console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Place", iri)
+        logger.info({
+            method: "_onUpdatedGraph",
+            iri: iri
+        }, "got iot:Place");
         self.iot.emit(GraphManager.EVENT_UPDATED_PLACE, iri)
     } else if (self.has_type(iri, "iot:Model")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Model", iri)
+        // console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Model", iri)
+        logger.info({
+            method: "_onUpdatedGraph",
+            iri: iri
+        }, "got iot:Model");
         self.iot.emit(GraphManager.EVENT_UPDATED_MODEL, iri)
     } else if (self.has_type(iri, "iot:item")) {
-        console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:item", iri)
+        // console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:item", iri)
+        logger.info({
+            method: "_onUpdatedGraph",
+            iri: iri
+        }, "got iot:item");
 
         var iris = self.get_objects(iri, "iot:item")
         for (var ii in iris) {
             self.load_iri(iris[ii]);
         }
     } else {
+        /*
         console.log("# GraphManger._onUpdatedGraph:", 
             "got iri but don't know the @type", 
             "\n  iri", iri)
+        */
+        logger.error({
+            method: "_onUpdatedGraph",
+            iri: iri
+        }, "don't recognize the @type");
     }
 
 };
