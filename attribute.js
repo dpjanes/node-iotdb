@@ -25,6 +25,12 @@
 var _ = require("./helpers");
 var assert = require("assert");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'Attribute',
+});
+
 /* --- constants --- */
 var iot_js_boolean = _.expand("iot-js:boolean");
 var iot_js_integer = _.expand("iot-js:integer");
@@ -549,10 +555,18 @@ Attribute.prototype.validate = function (paramd) {
         if (iot_formats.length > 0) {
             var formatted_value = self._format(paramd.value, iot_formats, paramd);
             if (formatted_value === undefined) {
+                /*
                 console.log("- Attribute.validate: iot-js:format failed",
                     "original:", paramd.value,
                     "formats:", iot_formats
                 );
+                 */
+                logger.error({
+                    method: "validate",
+                    original: paramd.value,
+                    formats: iot_formats,
+                    cause: "likely programmer error - bad type passed in"
+                }, "iot-js:format failed");
 
                 paramd.value = undefined;
             } else {
@@ -648,7 +662,12 @@ Attribute.prototype._format = function (value, formats, paramd) {
     }
 
     if (!known) {
-        console.log("# Attribute._format: warning: no recognized formats!", formats);
+        // console.log("# Attribute._format: warning: no recognized formats!", formats);
+        logger.error({
+            method: "_format",
+            formats: formats,
+            cause: "likely Node-IOTDB error, shouldn't be called with bad format"
+        }, "iot-js:format failed");
     }
 
     return undefined;
