@@ -20,23 +20,23 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
-var assert = require("assert")
+var assert = require("assert");
 
-var _ = require("./helpers")
-var attribute = require("./attribute")
-var meta_thing = require("./meta")
-var model_maker = require("./model_maker")
-var libs = require("./libs/libs")
+var _ = require("./helpers");
+var attribute = require("./attribute");
+var meta_thing = require("./meta");
+var model_maker = require("./model_maker");
+var libs = require("./libs/libs");
 
 /* --- constants --- */
 var VERBOSE = true;
-var iot_name = _.expand("iot:name")
+var iot_name = _.expand("iot:name");
 
-var EVENT_THINGS_CHANGED = "things_changed"
-var EVENT_THING_CHANGED = "thing_changed"
-var EVENT_META_CHANGED = "meta_changed"
+var EVENT_THINGS_CHANGED = "things_changed";
+var EVENT_THING_CHANGED = "thing_changed";
+var EVENT_META_CHANGED = "meta_changed";
 
 /**
  *  Convenience function to make a ModelMaker instance
@@ -47,8 +47,8 @@ var EVENT_META_CHANGED = "meta_changed"
  *  @return
  *  a new ModelMaker instance 
  */
-function make_model(_name) {
-    return new model_maker.ModelMaker(_name)
+var make_model = function(_name) {
+    return new model_maker.ModelMaker(_name);
 };
 
 /**
@@ -146,7 +146,7 @@ Model.prototype.make = function(paramd) {
 /**
  */
 Model.prototype.isa = function(classf) {
-    return classf == this.__make;
+    return classf === this.__make;
 };
 
 /**
@@ -159,7 +159,7 @@ Model.prototype.get_code = function() {
  */
 Model.prototype.state = function() {
     var self = this;
-    var d = _.deepCopy(self.stated)
+    var d = _.deepCopy(self.stated);
 
     for (var subkey in self.subthingd) {
         var subthing = self.subthingd[subkey];
@@ -174,7 +174,7 @@ Model.prototype.state = function() {
  */
 Model.prototype.attributes = function() {
     var self = this;
-    return self.__attributes
+    return self.__attributes;
 };
 
 /**
@@ -186,24 +186,24 @@ Model.prototype.attributes = function() {
 Model.prototype.freeze = function() {
     var self = this;
 
-    var new_thing = self.make()
-    new_thing.stated = _.deepCopy(self.stated)
+    var new_thing = self.make();
+    new_thing.stated = _.deepCopy(self.stated);
 
     new_thing.update = function() {
-        throw "You cannot call 'update' on a frozen Thing"
-    }
+        throw new Error("You cannot call 'update' on a frozen Thing");
+    };
     new_thing.set = function() {
-        throw "You cannot call 'set' on a frozen Thing"
-    }
+        throw new Error("You cannot call 'set' on a frozen Thing");
+    };
 
-    return new_thing
+    return new_thing;
 };
 
 /**
  *  Tags are for locally identitfying devices
  */
 Model.prototype.has_tag = function(tag) {
-    return _.ld_contains(this.initd, "tag", tag)
+    return _.ld_contains(this.initd, "tag", tag);
 
     /*
     var self = this;
@@ -233,6 +233,8 @@ Model.prototype.has_tag = function(tag) {
  */
 Model.prototype.jsonld = function(paramd) {
     var self = this;
+    var key;
+    var value;
 
     paramd = ( paramd !== undefined ) ? paramd : {};
     paramd.base = ( paramd.base !== undefined) ? paramd.base : ( "file:///" + self.code + "");
@@ -242,51 +244,51 @@ Model.prototype.jsonld = function(paramd) {
     var rd = {};
 
     if (paramd.context) {
-        var cd = {}
-        cd["@base"] = paramd.base 
+        var cd = {};
+        cd["@base"] = paramd.base ;
         if (paramd.include_state) {
             cd["@vocab"] = paramd.base + "#";
         }
         rd["@context"] = cd;
-        rd["@id"] = ""
+        rd["@id"] = "";
     } else if (paramd.path.length > 0) {
         rd["@id"] = "#" + paramd.path.replace(/\/+$/, '');
     } else {
-        rd["@id"] = "#"
+        rd["@id"] = "#";
     }
 
     rd["@type"] = _.expand("iot:Model");
 
     if (self.name) {
-        rd[_.expand("iot:name")] = self.name
+        rd[_.expand("iot:name")] = self.name;
     }
     if (self.description) {
-        rd[_.expand("iot:description")] = self.description
+        rd[_.expand("iot:description")] = self.description;
     }
     if (self.help) {
-        rd[_.expand("iot:help")] = self.help
+        rd[_.expand("iot:help")] = self.help;
     }
 
     if (paramd.include_state) {
-        for (var key in self.stated) {
+        for (key in self.stated) {
             rd[key] = self.stated[key];
         }
     }
 
     // attributes
-    var ads = []
+    var ads = [];
     for (var ax in self.__attributes) {
         var attribute = self.__attributes[ax];
         var ad = {};
         // ad[_.expand('iot:name')] = attribute.get_code()
         ads.push(ad);
         
-        for (var key in attribute) {
+        for (key in attribute) {
             if (!attribute.hasOwnProperty(key)) {
                 continue;
             }
 
-            var value = attribute[key];
+            value = attribute[key];
             if (value === undefined) {
                 continue;
             }
@@ -301,7 +303,7 @@ Model.prototype.jsonld = function(paramd) {
             
             if (key === "__validator") {
                 ad[_.expand("iot-iotdb:iotdb-attribute-validator")] = value;
-            } else if (key == "@id") {
+            } else if (key === "@id") {
                 ad[key] = "#" + paramd.path + value.substring(1);
             } else {
                 ad[key] = value;
@@ -309,22 +311,22 @@ Model.prototype.jsonld = function(paramd) {
         }
     }
     if (ads.length > 0) {
-        rd[_.expand("iot:attribute")] = ads
+        rd[_.expand("iot:attribute")] = ads;
     }
 
     // initializers
-    var ids = []
+    var ids = [];
     for (var ix in self.initializers) {
         var initializer = self.initializers[ix];
         var ind = {};
         var any = false;
         
-        for (var key in initializer) {
+        for (key in initializer) {
             if (!initializer.hasOwnProperty(key)) {
                 continue;
             }
 
-            var value = initializer[key];
+            value = initializer[key];
             if (value === undefined) {
                 continue;
             } else if (_.isFunction(value)) {
@@ -332,10 +334,10 @@ Model.prototype.jsonld = function(paramd) {
             }
             
             if (key === "__validator") {
-            } else if (key == "@id") {
+            } else if (key === "@id") {
             } else {
                 ind[key] = value;
-                any = true
+                any = true;
             }
         }
 
@@ -344,21 +346,21 @@ Model.prototype.jsonld = function(paramd) {
         }
     }
     if (ids.length > 0) {
-        rd[_.expand("iot:initializer")] = ids
+        rd[_.expand("iot:initializer")] = ids;
     }
 
     // subthings
-    var sds = []
+    var sds = [];
     for (var skey in self.subthingd) {
         var subthing = self.subthingd[skey];
         var subpath = paramd.path + skey + "/";
         sds.push(subthing.jsonld({
             context: false,
             path: subpath
-        }))
+        }));
     }
     if (sds.length > 0) {
-        rd[_.expand("iot:model")] = sds
+        rd[_.expand("iot:model")] = sds;
     }
 
     if (self.__validator) {
@@ -375,8 +377,8 @@ Model.prototype.jsonld = function(paramd) {
     }
 
     if (self.driver_identityd) {
-        var dids = []
-        for (var key in self.driver_identityd) {
+        var dids = [];
+        for (key in self.driver_identityd) {
             dids.push(key);
             dids.push(self.driver_identityd[key]);
         }
@@ -402,7 +404,7 @@ Model.prototype.jsonld = function(paramd) {
 Model.prototype.get = function(find_key) {
     var self = this;
 
-    var subthing = self.subthingd[find_key]
+    var subthing = self.subthingd[find_key];
     if (subthing !== undefined) {
         return subthing;
     }
@@ -449,7 +451,7 @@ Model.prototype.set = function(find_key, new_value) {
 
     var rd = self._find(find_key);
     if (rd === undefined) {
-        console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code)
+        console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code);
         return self;
     }
 
@@ -462,10 +464,10 @@ Model.prototype.set = function(find_key, new_value) {
             return self;
         }
 
-        rd.thing.ostated[attribute_key] = rd.thing.stated[attribute_key]
-        rd.thing.stated[attribute_key] = new_value
+        rd.thing.ostated[attribute_key] = rd.thing.stated[attribute_key];
+        rd.thing.stated[attribute_key] = new_value;
 
-        rd.thing._do_validate(rd.attribute, false)
+        rd.thing._do_validate(rd.attribute, false);
         rd.thing._do_notify(rd.attribute, false);
         rd.thing._do_push(rd.attribute, false);
 
@@ -488,9 +490,9 @@ Model.prototype.update = function(updated, paramd) {
 
     paramd = _.defaults(paramd, {
         notify: true
-    })
+    });
 
-    self.start(paramd)
+    self.start(paramd);
     for (var key in updated) {
         self.set(key, updated[key]);
     }
@@ -532,14 +534,14 @@ Model.prototype.start = function(paramd) {
         notify: false,  
         validate: true,   
         push: true
-    })
+    });
 
     self.stacks.push({
         paramd: paramd,
         attribute_notifyd: {},
         attribute_validated: {},
         attribute_pushd: {},
-    })
+    });
 
     for (var subthing_key in self.subthingd) {
         var subthing = self.subthingd[subthing_key];
@@ -630,11 +632,13 @@ Model.prototype.parent = function() {
  */
 Model.prototype.on = function(find_key, callback) {
     var self = this;
+    var attribute_key = null;
+    var callbacks = null;
 
-    if (find_key == null) {
-        var attribute_key = null;
+    if (find_key === null) {
+        attribute_key = null;
 
-        var callbacks = self.callbacksd[attribute_key];
+        callbacks = self.callbacksd[attribute_key];
         if (callbacks === undefined) {
             self.callbacksd[attribute_key] = callbacks = [];
         }
@@ -646,16 +650,16 @@ Model.prototype.on = function(find_key, callback) {
 
     var rd = self._find(find_key);
     if (rd === undefined) {
-        console.log("# Model.on: error: attribute '" + find_key + "' not found")
-        return
+        console.log("# Model.on: error: attribute '" + find_key + "' not found");
+        return;
     }
 
     if (rd.subthing) {
-        console.log("# Model.on: subscribing to a subthing not implemented yet")
+        console.log("# Model.on: subscribing to a subthing not implemented yet");
     } else if (rd.attribute) {
-        var attribute_key = rd.attribute.get_code()
+        attribute_key = rd.attribute.get_code();
 
-        var callbacks = rd.thing.callbacksd[attribute_key];
+        callbacks = rd.thing.callbacksd[attribute_key];
         if (callbacks === undefined) {
             rd.thing.callbacksd[attribute_key] = callbacks = [];
         }
@@ -664,7 +668,7 @@ Model.prototype.on = function(find_key, callback) {
 
         return self;
     } else {
-        throw "Model.on: error: impossible state: " + find_key;
+        throw new Error("Model.on: error: impossible state: " + find_key);
     }
 };
 
@@ -680,11 +684,11 @@ Model.prototype.on = function(find_key, callback) {
 Model.prototype.on_change = function(callback) {
     var self = this;
 
-    assert.ok(_.isFunction(callback))
+    assert.ok(_.isFunction(callback));
 
     self.__emitter.on(EVENT_THING_CHANGED, function(thing) {
-        callback(self, [])
-    })
+        callback(self, []);
+    });
 
     return self;
 };
@@ -695,11 +699,11 @@ Model.prototype.on_change = function(callback) {
 Model.prototype.on_meta = function(callback) {
     var self = this;
 
-    assert.ok(_.isFunction(callback))
+    assert.ok(_.isFunction(callback));
 
     self.__emitter.on(EVENT_META_CHANGED, function(thing) {
-        callback(self, [])
-    })
+        callback(self, []);
+    });
 
     return self;
 };
@@ -708,7 +712,7 @@ Model.prototype.on_meta = function(callback) {
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function() {
-    this.__emitter.emit(EVENT_META_CHANGED, true)
+    this.__emitter.emit(EVENT_META_CHANGED, true);
 };
 
 /* --- driver section --- */
@@ -762,7 +766,7 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
         // console.log("# Model.is_driver_supported: the Model has no identity?")
         return false;
     } else {
-        return otherwise
+        return otherwise;
     }
 };
 
@@ -780,9 +784,9 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
  */
 Model.prototype.identity = function(kitchen_sink) {
     if (this.driver_instance) {
-        return this.driver_instance.identity(kitchen_sink)
+        return this.driver_instance.identity(kitchen_sink);
     } else {
-        console.log("# Model.identity: returning null because this.driver_instance=null")
+        console.log("# Model.identity: returning null because this.driver_instance=null");
         return null;
     }
 };
@@ -792,7 +796,7 @@ Model.prototype.thing_id = function() {
     if (id) {
         return id.thing_id;
     } else {
-        console.log("# Model.thing_id: returning null because this.identity=null")
+        console.log("# Model.thing_id: returning null because this.identity=null");
         return null;
     }
 };
@@ -811,7 +815,7 @@ Model.prototype.driver_setup = function(paramd) {
     var self = this;
 
     if (self.__driver_setup) {
-        self.__driver_setup(paramd)
+        self.__driver_setup(paramd);
     }
 };
 
@@ -888,7 +892,7 @@ Model.prototype.pull = function() {
         thingd: {},
         libs : libs.libs,
         scratchd: self.__scratchd
-    }
+    };
     self.driver_out(paramd);
 
     if (!_.isEmpty(paramd.driverd)) {
@@ -925,7 +929,7 @@ Model.prototype._do_driver = function(attribute) {
 Model.prototype._do_push = function(attribute, immediate) {
     var self = this;
 
-    if ((self.stacks.length == 0) || immediate) {
+    if ((self.stacks.length === 0) || immediate) {
         var attributed = {};
         attributed[attribute.get_code()] = attribute;
 
@@ -933,20 +937,20 @@ Model.prototype._do_push = function(attribute, immediate) {
 
         // if this is happening now, propagate upwards
         if (self.__parent_thing) {
-            self.__parent_thing._do_pushes({})
+            self.__parent_thing._do_pushes({});
         }
     } else {
         var topd = self.stacks[self.stacks.length - 1];
-        topd.attribute_pushd[attribute.get_code()] = attribute
+        topd.attribute_pushd[attribute.get_code()] = attribute;
     }
 };
 
 Model.prototype._deep_copy_state = function(thing, use_push_keys) {
     var self = this;
-    var d = {}
+    var d = {};
 
     for (var key in thing.stated) {
-        if (use_push_keys && (thing.__push_keys.indexOf(key) == -1)) {
+        if (use_push_keys && (thing.__push_keys.indexOf(key) === -1)) {
             continue;
         }
         d[key] = thing.stated[key];
@@ -961,7 +965,7 @@ Model.prototype._deep_copy_state = function(thing, use_push_keys) {
         d[subthing_key] = self._deep_copy_state(subthing, use_push_keys);
     }
 
-    return d
+    return d;
 };
 
 
@@ -977,13 +981,13 @@ Model.prototype._do_pushes = function(attributed) {
     var self = this;
 
     // this magically does things to '__deep_copy_state'
-    self.__push_keys = _.keys(attributed)
+    self.__push_keys = _.keys(attributed);
 
     if (!self.driver_instance) {
         // if there's a parent and this has no driver, it will handle it
         if (self.__parent_thing !== undefined) {
             // console.log("HERE:C", self.__push_keys)
-            return
+            return;
         }
 
         console.log("- Model.push: no self.driver_instance?");
@@ -996,7 +1000,7 @@ Model.prototype._do_pushes = function(attributed) {
         thingd: self._deep_copy_state(self, true),
         libs : libs.libs,
         scratchd: self.__scratchd
-    }
+    };
     self.driver_out(paramd);
 
     if (!_.isEmpty(paramd.driverd)) {
@@ -1024,14 +1028,14 @@ Model.prototype._do_pushes = function(attributed) {
 Model.prototype._do_validate = function(attribute, immediate) {
     var self = this;
 
-    if ((self.stacks.length == 0) || immediate) {
+    if ((self.stacks.length === 0) || immediate) {
         var attributed = {};
         attributed[attribute.get_code()] = attribute;
 
         self._do_validates(attributed);
     } else {
         var topd = self.stacks[self.stacks.length - 1];
-        topd.attribute_validated[attribute.get_code()] = attribute
+        topd.attribute_validated[attribute.get_code()] = attribute;
     }
 };
 
@@ -1046,37 +1050,39 @@ Model.prototype._do_validate = function(attribute, immediate) {
  */
 Model.prototype._do_validates = function(attributed) {
     var self = this;
+    var paramd;
+    var code;
 
-    for (var code in attributed) {
+    for (code in attributed) {
         var attribute = attributed[code];
-        var code = attribute.get_code();
+        code = attribute.get_code();
 
-        var paramd = {
+        paramd = {
             value: self.stated[code],
             code: code,
             libs : libs.libs
-        }
+        };
 
         attribute.validate(paramd);
 
         if (paramd.value !== undefined) {
             self.stated[code] = paramd.value;
         } else {
-            self.stated[code] = self.ostated[code]
+            self.stated[code] = self.ostated[code];
         }
     }
 
     if (self.__validator) {
-        var paramd = {
+        paramd = {
             codes: _.keys(attributed),          // attributes that have changed
             thingd: _.deepCopy(self.stated),    // the current state of the model
             changed: {},                        // update these values (passed back)
             libs : libs.libs
-        }
+        };
         self.__validator(paramd);
 
         self.start({ notify: false, validate: false, push: true });
-        for (var code in paramd.changed) {
+        for (code in paramd.changed) {
             self.set(code, paramd.changed[code]);
         }
         self.end();
@@ -1101,14 +1107,14 @@ Model.prototype._do_validates = function(attributed) {
 Model.prototype._do_notify = function(attribute, immediate) {
     var self = this;
 
-    if ((self.stacks.length == 0) || immediate) {
+    if ((self.stacks.length === 0) || immediate) {
         var attributed = {};
         attributed[attribute.get_code()] = attribute;
 
         self._do_notifies(attributed);
     } else {
         var topd = self.stacks[self.stacks.length - 1];
-        topd.attribute_notifyd[attribute.get_code()] = attribute
+        topd.attribute_notifyd[attribute.get_code()] = attribute;
     }
 };
 
@@ -1128,10 +1134,10 @@ Model.prototype._do_notify = function(attribute, immediate) {
  */
 Model.prototype._do_notifies = function(attributed) {
     var self = this;
-    var any = false
+    var any = false;
 
     for (var attribute_key in attributed) {
-        any = true
+        any = true;
 
         var attribute = attributed[attribute_key];
         var attribute_value = self.stated[attribute_key];
@@ -1154,7 +1160,7 @@ Model.prototype._do_notifies = function(attributed) {
 
     // levels of hackdom here
     if (any) {
-        this.__emitter.emit(EVENT_THING_CHANGED, self)
+        this.__emitter.emit(EVENT_THING_CHANGED, self);
     }
 };
 
@@ -1205,14 +1211,17 @@ Model.prototype._do_notifies = function(attributed) {
  */
 Model.prototype._find = function(find_key) {
     var self = this;
+    var d;
+    var subthing;
+    var attribute;
 
-    if (typeof find_key == "string") {
-        var subkeys = find_key.split("/")
+    if (typeof find_key === "string") {
+        var subkeys = find_key.split("/");
         var thing = self;
 
         for (var ski = 0; ski < subkeys.length - 1; ski++) {
             var subkey = subkeys[ski];
-            var subthing = thing.subthingd[subkey];
+            subthing = thing.subthingd[subkey];
             if (subthing === undefined) {
                 return undefined;
             } else if (!subthing.__is_thing) {
@@ -1223,38 +1232,38 @@ Model.prototype._find = function(find_key) {
         }
 
         var last_key = subkeys[subkeys.length - 1];
-        if (last_key.substring(0, 1) == ":") {
-            var d = {}
+        if (last_key.substring(0, 1) === ":") {
+            d = {};
             d[_.expand("iot:purpose")] = _.expand("iot-attribute:" + last_key.substring(1));
 
             return thing._find(d);
         } else if (last_key.indexOf(":") > -1) {
-            var d = {}
+            d = {};
             d[_.expand("iot:purpose")] = _.expand(last_key);
 
             return thing._find(d);
         }
 
-        var attribute = thing.attributed[last_key];
+        attribute = thing.attributed[last_key];
         if (attribute !== undefined) {
             return {
                 thing: thing,
                 attribute: attribute
-            }
+            };
         }
 
-        var subthing = thing.subthingd[last_key];
+        subthing = thing.subthingd[last_key];
         if (subthing !== undefined) {
             return {
                 thing: thing,
                 subthing: subthing
-            }
+            };
         }
 
         return undefined;
     } else {
         for (var ai = 0; ai < self.__attributes.length; ai++) {
-            var attribute = self.__attributes[ai];
+            attribute = self.__attributes[ai];
 
             var all = true;
             for (var match_key in find_key) {
@@ -1265,7 +1274,7 @@ Model.prototype._find = function(find_key) {
                  */
                 if (match_key === iot_name) {
                     continue;
-                } else if (match_key.indexOf('@') == 0) {
+                } else if (match_key.indexOf('@') === 0) {
                     continue;
                 }
 
@@ -1275,13 +1284,13 @@ Model.prototype._find = function(find_key) {
                     if (_.isArray(match_value)) {
                         for (var mvi in match_value) {
                             var mv = match_value[mvi];
-                            if (attribute_value.indexOf(mv) == -1) {
+                            if (attribute_value.indexOf(mv) === -1) {
                                 all = false;
                                 break;
                             }
                         }
                     } else {
-                        if (attribute_value.indexOf(match_value) == -1) {
+                        if (attribute_value.indexOf(match_value) === -1) {
                             all = false;
                             break;
                         }
@@ -1296,7 +1305,7 @@ Model.prototype._find = function(find_key) {
                 return {
                     thing: self,
                     attribute: attribute
-                }
+                };
             }
         }
 
@@ -1309,7 +1318,7 @@ Model.prototype._find = function(find_key) {
  *  Return the IOTDB Thing IRI for this Thing
  */
 Model.prototype.thing_iri = function() {
-    return require('./iotdb').iot().thing_iri(this)
+    return require('./iotdb').iot().thing_iri(this);
 };
 
 /**
@@ -1327,18 +1336,18 @@ Model.prototype.thing_iri = function() {
 Model.prototype.place_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Model.place_iri: iot is null: perhaps not bound to a driver yet?")
-        return null
+        console.log("# Model.place_iri: iot is null: perhaps not bound to a driver yet?");
+        return null;
     }
 
-    var thing_iri = self.thing_iri()
+    var thing_iri = self.thing_iri();
     if (!thing_iri) {
         return null;
     }
 
-    return iot.gm.get_object(thing_iri, 'iot:place')
+    return iot.gm.get_object(thing_iri, 'iot:place');
 };
 
 /**
@@ -1356,18 +1365,18 @@ Model.prototype.place_iri = function() {
 Model.prototype.model_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Model.place: iot is null: perhaps not bound to a driver yet?")
-        return null
+        console.log("# Model.place: iot is null: perhaps not bound to a driver yet?");
+        return null;
     }
 
-    var thing_iri = self.thing_iri()
+    var thing_iri = self.thing_iri();
     if (!thing_iri) {
         return null;
     }
 
-    return iot.gm.get_object(thing_iri, 'iot:Model')
+    return iot.gm.get_object(thing_iri, 'iot:Model');
 };
 
 /**
@@ -1380,13 +1389,13 @@ Model.prototype.model_iri = function() {
 Model.prototype.model_code_iri = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Model.place: iot is null: perhaps not bound to a driver yet?")
-        return null
+        console.log("# Model.place: iot is null: perhaps not bound to a driver yet?");
+        return null;
     }
 
-    return iot.model_code_iri(self.code)
+    return iot.model_code_iri(self.code);
 };
 
 /**
@@ -1397,16 +1406,16 @@ Model.prototype.meta = function() {
     var self = this;
 
     if (self.__meta_thing === undefined) {
-        var iot = require('./iotdb').iot()
+        var iot = require('./iotdb').iot();
         if (!iot) {
-            console.log("# Model.meta: no iotdb object")
-            return undefined
+            console.log("# Model.meta: no iotdb object");
+            return undefined;
         }
 
-        self.__meta_thing = new meta_thing.Meta(iot, self)
+        self.__meta_thing = new meta_thing.Meta(iot, self);
     }
 
-    return self.__meta_thing
+    return self.__meta_thing;
 };
 
 /**
@@ -1417,23 +1426,23 @@ Model.prototype.meta = function() {
  *  @param {string} tag
  */
 Model.prototype.tag = function(tag) {
-    var self = this
+    var self = this;
 
-    assert.ok(_.isString(tag))
+    assert.ok(_.isString(tag));
 
-    _.ld_add(self.initd, "tag", tag)
+    _.ld_add(self.initd, "tag", tag);
 };
 
 /**
  */
 Model.prototype.reachable = function() {
-    var self = this
+    var self = this;
 
     if (!self.driver_instance) {
-        return false
+        return false;
     }
 
-    return self.driver_instance.reachable()
+    return self.driver_instance.reachable();
 };
 
 /**
@@ -1443,9 +1452,9 @@ Model.prototype.driver_meta = function() {
     var self = this;
 
     if (self.driver_instance) {
-        return self.driver_instance.meta()
+        return self.driver_instance.meta();
     } else {
-        return {}
+        return {};
     }
 
 };
@@ -1455,4 +1464,3 @@ Model.prototype.driver_meta = function() {
  */
 exports.Model = Model;
 exports.make_model = make_model;
-

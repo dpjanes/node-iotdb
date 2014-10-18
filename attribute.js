@@ -732,7 +732,7 @@ Attribute.prototype._convert = function (value, types) {
 
 Attribute.prototype._default = function (value, types) {
     if (VERBOSE) {
-        console.log("undefined", "wants-to-be", types);
+        logger.debug("undefined", "wants-to-be", types);
     }
     if (types.indexOf(iot_js_boolean) > -1) {
         return false;
@@ -749,7 +749,7 @@ Attribute.prototype._default = function (value, types) {
 
 Attribute.prototype._convert_boolean = function (value, types) {
     if (VERBOSE) {
-        console.log("is-a-boolean", value, "wants-to-be", types);
+        logger.debug("is-a-boolean", value, "wants-to-be", types);
     }
 
     if (types.indexOf(iot_js_boolean) > -1) {
@@ -767,7 +767,7 @@ Attribute.prototype._convert_boolean = function (value, types) {
 
 Attribute.prototype._convert_integer = function (value, types) {
     if (VERBOSE) {
-        console.log("is-a-integer", value, "wants-to-be", types);
+        logger.debug("is-a-integer", value, "wants-to-be", types);
     }
 
     if (types.indexOf(iot_js_boolean) > -1) {
@@ -785,7 +785,7 @@ Attribute.prototype._convert_integer = function (value, types) {
 
 Attribute.prototype._convert_number = function (value, types) {
     if (VERBOSE) {
-        console.log("is-a-number", value, "wants-to-be", types);
+        logger.debug("is-a-number", value, "wants-to-be", types);
     }
 
     if (types.indexOf(iot_js_boolean) > -1) {
@@ -806,7 +806,7 @@ Attribute.prototype._convert_number = function (value, types) {
 Attribute.prototype._convert_string = function (value, types) {
     var self = this;
     if (VERBOSE) {
-        console.log("is-a-string", value, "wants-to-be", types);
+        logger.debug("is-a-string", value, "wants-to-be", types);
     }
     if (types.indexOf(iot_js_string) > -1) {
         return value;
@@ -827,7 +827,7 @@ Attribute.prototype._convert_string = function (value, types) {
         }
 
         if (VERBOSE) {
-            console.log(" ... became boolean", value);
+            logger.debug(" ... became boolean", value);
         }
     } else if (types.indexOf(iot_js_integer) > -1) {
         value = Math.round(parseFloat(value));
@@ -835,7 +835,7 @@ Attribute.prototype._convert_string = function (value, types) {
             value = undefined;
         }
         if (VERBOSE) {
-            console.log(" ... became integer", value);
+            logger.debug(" ... became integer", value);
         }
     } else if (types.indexOf(iot_js_number) > -1) {
         value = parseFloat(value);
@@ -843,7 +843,7 @@ Attribute.prototype._convert_string = function (value, types) {
             value = undefined;
         }
         if (VERBOSE) {
-            console.log(" ... became number", value);
+            logger.debug(" ... became number", value);
         }
     }
 
