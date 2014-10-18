@@ -27,6 +27,12 @@
 var _ = require("../helpers");
 var driver = require('../driver');
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'NullDriver',
+})
+
 /**
  *  Typically this will be created by one of
  *  the discover_* functions

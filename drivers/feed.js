@@ -35,6 +35,12 @@ var FIFOQueue = require('../queue').FIFOQueue;
 
 var queue = new FIFOQueue("FeedDriver");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'FeedDriver',
+})
+
 /**
  */
 var FeedDriver = function(paramd) {

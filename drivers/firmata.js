@@ -30,6 +30,12 @@ var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'FirmataDriver',
+})
+
 var boardd = {};
 var machine_id = undefined;
 

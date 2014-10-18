@@ -27,6 +27,12 @@
 var _ = require("../helpers");
 var driver = require('../driver');
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'UPnPDriver',
+})
+
 var u = require("./libs/upnp-controlpoint");
 var UpnpControlPoint = u.UpnpControlPoint;
 

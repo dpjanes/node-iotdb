@@ -35,6 +35,12 @@ var node_url = require('url');
 
 var queue = new FIFOQueue("RESTDriver");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'RestDriver',
+})
+
 /**
  */
 var RESTDriver = function(paramd) {

@@ -30,6 +30,12 @@ var FIFOQueue = require('../queue').FIFOQueue;
 
 var queue = new FIFOQueue("ProtoDriver");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'PrototypeDriver',
+})
+
 /**
  */
 var ProtoDriver = function(paramd) {

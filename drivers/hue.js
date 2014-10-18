@@ -37,6 +37,12 @@ var UPnPDriver = require('./upnp').Driver;
 
 var queue = new FIFOQueue("HueDriver")
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'HueDriver',
+})
+
 var OFFSET_PUSH = 100000
 var OFFSET_PULL = 200000
 

@@ -37,6 +37,12 @@ var FIFOQueue = require('../queue').FIFOQueue;
 var queue = new FIFOQueue("TwitterDriver");
 var twitter_oauthd = null
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'TwitterDriver',
+})
+
 // for this driver only
 var InternalTwitterMessage = iotdb.make_model('InternalTwitterMessage')
     .driver_identity(":twitter")

@@ -31,6 +31,12 @@ var TCPControlPoint = require('./libs/tcp-connected');
 
 var queue = new FIFOQueue("TCPConnectedDriver");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({ 
+    name: 'iotdb',
+    module: 'TCPConnectedDriver',
+})
+
 /**
  */
 var TCPConnectedDriver = function(paramd) {
