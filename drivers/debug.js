@@ -57,7 +57,11 @@ DebugDriver.prototype.discover = function(paramd, discover_callback) {
     var self = this;
 
     if (paramd.initd === undefined) {
-        console.log("# DebugDriver.discover: no nearby discovery (not a problem)")
+        // console.log("# DebugDriver.discover: no nearby discovery (not a problem)")
+        logger.warn({
+            method: "discover",
+            cause: "not a problem"
+        }, "no nearby discovery");
         return
     }
 

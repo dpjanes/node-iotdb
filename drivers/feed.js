@@ -138,7 +138,11 @@ FeedDriver.prototype.setup = function(paramd) {
  */
 FeedDriver.prototype.discover = function(paramd, discover_callback) {
     if (paramd.initd === undefined) {
-        console.log("# FeedDriver.discover: no nearby discovery (not a problem)")
+        // console.log("# FeedDriver.discover: no nearby discovery (not a problem)")
+        logger.warn({
+            method: "discover",
+            cause: "not a problem"
+        }, "no nearby discovery");
         return
     }
 

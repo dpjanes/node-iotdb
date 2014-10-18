@@ -548,7 +548,7 @@ IOT.prototype._check_requirements = function () {
                 "\n  iotdb_oauth_key", self.iotdb_oauth_key
             )
              */
-            logger.error({
+            logger.fatal({
                 method: "_check_requirements",
                 cause: "likely user hasn't added oauth.json using iotdb-control - SERIOUS because required",
                 "username": self.username,
@@ -611,7 +611,7 @@ IOT.prototype.ready_delta = function (key, delta) {
 
     if (value < 0) {
         // console.log("#IOT.ready_delta", "serious error - over decremented", key);
-        logger.error({
+        logger.fatal({
             method: "ready_delta",
             cause: "Node-IOTDB error - contact us",
             key: key
@@ -1161,10 +1161,11 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
 
             if (!found) {
                 // console.log("- IOT._discover_nearby", "thing not found", "\n ", "driver_identityd", driver_identityd);
-                logger.error({
+                logger.warn({
                     method: "_discover_nearby",
-                    driver_identityd: driver_identityd
-                }, "matching Thing for Driver not found (this is usually OK)");
+                    driver_identityd: driver_identityd,
+                    cause: "usually OK"
+                }, "matching Thing for Driver not found");
             }
         });
     }

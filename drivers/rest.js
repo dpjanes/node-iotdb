@@ -138,7 +138,11 @@ RESTDriver.prototype.setup = function(paramd) {
  */
 RESTDriver.prototype.discover = function(paramd, discover_callback) {
     if (paramd.initd === undefined) {
-        console.log("# RESTDriver.discover: no nearby discovery (not a problem)")
+        // console.log("# RESTDriver.discover: no nearby discovery (not a problem)")
+        logger.warn({
+            method: "discover",
+            cause: "not a problem"
+        }, "no nearby discovery");
         return
     }
 
