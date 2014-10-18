@@ -150,10 +150,10 @@ ThingArray.prototype._persist_command = function(f, av, key) {
     /*
      *  If not in a transaction, there can only be one Setter
      */
-    if ((self.transaction_depth === 0) && (key == KEY_SETTER)) {
+    if ((self.transaction_depth === 0) && (key === KEY_SETTER)) {
         for (var pi = 0; pi < self._persistds.length; pi++) {
             var _persistd = self._persistds[pi]
-            if (_persistd.key == KEY_SETTER) {
+            if (_persistd.key === KEY_SETTER) {
                 self._persistds.splice(pi--, 1)
             }
         }
@@ -585,13 +585,13 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
 
     for (var dpredicate in d) {
         var dobject = d[dpredicate];
-        if (dpredicate == "_location") {
+        if (dpredicate === "_location") {
             dpredicate = _.expand("iot:place-location")
-        } else if (dpredicate == "_room") {
+        } else if (dpredicate === "_room") {
             dpredicate = _.expand("iot:place-room")
-        } else if (dpredicate == "_floor") {
+        } else if (dpredicate === "_floor") {
             dpredicate = _.expand("iot:place-floor")
-        } else if (dpredicate == "_driver") {
+        } else if (dpredicate === "_driver") {
             var driver_got = thing.identity().driver
             var driver_want = dobject
 
@@ -600,18 +600,18 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
             }
 
             continue;
-        } else if (dpredicate == "_name") {
+        } else if (dpredicate === "_name") {
             var name = meta.get('iot:name')
             if (name != dobject) {
                 return false
             }
             continue;
-        } else if (dpredicate == "_code") {
+        } else if (dpredicate === "_code") {
             if (thing.code != dobject) {
                 return false
             }
             continue;
-        } else if (dpredicate == "_tag") {
+        } else if (dpredicate === "_tag") {
             if (!thing.has_tag(dobject)) {
                 return false
             }
@@ -627,7 +627,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         } else if (_.isArray(value)) {
             return value.indexOf(dobject) > -1;
         } else {
-            return value == dobject;
+            return value === dobject;
         }
     }
 
@@ -653,7 +653,7 @@ ThingArray.prototype.filter = function(d) {
         }
     }
 
-    if (out_items.length == 0) {
+    if (out_items.length === 0) {
         // console.log("# ThingArray.filter: warning - nothing matched", d)
     }
 

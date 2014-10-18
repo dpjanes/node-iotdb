@@ -25,8 +25,10 @@ module.exports = function (grunt) {
                     'cfg.js',
                     'driver.js',
                     'iotdb.js',
+                    'meta.js',
                     'model.js',
                     'store.js',
+                    'graph.js',
                 ]
             },
             test: {

@@ -25,6 +25,12 @@
 var _ = require("./helpers.js");
 var assert = require("assert");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'meta',
+});
+
 /**
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
@@ -32,13 +38,13 @@ var assert = require("assert");
 var Meta = function(iot, thing) {
     var self = this;
 
-    self.iot = iot
-    self.thing = thing
+    self.iot = iot;
+    self.thing = thing;
 
-    self.thing_iri = self.thing.thing_iri()
+    self.thing_iri = self.thing.thing_iri();
 
     // updated metadata
-    self.updated = {}
+    self.updated = {};
 };
 
 /**
@@ -47,31 +53,31 @@ var Meta = function(iot, thing) {
 Meta.prototype.state = function() {
     var self = this;
 
-    var metad = {}
-    metad[_.expand('iot:thing')] = self.thing_iri
-    metad[_.expand('iot:model')] = self.thing.model_code_iri()
+    var metad = {};
+    metad[_.expand('iot:thing')] = self.thing_iri;
+    metad[_.expand('iot:model')] = self.thing.model_code_iri();
 
     if (!self.iot.gm.has_subject(self.thing_iri)) {
-        _.extend(metad, self.thing.driver_meta())
+        _.extend(metad, self.thing.driver_meta());
 
         _.ld_extend(metad, _.expand("iot:facet"), self.thing.__facets);
     } else {
-        var tds = self.iot.gm.get_triples(self.thing_iri, null, null)
+        var tds = self.iot.gm.get_triples(self.thing_iri, null, null);
         for (var tx in tds) {
-            var td = tds[tx]
-            if (td.predicate == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+            var td = tds[tx];
+            if (td.predicate === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
                 continue;
-            } else if (td.predicate == 'rdfs:type') {
+            } else if (td.predicate === 'rdfs:type') {
                 continue;
             }
 
-            metad[td.predicate] = td.object_value
+            metad[td.predicate] = td.object_value;
         }
     }
 
-    _.extend(metad, self.updated)
+    _.extend(metad, self.updated);
 
-    return metad
+    return metad;
 };
 
 /**
@@ -85,16 +91,16 @@ Meta.prototype.state = function() {
  */
 Meta.prototype.get = function(key, otherwise) {
     var self = this;
-    assert.ok(self.thing_iri)
+    assert.ok(self.thing_iri);
 
-    key = _.expand(key)
+    key = _.expand(key);
 
-    var stated = self.state()
-    var value = stated[key]
+    var stated = self.state();
+    var value = stated[key];
     if (value !== undefined) {
-        return value
+        return value;
     } else {
-        return otherwise
+        return otherwise;
     }
 };
 
@@ -109,12 +115,12 @@ Meta.prototype.get = function(key, otherwise) {
  */
 Meta.prototype.set = function(key, value) {
     var self = this;
-    assert.ok(self.thing_iri)
+    assert.ok(self.thing_iri);
 
-    key = _.expand(key)
+    key = _.expand(key);
 
-    self.updated[key] = value
-    self.thing.meta_changed()
+    self.updated[key] = value;
+    self.thing.meta_changed();
 };
 
-exports.Meta = Meta
+exports.Meta = Meta;
