@@ -194,7 +194,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
         for (var mqtt_url in linkdd) {
             var linkd = linkdd[mqtt_url]
             if (linkd.rel != "mqtt") {
-                continue
+                continue;
             }
 
             var mqtt_host = null
@@ -203,7 +203,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
 
             var mqtt_urlp = node_url.parse(mqtt_url)
             if (mqtt_urlp.protocol != "tcp:") {
-                continue
+                continue;
             }
 
             mqtt_port = parseInt(mqtt_urlp.port)

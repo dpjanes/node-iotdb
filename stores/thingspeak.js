@@ -80,7 +80,7 @@ ThingSpeakStore.prototype.on_change = function(thing) {
     for (var field = 1; field <= 8; field++) {
         var code = meta.get(ts_channel_fields + "/" + field, "")
         if (_.isEmpty(code)) {
-            continue
+            continue;
         }
 
         var value = thing.get(code, null)

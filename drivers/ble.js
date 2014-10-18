@@ -618,8 +618,8 @@ BLEDriver.prototype.push = function(paramd) {
                     logger.error({
                         method: "push",
                         uuid: uuid
-                    }, "uuid not found")
-                    continue
+                    }, "uuid not found");
+                    continue;
                 }
 
                 var value = paramd.driverd[uuid]

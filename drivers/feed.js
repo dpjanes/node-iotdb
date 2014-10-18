@@ -204,23 +204,23 @@ FeedDriver.prototype._process = function(body) {
         var item = null;
         while (item = stream.read()) {
             if (item.guid === undefined) {
-                continue
+                continue;
             }
 
             if (self.seend[item.guid] && self.track_links) {
-                continue
+                continue;
             }
             self.seend[item.guid] = 1
 
             var date = item.date
             if (!date) {
                 if (self.fresh) {
-                    continue
+                    continue;
                 } 
             } else {
                 var is_fresh = date.getTime() >= self.started.getTime()
                 if (self.fresh && !is_fresh) {
-                    continue
+                    continue;
                 }
             }
 
@@ -254,12 +254,12 @@ FeedDriver.prototype._flatten = function(od) {
             nd[nkey] = ovalue
         } else if (_.isObject(ovalue)) {
             if (_.isEmpty(ovalue)) {
-                continue
+                continue;
             }
 
             var ohash = ovalue['#']
             if (ohash === undefined) {
-                continue
+                continue;
             } else {
                 nd[nkey] = ovalue['#']
             }
