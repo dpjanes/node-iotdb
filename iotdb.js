@@ -468,7 +468,8 @@ IOT.prototype.cfg_load_oauth = function () {
             oauth_key: self.iotdb_oauth_key
         }, "no IOTDB OAuth Info");
     } else {
-        console.log("- IOT.cfg_load_oauth: IOTDB OAuth info discovered");
+        // console.log("- IOT.cfg_load_oauth: IOTDB OAuth info discovered");
+        logger.debug("IOTDB OAuth info discovered");
         self.iotdb_oauthd = {};
     }
 

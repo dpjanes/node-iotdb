@@ -38,6 +38,12 @@ var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "thing_changed";
 var EVENT_META_CHANGED = "meta_changed";
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'model',
+});
+
 /**
  *  Convenience function to make a ModelMaker instance
  *
@@ -411,7 +417,11 @@ Model.prototype.get = function(find_key) {
 
     var rd = self._find(find_key);
     if (rd === undefined) {
-        console.log("# Model.get: attribute '" + find_key + "' not found XXX");
+        // console.log("# Model.get: attribute '" + find_key + "' not found XXX");
+        logger.error({
+            method: "get",
+            find_key: find_key
+        }, "cannot find Attribute using find_key");
         return undefined;
     }
 
@@ -423,7 +433,13 @@ Model.prototype.get = function(find_key) {
     } else if (rd.subthing) {
         return rd.subthing;
     } else {
-        throw "Model.get: internal error: impossible state for: " + find_key;
+        logger.error({
+            method: "get",
+            find_key: find_key,
+            cause: "Node-IOTDB programming error"
+        }, "impossible state");
+
+        throw new Error("Model.get: internal error: impossible state for: " + find_key);
     }
 };
 
@@ -451,10 +467,15 @@ Model.prototype.set = function(find_key, new_value) {
 
     var rd = self._find(find_key);
     if (rd === undefined) {
-        console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code);
+        // console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code);
+        logger.error({
+            method: "set",
+            find_key: find_key,
+            model_code: self.code,
+            cause: "likely programmer error"
+        }, "attribute not found");
         return self;
     }
-
 
     if (rd.attribute) {
         var attribute_key = rd.attribute.get_code();
@@ -473,9 +494,21 @@ Model.prototype.set = function(find_key, new_value) {
 
         return self;
     } else if (rd.subthing) {
-        throw "# Model.get: error: cannot set a subthing: " + find_key;
+        logger.error({
+            method: "set",
+            find_key: find_key,
+            cause: "caller error / not implemented"
+        }, "cannot set a subthing");
+
+        throw new Error("# Model.get: error: cannot set a subthing: " + find_key);
     } else {
-        throw "# Model.get: internal error: impossible state for: " + find_key;
+        logger.error({
+            method: "set",
+            find_key: find_key,
+            cause: "Node-IOTDB programming error"
+        }, "impossible state");
+
+        throw new Error("# Model.get: internal error: impossible state for: " + find_key);
     }
 };
 
@@ -650,12 +683,20 @@ Model.prototype.on = function(find_key, callback) {
 
     var rd = self._find(find_key);
     if (rd === undefined) {
-        console.log("# Model.on: error: attribute '" + find_key + "' not found");
+        // console.log("# Model.on: error: attribute '" + find_key + "' not found");
+        logger.error({
+            method: "on",
+            find_key: find_key
+        }, "find_key not found");
         return;
     }
 
     if (rd.subthing) {
-        console.log("# Model.on: subscribing to a subthing not implemented yet");
+        // console.log("# Model.on: subscribing to a subthing not implemented yet");
+        logger.error({
+            method: "on",
+            find_key: find_key
+        }, "subscribing to a subthing not implemented yet");
     } else if (rd.attribute) {
         attribute_key = rd.attribute.get_code();
 
@@ -668,6 +709,11 @@ Model.prototype.on = function(find_key, callback) {
 
         return self;
     } else {
+        logger.error({
+            method: "on",
+            find_key: find_key
+        }, "impossible state");
+
         throw new Error("Model.on: error: impossible state: " + find_key);
     }
 };
@@ -786,7 +832,11 @@ Model.prototype.identity = function(kitchen_sink) {
     if (this.driver_instance) {
         return this.driver_instance.identity(kitchen_sink);
     } else {
-        console.log("# Model.identity: returning null because this.driver_instance=null");
+        // console.log("# Model.identity: returning null because this.driver_instance=null");
+        logger.error({
+            method: "identity",
+        }, "returning null self.driver_instance=null");
+        
         return null;
     }
 };
@@ -796,7 +846,11 @@ Model.prototype.thing_id = function() {
     if (id) {
         return id.thing_id;
     } else {
-        console.log("# Model.thing_id: returning null because this.identity=null");
+        // console.log("# Model.thing_id: returning null because this.identity=null");
+        logger.error({
+            method: "thing_id",
+        }, "returning null self.identity=null");
+        
         return null;
     }
 };
@@ -880,7 +934,11 @@ Model.prototype.pull = function() {
     var self = this;
 
     if (!self.driver_instance) {
-        console.log("# Model.pull: no self.driver_instance?");
+        // console.log("# Model.pull: no self.driver_instance?");
+        logger.error({
+            method: "pull",
+            cause: "this Model has been disconnected from it's driver, or was never connected"
+        }, "no driver_instance?");
         return;
     }
     
@@ -990,7 +1048,11 @@ Model.prototype._do_pushes = function(attributed) {
             return;
         }
 
-        console.log("- Model.push: no self.driver_instance?");
+        // console.log("- Model.push: no self.driver_instance?");
+        logger.error({
+            method: "_do_pushes",
+            cause: "this Model has been disconnected from it's driver, or was never connected"
+        }, "no driver_instance?");
         return;
     }
 
@@ -1338,7 +1400,11 @@ Model.prototype.place_iri = function() {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Model.place_iri: iot is null: perhaps not bound to a driver yet?");
+        logger.error({
+            method: "place_iri",
+            cause: "this is almost impossible"
+        }, "no iot() object");
+
         return null;
     }
 
@@ -1367,7 +1433,11 @@ Model.prototype.model_iri = function() {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Model.place: iot is null: perhaps not bound to a driver yet?");
+        logger.error({
+            method: "model_iri",
+            cause: "this is almost impossible"
+        }, "no iot() object");
+
         return null;
     }
 
@@ -1391,7 +1461,11 @@ Model.prototype.model_code_iri = function() {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Model.place: iot is null: perhaps not bound to a driver yet?");
+        logger.error({
+            method: "model_code_iri",
+            cause: "this is almost impossible"
+        }, "no iot() object");
+
         return null;
     }
 
@@ -1408,7 +1482,11 @@ Model.prototype.meta = function() {
     if (self.__meta_thing === undefined) {
         var iot = require('./iotdb').iot();
         if (!iot) {
-            console.log("# Model.meta: no iotdb object");
+            logger.error({
+                method: "meta",
+                cause: "this is almost impossible"
+            }, "no iot() object");
+
             return undefined;
         }
 

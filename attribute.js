@@ -28,7 +28,7 @@ var assert = require("assert");
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'Attribute',
+    module: 'attribute',
 });
 
 /* --- constants --- */
