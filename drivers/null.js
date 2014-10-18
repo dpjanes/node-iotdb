@@ -31,7 +31,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'NullDriver',
-})
+});
 
 /**
  *  Typically this will be created by one of
@@ -56,9 +56,12 @@ NullDriver.prototype = new driver.Driver;
 NullDriver.prototype.push = function(paramd) {
     var self = this;
 
-    if (self.verbose) {
-        console.log("- NullDriver.push", paramd.driverd);
-    }
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
 
     return self;
 };
@@ -71,6 +74,11 @@ NullDriver.prototype.push = function(paramd) {
  */
 NullDriver.prototype.pull = function() {
     var self = this;
+
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called");
 
     return self;
 };

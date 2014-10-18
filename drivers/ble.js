@@ -608,11 +608,12 @@ BLEDriver.prototype.push = function(paramd) {
 
     var qitem = {
         run: function() {
-            // console.log("- BLEDriver.push", paramd.driverd)
             logger.info({
-                method: "push",
+                method: "push/qitem(run)",
+                unique_id: self.unique_id,
+                initd: paramd.initd,
                 driverd: paramd.driverd
-            }, "start");
+            }, "called");
             for (var uuid in paramd.driverd) {
                 var c = self.cd[uuid];
                 if (!c) {

@@ -35,7 +35,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'TCPConnectedDriver',
-})
+});
 
 /**
  */
@@ -91,11 +91,11 @@ TCPConnectedDriver.cp = function() {
         _cp = new TCPControlPoint();
     }
 
-    return _cp
+    return _cp;
 };
 
 TCPConnectedDriver.prototype.driver_meta = function() {
-    return this.metad
+    return this.metad;
 };
 
 /**
@@ -107,7 +107,7 @@ TCPConnectedDriver.prototype._init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
 };
 
@@ -160,7 +160,7 @@ TCPConnectedDriver.prototype.discover = function(paramd, discover_callback) {
     cp.GetState(function(error, rooms) {
         if (rooms === null) {
             console.log("# TCPConnectDriver.discover/GetState", "no rooms?")
-            return
+            return;
         }
 
         for (var ri in rooms) {
@@ -191,9 +191,12 @@ TCPConnectedDriver.prototype.discover = function(paramd, discover_callback) {
 TCPConnectedDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- TCPConnectedDriver.push", 
-        "\n  driverd", paramd.driverd, 
-        "\n  initd", paramd.initd)
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
 
     var cp = TCPConnectedDriver.cp();
     var pulled = null
@@ -247,7 +250,10 @@ TCPConnectedDriver.prototype.push = function(paramd) {
 TCPConnectedDriver.prototype.pull = function(paramd) {
     var self = this;
 
-    console.log("- TCPConnectedDriver.pull")
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called");
 
     return self;
 };

@@ -41,7 +41,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'HueDriver',
-})
+});
 
 var OFFSET_PUSH = 100000
 var OFFSET_PULL = 200000
@@ -113,7 +113,7 @@ HueDriver.prototype._configure_device = function(upnp_device, callback) {
         console.log("+ HueDriver.configure: this hub is already configured")
         console.log("  username:", account_value)
         console.log("  no work to do")
-        return
+        return;
     }
 
     console.log("+ HueDriver.configure: configuring Philips Hue hub: ", upnp_device.uuid)
@@ -218,7 +218,7 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
 				message: "configure with: $ iotdb-control configure-driver hue --global"
 			})
         }
-        return
+        return;
     }
 
     var url = "http://" + upnp_device.host + ":" + upnp_device.port + "/api/" + account_value + "/lights"
@@ -228,7 +228,7 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
         .end(function(result) {
             if (!result.ok) {
                 console.log("not ok", "url", url, "result", result.text);
-                return
+                return;
             }
 
             for (var light in result.body) {
@@ -341,6 +341,7 @@ HueDriver.prototype.push = function(paramd) {
     // console.log("- HueDriver.push called", paramd.driverd);
     logger.info({
         method: "push",
+        unique_id: self.unique_id,
         driverd: paramd.driverd
     }, "called");
 
@@ -395,7 +396,7 @@ HueDriver.prototype.push = function(paramd) {
                     queue.finished(qitem);
                     if (!result.ok) {
                         console.log("# HueDriver.push", "not ok", "url", url, "result", result.text);
-                        return
+                        return;
                     }
 
                     console.log("- HueDriver.push", result.body);
@@ -417,9 +418,9 @@ HueDriver.prototype.push = function(paramd) {
 HueDriver.prototype.pull = function() {
     var self = this;
 
-    // console.log("- HueDriver.pull called");
-    logger.debug({
-        method: "pull"
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
     }, "called");
 
     var qitem = {
@@ -443,7 +444,7 @@ HueDriver.prototype.pull = function() {
                             url: url,
                             result: result 
                         }, "not ok");
-                        return
+                        return;
                     }
 
                     if (result.body && result.body.state) {
@@ -485,7 +486,7 @@ HueDriver.prototype.pull = function() {
  *  See {@link Driver#meta Driver.meta}
  */
 HueDriver.prototype.driver_meta = function() {
-    return this.metad
+    return this.metad;
 };
 
 /* --- internals --- */

@@ -34,7 +34,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'FirmataDriver',
-})
+});
 
 var boardd = {};
 var machine_id = undefined;
@@ -54,12 +54,12 @@ var unpack_bytes = function(board) {
         outb[obi] = ob
     }
 
-    return outb
+    return outb;
 };
 
 var unpack_char8s = function(board) {
     var outb = unpack_bytes(board)
-    return outb.toString()
+    return outb.toString();
 };
 
 var unpack_int8s = function(board) {
@@ -69,7 +69,7 @@ var unpack_int8s = function(board) {
         outi.push(outb[i])
     }
 
-    return outi
+    return outi;
 };
 
 var unpack_int16s = function(board) {
@@ -79,7 +79,7 @@ var unpack_int16s = function(board) {
         outi.push(outb.readInt16LE(i))
     }
 
-    return outi
+    return outi;
 };
 
 var unpack_int32s = function(board) {
@@ -89,7 +89,7 @@ var unpack_int32s = function(board) {
         outi.push(outb.readInt32LE(i))
     }
 
-    return outi
+    return outi;
 };
 
 var unpack_floats = function(board) {
@@ -99,7 +99,7 @@ var unpack_floats = function(board) {
         outi.push(outb.readFloatLE(i))
     }
 
-    return outi
+    return outi;
 };
 
 /**
@@ -164,7 +164,7 @@ FirmataDriver.prototype._setup_code = function(code, code_value, initd) {
     var self = this;
 
     if (!_.isString(code_value)) {
-        return
+        return;
     }
 
     var pind = {
@@ -235,7 +235,7 @@ FirmataDriver.prototype._setup_code = function(code, code_value, initd) {
             "\n  code", code,
             "\n  code_value", code_value
         )
-        return
+        return;
     }
 };
 
@@ -523,7 +523,7 @@ FirmataDriver.prototype.setup = function(paramd) {
 
     if (!self.tty) {
         console.log("# FirmataDriver.setup: self.tty not set - can't do anything")
-        return
+        return;
     }
 
     self.board = boardd[self.tty]
@@ -578,18 +578,18 @@ FirmataDriver.prototype.reachable = function() {
     var self = this
 
     if (!self.board) {
-        return false
+        return false;
     }
 
     if (!self.board.iotdb_ready) {
-        return false
+        return false;
     }
 
     if (!self.queue) {
-        return false
+        return false;
     }
 
-    return true
+    return true;
 };
 
 /*
@@ -604,7 +604,7 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
             method: "discover",
             cause: "not a problem"
         }, "no nearby discovery");
-        return
+        return;
     }
 
     if (machine_id === undefined) {
@@ -624,10 +624,10 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
 				message: "configure with $ iotdb-control machine-id"
 			})
 
-            return
+            return;
         }
     } else if (!machine_id) {
-        return
+        return;
     }
 
 
@@ -648,14 +648,17 @@ FirmataDriver.prototype.push = function(paramd) {
             self.__reachable_message = true
         }
 
-        return
+        return;
     } else {
         self.__reachable_message = undefined
     }
 
-    console.log("- FirmataDriver.push", 
-        "\n  driverd", paramd.driverd, 
-        "\n  initd", paramd.initd)
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
 
     for (var key in paramd.driverd) {
         var value = paramd.driverd[key]
@@ -721,11 +724,10 @@ FirmataDriver.prototype.push = function(paramd) {
 FirmataDriver.prototype.pull = function() {
     var self = this;
 
-    /*
-    console.log("- FirmataDriver.pull", 
-        "\n  initd", paramd.initd
-    )
-    */
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called");
 
     return self;
 };

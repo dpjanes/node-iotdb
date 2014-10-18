@@ -31,7 +31,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'DebugDriver',
-})
+});
 
 /**
  *  Typically this will be created by one of
@@ -62,14 +62,14 @@ DebugDriver.prototype.discover = function(paramd, discover_callback) {
             method: "discover",
             cause: "not a problem"
         }, "no nearby discovery");
-        return
+        return;
     }
 
     discover_callback(new DebugDriver(self.identityd));
 };
 
 DebugDriver.prototype.identity = function(kitchen_sink) {
-    return {}
+    return {};
 };
 
 /**
@@ -78,7 +78,13 @@ DebugDriver.prototype.identity = function(kitchen_sink) {
 DebugDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("DebugDriver.push called", paramd.initd, paramd.driverd);
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
+
     return self;
 };
 
@@ -91,7 +97,11 @@ DebugDriver.prototype.push = function(paramd) {
 DebugDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("DebugDriver.pull called");
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called");
+
     return self;
 };
 
@@ -99,4 +109,4 @@ DebugDriver.prototype.pull = function() {
 /*
  *  API
  */
-exports.Driver = DebugDriver
+exports.Driver = DebugDriver;

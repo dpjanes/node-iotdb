@@ -41,7 +41,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'TwitterDriver',
-})
+});
 
 // for this driver only
 var InternalTwitterMessage = iotdb.make_model('InternalTwitterMessage')
@@ -132,7 +132,7 @@ TwitterDriver.prototype.register = function(iot) {
 			name: "twitter",
 			message: "configure with instuctions: https://iotdb.org/docs/node/twitter"
 		})
-        return
+        return;
     }
     
     if (iot.initd.twitter) {
@@ -194,7 +194,7 @@ TwitterDriver.prototype._init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.search) {
         self.search = initd.search
@@ -248,7 +248,7 @@ TwitterDriver.prototype.discover = function(paramd, discover_callback) {
             method: "discover",
             cause: "not a problem"
         }, "no nearby discovery");
-        return
+        return;
     }
 
     discover_callback(new TwitterDriver());
@@ -262,7 +262,13 @@ TwitterDriver.prototype.discover = function(paramd, discover_callback) {
 TwitterDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- TwitterDriver.push", paramd.driverd)
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
+
     self.twitter
         .updateStatus(paramd.driverd.text, function() {
             console.log("- TwitterDriver.push", "tweet sent")
@@ -280,7 +286,10 @@ TwitterDriver.prototype.push = function(paramd) {
 TwitterDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- TwitterDriver.pull", "inherently, this does nothing!")
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called - inherently does nothing though");
 
     return self;
 };
@@ -290,10 +299,10 @@ TwitterDriver.prototype._setup_search = function() {
     var self = this;
 
     if (self.twitter) {
-        return
+        return;
     }
     if (!twitter_oauthd) {
-        return
+        return;
     }
 
     self.twitter = new node_twitter(twitter_oauthd)

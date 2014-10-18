@@ -34,7 +34,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'PrototypeDriver',
-})
+});
 
 /**
  */
@@ -69,7 +69,7 @@ ProtoDriver.prototype._init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.iri) {
         self.iri = initd.iri
@@ -123,9 +123,12 @@ ProtoDriver.prototype.discover = function(paramd, discover_callback) {
 ProtoDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- ProtoDriver.push", 
-        "\n  driverd", paramd.driverd, 
-        "\n  initd", paramd.initd)
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
 
     return self;
 };
@@ -139,9 +142,10 @@ ProtoDriver.prototype.push = function(paramd) {
 ProtoDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- ProtoDriver.pull", 
-        "\n  initd", paramd.initd
-    )
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called");
 
     return self;
 };

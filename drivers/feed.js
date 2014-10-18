@@ -39,7 +39,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'FeedDriver',
-})
+});
 
 /**
  */
@@ -82,7 +82,7 @@ FeedDriver.prototype._init = function(initd) {
     })
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.iri !== undefined) {
         self.iri = initd.iri
@@ -143,7 +143,7 @@ FeedDriver.prototype.discover = function(paramd, discover_callback) {
             method: "discover",
             cause: "not a problem"
         }, "no nearby discovery");
-        return
+        return;
     }
 
     discover_callback(new FeedDriver());
@@ -157,7 +157,12 @@ FeedDriver.prototype.discover = function(paramd, discover_callback) {
 FeedDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- FeedDriver.push", "inherently, this does nothing!")
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called - but inherently does nothing");
 
     return self;
 };
@@ -171,7 +176,10 @@ FeedDriver.prototype.push = function(paramd) {
 FeedDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- FeedDriver.pull")
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    }, "called");
 
     self._fetch()
 
@@ -287,7 +295,7 @@ FeedDriver.prototype._flatten = function(od) {
         }
     }
 
-    return nd
+    return nd;
 };
 
 /* --- API --- */

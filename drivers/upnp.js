@@ -31,7 +31,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'UPnPDriver',
-})
+});
 
 var u = require("./libs/upnp-controlpoint");
 var UpnpControlPoint = u.UpnpControlPoint;
@@ -121,7 +121,7 @@ UPnPDriver.prototype._forget_device = function() {
     var self = this
 
     if (!self.upnp_device) {
-        return
+        return;
     }
     
     if (_cp) {
@@ -219,7 +219,7 @@ UPnPDriver.prototype.setup = function(paramd) {
     var self = this;
 
     if (!self.upnp_device) {
-        return
+        return;
     }
 
     console.log("- UPnDriver.setup", paramd.initd);
@@ -282,10 +282,15 @@ UPnPDriver.prototype.push = function(paramd) {
     var self = this;
 
     if (!self.upnp_device) {
-        return
+        return;
     }
 
-    console.log("- UPnPDriver.push called", paramd.driverd);
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
 
     for (var service_urn in paramd.driverd) {
         var service = self._service_by_urn(service_urn);
@@ -319,7 +324,11 @@ UPnPDriver.prototype.push = function(paramd) {
 UPnPDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- UPnPDriver.pull called");
+    logger.info({
+        method: "pull",
+        unique_id: self.unique_id
+    });
+
     return self;
 };
 
@@ -332,7 +341,7 @@ UPnPDriver.prototype.driver_meta = function() {
     var self = this
 
     if (!self.upnp_device) {
-        return
+        return;
     }
 
     var metad = {}
@@ -348,7 +357,7 @@ UPnPDriver.prototype.driver_meta = function() {
         metad["iot:dsid"] = _.expand("iot-driver:upnp/" + self.upnp_device.udn)
     }
 
-    return metad
+    return metad;
 };
 
 /*

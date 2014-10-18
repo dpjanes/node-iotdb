@@ -82,7 +82,7 @@ SmartThingsDriver.prototype._init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.type) {
         self.type = initd.type
@@ -117,7 +117,7 @@ SmartThingsDriver.prototype.register = function(iot) {
 				name: "smartthings",
 				message: "not configured (instructions coming)"
 			})
-            return
+            return;
         }
 
         st.load_settings(oauthd)
@@ -177,7 +177,7 @@ SmartThingsDriver.prototype.setup = function(paramd) {
             console.log("############################## ")
         }
 
-        return
+        return;
     }
 
     if (paramd.initd) {
@@ -282,6 +282,7 @@ SmartThingsDriver.prototype.push = function(paramd) {
 
     logger.info({
         method: "push",
+        unique_id: self.unique_id,
         driverd: paramd.driverd, 
         initd: paramd.initd,
         smarthings_id: self.id,
@@ -306,7 +307,8 @@ SmartThingsDriver.prototype.pull = function() {
     var self = this;
 
     logger.info({
-        method: "pull"
+        method: "pull",
+        unique_id: self.unique_id
     }, "called");
 
     return self;
@@ -318,7 +320,7 @@ SmartThingsDriver.prototype.pull = function() {
  *  See {@link Driver#meta Driver.meta}
  */
 SmartThingsDriver.prototype.driver_meta = function() {
-    return this.metad
+    return this.metad;
 };
 
 

@@ -39,7 +39,7 @@ var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
     name: 'iotdb',
     module: 'RestDriver',
-})
+});
 
 /**
  */
@@ -76,7 +76,7 @@ RESTDriver.prototype._init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.iri) {
         self.iri = initd.iri
@@ -143,7 +143,7 @@ RESTDriver.prototype.discover = function(paramd, discover_callback) {
             method: "discover",
             cause: "not a problem"
         }, "no nearby discovery");
-        return
+        return;
     }
 
     discover_callback(new RESTDriver());
@@ -157,10 +157,13 @@ RESTDriver.prototype.discover = function(paramd, discover_callback) {
 RESTDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- RESTDriver.push", 
-        "\n  iri", self.iri, 
-        "\n  driverd", paramd.driverd, 
-        "\n  initd", paramd.initd)
+    logger.info({
+        method: "push",
+        unique_id: self.unique_id,
+        iri: self.iri,
+        initd: paramd.initd,
+        driverd: paramd.driverd
+    }, "called");
 
     var qitem = {
         id: self.light,
@@ -174,7 +177,7 @@ RESTDriver.prototype.push = function(paramd) {
                     queue.finished(qitem);
                     if (!result.ok) {
                         console.log("# RESTDriver.push/.end", "not ok", "url", self.iri, "result", result.text);
-                        return
+                        return;
                     }
 
                     console.log("- RESTDriver.push/.end.body", result.body);
@@ -191,7 +194,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
     var self = this;
 
     if (self.__parsed_headers) {
-        return
+        return;
     } else {
         self.__parsed_headers = true
     }
@@ -252,9 +255,11 @@ RESTDriver.prototype._parse_headers = function(headers) {
 RESTDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- RESTDriver.pull", 
-        "\n  iri", self.iri
-    )
+    logger.info({
+        method: "pull",
+        iri: self.iri,
+        unique_id: self.unique_id
+    }, "called");
 
     var qitem = {
         id: self.light,
@@ -268,7 +273,7 @@ RESTDriver.prototype.pull = function() {
                         console.log("# RESTDriver.pull/.end - not ok", 
                             "\n  url", self.iri, 
                             "\n  result", result.text);
-                        return
+                        return;
                     }
 
                     self._parse_headers(result.headers)
@@ -283,7 +288,7 @@ RESTDriver.prototype.pull = function() {
                         });
                     } else {
                         console.log("# RESTDriver.pull/.end - unknown content_type", self.content_type)
-                        return
+                        return;
                     }
 
                     /*
