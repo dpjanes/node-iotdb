@@ -34,6 +34,12 @@ var fs = require('fs')
 var path = require('path')
 var node_url = require('url')
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'IOT',
+});
+
 var GraphManager = function(iot) {
     events.EventEmitter.call(this);
 
@@ -340,9 +346,12 @@ GraphManager.prototype.load_iri = function(iri, callback) {
                 if (result.status == 404) {
                     self.failed_iri(iri, GraphManager.IRI_NOT_FOUND, result.status);
                 } else if (result.status == 500) {
-                    console.log("# GraphManager.load_iri: unexpected 500 error",
-                        "\n ", result.body
-                    )
+                    // console.log("# GraphManager.load_iri: unexpected 500 error", "\n ", result.body)
+                    logger.error({
+                        method: "load_iri",
+                        body: result.body,
+                        cause: "likely a IOTDB.org/server error"
+                    }, "unexpected 500 error");
                     self.failed_iri(iri, GraphManager.IRI_NOT_AVAILABLE, result.status);
                 } else if (result.status) {
                     self.failed_iri(iri, GraphManager.IRI_NOT_AVAILABLE, result.status);
@@ -368,6 +377,12 @@ GraphManager.prototype.load_iri = function(iri, callback) {
                             "\n exception", x
                             // ,"\n body", result.body
                             );
+                        logger.error({
+                            method: "load_iri",
+                            iri: iri,
+                            exception: x,
+                            cause: "likely a IOTDB.org/server error"
+                        }, "unparsable result");
                         self.failed_iri(iri, GraphManager.IRI_NOT_AVAILABLE, "unparsable result")
 
                         if (callback !== undefined) {
@@ -390,7 +405,13 @@ GraphManager.prototype.load_iri = function(iri, callback) {
 GraphManager.prototype.failed_iri = function(iri, iri_status, status) {
     var self = this;
 
-    console.log("- GraphManager.failed_iri", "\n  iri", iri, "\n  result", status)
+    // console.log("- GraphManager.failed_iri", "\n  iri", iri, "\n  result", status)
+    logger.error({
+        method: "load_iri",
+        iri: iri,
+        result: status,
+        cause: "likely what you're looking for is not defined on IOTDB.org yet"
+    }, "failed to locate resource");
 
     self.irid[iri] = iri_status
     self.iot.emit(GraphManager.EVENT_FAILED_IRI, iri)

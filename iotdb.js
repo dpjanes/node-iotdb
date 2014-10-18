@@ -1317,13 +1317,24 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             // has to happen after _bind_driver unfortunately to get the right identity
             var driver_supported = thing.is_driver_supported(driver, true);
             if (!driver_supported) {
-                console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)");
+                // console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)");
+                logger.info({
+                    method: "_discover_thing"/*,
+                    thing_initd: thing_exemplar.initd,
+                    driver_identityd: driver.identity()*/
+                }, "ignoring this Driver instance - not a real issue");
+
                 thing.driver_instance = null;
                 driver.disconnect();
                 return;
             }
 
-            console.log("- IOT._discover_thing", "found Driver (bound)");
+            // console.log("- IOT._discover_thing", "found Driver (bound)");
+            logger.info({
+                method: "_discover_thing",
+                thing_initd: thing_exemplar.initd,
+                driver_identityd: driver.identity()
+            }, "found Driver - bound to Thing")
 
             self._add_thing(thing, things);
             /*
@@ -1342,7 +1353,11 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             */
         });
 
-        console.log("- IOT._discover_thing", "found Driver (exemplar)");
+        // console.log("- IOT._discover_thing", "found Driver (exemplar)");
+        logger.info({
+            method: "_discover_thing",
+            initd: thing_exemplar.initd
+        }, "found a Driver exemplar for Thing");
         return self;
     }
 
@@ -1359,7 +1374,7 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             initd: thing_exemplar.initd,
             code: thing_exemplar.code
         }
-    }, "no Driver found for that matches this Thing");
+    }, "no Driver exemplar found for this Thing");
 
     return self;
 };
