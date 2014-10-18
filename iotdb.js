@@ -648,7 +648,10 @@ IOT.prototype.ready_delta = function(key, delta) {
 
         if (self.is_ready()) {
             if (!self.__ready_once) {
-                console.log("- IOT.on_ready: READY!")
+                // console.log("- IOT.on_ready: READY!")
+                logger.info({
+                    method: "on_ready"
+                }, "READY!")
                 self.__ready_once = true
 
                 if (self.initd.show_health) {
@@ -975,7 +978,11 @@ IOT.prototype.register_store = function(store_class) {
     var self = this;
 
     self.store_instanced[_.expand(store_class.prototype.store_id, "iot-store:")] = new store_class()
-    console.log("- IOT.register_store:", store_class.prototype.store_id)
+    // console.log("- IOT.register_store:", store_class.prototype.store_id)
+    logger.info({
+        method: "register_store",
+        store_id: store_class.prototype.store_id
+    }, "registered store")
 
     return self;
 }
@@ -2255,7 +2262,11 @@ IOT.prototype._load_stores = function() {
  */
 IOT.prototype._load_model_modules = function() {
     var self = this
-    console.log("- IOT._load_model_modules", "modules", self.initd.model_modules)
+    // console.log("- IOT._load_model_modules", "modules", self.initd.model_modules)
+    logger.info({
+        method: "_load_model_modules",
+        models_modules: self.initd.models_modules
+    }, "loading Models in modules")
 
     for (var mi in self.initd.models_modules) {
         var model_module = self.initd.models_modules[mi]
@@ -2275,7 +2286,12 @@ IOT.prototype._load_model_modules = function() {
 IOT.prototype._load_models = function() {
     var self = this;
 
-    console.log("- IOT._load_models", "loading models", self.initd.models_path)
+    // console.log("- IOT._load_models", "loading models", self.initd.models_path)
+    logger.info({
+        method: "_load_models",
+        models_path: self.initd.models_path
+    }, "loading Models")
+
     var filenames = cfg.cfg_find(self.envd, self.initd.models_path, /[.]js$/)
     // console.log("- IOT._load_models", "filenames", filenames, self.envd)
     cfg.cfg_load_js(filenames, function(paramd) {
@@ -2319,7 +2335,12 @@ IOT.prototype._load_models = function() {
 IOT.prototype._load_things = function() {
     var self = this;
 
-    console.log("- IOT._load_things", "loading things", self.initd.things_path)
+    // console.log("- IOT._load_things", "loading things", self.initd.things_path)
+    logger.info({
+        method: "_load_things",
+        models_path: self.initd.things_path
+    }, "loading Things")
+
     var filenames = cfg.cfg_find(self.envd, self.initd.things_path, /[.]json$/)
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
@@ -2359,7 +2380,11 @@ IOT.prototype.on_things = function(callback, paramd) {
     var timeoutId = timers.setInterval(function() {
         var things = self.things()
         if (things.length < paramd.min_things) {
-            console.log("- IOT.on_things: waiting for things to stabilize", things.length)
+            // console.log("- IOT.on_things: waiting for things to stabilize", things.length)
+            logger.debug({
+                method: "on_things",
+                nthings: things.length
+            }, "waiting for things to stabilize")
             return
         }
 
@@ -2374,7 +2399,7 @@ IOT.prototype.on_things = function(callback, paramd) {
 
     return self
 }
-
+// 
 /* --- places section -- */
 /**
  *  The IRI for places data
