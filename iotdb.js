@@ -1247,10 +1247,10 @@ IOT.prototype._add_thing = function (thing, things) {
 /**
  */
 IOT.prototype._driver_swap = function (existing_thing, new_thing) {
-    console.log("- IOT._driver_swap",
-        "swapping the driver",
-        "\n  driver_identityd", existing_thing.driver_identityd
-    );
+    logger.info({
+        method: "_driver_swap",
+        driver_identityd: existing_thing.driver_identityd
+    }, "swapping the driver");
 
     if (existing_thing.driver_instance) {
         existing_thing.driver_instance.disconnect();

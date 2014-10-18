@@ -21,6 +21,7 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: [
+                    'driver.js',
                     'cfg.js',
                     'model.js',
                     'attribute.js',

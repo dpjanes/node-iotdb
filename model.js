@@ -1400,7 +1400,7 @@ Model.prototype.place_iri = function() {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        logger.error({
+        logger.fatal({
             method: "place_iri",
             cause: "this is almost impossible"
         }, "no iot() object");
@@ -1433,7 +1433,7 @@ Model.prototype.model_iri = function() {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        logger.error({
+        logger.fatal({
             method: "model_iri",
             cause: "this is almost impossible"
         }, "no iot() object");
@@ -1461,7 +1461,7 @@ Model.prototype.model_code_iri = function() {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        logger.error({
+        logger.fatal({
             method: "model_code_iri",
             cause: "this is almost impossible"
         }, "no iot() object");
@@ -1482,7 +1482,7 @@ Model.prototype.meta = function() {
     if (self.__meta_thing === undefined) {
         var iot = require('./iotdb').iot();
         if (!iot) {
-            logger.error({
+            logger.fatal({
                 method: "meta",
                 cause: "this is almost impossible"
             }, "no iot() object");

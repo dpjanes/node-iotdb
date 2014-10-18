@@ -35,8 +35,8 @@ var logger = bunyan.createLogger({
     module: 'driver',
 });
 
-var id_counter = 1
-var EVENT_DISCONNECT = 'disconnect'
+var id_counter = 1;
+var EVENT_DISCONNECT = 'disconnect';
 
 /**
  *  Base class for all Drivers. It does nothing
@@ -74,24 +74,24 @@ Driver.prototype.driver_construct = function() {
     self.verbose = false;
     self.driver = null;     // should be redefined in subclasses
 
-    self.disconnected = false
+    self.disconnected = false;
 
     // poll built it
-    self.poll_delta = 0
-    self.poll_timer_id = null
+    self.poll_delta = 0;
+    self.poll_timer_id = null;
 
     // MQTT built in
-    self.mqtt_host = self.cfg_get('mqtt_host', null)
-    self.mqtt_port = self.cfg_get('mqtt_port', 1883)
-    self.mqtt_topic = null
-    self.mqtt_json = false
-    self.mqtt_device = ""
+    self.mqtt_host = self.cfg_get('mqtt_host', null);
+    self.mqtt_port = self.cfg_get('mqtt_port', 1883);
+    self.mqtt_topic = null;
+    self.mqtt_json = false;
+    self.mqtt_device = "";
 
     /*
     self.mqtt_client = null
      */
-    self.mqtt_last_millis = 0
-    self.mqtt_timer_id = 0
+    self.mqtt_last_millis = 0;
+    self.mqtt_timer_id = 0;
 };
 
 /**
@@ -121,12 +121,12 @@ Driver.prototype.identity = function(kitchen_sink) {
 };
 
 Driver.prototype.thing_id = function() {
-    var self = this
-    var d = self.identity()
+    var self = this;
+    var d = self.identity();
     if (d) {
         return d.thing_id;
     } else {
-        return null
+        return null;
     }
 };
 
@@ -155,7 +155,7 @@ Driver.prototype.register = function(iot) {
 Driver.prototype.configure = function(ad, callback) {
     logger.debug({
         method: "configure",
-        id: self.unique_id
+        id: this.unique_id
     }, "this driver does not need configuration");
 };
 
@@ -175,7 +175,7 @@ Driver.prototype.configure = function(ad, callback) {
 Driver.prototype.discover = function(paramd, discover_callback) {
     logger.error({
         method: "discover",
-        id: self.unique_id,
+        id: this.unique_id,
         cause: "Node-IOTDB programming error"
     }, "we expected this to be redefined in a subclass");
 };
@@ -247,18 +247,18 @@ Driver.prototype.setup = function(paramd) {
  *  @return {this}
  */
 Driver.prototype.disconnect = function() {
-    var self = this
+    var self = this;
 
-    self.disconnected = true
-    self.emit(EVENT_DISCONNECT)
+    self.disconnected = true;
+    self.emit(EVENT_DISCONNECT);
 
     if (self.thing) {
-        var the_thing = self.thing
+        var the_thing = self.thing;
         process.nextTick(function() {
-            the_thing.meta_changed()
-        })
+            the_thing.meta_changed();
+        });
     }
-    self.thing = null
+    self.thing = null;
 };
 
 /**
@@ -269,9 +269,9 @@ Driver.prototype.disconnect = function() {
  *  No need to chain if you know what you are doing
  */
 Driver.prototype.shutdown = function() {
-    this.disconnect()
+    this.disconnect();
 
-    return 0
+    return 0;
 };
 
 /**
@@ -333,7 +333,7 @@ Driver.prototype.pull = function() {
  *  Can this driver be reached (as far as we know)
  */
 Driver.prototype.reachable = function() {
-    return true
+    return true;
 };
 
 /**
@@ -342,15 +342,15 @@ Driver.prototype.reachable = function() {
  *  @return {this}
  */
 Driver.prototype.meta = function() {
-    var self = this
+    var self = this;
 
-    var metad = self.driver_meta()
-    metad = metad ? _.deepCopy(metad) : {}
+    var metad = self.driver_meta();
+    metad = metad ? _.deepCopy(metad) : {};
 
     if (self.driver) {
-        metad["iot:driver"] = self.driver
+        metad["iot:driver"] = self.driver;
     }
-    metad["iot:reachable"] = self.reachable() ? true : false
+    metad["iot:reachable"] = self.reachable() ? true : false;
 
     if (self.thing) {
         var paramd = {
@@ -358,19 +358,19 @@ Driver.prototype.meta = function() {
             driverd: {},
             initd: self.thing.initd,
             metad: metad
-        }
+        };
 
-        self.thing.driver_in(paramd)
+        self.thing.driver_in(paramd);
     }
 
-    var nd = {}
+    var nd = {};
     for (var key in metad) {
         if (key.indexOf(':') > -1) {
-            nd[_.expand(key)] = metad[key]
+            nd[_.expand(key)] = metad[key];
         }
     }
 
-    return nd
+    return nd;
 };
 
 /**
@@ -392,14 +392,18 @@ Driver.prototype.pulled = function(driverd) {
     /* metadata update */
     if ((driverd === undefined) || (driverd === null)) {
         if (self.thing) {
-            self.thing.meta_changed()
+            self.thing.meta_changed();
         }
         return;
     }
 
     /* the driver didn't chain Driver.setup OR setup was never called */
     if (!self.thing) {
-        console.log("# Driver.pulled: called, but no self.thing")
+        logger.error({
+            method: "pull",
+            id: self.unique_id,
+            cause: "likely a Node-IOTDB error"
+        }, "called - but no self.thing");
         return;
     }
 
@@ -408,18 +412,21 @@ Driver.prototype.pulled = function(driverd) {
         driverd: driverd,
         initd: self.thing.initd,
         libs: libs.libs
-    }
+    };
 
-    self.thing.driver_in(paramd)
+    self.thing.driver_in(paramd);
 
-    if (self.verbose) console.log("- Driver.pull", 
-        "\n  driverd", driverd,
-        "\n  thingd", paramd.thingd)
+    logger.trace({
+        method: "pull",
+        driverd: driverd,
+        thingd: paramd.thingd,
+        id: self.unique_id
+    }, "pulled");
 
     self.thing.update(paramd.thingd, { 
         notify: true,
         push: false
-    })
+    });
 };
 
 /**
@@ -441,9 +448,9 @@ Driver.prototype.mqtt_subscribe = function() {
         }, "missing info");
     }
 
-    self.mqtt_last_millis = (new Date).getTime()
+    self.mqtt_last_millis = (new Date()).getTime();
 
-    mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
+    var mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host);
     mqtt_client.setMaxListeners(25);
 
     /*
@@ -475,7 +482,7 @@ Driver.prototype.mqtt_subscribe = function() {
         }, "subscribed");
 
         try {
-            self.on_mqtt_message(in_topic, in_message)
+            self.on_mqtt_message(in_topic, in_message);
         } catch (x) {
             // console.log("# Driver.mqtt_subscribe/on(message): MQTT receive: exception ignored", x)
             logger.info(x, {
@@ -483,76 +490,15 @@ Driver.prototype.mqtt_subscribe = function() {
                 id: self.unique_id
             }, "exception during 'on_mqtt_message' ignored");
         }
-    }
-    mqtt_client.on('message', on_message)
+    };
+    mqtt_client.on('message', on_message);
 
     self.on(EVENT_DISCONNECT, function() {
         // console.log("# Driver.mqtt_subscribe/DISCONNECT", "thing_id", self.thing_id())
-        mqtt_client.removeListener('message', on_message)
-    })
+        mqtt_client.removeListener('message', on_message);
+    });
 
-    mqtt_client.subscribe(self.mqtt_topic)
-};
-
-var md = {}
-
-/**
- *  We cache MQTT clients - the new version of MQTT automatically reconnects
- */
-Driver.prototype._mqtt_client = function(mqtt_port, mqtt_host) {
-    var key = "mqtt://" + host + ":" + port
-    var mqtt_client = md[key]
-    if (!mqtt_client) {
-        mqtt_client = mqtt.createClient(mqtt_port, mqtt_host)
-        mqtt_client.setMaxListeners(25);
-        md[key] = mqtt_client
-
-        mqtt_client.on('connect', function() {
-            console.log("- Driver._mqtt_client/on(connect)")
-        })
-        mqtt_client.on('error', function(error) {
-            console.log("# Driver._mqtt_client/on(error)")
-        })
-        mqtt_client.on('close', function(error) {
-            console.log("# Driver._mqtt_client/on(close)")
-        })
-    }
-
-    return mqtt_client
-};
-
-/**
- *  Internal: called when a connection dies or whatever
- */
-Driver.prototype._mqtt_resubscribe = function() {
-    var self = this
-
-    if (self.disconnected) {
-        return;
-    }
-    if (self.mqtt_timer_id) {
-        return;
-    }
-
-    var now = (new Date).getTime()
-    var delta_min = 60 * 1000
-    var delta_now = now - self.mqtt_last_millis;
-    if (delta_now < delta_min) {
-        var delta_wait = delta_min - delta_now
-        console.log("# Driver._mqtt_resubscribe:", "will resubscribe in:", delta_wait)
-
-        self.mqtt_timer_id = timers.setInterval(function() {
-            console.log("- Driver._mqtt_resubscribe:", "resubscribe now")
-
-            timers.clearTimeout(self.mqtt_timer_id)
-            self.mqtt_timer_id = 0
-
-            self.mqtt_subscribe()
-        }, delta_wait)
-    } else {
-        console.log("- Driver._mqtt_resubscribe:", "resubscribe now")
-        self.mqtt_subscribe()
-    }
+    mqtt_client.subscribe(self.mqtt_topic);
 };
 
 /**
@@ -567,16 +513,16 @@ Driver.prototype.mqtt_init = function(initd) {
         return;
     }
     if (initd.mqtt_host) {
-        self.mqtt_host = initd.mqtt_host
+        self.mqtt_host = initd.mqtt_host;
     }
     if (initd.mqtt_port) {
-        self.mqtt_port = initd.mqtt_port
+        self.mqtt_port = initd.mqtt_port;
     }
     if (initd.mqtt_json) {
-        self.mqtt_json = initd.mqtt_json
+        self.mqtt_json = initd.mqtt_json;
     }
     if (initd.mqtt_device) {
-        self.mqtt_device = initd.mqtt_device
+        self.mqtt_device = initd.mqtt_device;
     }
 
     /*
@@ -585,7 +531,7 @@ Driver.prototype.mqtt_init = function(initd) {
      *  by the original Thing's mqtt_topic in initd
      */
     if (initd.mqtt_topic && (self.mqtt_topic == null)) {
-        self.mqtt_topic = initd.mqtt_topic
+        self.mqtt_topic = initd.mqtt_topic;
     }
 };
 
@@ -595,7 +541,7 @@ Driver.prototype.mqtt_init = function(initd) {
 Driver.prototype.on_mqtt_message = function(in_topic, in_message) {
     var self = this;
 
-    self.handle_mqtt_message(in_topic, in_message)
+    self.handle_mqtt_message(in_topic, in_message);
 };
 
 /**
@@ -609,12 +555,12 @@ Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
         self.pulled({
             mqtt_topic: in_topic,
             mqtt_message: JSON.parse(in_message)
-        })
+        });
     } else {
         self.pulled({
             mqtt_topic: in_topic,
             mqtt_message: in_message
-        })
+        });
     }
 };
 
@@ -628,7 +574,7 @@ Driver.prototype.poll_init = function(initd) {
         return;
     }
     if (initd.poll) {
-        self.poll_delta = initd.poll
+        self.poll_delta = initd.poll;
     }
 };
 
@@ -648,7 +594,7 @@ Driver.prototype.poll_reschedule = function() {
 
     self.poll_timer_id = setInterval(function() {
         if (self.thing) {
-            self.thing.pull()
+            self.thing.pull();
         }
     }, self.poll_delta * 1000);
 };
@@ -664,7 +610,7 @@ Driver.prototype.report_issue = function() {
 		return;
     }
 
-    return iot.report_issue.apply(iot, arguments)
+    return iot.report_issue.apply(iot, arguments);
 };
 
 /**
@@ -675,14 +621,19 @@ Driver.prototype.cfg_get = function(key, otherwise) {
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-        console.log("# Driver.cfg_get: 'iot' doesn't exist - perhaps create this driver _after 'new IOTDB'")
-        return otherwise
+        logger.fatal({
+            method: "cfg_get",
+            cause: "this is almost impossible"
+        }, "no iot() object");
+
+        return otherwise;
     }
 
-    return iot.cfg_get(key, otherwise)
+    return iot.cfg_get(key, otherwise);
 };
 
 /*
  *  API
  */
 exports.Driver = Driver;
+
