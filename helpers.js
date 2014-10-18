@@ -1043,14 +1043,14 @@ if (!exports.isArguments(arguments)) {
   exports.isArguments = function(obj) {
     return !!(obj && exports.has(obj, 'callee'));
   };
-}
+};
 
 // Optimize `isFunction` if appropriate.
 if (typeof (/./) !== 'function') {
   exports.isFunction = function(obj) {
     return typeof obj === 'function';
   };
-}
+};
 
 // Is a given object a finite number?
 exports.isFinite = function(obj) {
@@ -1313,7 +1313,7 @@ exports.json = function(v, paramd) {
             return undefined
         }
     }
-}
+};
 
 
 /**
@@ -1356,7 +1356,7 @@ exports.expand = function(v, otherwise) {
 
     return v;
 
-}
+};
 
 /**
  *  Compacts the value according to the namespace.
@@ -1418,7 +1418,7 @@ exports.compact = function(v, paramd) {
         }
     }
 
-}
+};
 
 /**
  */
@@ -1457,7 +1457,7 @@ exports.compact_jsonld = function(jd, callback) {
 
         callback(error, resultd)
     })
-}
+};
 
 var _get_namespace = function(key) {
     if (!exports.isString(key)) {
@@ -1467,7 +1467,7 @@ var _get_namespace = function(key) {
     } else {
         return key.replace(/:.*$/, '')
     }
-}
+};
 
 var _traverse_namespaces = function(d, namespaces) {
     for (var key in d) {
@@ -1490,7 +1490,7 @@ var _traverse_namespaces = function(d, namespaces) {
             _traverse_namespaces(value, namespaces)
         }
     }
-}
+};
 
 
 /*
@@ -1568,7 +1568,7 @@ exports.shallowCopy = function(oldObj) {
         }
     }
     return newObj;
-}
+};
 
 exports.deepCopy = function(oldObj) {
     var newObj = oldObj;
@@ -1579,7 +1579,7 @@ exports.deepCopy = function(oldObj) {
         }
     }
     return newObj;
-}
+};
 
 exports.mix = function() {
     var i, j, newObj = {};
@@ -1591,7 +1591,7 @@ exports.mix = function() {
         }
     }
     return newObj;
-}
+};
 
 /**
  *  Return the proper keys of a dictionary
@@ -1606,7 +1606,7 @@ exports.keys = function(d) {
     }
 
     return keys;
-}
+};
 
 /**
  *  Return true iff everthing a === b, in a deep
@@ -1614,7 +1614,7 @@ exports.keys = function(d) {
  */
 exports.equals = function(a, b) {
     return exports.isEqual(a, b);
-}
+};
 
 /**
  *  Return true iff everything in subd is in superd
@@ -1631,7 +1631,7 @@ exports.d_contains_d = function(superd, subd) {
     }
 
     return true;
-}
+};
 
 /**
  */
@@ -1657,7 +1657,7 @@ exports.ld_set = function(d, key, value) {
     } else {
         d[key] = [ existing, value ];
     }
-}
+};
 
 exports.ld_get_first = function(d, key, otherwise) {
     var existing = d[key];
@@ -1668,7 +1668,7 @@ exports.ld_get_first = function(d, key, otherwise) {
     } else {
         return existing;
     }
-}
+};
 
 exports.ld_get_list = function(d, key, otherwise) {
     var existing = d[key];
@@ -1679,7 +1679,7 @@ exports.ld_get_list = function(d, key, otherwise) {
     } else {
         return [ existing ];
     }
-}
+};
 
 exports.ld_contains = function(d, key, value) {
     var existing = d[key];
@@ -1690,7 +1690,7 @@ exports.ld_contains = function(d, key, value) {
     } else {
         return existing == value;
     }
-}
+};
 
 exports.ld_remove = function(d, key, value) {
     var existing = d[key];
@@ -1706,7 +1706,7 @@ exports.ld_remove = function(d, key, value) {
             delete d[key]
         }
     }
-}
+};
 
 exports.ld_add = function(d, key, value) {
     var existing = d[key];
@@ -1721,14 +1721,14 @@ exports.ld_add = function(d, key, value) {
             d[key] = [ existing, value ]
         }
     }
-}
+};
 
 exports.ld_extend = function(d, key, values) {
     for (var vi in values) {
         var value = values[vi]
         exports.ld_add(d, key, value)
     }
-}
+};
 
 
 /*
@@ -1888,7 +1888,7 @@ exports.color_to_hex = function(name, otherwise)
     } else {
         return otherwise;
     }
-}
+};
 
 /* XXX NOT INTEGRATED YET */
 function decimalToHex(d, padding) {
@@ -1900,16 +1900,16 @@ function decimalToHex(d, padding) {
     }
 
     return hex;
-}
+};
 
 /* --- random stuff --- */
 exports.randint = function(n) {
     return Math.floor(Math.random() * n);
-}
+};
 
 exports.choose = function(vs) {
     return vs[exports.randint(vs.length)];
-}
+};
 
 /**
  *  Copy all keys that start with "api_"
@@ -1922,7 +1922,7 @@ exports.copy_api = function(fromd, tod) {
             tod[key] = fromd[key];
         }
     }
-}
+};
 
 /**
  *  This reliably returns an MD5 hex hash of a _simple_ dictionary
@@ -1949,7 +1949,7 @@ exports.hash_dictionary = function(d, ignores) {
     }
 
     return hasher.digest("hex")
-}
+};
 
 /**
  */
@@ -1961,7 +1961,7 @@ exports.md5_hash = function() {
     }
 
     return hasher.digest("hex")
-}
+};
 
 /**
  *  Adds the "thing_id" key to the dictionary, which
@@ -1975,7 +1975,7 @@ exports.md5_hash = function() {
 exports.thing_id = function(identityd) {
     var hash = exports.hash_dictionary(identityd, [ "thing_id", ]);
     identityd["thing_id"] = "urn:iotdb:device:" + hash;
-}
+};
 
 /**
  *  Test if the identities "overlap". This is determined by:
@@ -2025,7 +2025,7 @@ exports.identity_overlap = function(superd, subd) {
     }
 
     return true;
-}
+};
 
 /**
  *  This provides a shorthand for when you need
@@ -2045,7 +2045,7 @@ exports.identity_expand = function(d) {
         }
         return d;
     }
-}
+};
 
 var _identifier_to_parts = function(identifier) {
     if (!exports.isString(identifier)) {
@@ -2068,7 +2068,7 @@ var _identifier_to_parts = function(identifier) {
     })
 
     return parts;
-}
+};
 
 /**
  *  Convert any string identifier to 'CamelCase'
@@ -2086,7 +2086,7 @@ exports.identifier_to_camel_case = function(identifier) {
     });
 
     return parts.join("");
-}
+};
 
 /**
  *  Convert any string identifier to 'dash-case'
@@ -2099,7 +2099,7 @@ exports.identifier_to_camel_case = function(identifier) {
  */
 exports.identifier_to_dash_case = function(identifier) {
     return  _identifier_to_parts(identifier).join("-");
-}
+};
 
 /**
  *  Convert any string identifier to 'underscore_case'
@@ -2112,7 +2112,7 @@ exports.identifier_to_dash_case = function(identifier) {
  */
 exports.identifier_to_underscore_case = function(identifier) {
     return  _identifier_to_parts(identifier).join("_");
-}
+};
 
 /**
  *  Return a pretty safe string from an identifier
@@ -2123,7 +2123,7 @@ exports.slugify = function(identifier) {
     identifier = identifier.replace(/_+/g, '_')
 
     return identifier
-}
+};
 
 /**
  *  Make sure a 'paramd' is properly set up. That is,
@@ -2153,7 +2153,7 @@ exports.defaults = function(paramd, defaultd) {
     }
 
     return paramd;
-}
+};
 
 /**
  *  Like extend, except dictionaries get merged.
@@ -2201,7 +2201,7 @@ exports.iri_to_code = function(iri) {
     } else {
         return path.basename(urlp.pathname)
     }
-}
+};
 
 exports.dump_things = function(iot, things) {
     console.log("----")
@@ -2225,7 +2225,7 @@ exports.dump_things = function(iot, things) {
             console.log("  tags:", thing.initd.tag)
         }
     }
-}
+};
 
 /**
  *  Convert the resut of iot.places() into a hierarchy
@@ -2269,7 +2269,7 @@ exports.places_hierarchy = function(places) {
     }
 
     return ld
-}
+};
 
 /**
  *  Django(-ish) string formatting. Can take
@@ -2292,7 +2292,7 @@ exports.format = function() {
     }
 
     return _format(template, valueds)
-}
+};
 
 var _format = function(template, valueds) {
     if (exports.isArray(template)) {
@@ -2353,7 +2353,7 @@ var _format = function(template, valueds) {
 
         return template
     }
-}
+};
 
 /**
  */
@@ -2367,7 +2367,7 @@ exports.isThingArray = function(o) {
     } else {
         return false
     }
-}
+};
 
 /**
  */
@@ -2381,4 +2381,4 @@ exports.isModel = function(o) {
     } else {
         return false
     }
-}
+};

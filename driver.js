@@ -52,7 +52,7 @@ var Driver = function() {
     // WE REALLY NEED TO FIX UP MQTT
     events.EventEmitter.call(this);
     this.setMaxListeners(25);
-}
+};
 
 util.inherits(Driver, events.EventEmitter);
 
@@ -86,7 +86,7 @@ Driver.prototype.driver_construct = function() {
      */
     self.mqtt_last_millis = 0
     self.mqtt_timer_id = 0
-}
+};
 
 /**
  *  Return an identity dictionary that uniquely
@@ -112,7 +112,7 @@ Driver.prototype.driver_construct = function() {
  */
 Driver.prototype.identity = function(kitchen_sink) {
     return {};
-}
+};
 
 Driver.prototype.thing_id = function() {
     var self = this
@@ -122,7 +122,7 @@ Driver.prototype.thing_id = function() {
     } else {
         return null
     }
-}
+};
 
 /**
  *  This is called by IOTDB when {@link IOTDB.register_driver}
@@ -137,7 +137,7 @@ Driver.prototype.register = function(iot) {
 
     // self.mqtt_host = self.cfg_get('mqtt_host', "XXXXXXX")
     // self.mqtt_port = self.cfg_get('mqtt_port', 1883)
-}
+};
 
 /**
  *  This is a very special function that's called usually outside
@@ -148,7 +148,7 @@ Driver.prototype.register = function(iot) {
  */
 Driver.prototype.configure = function(ad, callback) {
     console.log("- Driver.configure: this driver does not need configuration")
-}
+};
 
 /**
  *  Ask this Driver exemplar to discover devices on the LAN. For each
@@ -165,7 +165,7 @@ Driver.prototype.configure = function(ad, callback) {
  */
 Driver.prototype.discover = function(paramd, discover_callback) {
     console.log("# Driver.discover: we expected this to be redefined in a subclass", this)
-}
+};
 
 /**
  *  @callback Driver~discover_callback
@@ -217,7 +217,7 @@ Driver.prototype.setup = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  Disconnect this driver. Clear up every connection,
@@ -241,7 +241,7 @@ Driver.prototype.disconnect = function() {
         })
     }
     self.thing = null
-}
+};
 
 /**
  *  Like disconnect, except the application is going down.
@@ -254,7 +254,7 @@ Driver.prototype.shutdown = function() {
     this.disconnect()
 
     return 0
-}
+};
 
 /**
  *  Push a new Driver state. This is typically called
@@ -285,7 +285,7 @@ Driver.prototype.push = function(paramd) {
 
     console.log("# Driver.push: we expected this to be redefined in a subclass", this)
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -301,14 +301,14 @@ Driver.prototype.pull = function() {
 
     console.log("# Driver.pull: we expected this to be redefined in a subclass", this)
     return self;
-}
+};
 
 /**
  *  Can this driver be reached (as far as we know)
  */
 Driver.prototype.reachable = function() {
     return true
-}
+};
 
 /**
  *  Request the Driver's metadata.
@@ -345,7 +345,7 @@ Driver.prototype.meta = function() {
     }
 
     return nd
-}
+};
 
 /**
  *  Return the raw driver metadata. This
@@ -354,7 +354,7 @@ Driver.prototype.meta = function() {
  */
 Driver.prototype.driver_meta = function() {
     return {}
-}
+};
 
 
 /**
@@ -394,7 +394,7 @@ Driver.prototype.pulled = function(driverd) {
         notify: true,
         push: false
     })
-}
+};
 
 /**
  *  MQTT built in
@@ -442,7 +442,7 @@ Driver.prototype.mqtt_subscribe = function() {
     })
 
     mqtt_client.subscribe(self.mqtt_topic)
-}
+};
 
 var md = {}
 
@@ -469,7 +469,7 @@ Driver.prototype._mqtt_client = function(mqtt_port, mqtt_host) {
     }
 
     return mqtt_client
-}
+};
 
 /**
  *  Internal: called when a connection dies or whatever
@@ -503,7 +503,7 @@ Driver.prototype._mqtt_resubscribe = function() {
         console.log("- Driver._mqtt_resubscribe:", "resubscribe now")
         self.mqtt_subscribe()
     }
-}
+};
 
 /**
  *  Pull information from initd
@@ -537,7 +537,7 @@ Driver.prototype.mqtt_init = function(initd) {
     if (initd.mqtt_topic && (self.mqtt_topic == null)) {
         self.mqtt_topic = initd.mqtt_topic
     }
-}
+};
 
 /**
  *  Handle received MQTT messages. May be redefined by subclasses
@@ -546,7 +546,7 @@ Driver.prototype.on_mqtt_message = function(in_topic, in_message) {
     var self = this;
 
     self.handle_mqtt_message(in_topic, in_message)
-}
+};
 
 /**
  *  This is the standard way of handling messages, isolated so 
@@ -566,7 +566,7 @@ Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
             mqtt_message: in_message
         })
     }
-}
+};
 
 /**
  *  Initialize polling
@@ -580,7 +580,7 @@ Driver.prototype.poll_init = function(initd) {
     if (initd.poll) {
         self.poll_delta = initd.poll
     }
-}
+};
 
 /**
  *  Reschedule polling
@@ -601,7 +601,7 @@ Driver.prototype.poll_reschedule = function() {
             self.thing.pull()
         }
     }, self.poll_delta * 1000);
-}
+};
 
 /**
  *  Helper function to report an issue
@@ -615,7 +615,7 @@ Driver.prototype.report_issue = function() {
     }
 
     return iot.report_issue.apply(iot, arguments)
-}
+};
 
 /**
  *  Helper function to gGet a value from the IOT.Keystore
@@ -630,7 +630,7 @@ Driver.prototype.cfg_get = function(key, otherwise) {
     }
 
     return iot.cfg_get(key, otherwise)
-}
+};
 
 /*
  *  API

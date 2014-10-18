@@ -42,7 +42,7 @@ var Store = function() {
     var self = this
 
     self.things = null
-}
+};
 
 /**
  *  Track all changes to the thing(s) using the store
@@ -109,7 +109,7 @@ Store.prototype.track = function(paramd) {
     })
     
     // console.log("# Store.track: NOT IMPLEMENETED", paramd)
-}
+};
 
 /*
  *  This is called whenever underlying Array of things are changed.
@@ -118,20 +118,20 @@ Store.prototype.track = function(paramd) {
 Store.prototype.things_changed = function() {
     var self = this
     // console.log("# Store.track", "THINGS CHANGED", self.things.length)
-}
+};
 
 /*
  */
 Store.prototype.on_change = function(thing) {
     var self = this
     console.log("# Store.track", "THING CHANGED - this should be redefined by a subclass", thing)
-}
+};
 
 /**
  */
 Store.prototype.configure_thing = function(thing, ad, callback) {
     console.log("# Store.configure_thing", "warning: this thing does not need to be configured")
-}
+};
 
 /*
  *  API

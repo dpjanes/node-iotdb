@@ -70,7 +70,7 @@ GraphManager.prototype.wire = function() {
     self.iot.on(GraphManager.EVENT_UPDATED_GRAPH, function(url) {
         self._onGraphUpdatedGraph(url);
     });
-}
+};
 
 /*
  *  Interface
@@ -103,7 +103,7 @@ GraphManager.prototype.is_active = function() {
     }
 
     return false
-}
+};
 
 /**
  */
@@ -123,7 +123,7 @@ GraphManager.prototype.has_subject = function(subject) {
         null
     );
     return ts.length ? true : false
-}
+};
 
 GraphManager.prototype.get_object = function(subject, predicate) {
     var self = this;
@@ -141,7 +141,7 @@ GraphManager.prototype.get_object = function(subject, predicate) {
     } else {
         return ts[0].object.value;
     }
-}
+};
 
 GraphManager.prototype.get_subjects = function(predicate, object) {
     var self = this;
@@ -160,7 +160,7 @@ GraphManager.prototype.get_subjects = function(predicate, object) {
         }
     });
     return Object.keys(resultd);
-}
+};
 
 GraphManager.prototype.get_objects = function(subject, predicate) {
     var self = this;
@@ -179,7 +179,7 @@ GraphManager.prototype.get_objects = function(subject, predicate) {
         }
     });
     return Object.keys(resultd);
-}
+};
 
 GraphManager.prototype.get_dictionary = function(subject, paramd) {
     var self = this;
@@ -200,7 +200,7 @@ GraphManager.prototype.get_dictionary = function(subject, paramd) {
     }
 
     return d;
-}
+};
 
 GraphManager.prototype.get_triples = function(subject, predicate, object, paramd) {
     var self = this;
@@ -243,7 +243,7 @@ GraphManager.prototype.get_triples = function(subject, predicate, object, paramd
     });
 
     return ts;
-}
+};
 
 GraphManager.prototype.has_type = function(subject, type) {
     var self = this;
@@ -257,7 +257,7 @@ GraphManager.prototype.has_type = function(subject, type) {
         }
     }
     return false;
-}
+};
 
 GraphManager.prototype.contains_triple = function(subject, predicate, object) {
     return this.iot.gm.graph.match(
@@ -265,7 +265,7 @@ GraphManager.prototype.contains_triple = function(subject, predicate, object) {
         _.expand(predicate),
         object
     ).length > 0;
-}
+};
 
 /**
  *  Load a JSON-LD file (by name) into the graph
@@ -320,7 +320,7 @@ GraphManager.prototype.load_file = function(filename) {
 
         self.loaded_iri(url, body)
     })
-}
+};
 
 GraphManager.prototype.load_iri = function(iri, callback) {
     var self = this;
@@ -400,7 +400,7 @@ GraphManager.prototype.load_iri = function(iri, callback) {
             }
         })
     ;
-}
+};
 
 GraphManager.prototype.failed_iri = function(iri, iri_status, status) {
     var self = this;
@@ -415,7 +415,7 @@ GraphManager.prototype.failed_iri = function(iri, iri_status, status) {
 
     self.irid[iri] = iri_status
     self.iot.emit(GraphManager.EVENT_FAILED_IRI, iri)
-}
+};
 
 GraphManager.prototype.loaded_iri = function(iri, jd, callback) {
     var self = this;
@@ -477,7 +477,7 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
             "\n  iri", iri)
     }
 
-}
+};
 
 /*
  *  Internals
@@ -494,7 +494,7 @@ GraphManager.prototype._load_flattened = function(error, jd, robjectds) {
     });
 
     self.iot.emit(GraphManager.EVENT_UPDATED_GRAPH, jd['@id']);
-}
+};
 
 GraphManager.prototype._load_flattened_object = function(robjectd) {
     var self = this;
@@ -573,7 +573,7 @@ GraphManager.prototype._load_node = function(noded) {
         self.graph.add(t);
         return;
     }
-}
+};
 
 /*
  *  API

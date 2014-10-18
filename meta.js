@@ -39,7 +39,7 @@ var Meta = function(iot, thing) {
 
     // updated metadata
     self.updated = {}
-}
+};
 
 /**
  *  Return the metadata
@@ -72,7 +72,7 @@ Meta.prototype.state = function() {
     _.extend(metad, self.updated)
 
     return metad
-}
+};
 
 /**
  *  Returns meta value for the key. 
@@ -96,7 +96,7 @@ Meta.prototype.get = function(key, otherwise) {
     } else {
         return otherwise
     }
-}
+};
 
 /**
  *  Set a metavalue
@@ -115,6 +115,6 @@ Meta.prototype.set = function(key, value) {
 
     self.updated[key] = value
     self.thing.meta_changed()
-}
+};
 
 exports.Meta = Meta

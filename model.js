@@ -49,7 +49,7 @@ var EVENT_META_CHANGED = "meta_changed"
  */
 function make_model(_name) {
     return new model_maker.ModelMaker(_name)
-}
+};
 
 /**
  *  Base class for all Things. It does nothing
@@ -107,7 +107,7 @@ thing
  *  @constructor
  */
 var Model = function() {
-}
+};
 
 /**
  *  @callback Thing~subclass
@@ -141,19 +141,19 @@ var Model = function() {
  */
 Model.prototype.make = function(paramd) {
     return new this.__make(paramd);
-}
+};
 
 /**
  */
 Model.prototype.isa = function(classf) {
     return classf == this.__make;
-}
+};
 
 /**
  */
 Model.prototype.get_code = function() {
     return this.code;
-}
+};
 
 /**
  */
@@ -168,14 +168,14 @@ Model.prototype.state = function() {
     }
 
     return d;
-}
+};
 
 /**
  */
 Model.prototype.attributes = function() {
     var self = this;
     return self.__attributes
-}
+};
 
 /**
  *  Return a duplicate of this Thing that 
@@ -197,7 +197,7 @@ Model.prototype.freeze = function() {
     }
 
     return new_thing
-}
+};
 
 /**
  *  Tags are for locally identitfying devices
@@ -216,7 +216,7 @@ Model.prototype.has_tag = function(tag) {
         return false
     }
     */
-}
+};
 
 /**
  *  Return the JSON-LD version of this thing
@@ -386,7 +386,7 @@ Model.prototype.jsonld = function(paramd) {
     }
     
     return rd;
-}
+};
 
 /**
  *  Get a value from the state. Note that there's
@@ -423,7 +423,7 @@ Model.prototype.get = function(find_key) {
     } else {
         throw "Model.get: internal error: impossible state for: " + find_key;
     }
-}
+};
 
 /**
  *  Set a value. 
@@ -475,7 +475,7 @@ Model.prototype.set = function(find_key, new_value) {
     } else {
         throw "# Model.get: internal error: impossible state for: " + find_key;
     }
-}
+};
 
 /**
  *  Set many values at once, using a dictionary
@@ -495,7 +495,7 @@ Model.prototype.update = function(updated, paramd) {
         self.set(key, updated[key]);
     }
     self.end();
-}
+};
 
 
 /**
@@ -547,7 +547,7 @@ Model.prototype.start = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  End a transaction. 
@@ -598,7 +598,7 @@ Model.prototype.end = function() {
     }
 
     return self;
-}
+};
 
 /*
  *  Return the parent of this thing
@@ -608,7 +608,7 @@ Model.prototype.end = function() {
  */
 Model.prototype.parent = function() {
     return this.__parent_thing;
-}
+};
 
 /**
  *  Register for a callback. See {@link Thing#end Model.end} 
@@ -687,7 +687,7 @@ Model.prototype.on_change = function(callback) {
     })
 
     return self;
-}
+};
 
 /**
  *  On metadata change (including reachablity)
@@ -702,14 +702,14 @@ Model.prototype.on_meta = function(callback) {
     })
 
     return self;
-}
+};
 
 /*
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function() {
     this.__emitter.emit(EVENT_META_CHANGED, true)
-}
+};
 
 /* --- driver section --- */
 /**
@@ -764,7 +764,7 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
     } else {
         return otherwise
     }
-}
+};
 
 /**
  *  Return the identity of the Driver this thing
@@ -785,7 +785,7 @@ Model.prototype.identity = function(kitchen_sink) {
         console.log("# Model.identity: returning null because this.driver_instance=null")
         return null;
     }
-}
+};
 
 Model.prototype.thing_id = function() {
     var id = this.identity();
@@ -795,7 +795,7 @@ Model.prototype.thing_id = function() {
         console.log("# Model.thing_id: returning null because this.identity=null")
         return null;
     }
-}
+};
 
 /**
  *  Call a thing to fill in <code>paramd.initd</code>
@@ -813,7 +813,7 @@ Model.prototype.driver_setup = function(paramd) {
     if (self.__driver_setup) {
         self.__driver_setup(paramd)
     }
-}
+};
 
 /**
  *  Translates between the Driver's state and what the Thing's. 
@@ -837,7 +837,7 @@ Model.prototype.driver_in = function(paramd) {
             paramd.thingd[key] = paramd.driverd[key];
         }
     }
-}
+};
 
 /**
  *  Translate between the Thing's state to the Driver's.
@@ -864,7 +864,7 @@ Model.prototype.driver_out = function(paramd) {
             }
         }
     }
-}
+};
 
 /**
  *  Request values from the driver be brought to this object.
@@ -899,11 +899,11 @@ Model.prototype.pull = function() {
     self.driver_instance.pull();
 
     return self;
-}
+};
 
 /* --- internals --- */
 Model.prototype._do_driver = function(attribute) {
-}
+};
 
 /**
  *  Push this updated attribute's value
@@ -939,7 +939,7 @@ Model.prototype._do_push = function(attribute, immediate) {
         var topd = self.stacks[self.stacks.length - 1];
         topd.attribute_pushd[attribute.get_code()] = attribute
     }
-}
+};
 
 Model.prototype._deep_copy_state = function(thing, use_push_keys) {
     var self = this;
@@ -1004,7 +1004,7 @@ Model.prototype._do_pushes = function(attributed) {
     }
 
     return self;
-}
+};
 
 /**
  *  Validate this updated attribute. 
@@ -1033,7 +1033,7 @@ Model.prototype._do_validate = function(attribute, immediate) {
         var topd = self.stacks[self.stacks.length - 1];
         topd.attribute_validated[attribute.get_code()] = attribute
     }
-}
+};
 
 /**
  *  Validate all the attributes, then this thing as a whole
@@ -1081,7 +1081,7 @@ Model.prototype._do_validates = function(attributed) {
         }
         self.end();
     }
-}
+};
 
 /**
  *  Notify listened of this updated attribute. 
@@ -1110,7 +1110,7 @@ Model.prototype._do_notify = function(attribute, immediate) {
         var topd = self.stacks[self.stacks.length - 1];
         topd.attribute_notifyd[attribute.get_code()] = attribute
     }
-}
+};
 
 /**
  *  Do a whole bunch of notifies, one for each
@@ -1156,7 +1156,7 @@ Model.prototype._do_notifies = function(attributed) {
     if (any) {
         this.__emitter.emit(EVENT_THING_CHANGED, self)
     }
-}
+};
 
 /**
  *  Find the {@link Attribute attribute} or {@link Thing subthing}
@@ -1310,7 +1310,7 @@ Model.prototype._find = function(find_key) {
  */
 Model.prototype.thing_iri = function() {
     return require('./iotdb').iot().thing_iri(this)
-}
+};
 
 /**
  *  Return the IOTDB Place IRI for this Model. The Thing must
@@ -1339,7 +1339,7 @@ Model.prototype.place_iri = function() {
     }
 
     return iot.gm.get_object(thing_iri, 'iot:place')
-}
+};
 
 /**
  *  Return the IOTDB Model IRI for this Model. The Thing
@@ -1368,7 +1368,7 @@ Model.prototype.model_iri = function() {
     }
 
     return iot.gm.get_object(thing_iri, 'iot:Model')
-}
+};
 
 /**
  *  Return the IOTDB Model IRI for this Thing, based on the 
@@ -1387,7 +1387,7 @@ Model.prototype.model_code_iri = function() {
     }
 
     return iot.model_code_iri(self.code)
-}
+};
 
 /**
  *  Return an object to access and
@@ -1407,7 +1407,7 @@ Model.prototype.meta = function() {
     }
 
     return self.__meta_thing
-}
+};
 
 /**
  *  Add a tag to this Model. Tags are temporary
@@ -1422,7 +1422,7 @@ Model.prototype.tag = function(tag) {
     assert.ok(_.isString(tag))
 
     _.ld_add(self.initd, "tag", tag)
-}
+};
 
 /**
  */
@@ -1434,7 +1434,7 @@ Model.prototype.reachable = function() {
     }
 
     return self.driver_instance.reachable()
-}
+};
 
 /**
  *  Return the metadata of the driver
@@ -1448,7 +1448,7 @@ Model.prototype.driver_meta = function() {
         return {}
     }
 
-}
+};
 
 /*
  *  API

@@ -96,7 +96,7 @@ ModelMaker = function(_code) {
     this.__description = null;
     this.__help = null;
     this.__facets = []
-}
+};
 
 /**
  *  The code for this device. This will correspond
@@ -115,7 +115,7 @@ ModelMaker.prototype.code = function(_code) {
     self.__code = _.identifier_to_dash_case(_code);
 
     return self;
-}
+};
 
 /**
  *  Define the {@link https://iotdb.org/pub/iot.html#name iot:name}
@@ -133,7 +133,7 @@ ModelMaker.prototype.name = function(value) {
     self.__name = value
 
     return self;
-}
+};
 
 /**
  *  A description for this device. Purely for humans.
@@ -149,7 +149,7 @@ ModelMaker.prototype.description = function(value) {
     self.__description = value
 
     return self;
-}
+};
 
 
 /**
@@ -166,13 +166,13 @@ ModelMaker.prototype.help = function(value) {
     self.__help = value
 
     return self;
-}
+};
 
 /**
  */
 ModelMaker.prototype.product = function(value) {
     return this;
-}
+};
 
 /**
  */
@@ -188,7 +188,7 @@ ModelMaker.prototype.facet = function(_value) {
     }
 
     return this;
-}
+};
 
 
 /**
@@ -214,7 +214,7 @@ ModelMaker.prototype.driver_identity = function(identity) {
     self.driver_identityd = _.identity_expand(identity);
 
     return self;
-}
+};
 
 /**
  *  Add a subthing to the {@link Thing} we
@@ -241,7 +241,7 @@ ModelMaker.prototype.subthing = function(code, subthing_class) {
     // XXX delete corresponding attribute if it exists
 
     return self;
-}
+};
 
 /**
  *  Copy over all the the attributes and subthings from an
@@ -266,7 +266,7 @@ ModelMaker.prototype.inherit = function(inherit_class) {
     this.__validator = inherit.__validator;
 
     return self;
-}
+};
 
 /**
  *  Add a new {@link Attribute} to the {@link Thing} being made.
@@ -295,7 +295,7 @@ ModelMaker.prototype.attribute = function(attribute) {
     self.__attributes.push(attribute);
 
     return self;
-}
+};
 
 /**
  *  XXX - not finished
@@ -315,7 +315,7 @@ ModelMaker.prototype.initializer = function(attribute) {
     self.initializers.push(attribute)
 
     return self;
-}
+};
 
 /**
  *  Defines a control for a 'value' attribute
@@ -339,7 +339,7 @@ ModelMaker.prototype.link_control_reading = function(control_attribute_code, rea
     control_attribute[_.expand("iot:related-role")] = '#' + reading_attribute_code
 
     return self
-}
+};
 
 /**
  *  Defines a control for a 'value' attribute
@@ -367,7 +367,7 @@ ModelMaker.prototype.make_attribute_control = function(reading_attribute_code, c
     self.link_control_reading(control_attribute_code, reading_attribute_code)
 
     return self
-}
+};
 
 /**
  *  Defines a value for a 'control' attribute
@@ -395,13 +395,13 @@ ModelMaker.prototype.make_attribute_reading = function(control_attribute_code, r
     self.link_control_reading(control_attribute_code, reading_attribute_code)
 
     return self
-}
+};
 
 /**
  */
 ModelMaker.prototype.vector = function(attribute_codes) {
     return this
-}
+};
 
 /**
  *  Define a function that will validate the entire
@@ -425,7 +425,7 @@ ModelMaker.prototype.validator = function(validator) {
     self.__validator = validator;
 
     return self;
-}
+};
 
 /**
  *  Return an object that is passed to the {@link Driver}
@@ -449,7 +449,7 @@ ModelMaker.prototype.driver_setup = function(driver_setup) {
     self.__driver_setup = driver_setup;
 
     return self;
-}
+};
 
 /**
  *  Define a function that translates between the 
@@ -466,7 +466,7 @@ ModelMaker.prototype.driver_in = function(driver_in) {
     self.__driver_in = driver_in;
 
     return self;
-}
+};
 
 /**
  *  This function translates from the Driver's state to the Thing's.
@@ -511,7 +511,7 @@ ModelMaker.prototype.driver_out = function(driver_out) {
     self.__driver_out = driver_out;
 
     return self;
-}
+};
 
 /**
  *  This function translates from the Thing's state to the Driver's.
@@ -672,7 +672,7 @@ ModelMaker.prototype.make = function() {
 
 
     return new_thing;
-}
+};
 
 /**
  *  Make the special "Generic" model
@@ -687,6 +687,6 @@ ModelMaker.prototype.make_generic = function() {
     model.prototype.__make = __make
 
     return model
-}
+};
 
 exports.ModelMaker = ModelMaker;

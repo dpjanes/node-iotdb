@@ -46,7 +46,7 @@ exports.cfg_expand = function(envd, string) {
         var replace = envd[variable]
         return replace ? replace : ""
     })
-}
+};
 
 /**
  *  Look for files along a series of paths
@@ -158,7 +158,7 @@ exports.cfg_find = function(envd, paths, name, paramd) {
     }
 
     return results
-}
+};
 
 /**
  *  Load JSON files and call the callback
@@ -210,7 +210,7 @@ exports.cfg_load_json = function(filenames, callback) {
     }
 
     return first_doc
-}
+};
 
 /**
  *  Load files and call the callback. 
@@ -270,7 +270,7 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
     }
 
     return first_doc
-}
+};
 
 /**
  *  Load Javascript/Node modules and call the callback. 
@@ -332,7 +332,7 @@ exports.cfg_load_js = function(filenames, callback) {
     }
 
     return first_doc
-}
+};
 
 /**
  *  Return a reasonable env for IOTDB. Values are
@@ -383,5 +383,5 @@ exports.cfg_envd = function(envd) {
     }
 
     return envd
-}
+};
 

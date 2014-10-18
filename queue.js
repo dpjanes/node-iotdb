@@ -52,7 +52,7 @@ FIFOQueue = function(name, paramd) {
     self.qn = ( paramd.qn !== undefined ) ? paramd.qn : 1;
     self.qid = 0;
     self.paused = false;
-}
+};
 
 /**
  *  Add a item to the queue, which will be run
@@ -98,7 +98,7 @@ FIFOQueue.prototype.add = function(qitem) {
     if (self.qitems.length > 10) {
         console.log("FIFOQueue(" + self.name + ").add: warning - long queue", self.qitems.length)
     }
-}
+};
 
 /**
  *  
@@ -106,7 +106,7 @@ FIFOQueue.prototype.add = function(qitem) {
 FIFOQueue.prototype.pause = function() {
     var self = this;
     self.paused = true
-}
+};
 
 /**
  *  
@@ -118,7 +118,7 @@ FIFOQueue.prototype.resume = function() {
         self.paused = false
         self.run()
     }
-}
+};
 
 /**
  *  This function must be called by the qitem when it's
@@ -146,7 +146,7 @@ FIFOQueue.prototype.finished = function(qitem) {
     if (!self.paused) {
         self.run();
     }
-}
+};
 
 /**
  *  This function will see if it should run another
@@ -169,7 +169,7 @@ FIFOQueue.prototype.run = function() {
     self.qurrents.push(qitem);
 
     qitem.run(self, qitem);
-}
+};
 
 /* --- API --- */
 exports.FIFOQueue = FIFOQueue

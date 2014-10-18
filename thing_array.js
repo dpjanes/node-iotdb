@@ -68,7 +68,7 @@ var ThingArray = function(paramd) {
     }
 
     events.EventEmitter.call(self);
-}
+};
 
 ThingArray.prototype = new Array;
 util.inherits(ThingArray, events.EventEmitter);
@@ -128,7 +128,7 @@ ThingArray.prototype.push = function(thing, paramd) {
     }
 
     return self
-}
+};
 
 /**
  *  @param {string} key - if used, only the latest command
@@ -161,7 +161,7 @@ ThingArray.prototype._persist_command = function(f, av, key) {
     }
 
     self._persistds.push(persistd)
-}
+};
 
 /**
  */
@@ -183,7 +183,7 @@ ThingArray.prototype.splice = function(index, howmany, add1) {
     Array.prototype.splice.apply(self, arguments)
 
     return self
-}
+};
 
 /**
  *  Return true iff thing is in this
@@ -196,7 +196,7 @@ ThingArray.prototype.contains = function(thing) {
     } else {
         return thing[self.array_id] = self
     }
-}
+};
 
 
 /**
@@ -216,7 +216,7 @@ ThingArray.prototype.start = function() {
     }
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#end Model.end} on
@@ -235,7 +235,7 @@ ThingArray.prototype.end = function() {
         item.end.apply(item, Array.prototype.slice.call(arguments));
     }
     return self;
-}
+};
 
 /**
  *  Merge another array into this one
@@ -318,7 +318,7 @@ ThingArray.prototype.merge = function(new_items) {
     }
 
     return out_items;
-}
+};
 
 /**
  *  Call IOT.connect() and join all the resulting 
@@ -343,7 +343,7 @@ ThingArray.prototype.connect = function() {
     var iot = require('./iotdb').iot()
 
     return  self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
-}
+};
 
 /**
  *  Call {@link Thing#set Model.set} on
@@ -361,7 +361,7 @@ ThingArray.prototype.set = function() {
     self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER)
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#update Model.update} on
@@ -379,7 +379,7 @@ ThingArray.prototype.update = function() {
     self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER)
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#pull Model.pull} on
@@ -409,7 +409,7 @@ ThingArray.prototype.pull = function() {
      */
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#pull Model.tag} on
@@ -428,7 +428,7 @@ ThingArray.prototype.tag = function() {
     self._persist_command(model.Model.prototype.tag, arguments)
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#on Model.on} on
@@ -456,7 +456,7 @@ ThingArray.prototype.on = function() {
      */
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#on Model.on_change} on
@@ -486,7 +486,7 @@ ThingArray.prototype.on_change = function() {
      */
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#on Model.on_meta} on
@@ -516,7 +516,7 @@ ThingArray.prototype.on_meta = function() {
      */
 
     return self;
-}
+};
 
 /**
  *  The callback will be called whenever a new thing is added to this array
@@ -536,7 +536,7 @@ ThingArray.prototype.on_thing = function(callback) {
     })
 
     return self;
-}
+};
 
 /**
  *  Call {@link Thing#update Model.meta} on
@@ -557,7 +557,7 @@ ThingArray.prototype.metas = function(paramd) {
     }
 
     return metas;
-}
+};
 
 /**
  *  Somehow or another, the underlying things were changed.
@@ -567,7 +567,7 @@ ThingArray.prototype.things_changed = function() {
     var self = this;
 
     self.emit(EVENT_THINGS_CHANGED)
-}
+};
 
 
 /* --- */
@@ -632,7 +632,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
     }
 
     return true
-}
+};
 
 /**
  */
@@ -727,43 +727,43 @@ ThingArray.prototype.filter = function(d) {
     }
 
     return out_items;
-}
+};
 
 ThingArray.prototype.with_room = function(name) {
     return this.filter({ "iot:place-room" : name })
-}
+};
 
 ThingArray.prototype.with_floor = function(name) {
     return this.filter({ "iot:place-floor" : name })
-}
+};
 
 ThingArray.prototype.with_location = function(name) {
     return this.filter({ "iot:place-location" : name })
-}
+};
 
 ThingArray.prototype.with_code = function(code) {
     return this.filter({ "_code" : code })
-}
+};
 
 ThingArray.prototype.with_name = function(name) {
     return this.filter({ "_name" : name })
-}
+};
 
 ThingArray.prototype.with_number = function(number) {
     return this.filter({ "iot:number" : parseInt(number) })
-}
+};
 
 ThingArray.prototype.with_tag = function(tag) {
     return this.filter({ "_tag" : tag })
-}
+};
 
 ThingArray.prototype.with_facet = function(facet) {
     return this.filter({ "iot:facet" : _.expand(facet, "iot-facet:") })
-}
+};
 
 ThingArray.prototype.with_driver = function(driver) {
     return this.filter({ "_driver" : _.expand(driver, "iot-driver:") })
-}
+};
 
 ThingArray.prototype.with_model = function(model) {
     var iot = require('./iotdb').iot()
@@ -772,7 +772,7 @@ ThingArray.prototype.with_model = function(model) {
     iot._clarify_model(modeld, model)
 
     return this.filter({ "_code" : modeld.model_code })
-}
+};
 
 
 ThingArray.prototype.apply = function(paramd, f) {
@@ -792,12 +792,12 @@ ThingArray.prototype.apply = function(paramd, f) {
         }
     }
     return results;
-}
+};
 
 ThingArray.prototype.after = function(delay, f) {
     var self = this;
 
     setTimeout(f, delay, self)
-}
+};
 
 exports.ThingArray = ThingArray;

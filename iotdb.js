@@ -2713,7 +2713,7 @@ exports.EVENT_NEW_THING = EVENT_NEW_THING;
 exports.attribute = require('./attribute');
 for (var key in exports.attribute) {
     exports[key] = exports.attribute[key];
-}
+};
 
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;

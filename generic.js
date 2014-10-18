@@ -31,14 +31,14 @@ var libs = require("./libs/libs")
 /* -- */
 var FakeAttribute = function(key) {
     this.key = key
-}
+};
 
 FakeAttribute.prototype.get_code = function() {
     return this.key
-}
+};
 
 FakeAttribute.prototype.validate = function() {
-}
+};
 
 
 /* --- constants --- */
@@ -55,7 +55,7 @@ var VERBOSE = true;
  */
 exports.make_generic = function() {
     return (new model_maker.ModelMaker()).make_generic()
-}
+};
 
 /**
  *  This is the Model for a special kind of Thing 
@@ -65,7 +65,7 @@ exports.make_generic = function() {
  *  @constructor
  */
 var Generic = function() {
-}
+};
 
 Generic.prototype = new model.Model
 
@@ -101,7 +101,7 @@ Generic.prototype.get = function(find_key) {
     }
 
     return d[lastkey]
-}
+};
 
 /**
  *  Set a value. 
@@ -166,7 +166,7 @@ Generic.prototype.set = function(find_key, new_value) {
     self._do_push(attribute, false);
 
     return self;
-}
+};
 
 /**
  *  Set many values at once, using a dictionary
@@ -185,7 +185,7 @@ Generic.prototype.update = function(updated, paramd) {
         self.set(key, updated[key]);
     }
     self.end();
-}
+};
 
 
 /**
@@ -207,7 +207,7 @@ Generic.prototype.start = function(paramd) {
     })
 
     return self;
-}
+};
 
 /**
  */
@@ -229,7 +229,7 @@ Generic.prototype.end = function() {
     }
 
     return self;
-}
+};
 
 /**
  *  Register for a callback. See {@link Thing#end Model.end} 
@@ -282,7 +282,7 @@ Generic.prototype.on_change = function(callback) {
     })
 
     return self;
-}
+};
 
 /**
  *  Validate all the attributes, then this thing as a whole
@@ -311,7 +311,7 @@ Generic.prototype._do_validates = function(attributed) {
         }
         self.end();
     }
-}
+};
 
 Generic.prototype._do_notifies = function(attributed) {
     var self = this;
@@ -343,7 +343,7 @@ Generic.prototype._do_notifies = function(attributed) {
     if (any) {
         require('./iotdb').iot().emit("thing_changed", self)
     }
-}
+};
 
 /*
  *  API
