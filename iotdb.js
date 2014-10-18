@@ -932,8 +932,9 @@ IOT.prototype.register_driver = function(driver) {
          */
         logger.error({
             method: "register_driver",
+            cause: "likely <Driver>.js is not set up correctly",
             driver: driver_exemplar.constructor.name
-        }, "ignoring driver - no identity")
+        }, "ignoring Driver - no identity")
         return;
     }
 
@@ -2170,10 +2171,19 @@ IOT.prototype._load_drivers = function() {
 
         var module = paramd.doc
         if (module.Driver) {
-            console.log("- IOT._load_drivers", "found Driver", "\n ", paramd.filename);
+            // console.log("- IOT._load_drivers", "found Driver", "\n ", paramd.filename);
+            logger.info({
+                method: "_load_drivers",
+                filename: paramd.filename
+            }, "found Driver")
             self.register_driver(module.Driver);
         } else {
-            console.log("- IOT._load_drivers", "missing exports.Driver?", "\n ", paramd.filename);
+            // console.log("- IOT._load_drivers", "missing exports.Driver?", "\n ", paramd.filename);
+            logger.error({
+                method: "_load_drivers",
+                filename: paramd.filename,
+                cause: "likely a programming eorror in <Driver>.js"
+            }, "missing exports.Driver")
         }
     })
 }
@@ -2221,10 +2231,19 @@ IOT.prototype._load_stores = function() {
 
         var module = paramd.doc
         if (module.Store) {
-            console.log("- IOT._load_stores:", "found Store", "\n ", paramd.filename);
+            // console.log("- IOT._load_stores:", "found Store", "\n ", paramd.filename);
+            logger.info({
+                method: "_load_stores",
+                filename: paramd.filename
+            }, "found Store")
             self.register_store(module.Store);
         } else {
-            console.log("- IOT._load_stores:", "missing exports.Store?", "\n ", paramd.filename);
+            // console.log("- IOT._load_stores:", "missing exports.Store?", "\n ", paramd.filename);
+            logger.error({
+                method: "_load_stores",
+                filename: paramd.filename,
+                cause: "likely a programming error in <Store>.js"
+            }, "missing exports.Store")
         }
     })
 }
@@ -2275,10 +2294,19 @@ IOT.prototype._load_models = function() {
 
         var module = paramd.doc
         if (module.Model) {
-            console.log("- IOT._load_models:", "found Model", "\n ", paramd.filename);
+            // console.log("- IOT._load_models:", "found Model", "\n ", paramd.filename);
+            logger.info({
+                method: "_load_models",
+                filename: paramd.filename
+            }, "found Model")
             self.register_model(module.Model);
         } else {
-            console.log("- IOT._load_models:", "missing exports.Model?", paramd.filename);
+            // console.log("- IOT._load_models:", "missing exports.Model?", paramd.filename);
+            logger.error({
+                method: "_load_models",
+                filename: paramd.filename,
+                cause: "likely a programming error in <Model>.js"
+            }, "missing exports.Model")
         }
     })
 }
