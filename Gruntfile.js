@@ -21,11 +21,12 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: [
-                    'driver.js',
-                    'cfg.js',
-                    'model.js',
                     'attribute.js',
-                    'iotdb.js'
+                    'cfg.js',
+                    'driver.js',
+                    'iotdb.js',
+                    'model.js',
+                    'store.js',
                 ]
             },
             test: {

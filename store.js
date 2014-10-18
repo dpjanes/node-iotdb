@@ -26,6 +26,12 @@ var assert = require('assert');
 var _ = require("./helpers");
 var ThingArray = require("./thing_array").ThingArray;
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'store',
+});
+
 /* --- constants --- */
 var VERBOSE = true;
 
@@ -39,16 +45,16 @@ var VERBOSE = true;
  *  - Dweet.io
  */
 var Store = function() {
-    var self = this
+    var self = this;
 
-    self.things = null
+    self.things = null;
 };
 
 /**
  *  Track all changes to the thing(s) using the store
  */
 Store.prototype.track = function(paramd) {
-    var self = this
+    var self = this;
 
     /*
      *  Bash arguments - phase 1
@@ -56,57 +62,64 @@ Store.prototype.track = function(paramd) {
     if (_.isModel(paramd)) {
         paramd = {
             things: [ paramd ]
-        }
+        };
     } else if (_.isThingArray(paramd)) {
         paramd = {
             things: paramd
-        }
+        };
     } else if (_.isArray(paramd)) {
         paramd = {
             things: paramd
-        }
+        };
     } else if (paramd.thing) {
-        paramd.things = [ paramd.thing ]
-        delete paramd["thing"]
+        paramd.things = [ paramd.thing ];
+        delete paramd["thing"];
     } else if (paramd.things) {
     } else {
-        console.log("# Store.track", "expected 'paramd.things'")
+        logger.error({
+            method: "track",
+            cause: "likly programmer error"
+        }, "expected 'paramd.things'");
         return;
     }
 
     /*
      *  Bash arguments - phase 2
      */
-    assert.ok(paramd.things !== undefined)
+    assert.ok(paramd.things !== undefined);
 
-    var src = null
+    var src = null;
     
     if (_.isThingArray(paramd.things)) {
-        src = paramd
+        src = paramd;
     } else if (_.isArray(paramd)) {
-        src = new ThingArray()
+        src = new ThingArray();
         for (var ti in paramd) {
-            src.push(paramd[ti])
+            src.push(paramd[ti]);
         }
-        paramd = {}
+        paramd = {};
     } else {
-        console.log("# Store.track", "impossible state")
-        assert(0)
+        logger.fatal({
+            method: "track",
+            cause: "Node-IOTDB programming error"
+        }, "impossible state");
+
+        throw new Error("Store.track: impossible state");
     }
 
     /*
      *  Magically track changes to the ThingArray
      */
-    self.things = paramd.things.filter()
-    self.things._things_changed  = self.things.things_changed
+    self.things = paramd.things.filter();
+    self.things._things_changed  = self.things.things_changed;
     self.things.things_changed = function() {
-        self.things._things_changed()
-        self.things_changed()
-    }
+        self.things._things_changed();
+        self.things_changed();
+    };
 
     self.things.on_change(function(thing) {
-        self.on_change(thing)
-    })
+        self.on_change(thing);
+    });
     
     // console.log("# Store.track: NOT IMPLEMENETED", paramd)
 };
@@ -116,24 +129,30 @@ Store.prototype.track = function(paramd) {
  *  This is magically hooked up in 'track'
  */
 Store.prototype.things_changed = function() {
-    var self = this
+    var self = this;
     // console.log("# Store.track", "THINGS CHANGED", self.things.length)
 };
 
 /*
  */
 Store.prototype.on_change = function(thing) {
-    var self = this
-    console.log("# Store.track", "THING CHANGED - this should be redefined by a subclass", thing)
+    var self = this;
+    logger.error({
+        method: "on_change",
+        cause: "Node-IOTDB programming error",
+        thing: thing
+    }, "THING CHANGED - this should be redefined by a subclass");
 };
 
 /**
  */
 Store.prototype.configure_thing = function(thing, ad, callback) {
-    console.log("# Store.configure_thing", "warning: this thing does not need to be configured")
+    logger.info({
+        method: "configure_thing"
+    }, "this thing does not need to be configured");
 };
 
 /*
  *  API
  */
-exports.Store = Store
+exports.Store = Store;
