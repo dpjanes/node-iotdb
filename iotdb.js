@@ -1121,7 +1121,7 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
             logger.info({
                 method: "_discover_nearby",
                 "driver.indentityd": driver_identityd
-            }, "this driver was discovered");
+            }, "this Driver was discovered");
 
             var existing = self.thing_instanced[driver_identityd.thing_id];
             if (existing) {
@@ -1159,7 +1159,11 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
             }
 
             if (!found) {
-                console.log("- IOT._discover_nearby", "thing not found", "\n ", "driver_identityd", driver_identityd);
+                // console.log("- IOT._discover_nearby", "thing not found", "\n ", "driver_identityd", driver_identityd);
+                logger.error({
+                    method: "_discover_nearby",
+                    driver_identityd: driver_identityd
+                }, "matching Thing for Driver not found (this is usually OK)");
             }
         });
     }
