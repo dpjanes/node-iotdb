@@ -33,6 +33,7 @@ module.exports = function (grunt) {
                     'store.js',
                     'thing_array.js',
                     'drivers/ble.js',
+                    'drivers/hue.js',
                 ]
             },
             test: {
