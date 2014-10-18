@@ -232,7 +232,12 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
             }
 
             for (var light in result.body) {
-                console.log("- HueDriver._foundDevice", "make-light", light);
+                // console.log("- HueDriver._foundDevice", "make-light", light);
+                logger.info({
+                    method: "_foundDevice",
+                    light: light
+                }, "make light")
+
                 var md = result.body[light]
                 var metad = {}
                 metad[_.expand("iot:name")] = md.name
@@ -316,7 +321,10 @@ HueDriver.prototype.identity = function(kitchen_sink) {
  */
 HueDriver.prototype.setup = function(paramd) {
     var self = this;
-    console.log("- UPnDriver.setup");
+    // console.log("- UPnDriver.setup");
+    logger.info({
+        method: "setup"
+    }, "called");
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
@@ -330,7 +338,11 @@ HueDriver.prototype.setup = function(paramd) {
 HueDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- HueDriver.push called", paramd.driverd);
+    // console.log("- HueDriver.push called", paramd.driverd);
+    logger.info({
+        method: "push",
+        driverd: paramd.driverd
+    }, "called");
 
     var putd = {
     }
@@ -358,13 +370,22 @@ HueDriver.prototype.push = function(paramd) {
         */
     }
 
-    console.log("- HueDriver.push", "putd", putd)
+    // console.log("- HueDriver.push", "putd", putd)
+    logger.info({
+        method: "push",
+        putd: putd
+    }, "push");
 
     var qitem = {
         id: self.light + OFFSET_PUSH,
         run: function() {
             var url = self.iri + "/api/" + self.username + "/lights/" + self.light + "/state/";
-            console.log("- do", url);
+            // console.log("- do", url);
+            logger.debug({
+                method: "push",
+                url: url
+            }, "do");
+
             unirest
                 .put(url)
                 .headers({ 'Accept': 'application/json' })
@@ -396,19 +417,32 @@ HueDriver.prototype.push = function(paramd) {
 HueDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- HueDriver.pull called");
+    // console.log("- HueDriver.pull called");
+    logger.debug({
+        method: "pull"
+    }, "called");
+
     var qitem = {
         id: self.light + OFFSET_PULL,
         run: function() {
             var url = self.iri + "/api/" + self.username + "/lights/" + self.light;
-            console.log("- do", url);
+            // console.log("- do", url);
+            logger.debug({
+                method: "pull",
+                url: url
+            }, "do");
             unirest
                 .get(url)
                 .headers({ 'Accept': 'application/json' })
                 .end(function(result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# HueDriver.pull", "not ok", "url", x);
+                        // console.log("# HueDriver.pull", "not ok", "url", x);
+                        logger.error({
+                            method: "pull",
+                            url: url,
+                            result: result 
+                        }, "not ok");
                         return
                     }
 
@@ -424,10 +458,18 @@ HueDriver.prototype.pull = function() {
                         }
 
                         self.pulled(driverd)
+                        /*
                         console.log("- HueDriver.pull", 
                             "\n  light", self.light, 
                             "\n  driverd", driverd, 
                             "\n  state", state)
+                         */
+                        logger.info({
+                            method: "pull",
+                            light: self.light, 
+                            driverd: driverd, 
+                            state: state
+                        }, "pulled");
                     }
                 })
             ;
