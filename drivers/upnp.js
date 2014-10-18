@@ -52,7 +52,7 @@ var UPnPDriver = function(upnp_device) {
     }
 
     return self;
-}
+};
 
 UPnPDriver.prototype = new driver.Driver;
 
@@ -72,7 +72,7 @@ UPnPDriver.cp = function() {
     }
 
     return _cp
-}
+};
 
 /**
  *  See {@link Driver#discover Driver.discover}
@@ -92,7 +92,7 @@ UPnPDriver.prototype.discover = function(paramd, discover_callback) {
 
     // always search to speed up device discovery
     cp.search();
-}
+};
 
 /**
  *  See {@link Driver#reachable}
@@ -105,7 +105,7 @@ UPnPDriver.prototype.reachable = function() {
     }
 
     return true
-}
+};
 
 /**
  *  Forget about this connect. This will render
@@ -124,7 +124,7 @@ UPnPDriver.prototype._forget_device = function() {
 
     self.upnp_device = null
     self.pulled()
-}
+};
 
 /**
  *  A new Driver can be made (maybe) with the upnp_device
@@ -134,7 +134,7 @@ UPnPDriver.prototype._found_device = function(discover_callback, upnp_device) {
 
     console.log("- UPnPDriver._found_device", "deviceType", upnp_device.deviceType);
     discover_callback(new UPnPDriver(upnp_device))
-}
+};
 
 /**
  */
@@ -157,7 +157,7 @@ UPnPDriver.prototype._service_by_urn = function(service_urn) {
     }
 
     return null;
-}
+};
 
 /* --- --- */
 /**
@@ -203,7 +203,7 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 
 /**
@@ -266,7 +266,7 @@ UPnPDriver.prototype.setup = function(paramd) {
     }
 
     return self;
-}
+};
 
 
 /**
@@ -302,7 +302,7 @@ UPnPDriver.prototype.push = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -315,7 +315,7 @@ UPnPDriver.prototype.pull = function() {
 
     console.log("- UPnPDriver.pull called");
     return self;
-}
+};
 
 /**
  *  Request the Driver's metadata.
@@ -343,7 +343,7 @@ UPnPDriver.prototype.driver_meta = function() {
     }
 
     return metad
-}
+};
 
 /*
  *  API

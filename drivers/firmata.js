@@ -49,12 +49,12 @@ var unpack_bytes = function(board) {
     }
 
     return outb
-}
+};
 
 var unpack_char8s = function(board) {
     var outb = unpack_bytes(board)
     return outb.toString()
-}
+};
 
 var unpack_int8s = function(board) {
     var outb = unpack_bytes(board)
@@ -64,7 +64,7 @@ var unpack_int8s = function(board) {
     }
 
     return outi
-}
+};
 
 var unpack_int16s = function(board) {
     var outb = unpack_bytes(board)
@@ -74,7 +74,7 @@ var unpack_int16s = function(board) {
     }
 
     return outi
-}
+};
 
 var unpack_int32s = function(board) {
     var outb = unpack_bytes(board)
@@ -84,7 +84,7 @@ var unpack_int32s = function(board) {
     }
 
     return outi
-}
+};
 
 var unpack_floats = function(board) {
     var outb = unpack_bytes(board)
@@ -94,7 +94,7 @@ var unpack_floats = function(board) {
     }
 
     return outi
-}
+};
 
 /**
  */
@@ -122,7 +122,7 @@ var FirmataDriver = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 FirmataDriver.prototype = new driver.Driver;
 
@@ -150,7 +150,7 @@ FirmataDriver.prototype._init = function(initd) {
 
         if (self.verbose) console.log("- FirmataDriver._init", "pindd", self.pindd)
     }
-}
+};
 
 /**
  */
@@ -231,7 +231,7 @@ FirmataDriver.prototype._setup_code = function(code, code_value, initd) {
         )
         return
     }
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -263,7 +263,7 @@ FirmataDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  Setup pins
@@ -298,7 +298,7 @@ FirmataDriver.prototype._setup_pind = function(pind) {
     } else {
         console.log("# FirmataDriver.push: programming error", pind)
     }
-}
+};
 
 FirmataDriver.prototype._setup_digital_output = function(pind) {
     var self = this;
@@ -317,7 +317,7 @@ FirmataDriver.prototype._setup_digital_output = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_digital_input = function(pind) {
     var self = this;
@@ -342,7 +342,7 @@ FirmataDriver.prototype._setup_digital_input = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_analog_output = function(pind) {
     var self = this;
@@ -361,7 +361,7 @@ FirmataDriver.prototype._setup_analog_output = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_analog_input = function(pind) {
     var self = this;
@@ -387,7 +387,7 @@ FirmataDriver.prototype._setup_analog_input = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_sysex_input_float = function(pind) {
     var self = this;
@@ -412,10 +412,10 @@ FirmataDriver.prototype._setup_sysex_input_float = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_sysex_input_int8 = function(pind) {
-}
+};
 
 FirmataDriver.prototype._setup_sysex_input_int16 = function(pind) {
     var self = this;
@@ -440,13 +440,13 @@ FirmataDriver.prototype._setup_sysex_input_int16 = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_sysex_input_int32 = function(pind) {
-}
+};
 
 FirmataDriver.prototype._setup_sysex_output_float = function(pind) {
-}
+};
 
 FirmataDriver.prototype._setup_sysex_output_int8 = function(pind) {
     var self = this;
@@ -466,13 +466,13 @@ FirmataDriver.prototype._setup_sysex_output_int8 = function(pind) {
             queue.finished(qitem);
         }
     })
-}
+};
 
 FirmataDriver.prototype._setup_sysex_output_int16 = function(pind) {
-}
+};
 
 FirmataDriver.prototype._setup_sysex_output_int32 = function(pind) {
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -563,7 +563,7 @@ FirmataDriver.prototype.setup = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  See {@link Driver#reachable}
@@ -584,7 +584,7 @@ FirmataDriver.prototype.reachable = function() {
     }
 
     return true
-}
+};
 
 /*
  *  See {@link Driver#discover Driver.discover}
@@ -622,7 +622,7 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
 
 
     discover_callback(new FirmataDriver())
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -700,7 +700,7 @@ FirmataDriver.prototype.push = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -718,7 +718,7 @@ FirmataDriver.prototype.pull = function() {
     */
 
     return self;
-}
+};
 
 
 /*

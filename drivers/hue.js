@@ -66,7 +66,7 @@ var HueDriver = function(paramd) {
     self.metad[_.expand("schema:model")] = "http://meethue.com/"
 
     return self;
-}
+};
 
 HueDriver.prototype = new driver.Driver;
 
@@ -83,7 +83,7 @@ HueDriver.prototype.configure = function(ad, callback) {
         self._configure_device(upnp_device, callback);
     });
     cp.search();
-}
+};
 
 HueDriver.prototype._configure_device = function(upnp_device, callback) {
     var self = this;
@@ -155,7 +155,7 @@ HueDriver.prototype._configure_device = function(upnp_device, callback) {
             count--;
         }
     }, 1000)
-}
+};
 
 /**
  *  See {@link Driver#discover Driver.discover}
@@ -169,7 +169,7 @@ HueDriver.prototype.discover = function(paramd, discover_callback) {
         self._foundDevice(discover_callback, upnp_device);
     });
     cp.search();
-}
+};
 
 var __message_configure = false
 
@@ -245,7 +245,7 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
             }
         })
     ;
-}
+};
 
 HueDriver.prototype._service_by_urn = function(service_urn) {
     var self = this;
@@ -258,7 +258,7 @@ HueDriver.prototype._service_by_urn = function(service_urn) {
     }
 
     return null;
-}
+};
 
 /* --- --- */
 /**
@@ -303,7 +303,7 @@ HueDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -316,7 +316,7 @@ HueDriver.prototype.setup = function(paramd) {
     driver.Driver.prototype.setup.call(self, paramd);
 
     return self;
-}
+};
 
 /**
  *  See {@link Driver#push}
@@ -379,7 +379,7 @@ HueDriver.prototype.push = function(paramd) {
     queue.add(qitem);
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -429,7 +429,7 @@ HueDriver.prototype.pull = function() {
     }
     queue.add(qitem);
     return self;
-}
+};
 
 /**
  *  Request the Driver's metadata.
@@ -438,7 +438,7 @@ HueDriver.prototype.pull = function() {
  */
 HueDriver.prototype.driver_meta = function() {
     return this.metad
-}
+};
 
 /* --- internals --- */
 function rgb2hsb(outd, red, green, blue) {
@@ -492,7 +492,7 @@ function rgb2hsb(outd, red, green, blue) {
     outd["hue"] = _getBoundedValue(hue, 0, 65535)
     outd["sat"] = _getBoundedValue(saturation, 0, 254)
     outd["bri"] = _getBrightnessValue(luminosity)
-}
+};
 
 // http://stackoverflow.com/questions/16052933/convert-philips-hue-xy-values-to-hex
 function xybri2rgb(outd, x, y, bri) {
@@ -518,15 +518,15 @@ function xybri2rgb(outd, x, y, bri) {
     c.set_rgb_1(r, g, b)
 
     outd['color'] = c.get_hex()
-}
+};
 
 function _convertBrightPercentToHueValue(percentage) {
     return Math.floor(_getBoundedValue(percentage, 0, 100) * (255 / 100));
-}
+};
 
 function _getBrightnessValue(value) {
     return Math.floor(_getBoundedValue(value, 1, 255));
-}
+};
 
 function _getBoundedValue(value, min, max) {
     if (isNaN(value)) {
@@ -540,14 +540,14 @@ function _getBoundedValue(value, min, max) {
     } else {
         return value;
     }
-}
+};
 
 function c2h(outd, hex) {
     var color = new Color(hex)
 
     outd.xy = hc.rgbToCIE1931(color.r, color.g, color.b)
     outd.bri = Math.max(color.r, color.g, color.b) * 255
-}
+};
 
 var hueds = null;
 
@@ -588,7 +588,7 @@ function h2c(outd, state) {
     if (best) {
         outd.color = best.hex
     }
-}
+};
 
 /*
  *  API

@@ -38,7 +38,7 @@ var DebugDriver = function(identityd) {
     self.identityd = identityd ? identityd : {};
 
     return self;
-}
+};
 
 DebugDriver.prototype = new driver.Driver;
 
@@ -56,11 +56,11 @@ DebugDriver.prototype.discover = function(paramd, discover_callback) {
     }
 
     discover_callback(new DebugDriver(self.identityd));
-}
+};
 
 DebugDriver.prototype.identity = function(kitchen_sink) {
     return {}
-}
+};
 
 /**
  *  Push
@@ -70,7 +70,7 @@ DebugDriver.prototype.push = function(paramd) {
 
     console.log("DebugDriver.push called", paramd.initd, paramd.driverd);
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -83,7 +83,7 @@ DebugDriver.prototype.pull = function() {
 
     console.log("DebugDriver.pull called");
     return self;
-}
+};
 
 
 /*

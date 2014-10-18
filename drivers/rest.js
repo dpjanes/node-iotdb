@@ -55,7 +55,7 @@ var RESTDriver = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 RESTDriver.prototype = new driver.Driver;
 
@@ -81,7 +81,7 @@ RESTDriver.prototype._init = function(initd) {
 
     self.poll_init(initd)
     self.mqtt_init(initd)
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -104,7 +104,7 @@ RESTDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -125,7 +125,7 @@ RESTDriver.prototype.setup = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  See {@link Driver#discover Driver.discover}
@@ -137,7 +137,7 @@ RESTDriver.prototype.discover = function(paramd, discover_callback) {
     }
 
     discover_callback(new RESTDriver());
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -175,7 +175,7 @@ RESTDriver.prototype.push = function(paramd) {
     queue.add(qitem);
 
     return self;
-}
+};
 
 RESTDriver.prototype._parse_headers = function(headers) {
     var self = this;
@@ -231,7 +231,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
             break
         }
     }
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -287,7 +287,7 @@ RESTDriver.prototype.pull = function() {
     queue.add(qitem);
 
     return self;
-}
+};
 
 /**
  *  See {@link Driver#handle_mqtt_message Driver.handle_mqtt_message}
@@ -295,7 +295,7 @@ RESTDriver.prototype.pull = function() {
 RESTDriver.prototype.handle_mqtt_message = function(in_topic, in_message) {
     console.log("- RESTDriver.handle_mqtt_message: received update, pulling")
     this.pull()
-}
+};
 
 /*
  *  API

@@ -96,7 +96,7 @@ var TwitterDriver = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 TwitterDriver.prototype = new driver.Driver;
 
@@ -140,7 +140,7 @@ TwitterDriver.prototype.register = function(iot) {
             }
         }
     }
-}
+};
 
 TwitterDriver.prototype._helper_search = function(iot, search, callback) {
     var self = this;
@@ -157,7 +157,7 @@ TwitterDriver.prototype._helper_search = function(iot, search, callback) {
         .on_change(function(attributes) {
             callback(thing)
         })
-}
+};
 
 TwitterDriver.prototype._helper_send = function(iot, text) {
     var self = this;
@@ -176,7 +176,7 @@ TwitterDriver.prototype._helper_send = function(iot, text) {
     self.send_twitter.update({
         text: text
     })
-}
+};
 
 
 /**
@@ -193,7 +193,7 @@ TwitterDriver.prototype._init = function(initd) {
     if (initd.search) {
         self.search = initd.search
     }
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -215,7 +215,7 @@ TwitterDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -230,7 +230,7 @@ TwitterDriver.prototype.setup = function(paramd) {
     self._setup_search()
 
     return self;
-}
+};
 
 /*
  *  See {@link Driver#discover Driver.discover}
@@ -242,7 +242,7 @@ TwitterDriver.prototype.discover = function(paramd, discover_callback) {
     }
 
     discover_callback(new TwitterDriver());
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -259,7 +259,7 @@ TwitterDriver.prototype.push = function(paramd) {
         });
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -273,7 +273,7 @@ TwitterDriver.prototype.pull = function() {
     console.log("- TwitterDriver.pull", "inherently, this does nothing!")
 
     return self;
-}
+};
 
 /* --- Internals --- */
 TwitterDriver.prototype._setup_search = function() {
@@ -300,7 +300,7 @@ TwitterDriver.prototype._setup_search = function() {
         })
     }
 
-}
+};
 
 
 /* --- API --- */

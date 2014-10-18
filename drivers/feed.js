@@ -57,7 +57,7 @@ var FeedDriver = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 FeedDriver.prototype = new driver.Driver;
 
@@ -89,7 +89,7 @@ FeedDriver.prototype._init = function(initd) {
     }
 
     self.poll_init(initd)
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -110,7 +110,7 @@ FeedDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -125,7 +125,7 @@ FeedDriver.prototype.setup = function(paramd) {
     self.pull()
 
     return self;
-}
+};
 
 /*
  *  See {@link Driver#discover Driver.discover}
@@ -137,7 +137,7 @@ FeedDriver.prototype.discover = function(paramd, discover_callback) {
     }
 
     discover_callback(new FeedDriver());
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -150,7 +150,7 @@ FeedDriver.prototype.push = function(paramd) {
     console.log("- FeedDriver.push", "inherently, this does nothing!")
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -166,7 +166,7 @@ FeedDriver.prototype.pull = function() {
     self._fetch()
 
     return self;
-}
+};
 
 /* --- Internals --- */
 FeedDriver.prototype._fetch = function() {
@@ -184,7 +184,7 @@ FeedDriver.prototype._fetch = function() {
 
             self.poll_reschedule()
         })
-}
+};
 
 FeedDriver.prototype._process = function(body) {
     var self = this;
@@ -231,7 +231,7 @@ FeedDriver.prototype._process = function(body) {
     })
 
     s.pipe(fp)
-}
+};
 
 FeedDriver.prototype._flatten = function(od) {
     var self = this;
@@ -278,7 +278,7 @@ FeedDriver.prototype._flatten = function(od) {
     }
 
     return nd
-}
+};
 
 /* --- API --- */
 exports.Driver = FeedDriver

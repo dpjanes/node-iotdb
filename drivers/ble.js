@@ -152,7 +152,7 @@ var BLEDriver = function(paramd) {
     }
 
     return self;
-}
+};
 util.inherits(BLEDriver, events.EventEmitter);
 
 BLEDriver.prototype = new driver.Driver;
@@ -197,7 +197,7 @@ BLEDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  */
@@ -210,7 +210,7 @@ BLEDriver.prototype.configure = function(ad, callback) {
         console.log("# BLEDriver.configure: try adding '--make-models'")
         process.exit(1)
     }
-}
+};
 
 /**
  *  Handle disconnects
@@ -227,7 +227,7 @@ BLEDriver.prototype.disconnect = function() {
 
     self.p = null;
     self.s = null;
-}
+};
 
 /**
  *  Handle shutdown
@@ -245,7 +245,7 @@ BLEDriver.prototype.shutdown = function() {
     noble.stopScanning()
 
     return 2000
-}
+};
 
 /**
  */
@@ -264,7 +264,7 @@ BLEDriver.prototype._discover_drivers = function(driver) {
             discover_folder: discover_folder
         })
     })
-}
+};
 
 /**
  */
@@ -282,7 +282,7 @@ BLEDriver.prototype._discover_driver = function(driver, paramd) {
     driver.on("found-characteristics", function() {
         self._write_driver(driver, paramd)
     })
-}
+};
 
 BLEDriver.prototype._write_driver = function(driver, paramd) {
     var iotdb = require('../iotdb')
@@ -421,7 +421,7 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
 
     console.log("- BLEDriver._write_driver", "wrote", paramd.filename)
     fs.writeFileSync(paramd.filename, lines.join("\n") + "\n")
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -443,7 +443,7 @@ BLEDriver.prototype.setup = function(paramd) {
 
 
     return self;
-}
+};
 
 /**
  *  See {@link Driver#reachable}
@@ -456,7 +456,7 @@ BLEDriver.prototype.reachable = function() {
     }
 
     return true
-}
+};
 
 /**
  *  Request the Driver's metadata.
@@ -478,7 +478,7 @@ BLEDriver.prototype.driver_meta = function() {
     }
 
     return metad
-}
+};
 
 var p_active = {}
 
@@ -591,7 +591,7 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
     }, "n.startScanning")
     // console.log("- BLEDriver.discover", "n.startScanning");
     n.startScanning([], true);
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -638,7 +638,7 @@ BLEDriver.prototype.push = function(paramd) {
     self.queue.add(qitem);
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -661,7 +661,7 @@ BLEDriver.prototype.pull = function() {
     self.poll_reschedule()
 
     return self;
-}
+};
 
 
 /*

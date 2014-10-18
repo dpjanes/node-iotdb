@@ -73,7 +73,7 @@ var TCPConnectedDriver = function(paramd) {
     }
 
     return self;
-}
+};
 
 TCPConnectedDriver.prototype = new driver.Driver;
 
@@ -86,11 +86,11 @@ TCPConnectedDriver.cp = function() {
     }
 
     return _cp
-}
+};
 
 TCPConnectedDriver.prototype.driver_meta = function() {
     return this.metad
-}
+};
 
 /**
  *  Pull information from initd
@@ -103,7 +103,7 @@ TCPConnectedDriver.prototype._init = function(initd) {
     if (!initd) {
         return
     }
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -128,7 +128,7 @@ TCPConnectedDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -142,7 +142,7 @@ TCPConnectedDriver.prototype.setup = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 /*
  *  See {@link Driver#discover Driver.discover}
@@ -175,7 +175,7 @@ TCPConnectedDriver.prototype.discover = function(paramd, discover_callback) {
             */
         }
     })
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -230,7 +230,7 @@ TCPConnectedDriver.prototype.push = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -244,7 +244,7 @@ TCPConnectedDriver.prototype.pull = function(paramd) {
     console.log("- TCPConnectedDriver.pull")
 
     return self;
-}
+};
 
 
 /*

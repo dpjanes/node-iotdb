@@ -48,7 +48,7 @@ var ProtoDriver = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 ProtoDriver.prototype = new driver.Driver;
 
@@ -68,7 +68,7 @@ ProtoDriver.prototype._init = function(initd) {
     if (initd.iri) {
         self.iri = initd.iri
     }
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -86,7 +86,7 @@ ProtoDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -100,14 +100,14 @@ ProtoDriver.prototype.setup = function(paramd) {
     self._init(paramd.initd)
 
     return self;
-}
+};
 
 /*
  *  See {@link Driver#discover Driver.discover}
  */
 ProtoDriver.prototype.discover = function(paramd, discover_callback) {
     discover_callback(new ProtoDriver());
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -122,7 +122,7 @@ ProtoDriver.prototype.push = function(paramd) {
         "\n  initd", paramd.initd)
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -138,7 +138,7 @@ ProtoDriver.prototype.pull = function() {
     )
 
     return self;
-}
+};
 
 
 /*

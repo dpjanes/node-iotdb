@@ -38,7 +38,7 @@ var NullDriver = function(verbose) {
     self.verbose = verbose;
 
     return self;
-}
+};
 
 NullDriver.prototype = new driver.Driver;
 
@@ -55,7 +55,7 @@ NullDriver.prototype.push = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -67,7 +67,7 @@ NullDriver.prototype.pull = function() {
     var self = this;
 
     return self;
-}
+};
 
 
 /*

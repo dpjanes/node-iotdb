@@ -61,7 +61,7 @@ var SmartThingsDriver = function(paramd) {
     self.metad["schema:manufacturer"] = "http://www.smartthings.com/"
 
     return self;
-}
+};
 
 SmartThingsDriver.prototype = new driver.Driver;
 
@@ -86,7 +86,7 @@ SmartThingsDriver.prototype._init = function(initd) {
     }
 
     self.mqtt_init(initd)
-}
+};
 
 /**
  *  See {@link Driver#register Driver.register}
@@ -117,7 +117,7 @@ SmartThingsDriver.prototype.register = function(iot) {
         st.load_settings(oauthd)
         st.request_endpoint()
     }
-}
+};
 
 /**
  *  See {@link Driver#identity Driver.identity}
@@ -141,7 +141,7 @@ SmartThingsDriver.prototype.identity = function(kitchen_sink) {
     }
 
     return self.__identityd;
-}
+};
 
 var __message_no_username = false
 
@@ -184,7 +184,7 @@ SmartThingsDriver.prototype.setup = function(paramd) {
     }
 
     return self;
-}
+};
 
 /**
  *  See {@link Driver#handle_mqtt_message Driver.handle_mqtt_message}
@@ -205,7 +205,7 @@ SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message)
     }
 
     console.log("- SmartThingsDriver.handle_mqtt_message: MQTT receive:", in_topic, in_message)
-}
+};
 
 /**
  *  See {@link Driver#discover Driver.discover}
@@ -238,7 +238,7 @@ SmartThingsDriver.prototype.discover = function(paramd, discover_callback) {
     } else {
         self._request_all_devices()
     }
-}
+};
 
 SmartThingsDriver.prototype._request_all_devices = function() {
     var dtypes = [
@@ -254,7 +254,7 @@ SmartThingsDriver.prototype._request_all_devices = function() {
         var dtype = dtypes[dti]
         st.request_devices(dtype)
     }
-}
+};
 
 /**
  *  Just send the data via PUT to the API
@@ -277,7 +277,7 @@ SmartThingsDriver.prototype.push = function(paramd) {
     }, paramd.driverd);
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's current state. It should
@@ -291,7 +291,7 @@ SmartThingsDriver.prototype.pull = function() {
     console.log("- SmartThingsDriver.pull")
 
     return self;
-}
+};
 
 /**
  *  Request the Driver's metadata.
@@ -300,7 +300,7 @@ SmartThingsDriver.prototype.pull = function() {
  */
 SmartThingsDriver.prototype.driver_meta = function() {
     return this.metad
-}
+};
 
 
 /*
