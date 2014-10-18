@@ -1319,9 +1319,10 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             if (!driver_supported) {
                 // console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)");
                 logger.info({
-                    method: "_discover_thing"/*,
-                    thing_initd: thing_exemplar.initd,
-                    driver_identityd: driver.identity()*/
+                    method: "_discover_thing"
+                        /*,
+                                            thing_initd: thing_exemplar.initd,
+                                            driver_identityd: driver.identity()*/
                 }, "ignoring this Driver instance - not a real issue");
 
                 thing.driver_instance = null;

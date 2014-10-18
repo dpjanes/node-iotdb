@@ -6,13 +6,13 @@
  *  2013-12-22
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,10 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
-var _ = require("./helpers")
-var assert = require("assert")
+var _ = require("./helpers");
+var assert = require("assert");
 
 /* --- constants --- */
 var iot_js_boolean = _.expand("iot-js:boolean");
@@ -102,7 +102,7 @@ attribute.make_number()
  *  <hr />
  *  @constructor
  */
-var Attribute = function() {
+var Attribute = function () {
     var self = this;
 
     self['@type'] = _.expand('iot:Attribute');
@@ -120,10 +120,10 @@ var Attribute = function() {
  *  @return {this}
  *  this
  */
-Attribute.prototype.code = function(code) {
+Attribute.prototype.code = function (code) {
     var self = this;
 
-    code = code.replace(/^:/, '')
+    code = code.replace(/^:/, '');
 
     self['@id'] = '#' + code;
     return self;
@@ -137,7 +137,7 @@ Attribute.prototype.code = function(code) {
  *  @return {string}
  *  The code
  */
-Attribute.prototype.get_code = function(code) {
+Attribute.prototype.get_code = function () {
     var self = this;
 
     var code = self['@id'];
@@ -165,24 +165,26 @@ Attribute.prototype.get_code = function(code) {
  *  @return {this}
  *  this
  */
-Attribute.prototype.purpose = function(purpose_iri) {
-    return this.property('iot:purpose', _.expand(purpose_iri, 'iot-attribute:'), { array: false })
+Attribute.prototype.purpose = function (purpose_iri) {
+    return this.property('iot:purpose', _.expand(purpose_iri, 'iot-attribute:'), {
+        array: false
+    });
 };
 
 /**
  *  This is a value, i.e. it is measuring something
  */
-Attribute.prototype.reading = function() {
-    return this.property('iot:role', 'iot-attribute:role-reading')
+Attribute.prototype.reading = function () {
+    return this.property('iot:role', 'iot-attribute:role-reading');
 };
-            
+
 /**
  *  This is a control, i.e. you can change with it
  */
-Attribute.prototype.control = function() {
-    return this.property('iot:role', 'iot-attribute:role-control')
+Attribute.prototype.control = function () {
+    return this.property('iot:role', 'iot-attribute:role-control');
 };
-    
+
 
 /**
  *  Define the {@link https://iotdb.org/pub/iot.html#name iot:name}
@@ -194,8 +196,10 @@ Attribute.prototype.control = function() {
  *  @return {this}
  *  this
  */
-Attribute.prototype.name = function(_value) {
-    return this.property_value(_.expand('iot:name'), _value, { array: false });
+Attribute.prototype.name = function (_value) {
+    return this.property_value(_.expand('iot:name'), _value, {
+        array: false
+    });
 };
 
 /**
@@ -208,7 +212,7 @@ Attribute.prototype.name = function(_value) {
  *  @return {this}
  *  this
  */
-Attribute.prototype.description = function(_value) {
+Attribute.prototype.description = function (_value) {
     return this.property_value(_.expand('iot:description'), _value);
 };
 
@@ -222,7 +226,7 @@ Attribute.prototype.description = function(_value) {
  *  @return {this}
  *  this
  */
-Attribute.prototype.help = function(_value) {
+Attribute.prototype.help = function (_value) {
     return this.property_value(_.expand('iot:help'), _value);
 };
 
@@ -234,19 +238,19 @@ Attribute.prototype.help = function(_value) {
  *
  *  @param {*} value_iri
  *  The property object IRI. If this is not a string or
- *  not a namespaced IRI, it will be used as-is. 
+ *  not a namespaced IRI, it will be used as-is.
  *  If you want to add a string that is not interpretted
  *  as an IRI, use {@link Attribute#property_value Attribute.property_value}
  *
  *  @return {this}
  *  this
  */
-Attribute.prototype.property = function(key_iri, value_iri, paramd) {
+Attribute.prototype.property = function (key_iri, value_iri, paramd) {
     return this.property_value(_.expand(key_iri), _.expand(value_iri), paramd);
 };
 
 /**
- *  Add a property (predicate, string) to this Attribute. 
+ *  Add a property (predicate, string) to this Attribute.
  *  Unlike {@link #property} value is always used as-is
  *
  *  @param {string} key_iri
@@ -258,12 +262,12 @@ Attribute.prototype.property = function(key_iri, value_iri, paramd) {
  *  @return {this}
  *  this
  */
-Attribute.prototype.property_value = function(key_iri, value, paramd) {
+Attribute.prototype.property_value = function (key_iri, value, paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
         array: true
-    })
+    });
 
     key_iri = _.expand(key_iri);
 
@@ -271,12 +275,12 @@ Attribute.prototype.property_value = function(key_iri, value, paramd) {
     if ((existing === undefined) || !paramd.array) {
         self[key_iri] = value;
     } else if (_.isArray(existing)) {
-        if (existing.indexOf(value) == -1) {
+        if (existing.indexOf(value) === -1) {
             existing.push(value);
         }
     } else {
         if (existing !== value) {
-            self[key_iri] = [ existing, value ];
+            self[key_iri] = [existing, value];
         }
     }
 
@@ -297,8 +301,8 @@ Attribute.prototype.property_value = function(key_iri, value, paramd) {
  *
  *  @return {this}
  */
-Attribute.prototype.unit = function(unit_iri) {
-    return this.property_value(_.expand("iot:unit"), _.expand(unit_iri, function(v) {
+Attribute.prototype.unit = function (unit_iri) {
+    return this.property_value(_.expand("iot:unit"), _.expand(unit_iri, function (v) {
         return _.expand("iot-unit:" + v);
     }));
 };
@@ -311,29 +315,29 @@ Attribute.prototype.unit = function(unit_iri) {
  *
  *  @return {this}
  */
-Attribute.prototype.measuring = function(iri) {
-    return this.property_value(_.expand("iot:measuring"), _.expand(iri))
+Attribute.prototype.measuring = function (iri) {
+    return this.property_value(_.expand("iot:measuring"), _.expand(iri));
 };
 
 /**
  *  Specify the arithmetic precision, i.e. the number
  *  of places past the decimal point that count
  */
-Attribute.prototype.arithmetic_precision = function(places) {
+Attribute.prototype.arithmetic_precision = function (places) {
     return this
         .property_value(_.expand("iot:arithmetic-precision"), places);
 };
 
 /**
  *  Specify the name of the vector this attribute belongs to.
- *  Attributes in the same vector should be, um, considered 
+ *  Attributes in the same vector should be, um, considered
  *  part of the same vector.
  *
  *  @param {string} name
  *  A name for the vector, preferably human readable
  *
  */
-Attribute.prototype.vector = function(name) {
+Attribute.prototype.vector = function (name) {
     return this
         .property_value(_.expand("iot:vector"), name);
 };
@@ -348,7 +352,7 @@ Attribute.prototype.vector = function(name) {
  *
  *  @return {this}
  */
-Attribute.prototype.unit_multiplier = function(multiplier) {
+Attribute.prototype.unit_multiplier = function (multiplier) {
     return this.property_value(_.expand("iot:unit-multiplier"), multiplier);
 };
 
@@ -361,7 +365,7 @@ Attribute.prototype.unit_multiplier = function(multiplier) {
  *  @return {this}
  *  this
  */
-Attribute.prototype.enumeration = function(values) {
+Attribute.prototype.enumeration = function (values) {
     return this.property_value(_.expand("iot:enumeration"), values);
 };
 
@@ -373,7 +377,7 @@ Attribute.prototype.enumeration = function(values) {
  *  @return {this}
  *  this
  */
-Attribute.prototype.monitoring = function(iri) {
+Attribute.prototype.monitoring = function (iri) {
     return this;
 };
 
@@ -387,31 +391,30 @@ Attribute.prototype.monitoring = function(iri) {
  *
  *  @return {this}
  */
-Attribute.prototype.active = function(f) {
+Attribute.prototype.active = function (f) {
     this.__active = f;
     return this;
 };
 
 /**
- *  Set the <code>iot-js:type</code> for this 
+ *  Set the <code>iot-js:type</code> for this
  *  Attribute, which defines the type(s) of values
- *  this attribute can take. 
+ *  this attribute can take.
  *
  *  @param {string} type
- *  Usually one of 'iot-js:boolean', 'iot-js:integer', 'iot-js:number', 
- *  'iot-js:string'. 
+ *  Usually one of 'iot-js:boolean', 'iot-js:integer', 'iot-js:number',
+ *  'iot-js:string'.
  *
  *  @return {this}
  */
-Attribute.prototype.type = function(format_iri) {
-    return this.property_value(_.expand("iot-js:type"), _.expand(format_iri, function(v) {
+Attribute.prototype.type = function (format_iri) {
+    return this.property_value(_.expand("iot-js:type"), _.expand(format_iri, function (v) {
         return _.expand("iot-js:" + v);
     }));
-    return this;
 };
 
 /**
- *  Set the <code>iot-js:format</code> for this 
+ *  Set the <code>iot-js:format</code> for this
  *  Attribute, which constrains the values a string can take.
  *
  *  @param {string} format_iri
@@ -421,11 +424,10 @@ Attribute.prototype.type = function(format_iri) {
  *
  *  @return {this}
  */
-Attribute.prototype.format = function(format_iri) {
-    return this.property_value(_.expand("iot-js:format"), _.expand(format_iri, function(v) {
+Attribute.prototype.format = function (format_iri) {
+    return this.property_value(_.expand("iot-js:format"), _.expand(format_iri, function (v) {
         return _.expand("iot-js:" + v);
     }));
-    return this;
 };
 
 /**
@@ -436,7 +438,7 @@ Attribute.prototype.format = function(format_iri) {
  *
  *  @return {this}
  */
-Attribute.prototype.minimum = function(value) {
+Attribute.prototype.minimum = function (value) {
     return this.property_value(iot_js_minimum, value);
 };
 
@@ -448,7 +450,7 @@ Attribute.prototype.minimum = function(value) {
  *
  *  @return {this}
  */
-Attribute.prototype.maximum = function(value) {
+Attribute.prototype.maximum = function (value) {
     return this.property_value(iot_js_maximum, value);
 };
 
@@ -457,22 +459,22 @@ Attribute.prototype.maximum = function(value) {
  *
  *  @return {this}
  */
-Attribute.prototype.read_only = function() {
+Attribute.prototype.read_only = function () {
     return this.property_value(iot_js_write, false);
 };
 
 /**
- *  Dummy function for consistency with thing. 
+ *  Dummy function for consistency with thing.
  *  Does not need to be called.
  *
  *  @return {this}
  */
-Attribute.prototype.make = function() {
+Attribute.prototype.make = function () {
     return this;
 };
 
 /**
- *  Set a validation function, for use 
+ *  Set a validation function, for use
  *  in {@link Attribute#validate Attribute.validate}.
  *  After this attribute does all it's validation,
  *  this function will be called and you can do your
@@ -485,7 +487,7 @@ Attribute.prototype.make = function() {
  *
  *  @return {this}
  */
-Attribute.prototype.validator = function(f) {
+Attribute.prototype.validator = function (f) {
     var self = this;
 
     self.__validator = f;
@@ -497,7 +499,7 @@ Attribute.prototype.validator = function(f) {
  *  Take the value and validate it according to
  *  the rules of this Attribute. This can include
  *  changing its type, placing it with bounds,
- *  and calling a validation function. 
+ *  and calling a validation function.
  *
  *  <p>
  *  Note that the validation function result
@@ -510,9 +512,9 @@ Attribute.prototype.validator = function(f) {
  *
  *  @param {boolean} paramd.use_otherwise
  *  If the value isn't valid, a 'reasonable'
- *  otherwise value is returned. 
+ *  otherwise value is returned.
  *
- *  @param {object} paramd.lib 
+ *  @param {object} paramd.lib
  *  A library of useful functions. These are the only
  *  functions you can assume are available beyond
  *  standard JS functions.
@@ -523,7 +525,7 @@ Attribute.prototype.validator = function(f) {
  *  but probably should not be used
  *
  */
-Attribute.prototype.validate = function(paramd) {
+Attribute.prototype.validate = function (paramd) {
     var self = this;
 
     var iot_types = _.ld_get_list(self, iot_js_type, []);
@@ -536,7 +538,7 @@ Attribute.prototype.validate = function(paramd) {
 
     if (_.isNumber(paramd.value)) {
         paramd.value = self._bounded(
-            paramd.value, 
+            paramd.value,
             _.ld_get_first(self, iot_js_minimum),
             _.ld_get_first(self, iot_js_maximum)
         );
@@ -547,10 +549,10 @@ Attribute.prototype.validate = function(paramd) {
         if (iot_formats.length > 0) {
             var formatted_value = self._format(paramd.value, iot_formats, paramd);
             if (formatted_value === undefined) {
-                console.log("- Attribute.validate: iot-js:format failed", 
+                console.log("- Attribute.validate: iot-js:format failed",
                     "original:", paramd.value,
                     "formats:", iot_formats
-                )
+                );
 
                 paramd.value = undefined;
             } else {
@@ -565,17 +567,19 @@ Attribute.prototype.validate = function(paramd) {
 };
 
 /* --- internal validation --- */
-Attribute.prototype._format = function(value, formats, paramd) {
+Attribute.prototype._format = function (value, formats, paramd) {
     var self = this;
     var known = false;
+    var otherwise;
+    var new_value;
 
-    if (!formats || (formats.length == 0)) {
+    if (!formats || (formats.length === 0)) {
         return value;
     }
 
     if (formats.indexOf(iot_js_color) > -1) {
         known = true;
-        var otherwise = undefined;
+        otherwise = undefined;
         if (paramd.use_otherwise) {
             if (paramd.otherwise_rgb !== undefined) {
                 otherwise = paramd.otherwise_rgb;
@@ -584,7 +588,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
             }
         }
 
-        var new_value = self._format_rgb(value, otherwise);
+        new_value = self._format_rgb(value, otherwise);
         if (new_value !== undefined) {
             return new_value;
         }
@@ -592,7 +596,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
 
     if (formats.indexOf(iot_js_datetime) > -1) {
         known = true;
-        var otherwise = undefined;
+        otherwise = undefined;
         if (paramd.use_otherwise) {
             if (paramd.otherwise_datetime !== undefined) {
                 otherwise = paramd.otherwise_datetime;
@@ -600,7 +604,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
                 otherwise = (new Date()).toISOString();
             }
         }
-        var new_value = self._format_datetime(value, otherwise);
+        new_value = self._format_datetime(value, otherwise);
         if (new_value !== undefined) {
             return new_value;
         }
@@ -608,7 +612,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
 
     if (formats.indexOf(iot_js_date) > -1) {
         known = true;
-        var otherwise = undefined;
+        otherwise = undefined;
         if (paramd.use_otherwise) {
             if (paramd.otherwise_date !== undefined) {
                 otherwise = paramd.otherwise_date;
@@ -616,7 +620,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
                 otherwise = (new Date()).toISOString().substring(0, 10);
             }
         }
-        var new_value = self._format_date(value, otherwise);
+        new_value = self._format_date(value, otherwise);
         if (new_value !== undefined) {
             return new_value;
         }
@@ -624,7 +628,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
 
     if (formats.indexOf(iot_js_time) > -1) {
         known = true;
-        var otherwise = undefined;
+        otherwise = undefined;
         if (paramd.use_otherwise) {
             if (paramd.otherwise_time !== undefined) {
                 otherwise = paramd.otherwise_time;
@@ -632,7 +636,7 @@ Attribute.prototype._format = function(value, formats, paramd) {
                 otherwise = (new Date()).toISOString().substring(10);
             }
         }
-        var new_value = self._format_time(value, otherwise);
+        new_value = self._format_time(value, otherwise);
         if (new_value !== undefined) {
             return new_value;
         }
@@ -644,13 +648,13 @@ Attribute.prototype._format = function(value, formats, paramd) {
     }
 
     if (!known) {
-        console.log("# Attribute._format: warning: no recognized formats!", formats)
+        console.log("# Attribute._format: warning: no recognized formats!", formats);
     }
 
     return undefined;
 };
 
-Attribute.prototype._format_rgb = function(value, otherwise) {
+Attribute.prototype._format_rgb = function (value, otherwise) {
     value = value.toUpperCase();
     if (!value.match(/^#[0-9A-F]{6}/)) {
         return _.color_to_hex(value, otherwise);
@@ -667,7 +671,7 @@ var iso_notz_re = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[0
  *
  *  @private
  */
-Attribute.prototype._format_datetime = function(value, otherwise) {
+Attribute.prototype._format_datetime = function (value, otherwise) {
     var dt = new Date(value);
     if (isNaN(dt.getFullYear())) {
         return otherwise;
@@ -676,13 +680,13 @@ Attribute.prototype._format_datetime = function(value, otherwise) {
     return dt.toISOString();
 };
 
-Attribute.prototype._bounded = function(value, min, max) {
-    if (min != undefined) {
+Attribute.prototype._bounded = function (value, min, max) {
+    if (min !== undefined) {
         if (value < min) {
             value = min;
         }
     }
-    if (max != undefined) {
+    if (max !== undefined) {
         if (value > max) {
             value = max;
         }
@@ -690,7 +694,7 @@ Attribute.prototype._bounded = function(value, min, max) {
     return value;
 };
 
-Attribute.prototype._convert = function(value, types) {
+Attribute.prototype._convert = function (value, types) {
     var self = this;
     if (value === undefined) {
         return self._default(value, types);
@@ -707,8 +711,10 @@ Attribute.prototype._convert = function(value, types) {
     }
 };
 
-Attribute.prototype._default = function(value, types) {
-    if (VERBOSE) console.log("undefined", "wants-to-be", types);
+Attribute.prototype._default = function (value, types) {
+    if (VERBOSE) {
+        console.log("undefined", "wants-to-be", types);
+    }
     if (types.indexOf(iot_js_boolean) > -1) {
         return false;
     } else if (types.indexOf(iot_js_integer) > -1) {
@@ -722,8 +728,10 @@ Attribute.prototype._default = function(value, types) {
     }
 };
 
-Attribute.prototype._convert_boolean = function(value, types) {
-    if (VERBOSE) console.log("is-a-boolean", value, "wants-to-be", types);
+Attribute.prototype._convert_boolean = function (value, types) {
+    if (VERBOSE) {
+        console.log("is-a-boolean", value, "wants-to-be", types);
+    }
 
     if (types.indexOf(iot_js_boolean) > -1) {
         return value;
@@ -738,8 +746,10 @@ Attribute.prototype._convert_boolean = function(value, types) {
     }
 };
 
-Attribute.prototype._convert_integer = function(value, types) {
-    if (VERBOSE) console.log("is-a-integer", value, "wants-to-be", types);
+Attribute.prototype._convert_integer = function (value, types) {
+    if (VERBOSE) {
+        console.log("is-a-integer", value, "wants-to-be", types);
+    }
 
     if (types.indexOf(iot_js_boolean) > -1) {
         return value ? true : false;
@@ -754,8 +764,10 @@ Attribute.prototype._convert_integer = function(value, types) {
     }
 };
 
-Attribute.prototype._convert_number = function(value, types) {
-    if (VERBOSE) console.log("is-a-number", value, "wants-to-be", types);
+Attribute.prototype._convert_number = function (value, types) {
+    if (VERBOSE) {
+        console.log("is-a-number", value, "wants-to-be", types);
+    }
 
     if (types.indexOf(iot_js_boolean) > -1) {
         return value ? true : false;
@@ -772,14 +784,16 @@ Attribute.prototype._convert_number = function(value, types) {
     return value;
 };
 
-Attribute.prototype._convert_string = function(value, types) {
+Attribute.prototype._convert_string = function (value, types) {
     var self = this;
-    if (VERBOSE) console.log("is-a-string", value, "wants-to-be", types);
+    if (VERBOSE) {
+        console.log("is-a-string", value, "wants-to-be", types);
+    }
     if (types.indexOf(iot_js_string) > -1) {
         return value;
     } else if (types.indexOf(iot_js_boolean) > -1) {
         value = value.toLowerCase();
-        if (value.length == 0) {
+        if (value.length === 0) {
             value = false;
         } else if (value === "0") {
             value = false;
@@ -793,19 +807,25 @@ Attribute.prototype._convert_string = function(value, types) {
             value = true;
         }
 
-        if (VERBOSE) console.log(" ... became boolean", value);
+        if (VERBOSE) {
+            console.log(" ... became boolean", value);
+        }
     } else if (types.indexOf(iot_js_integer) > -1) {
         value = Math.round(parseFloat(value));
         if (isNaN(value)) {
             value = undefined;
         }
-        if (VERBOSE) console.log(" ... became integer", value);
+        if (VERBOSE) {
+            console.log(" ... became integer", value);
+        }
     } else if (types.indexOf(iot_js_number) > -1) {
         value = parseFloat(value);
         if (isNaN(value)) {
             value = undefined;
-        } 
-        if (VERBOSE) console.log(" ... became number", value);
+        }
+        if (VERBOSE) {
+            console.log(" ... became number", value);
+        }
     }
 
     return value;
@@ -821,25 +841,25 @@ exports.Attribute = Attribute;
  *  If this is present, we call
  *  both {@link Attribute#purpose Attribute.purpose}
  *  and {@link Attribute#code Attribute.code}. This
- *  is useful if your "code" names are going to 
+ *  is useful if your "code" names are going to
  *  be pretty well the same as the semantic
  *  "purpose" names
  *
  *  @return {Attribute}
  *  a new attribute
  */
-exports.make = function(purpose, code, name) {
-    assert.ok(_.isString(purpose))
+exports.make = function (purpose, code, name) {
+    assert.ok(_.isString(purpose));
     // code = (code === undefined) ? purpose : code
-    code = code === undefined ? purpose.replace(/^.*[.]/, '') : code
-    name = name === undefined ? code.replace(/^:+/, '') : name
+    code = code === undefined ? purpose.replace(/^.*[.]/, '') : code;
+    name = name === undefined ? code.replace(/^:+/, '') : name;
 
     var attribute = new Attribute();
     if (purpose) {
         attribute
             .purpose(purpose)
             .code(code)
-            .name(name)
+            .name(name);
     }
     return attribute;
 };
@@ -853,7 +873,7 @@ exports.make = function(purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
-exports.make_boolean = function(purpose, code, name) {
+exports.make_boolean = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot-js:type", "iot-js:boolean");
 };
 
@@ -866,7 +886,7 @@ exports.make_boolean = function(purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
-exports.make_integer = function(purpose, code, name) {
+exports.make_integer = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot-js:type", "iot-js:integer");
 };
 
@@ -879,26 +899,26 @@ exports.make_integer = function(purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
-exports.make_number = function(purpose, code, name) {
+exports.make_number = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot-js:type", "iot-js:number");
 };
 
-exports.make_unit = function(purpose, code, name) {
+exports.make_unit = function (purpose, code, name) {
     return exports
         .make(purpose, code, name)
         .property("iot-js:type", "iot-js:number")
         .unit("iot-unit:math.fraction.unit")
         .minimum(0)
-        .maximum(1)
+        .maximum(1);
 };
 
-exports.make_percent = function(purpose, code, name) {
+exports.make_percent = function (purpose, code, name) {
     return exports
         .make(purpose, code, name)
         .property("iot-js:type", "iot-js:number")
         .unit("iot-unit:math.fraction.percent")
         .minimum(0)
-        .maximum(100)
+        .maximum(100);
 };
 
 /**
@@ -910,36 +930,36 @@ exports.make_percent = function(purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
-exports.make_string = function(purpose, code, name) {
+exports.make_string = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot-js:type", "iot-js:string");
 };
 
-exports.make_iri = function(purpose, code, name) {
+exports.make_iri = function (purpose, code, name) {
     return exports.make(purpose, code, name)
         .property("iot-js:type", "iot-js:string")
-        .format(":iri")
+        .format(":iri");
 };
 
-exports.make_datetime = function(purpose, code, name) {
+exports.make_datetime = function (purpose, code, name) {
     return exports.make(purpose, code, name)
         .property("iot-js:type", "iot-js:string")
-        .format(":datetime")
+        .format(":datetime");
 };
 
-exports.make_date = function(purpose, code, name) {
+exports.make_date = function (purpose, code, name) {
     return exports.make(purpose, code, name)
         .property("iot-js:type", "iot-js:string")
-        .format(":date")
+        .format(":date");
 };
 
-exports.make_time = function(purpose, code, name) {
+exports.make_time = function (purpose, code, name) {
     return exports.make(purpose, code, name)
         .property("iot-js:type", "iot-js:string")
-        .format(":time")
+        .format(":time");
 };
 
-exports.make_color = function(purpose, code, name) {
+exports.make_color = function (purpose, code, name) {
     return exports.make(purpose, code, name)
         .property("iot-js:type", "iot-js:string")
-        .format(":color")
+        .format(":color");
 };
