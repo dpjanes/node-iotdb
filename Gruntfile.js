@@ -32,6 +32,7 @@ module.exports = function (grunt) {
                     'queue.js',
                     'store.js',
                     'thing_array.js',
+                    'drivers/ble.js',
                 ]
             },
             test: {
