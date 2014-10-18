@@ -20,6 +20,8 @@
  *  limitations under the License.
  */
 
+"use strict";
+
 var _ = require("./helpers");
 var attribute = require("./attribute");
 var model = require("./model");
@@ -80,7 +82,7 @@ var HueLight = model.make_model('HueLight')
  *
  *  @constructor
  */
-ModelMaker = function(_code) {
+var ModelMaker = function(_code) {
     this.__validator = null;
     this.__driver_setup = null;
     this.__driver_in = null;
@@ -95,7 +97,7 @@ ModelMaker = function(_code) {
     this.__name = null;
     this.__description = null;
     this.__help = null;
-    this.__facets = []
+    this.__facets = [];
 };
 
 /**
@@ -130,7 +132,7 @@ ModelMaker.prototype.code = function(_code) {
 ModelMaker.prototype.name = function(value) {
     var self = this;
 
-    self.__name = value
+    self.__name = value;
 
     return self;
 };
@@ -146,7 +148,7 @@ ModelMaker.prototype.name = function(value) {
 ModelMaker.prototype.description = function(value) {
     var self = this;
 
-    self.__description = value
+    self.__description = value;
 
     return self;
 };
@@ -163,7 +165,7 @@ ModelMaker.prototype.description = function(value) {
 ModelMaker.prototype.help = function(value) {
     var self = this;
 
-    self.__help = value
+    self.__help = value;
 
     return self;
 };
@@ -178,13 +180,13 @@ ModelMaker.prototype.product = function(value) {
  */
 ModelMaker.prototype.facet = function(_value) {
     if (_value.match(/^:.*[.]/)) {
-        var parts = _value.split(".")
+        var parts = _value.split(".");
         for (var pi = 0; pi < parts.length; pi++) {
-            var sub = parts.slice(0, pi + 1).join(".")
-            this.__facets.push(_.expand(sub, "iot-facet:"))
+            var sub = parts.slice(0, pi + 1).join(".");
+            this.__facets.push(_.expand(sub, "iot-facet:"));
         }
     } else {
-        this.__facets.push(_.expand(_value, "iot-facet:"))
+        this.__facets.push(_.expand(_value, "iot-facet:"));
     }
 
     return this;
@@ -258,7 +260,7 @@ ModelMaker.prototype.subthing = function(code, subthing_class) {
 ModelMaker.prototype.inherit = function(inherit_class) {
     var self = this;
 
-    var inherit = new inherit_class;
+    var inherit = new inherit_class();
     inherit.__attributes.map(function(attribute) {
         self.attribute(attribute);
     });
@@ -309,10 +311,10 @@ ModelMaker.prototype.attribute = function(attribute) {
 ModelMaker.prototype.initializer = function(attribute) {
     var self = this;
 
-    delete attribute[_.expand("iot:purpose")]
-    attribute['@type'] = _.expand("iot:initializer")
+    delete attribute[_.expand("iot:purpose")];
+    attribute['@type'] = _.expand("iot:initializer");
 
-    self.initializers.push(attribute)
+    self.initializers.push(attribute);
 
     return self;
 };
@@ -321,86 +323,86 @@ ModelMaker.prototype.initializer = function(attribute) {
  *  Defines a control for a 'value' attribute
  */
 ModelMaker.prototype.link_control_reading = function(control_attribute_code, reading_attribute_code) {
-    var self = this
+    var self = this;
 
-    reading_attribute_code = reading_attribute_code.replace(/^:/, '')
+    reading_attribute_code = reading_attribute_code.replace(/^:/, '');
     var reading_attribute = self.attributed[reading_attribute_code];
     if (!reading_attribute) {
-        throw "# value attribute not found: " + reading_attribute_code
+        throw "# value attribute not found: " + reading_attribute_code;
     }
 
-    control_attribute_code = control_attribute_code.replace(/^:/, '')
+    control_attribute_code = control_attribute_code.replace(/^:/, '');
     var control_attribute = self.attributed[control_attribute_code];
     if (!control_attribute) {
-        throw "# value attribute not found: " + reading_attribute_code
+        throw "# value attribute not found: " + reading_attribute_code;
     }
 
-    reading_attribute[_.expand("iot:related-role")] = '#' + control_attribute_code
-    control_attribute[_.expand("iot:related-role")] = '#' + reading_attribute_code
+    reading_attribute[_.expand("iot:related-role")] = '#' + control_attribute_code;
+    control_attribute[_.expand("iot:related-role")] = '#' + reading_attribute_code;
 
-    return self
+    return self;
 };
 
 /**
  *  Defines a control for a 'value' attribute
  */
 ModelMaker.prototype.make_attribute_control = function(reading_attribute_code, control_attribute_code) {
-    var self = this
+    var self = this;
 
-    assert.ok(_.isString(reading_attribute_code))
-    assert.ok(_.isString(control_attribute_code))
+    assert.ok(_.isString(reading_attribute_code));
+    assert.ok(_.isString(control_attribute_code));
 
     var reading_attribute = self.attributed[reading_attribute_code];
     if (!reading_attribute) {
-        throw "# value attribute not found: " + reading_attribute_code
+        throw "# value attribute not found: " + reading_attribute_code;
     }
 
-    var control_attribute = _.deepCopy(reading_attribute)
+    var control_attribute = _.deepCopy(reading_attribute);
     control_attribute['@id'] = '#' + control_attribute_code;
 
-    _.ld_remove(control_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-reading"))
-    control_attribute.control()
+    _.ld_remove(control_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-reading"));
+    control_attribute.control();
 
     self.attributed[control_attribute_code] = control_attribute;
     self.__attributes.push(control_attribute);
 
-    self.link_control_reading(control_attribute_code, reading_attribute_code)
+    self.link_control_reading(control_attribute_code, reading_attribute_code);
 
-    return self
+    return self;
 };
 
 /**
  *  Defines a value for a 'control' attribute
  */
 ModelMaker.prototype.make_attribute_reading = function(control_attribute_code, reading_attribute_code) {
-    var self = this
+    var self = this;
 
-    assert.ok(_.isString(control_attribute_code))
-    assert.ok(_.isString(reading_attribute_code))
+    assert.ok(_.isString(control_attribute_code));
+    assert.ok(_.isString(reading_attribute_code));
 
     var control_attribute = self.attributed[control_attribute_code];
     if (!control_attribute) {
-        throw "# control attribute not found: " + control_attribute_code
+        throw "# control attribute not found: " + control_attribute_code;
     }
 
-    var reading_attribute = _.deepCopy(control_attribute)
+    var reading_attribute = _.deepCopy(control_attribute);
     reading_attribute['@id'] = '#' + reading_attribute_code;
 
-    _.ld_remove(reading_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-control"))
-    reading_attribute.reading()
+    _.ld_remove(reading_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-control"));
+    reading_attribute.reading();
 
     self.attributed[reading_attribute_code] = reading_attribute;
     self.__attributes.push(reading_attribute);
 
-    self.link_control_reading(control_attribute_code, reading_attribute_code)
+    self.link_control_reading(control_attribute_code, reading_attribute_code);
 
-    return self
+    return self;
 };
 
 /**
  */
 ModelMaker.prototype.vector = function(attribute_codes) {
-    return this
+    return this;
 };
 
 /**
@@ -554,7 +556,7 @@ ModelMaker.prototype.make = function() {
     var self = this;
 
     if (!self.__code) {
-        throw new Error("ModelMaker.make: 'code' must be defined")
+        throw new Error("ModelMaker.make: 'code' must be defined");
     }
 
     var new_thing = function(paramd) {
@@ -566,13 +568,13 @@ ModelMaker.prototype.make = function() {
         var iot = require('./iotdb').iot();
 
         this.code = self.__code;
-        this.Model = new_thing
+        this.Model = new_thing;
 
-        this.__emitter = new events.EventEmitter()
+        this.__emitter = new events.EventEmitter();
         this.name = (self.__name !== null) ? self.__name : self.__code;
         this.description = self.__description;
         this.help = self.__help;
-        this.__scratchd = {}
+        this.__scratchd = {};
         this.__push_keys = [];
         this.__parent_thing = null;
         this.__is_thing = true;
@@ -589,28 +591,28 @@ ModelMaker.prototype.make = function() {
             this.driver_identityd = _.deepCopy(self.driver_identityd);
         }
 
-        this.__attributes = []
-        this.attributed = {}
+        this.__attributes = [];
+        this.attributed = {};
         for (var ai in self.__attributes) {
             var in_attribute = self.__attributes[ai];
 
-            var out_attribute = _.deepCopy(in_attribute)
+            var out_attribute = _.deepCopy(in_attribute);
             out_attribute.__validator = in_attribute.__validator;
-            var out_key = out_attribute.get_code()
+            var out_key = out_attribute.get_code();
 
-            this.__attributes.push(out_attribute)
-            this.attributed[out_key] = out_attribute
+            this.__attributes.push(out_attribute);
+            this.attributed[out_key] = out_attribute;
         }
 
-        this.initializers = []
+        this.initializers = [];
         for (var ii in self.initializers) {
             var initializer = self.initializers[ii];
 
-            this.initializers.push(_.deepCopy(initializer))
+            this.initializers.push(_.deepCopy(initializer));
         }
 
-        this.callbacksd = {}
-        this.stacks = []
+        this.callbacksd = {};
+        this.stacks = [];
 
         /*
          *  Complicated because subthings can be passed in 
@@ -624,50 +626,50 @@ ModelMaker.prototype.make = function() {
 
             if (_.isFunction(model)) {
                 // model class
-                var subthing = new model()
+                var subthing = new model();
                 subthing.__parent_thing = this;
 
                 this.subthingd[code] = subthing;
             } else if (model.Model) {
                 // model exemplar
-                this.subthingd[code] = new model.Model;
+                this.subthingd[code] = new model.Model();
             } else {
-                d = {}
+                var d = {};
                 if (_.isAbsoluteURL(model)) {
-                    d["model_iri"] = model
+                    d["model_iri"] = model;
                 } else {
-                    d["model_code"] = _.identifier_to_dash_case(model)
+                    d["model_code"] = _.identifier_to_dash_case(model);
                 }
 
                 if (!iot) {
-                    console.log("# ModelMaker.make: warning: no 'iot' so can't properly instantiate (yet maybe)")
+                    console.log("# ModelMaker.make: warning: no 'iot' so can't properly instantiate (yet maybe)");
                     // self.subthingd[code] = "http://xxx"
                 } else {
                     var outer_this = this;
                     iot.ask_model(d, function(callbackd) {
                         if (callbackd.error) {
-                            console.log("# ModelMaker.make: Model not found", "\n ", model, callbackd.error)
+                            console.log("# ModelMaker.make: Model not found", "\n ", model, callbackd.error);
                         } else if (callbackd.model_exemplar) {
-                            console.log("- ModelMaker.make: model found", model)
-                            outer_this.subthingd[code] = new callbackd.model_exemplar.Model
-                            self.subthingd[code] = new callbackd.model_exemplar.Model
+                            console.log("- ModelMaker.make: model found", model);
+                            outer_this.subthingd[code] = new callbackd.model_exemplar.Model();
+                            self.subthingd[code] = new callbackd.model_exemplar.Model();
                         } else {
-                            console.log("# ModelMaker.make: Model not found", model)
+                            console.log("# ModelMaker.make: Model not found", model);
                         }
-                    })
+                    });
                 }
             }
         }
 
-        this.ostated = {}    // scratchpad
-        this.stated = {}
-        for (var code in this.attributed) {
-            var a = this.attributed[code];
-            this.stated[code] = null;
+        this.ostated = {};    // scratchpad
+        this.stated = {};
+        for (var acode in this.attributed) {
+            var a = this.attributed[acode];
+            this.stated[acode] = null;
         }
-    }
+    };
 
-    new_thing.prototype = new model.Model;
+    new_thing.prototype = new model.Model();
     new_thing.prototype.__make = new_thing;
 
 
@@ -679,14 +681,14 @@ ModelMaker.prototype.make = function() {
  */
 ModelMaker.prototype.make_generic = function() {
     var generic = require("./generic");
-    this.__code = "generic"
-    var model = this.make()
+    this.__code = "generic";
+    var model = this.make();
 
-    var __make = model.prototype.__make
-    model.prototype = new generic.Generic
-    model.prototype.__make = __make
+    var __make = model.prototype.__make;
+    model.prototype = new generic.Generic();
+    model.prototype.__make = __make;
 
-    return model
+    return model;
 };
 
 exports.ModelMaker = ModelMaker;
