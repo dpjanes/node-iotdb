@@ -29,6 +29,12 @@ var util = require('util');
 var _ = require('./helpers');
 var libs = require("./libs/libs");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'driver',
+});
+
 var id_counter = 1
 var EVENT_DISCONNECT = 'disconnect'
 
@@ -147,7 +153,10 @@ Driver.prototype.register = function(iot) {
  *  Random arguments
  */
 Driver.prototype.configure = function(ad, callback) {
-    console.log("- Driver.configure: this driver does not need configuration")
+    logger.debug({
+        method: "configure",
+        id: self.unique_id
+    }, "this driver does not need configuration");
 };
 
 /**
@@ -164,7 +173,11 @@ Driver.prototype.configure = function(ad, callback) {
  *  Called with the bound driver
  */
 Driver.prototype.discover = function(paramd, discover_callback) {
-    console.log("# Driver.discover: we expected this to be redefined in a subclass", this)
+    logger.error({
+        method: "discover",
+        id: self.unique_id,
+        cause: "Node-IOTDB programming error"
+    }, "we expected this to be redefined in a subclass");
 };
 
 /**
@@ -213,7 +226,12 @@ Driver.prototype.setup = function(paramd) {
     if (paramd.thing !== undefined) {
         self.thing = paramd.thing;
     } else {
-        console.log("# Driver.setup: expected paramd.thing")
+        logger.error({
+            method: "setup",
+            id: self.unique_id,
+            paramd: paramd,
+            cause: "Node-IOTDB programming error"
+        }, "expected paramd.thing");
     }
 
     return self;
@@ -283,7 +301,11 @@ Driver.prototype.shutdown = function() {
 Driver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("# Driver.push: we expected this to be redefined in a subclass", this)
+    logger.error({
+        method: "push",
+        id: self.unique_id,
+        cause: "Node-IOTDB programming error"
+    }, "we expected this to be redefined in a subclass");
     return self;
 };
 
@@ -299,7 +321,11 @@ Driver.prototype.push = function(paramd) {
 Driver.prototype.pull = function() {
     var self = this;
 
-    console.log("# Driver.pull: we expected this to be redefined in a subclass", this)
+    logger.error({
+        method: "pull",
+        id: self.unique_id,
+        cause: "Node-IOTDB programming error"
+    }, "we expected this to be redefined in a subclass");
     return self;
 };
 
@@ -353,7 +379,7 @@ Driver.prototype.meta = function() {
  *  which does all needed translation work
  */
 Driver.prototype.driver_meta = function() {
-    return {}
+    return {};
 };
 
 
@@ -403,13 +429,16 @@ Driver.prototype.mqtt_subscribe = function() {
     var self = this;
 
     if (!(self.mqtt_host && self.mqtt_port && self.mqtt_topic)) {
-        console.log("# Driver.mqtt_subscribe: missing info",
-            "\n  unique_id", self.unique_id,
-            "\n  mqtt_host", self.mqtt_host,
-            "\n  mqtt_port", self.mqtt_port,
-            "\n  mqtt_topic", self.mqtt_topic
-        )
-        console.log("  HINT - you may need to define add 'mqtt_host' to $HOME/.iotdb/keystore.json")
+        logger.error({
+            method: "mqtt_subscribe",
+            id: self.unique_id,
+            cause: "configuration error",
+            hint: "HINT - you may need to define add 'mqtt_host' to $HOME/.iotdb/keystore.json",
+            unique_id: self.unique_id,
+            mqtt_host: self.mqtt_host,
+            mqtt_port: self.mqtt_port,
+            mqtt_topic: self.mqtt_topic
+        }, "missing info");
     }
 
     self.mqtt_last_millis = (new Date).getTime()
@@ -417,6 +446,7 @@ Driver.prototype.mqtt_subscribe = function() {
     mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host)
     mqtt_client.setMaxListeners(25);
 
+    /*
     console.log("- Driver.mqtt_subscribe:",
         "\n  mqtt_host", self.mqtt_host,
         "\n  mqtt_port", self.mqtt_port,
@@ -424,14 +454,34 @@ Driver.prototype.mqtt_subscribe = function() {
         "\n  mqtt_device", self.mqtt_device,
         "\n  thing_id", self.thing_id()
     )
+     */
+    logger.info({
+        method: "mqtt_subscribe",
+        id: self.unique_id,
+        unique_id: self.unique_id,
+        mqtt_host: self.mqtt_host,
+        mqtt_port: self.mqtt_port,
+        mqtt_topic: self.mqtt_topic,
+        thing_id: self.thing_id()
+    }, "subscribed");
 
     var on_message = function(in_topic, in_message) {
-        console.log("- Driver.mqtt_subscribe/on(message): MQTT receive:", in_topic, in_message)
+        // console.log("- Driver.mqtt_subscribe/on(message): MQTT receive:", in_topic, in_message)
+        logger.info({
+            method: "mqtt_subscribe",
+            id: self.unique_id,
+            in_topic: in_topic,
+            in_message: in_message
+        }, "subscribed");
 
         try {
             self.on_mqtt_message(in_topic, in_message)
         } catch (x) {
-            console.log("# Driver.mqtt_subscribe/on(message): MQTT receive: exception ignored", x)
+            // console.log("# Driver.mqtt_subscribe/on(message): MQTT receive: exception ignored", x)
+            logger.info(x, {
+                method: "mqtt_subscribe",
+                id: self.unique_id
+            }, "exception during 'on_mqtt_message' ignored");
         }
     }
     mqtt_client.on('message', on_message)
