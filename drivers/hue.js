@@ -25,15 +25,15 @@
 "use strict"
 
 var _ = require("../helpers");
-var Color = require("../libs/color").Color
-var hc = require('./libs/hue-colors.js')
+var Color = require("../libs/color").Color;
+var hc = require('./libs/hue-colors.js');
 
 var unirest = require('unirest');
 
-var driver = require('../driver')
-var upnp = require('./upnp')
-var FIFOQueue = require('../queue').FIFOQueue
-var UPnPDriver = require('./upnp').Driver
+var driver = require('../driver');
+var upnp = require('./upnp');
+var FIFOQueue = require('../queue').FIFOQueue;
+var UPnPDriver = require('./upnp').Driver;
 
 var queue = new FIFOQueue("HueDriver")
 

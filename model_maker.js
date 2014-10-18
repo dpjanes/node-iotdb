@@ -20,9 +20,9 @@
  *  limitations under the License.
  */
 
-var _ = require("./helpers")
-var attribute = require("./attribute")
-var model = require("./model")
+var _ = require("./helpers");
+var attribute = require("./attribute");
+var model = require("./model");
 
 var events = require('events');
 var util = require('util');
@@ -563,7 +563,7 @@ ModelMaker.prototype.make = function() {
         this.driver_instance = ( paramd.driver_instance !== undefined) ? paramd.driver_instance : undefined;
         this.initd = ( paramd.initd !== undefined) ? paramd.initd : {};
 
-        var iot = require('./iotdb').iot()
+        var iot = require('./iotdb').iot();
 
         this.code = self.__code;
         this.Model = new_thing
@@ -678,7 +678,7 @@ ModelMaker.prototype.make = function() {
  *  Make the special "Generic" model
  */
 ModelMaker.prototype.make_generic = function() {
-    var generic = require("./generic")
+    var generic = require("./generic");
     this.__code = "generic"
     var model = this.make()
 

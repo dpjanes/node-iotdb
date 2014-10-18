@@ -22,8 +22,8 @@
 
 "use strict"
 
-var _ = require("./helpers.js")
-var assert = require("assert")
+var _ = require("./helpers.js");
+var assert = require("assert");
 
 /**
  *  This represents the Thing data in the graph.

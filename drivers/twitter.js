@@ -24,15 +24,15 @@
 
 "use strict"
 
-var node_twitter = require('twitter')
-var iotdb = require("iotdb")
-var node_uuid = require('node-uuid')
-var unirest = require('unirest')
-var stream = require('stream')
+var node_twitter = require('twitter');
+var iotdb = require("iotdb");
+var node_uuid = require('node-uuid');
+var unirest = require('unirest');
+var stream = require('stream');
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
 
 var queue = new FIFOQueue("TwitterDriver");
 var twitter_oauthd = null

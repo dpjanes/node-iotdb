@@ -25,8 +25,8 @@
 "use strict"
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
 
 var queue = new FIFOQueue("ProtoDriver");
 

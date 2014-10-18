@@ -28,9 +28,9 @@ var jsonld = require('jsonld');
 var rdf = require('rdf');
 var url = require('url');
 var crypto = require('crypto');
-var node_url = require('url')
-var path = require('path')
-var timers = require('timers')
+var node_url = require('url');
+var path = require('path');
+var timers = require('timers');
 
 exports.rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 

@@ -22,11 +22,11 @@
 
 "use strict"
 
-var _ = require("./helpers")
-var attribute = require("./attribute")
-var model = require("./model")
-var model_maker = require("./model_maker")
-var libs = require("./libs/libs")
+var _ = require("./helpers");
+var attribute = require("./attribute");
+var model = require("./model");
+var model_maker = require("./model_maker");
+var libs = require("./libs/libs");
 
 /* -- */
 var FakeAttribute = function(key) {
@@ -341,7 +341,7 @@ Generic.prototype._do_notifies = function(attributed) {
 
     // levels of hackdom here
     if (any) {
-        require('./iotdb').iot().emit("thing_changed", self)
+        require('./iotdb').iot().emit("thing_changed", self);
     }
 };
 

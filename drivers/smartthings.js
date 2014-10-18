@@ -25,10 +25,16 @@
 "use strict"
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
-var SmartThings = require('./libs/smartthingslib').SmartThings
-var mqtt = require('mqtt')
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
+var SmartThings = require('./libs/smartthingslib').SmartThings;
+var mqtt = require('mqtt');
+
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'SmartThingsDriver',
+});
 
 var queue = new FIFOQueue("SmartThingsDriver");
 var st = null;
@@ -155,7 +161,7 @@ SmartThingsDriver.prototype.setup = function(paramd) {
     driver.Driver.prototype.setup.call(self, paramd);
 
 
-    var iot = require('../iotdb').iot()
+    var iot = require('../iotdb').iot();
     if (!iot.username || (iot.username == "nobody")) {
         if (!__message_no_username) {
             __message_no_username = true
@@ -201,10 +207,20 @@ SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message)
         delete in_messaged['timestamp']
         self.pulled(in_messaged)
     } catch (x) {
-        console.log("# SmartThingsDriver.handle_mqtt_message: MQTT receive: exception ignored", x, "\n ", x.stack)
+        // console.log("# SmartThingsDriver.handle_mqtt_message: MQTT receive: exception ignored", x, "\n ", x.stack)
+        logger.error(x, {
+            method: "handle_mqtt_message",
+            in_topic: in_topic,
+            in_message: in_message
+        }, "exception processing MQTT message");
     }
 
-    console.log("- SmartThingsDriver.handle_mqtt_message: MQTT receive:", in_topic, in_message)
+    // console.log("- SmartThingsDriver.handle_mqtt_message: MQTT receive:", in_topic, in_message)
+    logger.info({
+        method: "handle_mqtt_message",
+        in_topic: in_topic,
+        in_message: in_message
+    }, "MQTT receive");
 };
 
 /**
@@ -264,12 +280,13 @@ SmartThingsDriver.prototype._request_all_devices = function() {
 SmartThingsDriver.prototype.push = function(paramd) {
     var self = this;
 
-    console.log("- SmartThingsDriver.push", 
-        "\n  driverd", paramd.driverd, 
-        "\n  initd", paramd.initd,
-        "\n  smarthings.id", self.id,
-        "\n  smarthings.type", self.type
-        )
+    logger.info({
+        method: "push",
+        driverd: paramd.driverd, 
+        initd: paramd.initd,
+        smarthings_id: self.id,
+        smarthings_type: self.type
+    }, "called");
 
     st.device_request({
         id: self.id,
@@ -288,7 +305,9 @@ SmartThingsDriver.prototype.push = function(paramd) {
 SmartThingsDriver.prototype.pull = function() {
     var self = this;
 
-    console.log("- SmartThingsDriver.pull")
+    logger.info({
+        method: "pull"
+    }, "called");
 
     return self;
 };

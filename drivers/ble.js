@@ -25,8 +25,8 @@
 // "use strict"
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
 var noble = require('noble');
 var util = require('util');
 var fs = require('fs');
@@ -285,7 +285,7 @@ BLEDriver.prototype._discover_driver = function(driver, paramd) {
 };
 
 BLEDriver.prototype._write_driver = function(driver, paramd) {
-    var iotdb = require('../iotdb')
+    var iotdb = require('../iotdb');
 
     var lines = []
 
@@ -315,7 +315,7 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
     lines.push(util.format(" */"))
     lines.push(util.format(""))
     lines.push(util.format("'use strict'"))
-    lines.push(util.format("var iotdb = require('iotdb')"))
+    lines.push(util.format("var iotdb = require('iotdb')"));
 
     lines.push(util.format("exports.Model = iotdb.make_model('BLE_%s')", driver.s.uuid))
     lines.push(util.format("    .driver_identity({"))

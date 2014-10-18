@@ -22,9 +22,9 @@
 
 "use strict"
 
-var _ = require("./helpers")
-var attribute = require("./attribute")
-var model = require("./model")
+var _ = require("./helpers");
+var attribute = require("./attribute");
+var model = require("./model");
 var events = require('events');
 var util = require('util');
 var assert = require('assert');
@@ -340,7 +340,7 @@ ThingArray.prototype.merge = function(new_items) {
  */
 ThingArray.prototype.connect = function() {
     var self = this
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
 
     return  self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
 };
@@ -766,7 +766,7 @@ ThingArray.prototype.with_driver = function(driver) {
 };
 
 ThingArray.prototype.with_model = function(model) {
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
 
     var modeld = {}
     iot._clarify_model(modeld, model)

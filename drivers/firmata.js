@@ -24,11 +24,11 @@
 
 "use strict"
 
-var firmata = require('firmata')
+var firmata = require('firmata');
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
 
 var boardd = {};
 var machine_id = undefined;
@@ -485,7 +485,7 @@ FirmataDriver.prototype.setup = function(paramd) {
 
     /* get values from settings */
     if (paramd.thing) {
-        var iot = require('../iotdb').iot()
+        var iot = require('../iotdb').iot();
         // var code = _.identifier_to_camel_case(paramd.thing.code)
         var code = paramd.thing.code
 

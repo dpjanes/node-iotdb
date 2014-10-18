@@ -22,9 +22,9 @@
 
 "use strict"
 
-var assert = require('assert')
-var _ = require("./helpers")
-var ThingArray = require("./thing_array").ThingArray
+var assert = require('assert');
+var _ = require("./helpers");
+var ThingArray = require("./thing_array").ThingArray;
 
 /* --- constants --- */
 var VERBOSE = true;

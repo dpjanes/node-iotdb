@@ -27,7 +27,7 @@ var timers = require('timers');
 var events = require('events');
 var util = require('util');
 var _ = require('./helpers');
-var libs = require("./libs/libs")
+var libs = require("./libs/libs");
 
 var id_counter = 1
 var EVENT_DISCONNECT = 'disconnect'
@@ -609,7 +609,7 @@ Driver.prototype.poll_reschedule = function() {
 Driver.prototype.report_issue = function() {
     var self = this;
 
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
     if (!iot) {
 		return;
     }
@@ -623,7 +623,7 @@ Driver.prototype.report_issue = function() {
 Driver.prototype.cfg_get = function(key, otherwise) {
     var self = this;
 
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
     if (!iot) {
         console.log("# Driver.cfg_get: 'iot' doesn't exist - perhaps create this driver _after 'new IOTDB'")
         return otherwise

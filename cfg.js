@@ -309,17 +309,17 @@ exports.cfg_load_js = function(filenames, callback) {
                     filename = node_path.join(process.cwd(), filename)
                 }
 
-                var doc = require(filename)
+                var doc = require(filename);
                 var r = callback({
                     doc: doc,
                     filename: filename
-                })
+                });
 
                 if (first_doc === null) {
                     first_doc = doc;
                 }
                 if (r) {
-                    break
+                    break;
                 }
             } catch (x) {
                 callback({

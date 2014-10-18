@@ -30,9 +30,9 @@ var rdf = require('rdf');
 var events = require('events');
 var util = require('util');
 var _ = require('./helpers');
-var fs = require('fs')
-var path = require('path')
-var node_url = require('url')
+var fs = require('fs');
+var path = require('path');
+var node_url = require('url');
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({

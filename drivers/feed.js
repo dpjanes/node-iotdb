@@ -24,14 +24,14 @@
 
 "use strict"
 
-var FeedParser = require('feedparser')
-var unirest = require('unirest')
-var stream = require('stream')
+var FeedParser = require('feedparser');
+var unirest = require('unirest');
+var stream = require('stream');
 var timers = require('timers');
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
 
 var queue = new FIFOQueue("FeedDriver");
 

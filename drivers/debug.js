@@ -25,7 +25,7 @@
 "use strict"
 
 var _ = require("../helpers");
-var driver = require('../driver')
+var driver = require('../driver');
 
 /**
  *  Typically this will be created by one of

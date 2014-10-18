@@ -25,9 +25,9 @@
 "use strict"
 
 var _ = require("../helpers");
-var driver = require('../driver')
-var FIFOQueue = require('../queue').FIFOQueue
-var TCPControlPoint = require('./libs/tcp-connected')
+var driver = require('../driver');
+var FIFOQueue = require('../queue').FIFOQueue;
+var TCPControlPoint = require('./libs/tcp-connected');
 
 var queue = new FIFOQueue("TCPConnectedDriver");
 
