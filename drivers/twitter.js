@@ -22,7 +22,7 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
 var node_twitter = require('twitter');
 var iotdb = require("iotdb");

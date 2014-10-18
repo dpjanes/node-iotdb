@@ -20,7 +20,7 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
 var assert = require('assert');
 var _ = require("./helpers");

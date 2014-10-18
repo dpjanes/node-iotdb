@@ -22,7 +22,7 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
 var jsonld = require('jsonld');
 var rdf = require('rdf');

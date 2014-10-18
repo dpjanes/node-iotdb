@@ -22,7 +22,7 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
 var FeedParser = require('feedparser');
 var unirest = require('unirest');

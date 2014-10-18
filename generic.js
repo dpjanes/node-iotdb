@@ -20,7 +20,7 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
 var _ = require("./helpers");
 var attribute = require("./attribute");
