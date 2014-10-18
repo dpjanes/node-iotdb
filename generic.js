@@ -141,7 +141,7 @@ Generic.prototype.set = function(find_key, new_value) {
         } else if (_.isObject(subd)) {
         } else {
             console.log("# Generic.set: key incompatible with current state", find_key)
-            return
+            return;
         }
 
         d = subd
@@ -151,7 +151,7 @@ Generic.prototype.set = function(find_key, new_value) {
      *  Update it if it's changed
      */
     if (d[lastkey] == new_value) {
-        return
+        return;
     }
 
     d[lastkey] = new_value

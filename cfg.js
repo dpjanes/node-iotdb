@@ -96,10 +96,10 @@ exports.cfg_find = function(envd, paths, name, paramd) {
         try {
             var stbuf = node_fs.statSync(path)
             if (!stbuf.isDirectory()) {
-                continue
+                continue;
             }
         } catch (x) {
-            continue
+            continue;
         }
 
         if ((name === null) || (name === undefined) || _.isRegExp(name)) {
@@ -111,9 +111,9 @@ exports.cfg_find = function(envd, paths, name, paramd) {
                 for (var fi in files) {
                     var file = files[fi]
                     if ((file === ".") || (file === "..")) {
-                        continue
+                        continue;
                     } else if (!paramd.dotfiles && (file.substring(0, 1) == ".")) {
-                        continue
+                        continue;
                     }
 
                     var subpath = node_path.join(path, file)

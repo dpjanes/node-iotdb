@@ -60,9 +60,9 @@ Meta.prototype.state = function() {
         for (var tx in tds) {
             var td = tds[tx]
             if (td.predicate == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
-                continue
+                continue;
             } else if (td.predicate == 'rdfs:type') {
-                continue
+                continue;
             }
 
             metad[td.predicate] = td.object_value

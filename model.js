@@ -283,12 +283,12 @@ Model.prototype.jsonld = function(paramd) {
         
         for (var key in attribute) {
             if (!attribute.hasOwnProperty(key)) {
-                continue
+                continue;
             }
 
             var value = attribute[key];
             if (value === undefined) {
-                continue
+                continue;
             }
 
             if (_.isFunction(value)) {
@@ -321,14 +321,14 @@ Model.prototype.jsonld = function(paramd) {
         
         for (var key in initializer) {
             if (!initializer.hasOwnProperty(key)) {
-                continue
+                continue;
             }
 
             var value = initializer[key];
             if (value === undefined) {
-                continue
+                continue;
             } else if (_.isFunction(value)) {
-                continue
+                continue;
             }
             
             if (key === "__validator") {
@@ -947,7 +947,7 @@ Model.prototype._deep_copy_state = function(thing, use_push_keys) {
 
     for (var key in thing.stated) {
         if (use_push_keys && (thing.__push_keys.indexOf(key) == -1)) {
-            continue
+            continue;
         }
         d[key] = thing.stated[key];
     }
@@ -955,7 +955,7 @@ Model.prototype._deep_copy_state = function(thing, use_push_keys) {
     for (var subthing_key in thing.subthingd) {
         var subthing = thing.subthingd[subthing_key];
         if (subthing.__parent_thing === undefined) {
-            continue
+            continue;
         }
 
         d[subthing_key] = self._deep_copy_state(subthing, use_push_keys);
@@ -1264,9 +1264,9 @@ Model.prototype._find = function(find_key) {
                  *  iotdb.make_attribute always adds a name)
                  */
                 if (match_key === iot_name) {
-                    continue
+                    continue;
                 } else if (match_key.indexOf('@') == 0) {
-                    continue
+                    continue;
                 }
 
                 var match_value = find_key[match_key];

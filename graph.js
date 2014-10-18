@@ -284,7 +284,7 @@ GraphManager.prototype.load_file = function(filename) {
     fs.readFile(filename, { encoding: 'utf8' }, function(error, data) {
         if (error) {
             console.log("GraphManager.load_file", "not ok", "filename", filename, "error", error);
-            return
+            return;
         }
 
         var body = JSON.parse(data)
@@ -329,7 +329,7 @@ GraphManager.prototype.load_iri = function(iri, callback) {
     }
 
     if (self.irid[iri] == GraphManager.IRI_LOADING) {
-        return
+        return;
     }
     self.irid[iri] = GraphManager.IRI_LOADING
 
@@ -392,7 +392,7 @@ GraphManager.prototype.load_iri = function(iri, callback) {
                             })
                         }
 
-                        return
+                        return;
                     }
                 }
 
@@ -422,7 +422,7 @@ GraphManager.prototype.loaded_iri = function(iri, jd, callback) {
 
     var loading_status = self.irid[iri];
     if (loading_status === GraphManager.IRI_PROCESSING) {
-        return
+        return;
     }
 
     self.irid[iri] = GraphManager.IRI_PROCESSING

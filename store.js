@@ -71,7 +71,7 @@ Store.prototype.track = function(paramd) {
     } else if (paramd.things) {
     } else {
         console.log("# Store.track", "expected 'paramd.things'")
-        return
+        return;
     }
 
     /*

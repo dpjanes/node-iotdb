@@ -1442,7 +1442,7 @@ exports.compact_jsonld = function(jd, callback) {
     jsonld.compact(jd, contextd, function(error, resultd) {
         if (error) {
             callback(error, resultd)
-            return
+            return;
         }
 
         var namespaces = []
@@ -1472,7 +1472,7 @@ var _get_namespace = function(key) {
 var _traverse_namespaces = function(d, namespaces) {
     for (var key in d) {
         if (!d.hasOwnProperty(key)) {
-            continue
+            continue;
         }
 
         var namespace = _get_namespace(key)
@@ -1695,7 +1695,7 @@ exports.ld_contains = function(d, key, value) {
 exports.ld_remove = function(d, key, value) {
     var existing = d[key];
     if (existing === undefined) {
-        return
+        return;
     } else if (exports.isArray(existing)) {
         var x = existing.indexOf(value)
         if (x > -1) {
@@ -2163,7 +2163,7 @@ exports.defaults = function(paramd, defaultd) {
 exports.smart_extend = function(od) {
     each(slice.call(arguments, 1), function(xd) {
         if (!exports.isObject(xd)) {
-            return
+            return;
         }
 
         for (var key in xd) {

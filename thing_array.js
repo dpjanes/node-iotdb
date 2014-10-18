@@ -89,7 +89,7 @@ ThingArray.prototype.push = function(thing, paramd) {
         var t = self[ti];
         if (t === thing) {
             console.log("# ThingArray.push", "preventing same Thing from being pushed", thing.thing_id())
-            return
+            return;
         }
     }
 
@@ -138,7 +138,7 @@ ThingArray.prototype._persist_command = function(f, av, key) {
     var self = this
 
     if (self._persistds === null) {
-        return
+        return;
     }
 
     var persistd = {
@@ -278,7 +278,7 @@ ThingArray.prototype.merge = function(new_items) {
         for (var oi = 0; oi < out_items.length; oi++) {
             var o = out_items[oi]
             if (!oidd[o.thing_id()]) {
-                continue
+                continue;
             }
 
             out_items.splice(oi--, 1)
@@ -309,7 +309,7 @@ ThingArray.prototype.merge = function(new_items) {
     for (var si in srcs) {
         var src = srcs[si]
         if (src._persistds === null) {
-            continue
+            continue;
         }
 
         events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, function() {
@@ -599,23 +599,23 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
                 return false
             }
 
-            continue
+            continue;
         } else if (dpredicate == "_name") {
             var name = meta.get('iot:name')
             if (name != dobject) {
                 return false
             }
-            continue
+            continue;
         } else if (dpredicate == "_code") {
             if (thing.code != dobject) {
                 return false
             }
-            continue
+            continue;
         } else if (dpredicate == "_tag") {
             if (!thing.has_tag(dobject)) {
                 return false
             }
-            continue
+            continue;
         } else {
             dpredicate = _.expand(dpredicate);
         }
@@ -643,7 +643,7 @@ ThingArray.prototype.filter = function(d) {
     var out_items = new ThingArray({
         persist: persist
     });
-    var iot = require('./iotdb').iot()
+    var iot = require('./iotdb').iot();
 
     for (var ii = 0; ii < self.length; ii++) {
         var thing = self[ii];
@@ -681,7 +681,7 @@ ThingArray.prototype.filter = function(d) {
                 var thing_id = thing.thing_id()
 
                 if (!self._filter_test(d, iot, thing)) {
-                    continue
+                    continue;
                 }
 
                 if (oidd[thing_id]) {
@@ -700,7 +700,7 @@ ThingArray.prototype.filter = function(d) {
             for (var oi = 0; oi < out_items.length; oi++) {
                 var o = out_items[oi]
                 if (!oidd[o.thing_id()]) {
-                    continue
+                    continue;
                 }
 
                 // console.log("! ThingArray.filter/things_changed: remove old match", o.thing_id())

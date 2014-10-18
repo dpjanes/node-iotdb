@@ -368,13 +368,13 @@ Driver.prototype.pulled = function(driverd) {
         if (self.thing) {
             self.thing.meta_changed()
         }
-        return
+        return;
     }
 
     /* the driver didn't chain Driver.setup OR setup was never called */
     if (!self.thing) {
         console.log("# Driver.pulled: called, but no self.thing")
-        return
+        return;
     }
 
     var paramd = {
@@ -478,10 +478,10 @@ Driver.prototype._mqtt_resubscribe = function() {
     var self = this
 
     if (self.disconnected) {
-        return
+        return;
     }
     if (self.mqtt_timer_id) {
-        return
+        return;
     }
 
     var now = (new Date).getTime()
@@ -514,7 +514,7 @@ Driver.prototype.mqtt_init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.mqtt_host) {
         self.mqtt_host = initd.mqtt_host
@@ -575,7 +575,7 @@ Driver.prototype.poll_init = function(initd) {
     var self = this;
 
     if (!initd) {
-        return
+        return;
     }
     if (initd.poll) {
         self.poll_delta = initd.poll
@@ -589,7 +589,7 @@ Driver.prototype.poll_reschedule = function() {
     var self = this;
 
     if (!self.poll_delta) {
-        return
+        return;
     }
 
     if (self.poll_timer_id) {
@@ -611,7 +611,7 @@ Driver.prototype.report_issue = function() {
 
     var iot = require('./iotdb').iot()
     if (!iot) {
-		return
+		return;
     }
 
     return iot.report_issue.apply(iot, arguments)
