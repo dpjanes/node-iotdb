@@ -257,13 +257,20 @@ IOT.prototype.cfg_load_paramd = function(initd) {
     self.envd = cfg.cfg_envd(initd.envd)
 
     var filenames = cfg.cfg_find(self.envd, initd.cfg_path, "iotdb.json")
-    cfg.cfg_load_json(filenames, function(d) {
-        if (d.error) {
-            console.log("# IOT.cfg_load_paramd:", d.error, d.exception)
+    cfg.cfg_load_json(filenames, function(paramd) {
+        if (paramd.error) {
+            // console.log("# IOT.cfg_load_paramd:", paramd.error, paramd.exception)
+            logger.error({
+                method: "cfg_load_paramd",
+                cause: "likely user hasn't added iotdb.json using iotdb-control",
+                filename: paramd.filename,
+                error: paramd.error,
+                exception: paramd.exception,
+            }, "error loading JSON iotdb.json")
             return
         }
 
-        initd = _.defaults(initd, d.doc)
+        initd = _.defaults(initd, paramd.doc)
     })
 
     // backward compatibility
@@ -344,7 +351,14 @@ IOT.prototype.cfg_load_keystore = function() {
 
     cfg.cfg_load_json(filenames, function(paramd) {
         if (paramd.error) {
-            console.log("# IOT.cfg_load_oauth:", paramd.error, paramd.exception)
+            // console.log("# IOT.cfg_load_oauth:", paramd.error, paramd.exception)
+            logger.error({
+                method: "cfg_load_keystore",
+                cause: "likely user hasn't added keystore.json using iotdb-control - not serious",
+                filename: paramd.filename,
+                error: paramd.error,
+                exception: paramd.exception,
+            }, "error loading JSON keystore.json")
             return
         }
 
@@ -418,7 +432,14 @@ IOT.prototype.cfg_load_oauth = function() {
     var filenames = cfg.cfg_find(self.envd, self.initd.cfg_path, "oauth.json")
     cfg.cfg_load_json(filenames, function(paramd) {
         if (paramd.error) {
-            console.log("# IOT.cfg_load_oauth:", paramd.error, paramd.exception)
+            // console.log("# IOT.cfg_load_oauth:", paramd.error, paramd.exception)
+            logger.error({
+                method: "cfg_load_oauth",
+                cause: "likely user hasn't added oauth.json using iotdb-control - not serious",
+                filename: paramd.filename,
+                error: paramd.error,
+                exception: paramd.exception,
+            }, "error loading JSON OAuth")
             return
         }
 
@@ -435,7 +456,12 @@ IOT.prototype.cfg_load_oauth = function() {
     self.iotdb_oauth_key = self.username.toLowerCase() + "@" + node_url.parse(self.initd.iotdb_prefix).host
     self.iotdb_oauthd = self.oauthdd[self.iotdb_oauth_key]
     if (_.isEmpty(self.iotdb_oauthd)) {
-        console.log("# IOT.cfg_load_oauth: no IOTDB OAuth info", "\n  username", self.iotdb_oauth_key)
+        // console.log("# IOT.cfg_load_oauth: no IOTDB OAuth info", "\n  username", self.iotdb_oauth_key)
+        logger.error({
+            method: "cfg_load_oauth",
+            cause: "likely user hasn't added oauth.json using iotdb-control - not serious",
+            oauth_key: self.iotdb_oauth_key
+        }, "no IOTDB OAuth Info")
     } else {
         console.log("- IOT.cfg_load_oauth: IOTDB OAuth info discovered")
         self.iotdb_oauthd = {}
@@ -509,12 +535,21 @@ IOT.prototype._check_requirements = function() {
 
     if (self.initd.require_iotdb_oauth) {
         if (_.isEmpty(self.iotdb_oauthd)) {
+            /*
             console.log("# IOT._check_requrements",
                 "\n  username", self.username,
                 "\n  iotdb_prefix", self.iotdb_prefix,
                 "\n  iotdb_oauth_key", self.iotdb_oauth_key
             )
-            throw "IOT._check_requirements: FAIL: require_iotdb_oauth"
+             */
+            logger.error({
+                method: "_check_requirements",
+                cause: "likely user hasn't added oauth.json using iotdb-control - SERIOUS because required",
+                "username": self.username,
+                "iotdb_prefix": self.iotdb_prefix,
+                "iotdb_oauth_key": self.iotdb_oauth_key
+            }, "unexpected empty iotdb_oauthd")
+            throw new Error("IOT._check_requirements: FAIL: require_iotdb_oauth")
         }
     }
 }
@@ -569,7 +604,12 @@ IOT.prototype.ready_delta = function(key, delta) {
     self.readyd[key] = value
 
     if (value < 0) {
-        console.log("#IOT.ready_delta", "serious error - over decremented", key)
+        // console.log("#IOT.ready_delta", "serious error - over decremented", key)
+        logger.error({
+            method: "ready_delta",
+            cause: "Node-IOTDB error - contact us",
+            key: key
+        }, "serious error - over decremented")
         throw "impossible state error"
     } else if (value > 0) {
         return
@@ -885,9 +925,15 @@ IOT.prototype.register_driver = function(driver) {
     var driver_exemplar = new driver()
     var driver_identity = driver_exemplar.identity();
     if (!driver_identity.driver) {
+        /*
         console.log("# IOT.register_driver",
             "ignoring driver - no identity", 
             driver_exemplar.constructor.name)
+         */
+        logger.error({
+            method: "register_driver",
+            driver: driver_exemplar.constructor.name
+        }, "ignoring driver - no identity")
         return;
     }
 
@@ -895,9 +941,16 @@ IOT.prototype.register_driver = function(driver) {
         var name = _.compact(driver_identity.driver)
         var x = self.initd.drivers_disabled.indexOf(name)
         if (x != -1) {
+            /*
             console.log("# IOT.register_driver",
                 "ignoring driver - disabled in iotdb.json (use iotdb-control to change)", 
                 "\n  driver:", name)
+            */
+            logger.error({
+                method: "register_driver",
+                cause: "disabled in iotdb.json (use iotdb-control to change)",
+                driver: name
+            }, "ignoring Driver - disabled")
             return
         }
     }
@@ -934,7 +987,11 @@ IOT.prototype.store = function(store_id) {
 
     var store = self.store_instanced[_.expand(store_id, "iot-store:")]
     if (!store) {
-        console.log("# IOT.store", "store not found", store_id)
+        // console.log("# IOT.store", "store not found", store_id)
+        logger.error({
+            method: "store",
+            store_id: store_id
+        }, "store not found")
     }
 
     return store
@@ -991,7 +1048,12 @@ IOT.prototype._discover = function() {
         } else if (_.isObject(av[0])) {
             thing_bindd = av[0]
         } else {
-            console.log("# IOT.discover: unexpected argument type", av[0])
+            // console.log("# IOT.discover: unexpected argument type", av[0])
+            logger.error({
+                method: "discover",
+                cause: "likely programmer error",
+                argument: av[0]
+            }, "unexpected/unknown argument type")
         }
     }
 
@@ -1036,7 +1098,10 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
         }
         driver_exemplar.discover(discover_paramd, function(driver) {
             if (self.shutting_down) {
-                console.log("# IOT._discover_nearby", "ignoring this Driver because shutting down")
+                // console.log("# IOT._discover_nearby", "ignoring this Driver because shutting down")
+                logger.error({
+                    method: "_discover_nearby"
+                }, "ignoring this Driver because SHUTTING DOWN")
                 driver.disconnect()
                 return
             }
@@ -1052,7 +1117,11 @@ IOT.prototype._discover_nearby = function(find_driver_identityd, things) {
             var existing = self.thing_instanced[driver_identityd.thing_id];
             if (existing) {
                 if (existing.reachable()) {
-                    console.log("# IOT._discover_nearby", "thing already exists", driver_identityd.thing_id)
+                    // console.log("# IOT._discover_nearby", "thing already exists", driver_identityd.thing_id)
+                    logger.error({
+                        method: "_discover_nearby",
+                        thing_id: driver_identityd.thing_id
+                    }, "Thing with thing_id already exists - ignoring")
                     return
                 }
             } else {
@@ -1094,7 +1163,11 @@ IOT.prototype._add_thing = function(thing, things) {
 
     var thing_id = thing.thing_id()
     if (!thing_id) {
-        console.log("# IOT._add_thing", "Thing does not have an identity", thing.initd)
+        // console.log("# IOT._add_thing", "Thing does not have an identity", thing.initd)
+        logger.error({
+            method: "_add_thing",
+            thing_initd: thing.initd
+        }, "Thing does not have an identity")
         return;
     }
 
@@ -1103,10 +1176,18 @@ IOT.prototype._add_thing = function(thing, things) {
     var existing = self.thing_instanced[thing_id]
     if (existing) {
         if (existing.reachable()) {
+            /*
             console.log("# IOT._add_thing", "Thing has already been registered",
                 "\n  thing_id", thing_id,
                 "\n  driver_identityd", thing.driver_identityd,
                 "\n  initd", thing.initd)
+             */
+            logger.error({
+                method: "_add_thing",
+                thing_id: thing_id,
+                driver_identityd: thing.driver_identityd,
+                initd: thing.initd
+            }, "Thing has already been registered")
         } else {
             self._driver_swap(existing, thing)
         }
@@ -1207,7 +1288,10 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
         }
         driver_exemplar.discover(discover_paramd, function(driver) {
             if (self.shutting_down) {
-                console.log("# IOT._discover_thing", "ignoring this Driver because shutting down")
+                // console.log("# IOT._discover_thing", "ignoring this Driver because shutting down")
+                logger.error({
+                    method: "_discover_thing"
+                }, "ignoring this Driver because SHUTTING DOWN")
                 driver.disconnect()
                 return
             }
@@ -1249,10 +1333,20 @@ IOT.prototype._discover_thing = function(thing_exemplar, things) {
         return self;
     }
 
+    /*
     console.log("# IOT._discover_thing", "NO driver found",
         "\n  thing.driver_identityd=", thing_exemplar.driver_identityd,
         "\n  thing.initd=", thing_exemplar.initd,
         "\n  thing.code=", thing_exemplar.code);
+     */
+    logger.error({
+        method: "_discover_thing",
+        thing: {
+            driver_identityd: thing_exemplar.driver_identityd,
+            initd: thing_exemplar.initd,
+            code: thing_exemplar.code
+        }
+    }, "no Driver found for that matches this Thing")
 
     return self;
 }
@@ -1293,7 +1387,13 @@ IOT.prototype._discover_bind = function(paramd, things) {
     if (paramd.model_code || paramd.model_iri) {
         self.ask_model(paramd, function(callbackd) {
             if (callbackd.error) {
-                console.log("# IOT._discover_bind: Model not found", "\n ", callbackd)
+                // console.log("# IOT._discover_bind: Model not found", "\n ", callbackd)
+                logger.error({
+                    method: "_discover_bind",
+                    callbackd: callbackd,
+                    model_code: paramd.model_code,
+                    model_iri: paramd.model_iri
+                }, "Model not found")
             } else if (callbackd.model_exemplar) {
                 if (callbackd.model_exemplar.driver_identityd) {
                     paramd = _.defaults(paramd, callbackd.model_exemplar.driver_identityd)
@@ -1309,7 +1409,11 @@ IOT.prototype._discover_bind = function(paramd, things) {
                 // XXX - THIS SHOULD BE CHANGED to _discover_thing
                 self._discover(thing, things)
             } else {
-                console.log("# IOT._discover_bind: unexpected state", callbackd.paramd)
+                // console.log("# IOT._discover_bind: unexpected state", callbackd.paramd)
+                logger.error({
+                    method: "_discover_bind",
+                    paramd: callbackd.paramd
+                }, "unexpected state")
             }
         });
     } else if (paramd.initd.iri) {
@@ -1330,14 +1434,20 @@ IOT.prototype._discover_bind = function(paramd, things) {
                     initd: paramd.initd
                 }, things)
             } else {
-                console.log("# IOT._discover_bind: unexpected state: no iot:model?")
+                // console.log("# IOT._discover_bind: unexpected state: no iot:model?")
+                logger.error({
+                    method: "_discover_bind"
+                }, "unexpected state - no iot:model?")
             }
         })
     } else if (paramd.initd.driver) {
         // console.log("# IOT._discover_bind: ERROR: initd.driver not supported yet", paramd.initd.driver)
         return self._discover_nearby(_.identity_expand(paramd.initd.driver), things)
     } else {
-        console.log("# IOT._discover_bind: ERROR: no model_code, model_iri or initd.iri")
+        // console.log("# IOT._discover_bind: ERROR: no model_code, model_iri or initd.iri")
+        logger.error({
+            method: "_discover_bind"
+        }, "no model_code, model_iri or initd.iri")
     }
 }
 
@@ -1698,7 +1808,10 @@ IOT.prototype.model_code_iri = function(model) {
     }
 
     if (!resultd.model_code) {
-        console.log("# IOT.model_code_iri: could not get 'model_code'?")
+        // console.log("# IOT.model_code_iri: could not get 'model_code'?")
+        logger.error({
+            method: "model_code_iri"
+        }, "could not get a model_code?")
         return
     }
 
@@ -1730,7 +1843,10 @@ IOT.prototype.thing_iri = function(thing) {
     } else {
         thing_id = thing.thing_id();
         if (thing_id == null) {
-            console.log("# IOT.thing_iri: thing_id is null:perhaps not bound to a driver yet?")
+            // console.log("# IOT.thing_iri: thing_id is null:perhaps not bound to a driver yet?")
+            logger.error({
+                method: "thing_iri"
+            }, "thing_id is null:perhaps not bound to a driver yet?")
             return null;
         }
     }
@@ -1757,9 +1873,17 @@ IOT.prototype._clarify_model = function(resultd, model) {
     resultd.model_code = null
 
     if (model === undefined) {
-        console.log("# IOT._clarify_model: model is undefined. This should never happen")
+        // console.log("# IOT._clarify_model: model is undefined. This should never happen")
+        logger.error({
+            method: "_clarify_model",
+            cause: "likely programmer error"
+        }, "model is undefined - this should never happen")
     } else if (model == null) {
-        console.log("# IOT._clarify_model: model is null. This should rarely happen")
+        // console.log("# IOT._clarify_model: model is null. This should rarely happen")
+        logger.error({
+            method: "_clarify_model",
+            cause: "likely upstream error"
+        }, "model is null - this should rarely happen")
     } else if (_.isAbsoluteURL(model)) {
         resultd.model_iri = model
         resultd.model_code = _.iri_to_code(resultd.model_iri)
@@ -1778,8 +1902,12 @@ IOT.prototype._clarify_model = function(resultd, model) {
         resultd.model = model.Model
         resultd.model_code = resultd.model_exemplar.code
     } else {
-        console.log("# IOT._model: model was not a URL, string, exemplar or class",
-            "\n ", model)
+        // console.log("# IOT._model: model was not a URL, string, exemplar or class", "\n ", model)
+        logger.error({
+            method: "_clarify_model",
+            cause: "programmer error",
+            model: model
+        }, "model was not a URL, string, exemplar or class")
     }
 }
 
@@ -1835,7 +1963,11 @@ IOT.prototype._build_model = function(model_iri) {
 
     var ts = self.gm.get_triples(model_iri)
     if (ts.length == 0) {
-        console.log("# IOT._build_build: no triples", "\n  model_iri", model_iri)
+        // console.log("# IOT._build_build: no triples", "\n  model_iri", model_iri)
+        logger.error({
+            method: "_build_model",
+            model_iri: model_iri
+        }, "no triples")
         return null;
     }
 
@@ -2005,12 +2137,20 @@ IOT.prototype._load_drivers = function() {
     var filenames = cfg.cfg_find(self.envd, self.initd.drivers_path, /[.]js$/)
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
+            /*
             console.log("# IOT._load_drivers:",
                 "\n  filename", paramd.filename,
                 "\n  error", paramd.error,
                 "\n  exception", paramd.exception,
                 "\n  stack", paramd.exception ? paramd.exception.stack : null
                 )
+             */
+            logger.error({
+                method: "_load_drivers",
+                filename: paramd.filename,
+                error: paramd.error,
+                exception: paramd.exception,
+            }, "error loading JS Driver")
 
             if (paramd.exception) {
                 self.report_issue({
@@ -2049,10 +2189,18 @@ IOT.prototype._load_stores = function() {
     var filenames = cfg.cfg_find(self.envd, self.initd.stores_path, /[.]js$/)
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
+            /*
             console.log("# IOT._load_stores:", 
                 "\n  filename", paramd.filename, 
                 "\n  error", paramd.error, 
                 "\n  exception", paramd.exception)
+             */
+            logger.error({
+                method: "_load_stores",
+                filename: paramd.filename,
+                error: paramd.error,
+                exception: paramd.exception,
+            }, "error loading JS Store")
 
             if (paramd.exception) {
                 self.report_issue({
@@ -2114,7 +2262,13 @@ IOT.prototype._load_models = function() {
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
             if (paramd.filename) {
-                console.log("# IOT._load_models:", paramd.error, paramd.exception, paramd.filename)
+                // console.log("# IOT._load_models:", paramd.error, paramd.exception, paramd.filename)
+                logger.error({
+                    method: "_load_models",
+                    filename: paramd.filename,
+                    error: paramd.error,
+                    exception: paramd.exception,
+                }, "error loading JS Model")
             }
             return
         }
@@ -2142,7 +2296,13 @@ IOT.prototype._load_things = function() {
     cfg.cfg_load_js(filenames, function(paramd) {
         if (paramd.error) {
             if (paramd.filename) {
-                console.log("# IOT._load_things:", paramd.error, paramd.exception, paramd.filename)
+                // console.log("# IOT._load_things:", paramd.error, paramd.exception, paramd.filename)
+                logger.error({
+                    method: "_load_things",
+                    filename: paramd.filename,
+                    error: paramd.error,
+                    exception: paramd.exception,
+                }, "error loading JS Thing")
             }
             return
         }
@@ -2303,7 +2463,11 @@ IOT.prototype.connect = function(value) {
         self._connect(value, things)
 
     } else {
-        console.log("# IOT.connect: unexpected argument type", value)
+        // console.log("# IOT.connect: unexpected argument type", value)
+        logger.error({
+            method: "connect",
+            argument: value
+        }, "unexpected/unknown argument type")
     }
 
     return things
@@ -2318,7 +2482,9 @@ IOT.prototype.meta_save = function() {
     var self = this
 
     if (!self.initd.meta_dir) {
-        console.log("# IOT.meta_save", "no initd.meta_dir")
+        logger.error({
+            method: "meta_save"
+        }, "no initd.meta_dir")
         return
     }
 
