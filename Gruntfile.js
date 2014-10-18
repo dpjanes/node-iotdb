@@ -21,6 +21,7 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: [
+                    'cfg.js',
                     'model.js',
                     'attribute.js',
                     'iotdb.js'

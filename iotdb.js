@@ -1337,7 +1337,7 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
                 method: "_discover_thing",
                 thing_initd: thing_exemplar.initd,
                 driver_identityd: driver.identity()
-            }, "found Driver - bound to Thing")
+            }, "found Driver - bound to Thing");
 
             self._add_thing(thing, things);
             /*
@@ -2716,7 +2716,7 @@ exports.EVENT_NEW_THING = EVENT_NEW_THING;
 exports.attribute = require('./attribute');
 for (var key in exports.attribute) {
     exports[key] = exports.attribute[key];
-};
+}
 
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;

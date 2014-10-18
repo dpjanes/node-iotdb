@@ -28,6 +28,12 @@ var _ = require('./helpers');
 var node_path = require('path');
 var node_fs = require('fs');
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'cfg',
+});
+
 /**
  *  Expand any $VARIABLE type substring in <code>string</code>
  *  with the corresponding value from <code>envd</code>
@@ -43,9 +49,9 @@ var node_fs = require('fs');
  */
 exports.cfg_expand = function(envd, string) {
     return string.replace(/[$]([A-Za-z_0-9]+)/g, function(match, variable) {
-        var replace = envd[variable]
-        return replace ? replace : ""
-    })
+        var replace = envd[variable];
+        return replace ? replace : "";
+    });
 };
 
 /**
@@ -77,24 +83,24 @@ exports.cfg_find = function(envd, paths, name, paramd) {
         max: 0,
         expand: true,
         dotfiles: false
-    })
+    });
 
     if (_.isString(paths)) {
-        paths = paths.split(node_path.delimiter)
+        paths = paths.split(node_path.delimiter);
     }
 
-    var results = []
+    var results = [];
 
     for (var pi in paths) {
         var path = paths[pi];
         
         if (paramd.expand) {
-            path = exports.cfg_expand(envd, path)
+            path = exports.cfg_expand(envd, path);
         }
 
         // ignore non-directories
         try {
-            var stbuf = node_fs.statSync(path)
+            var stbuf = node_fs.statSync(path);
             if (!stbuf.isDirectory()) {
                 continue;
             }
@@ -104,20 +110,20 @@ exports.cfg_find = function(envd, paths, name, paramd) {
 
         if ((name === null) || (name === undefined) || _.isRegExp(name)) {
             var list_files = function(path, callback) {
-                var is_recursive = path.match(/[\/][\/]$/)
-                var files = node_fs.readdirSync(path)
-                files.sort()
+                var is_recursive = path.match(/[\/][\/]$/);
+                var files = node_fs.readdirSync(path);
+                files.sort();
 
                 for (var fi in files) {
-                    var file = files[fi]
+                    var file = files[fi];
                     if ((file === ".") || (file === "..")) {
                         continue;
-                    } else if (!paramd.dotfiles && (file.substring(0, 1) == ".")) {
+                    } else if (!paramd.dotfiles && (file.substring(0, 1) === ".")) {
                         continue;
                     }
 
-                    var subpath = node_path.join(path, file)
-                    var subpath_stbuf = node_fs.statSync(subpath)
+                    var subpath = node_path.join(path, file);
+                    var subpath_stbuf = node_fs.statSync(subpath);
                     if (subpath_stbuf.isFile()) {
                         if (callback(subpath, file)) {
                             break;
@@ -128,27 +134,29 @@ exports.cfg_find = function(envd, paths, name, paramd) {
                         }
                     }
                 }
-            }
+            };
             
             try {
                 list_files(path, function(subpath, file) {
                     if ((name === null) || (name === undefined)) {
-                        results.push(subpath)
+                        results.push(subpath);
                     } else if (file.match(name)) {
-                        results.push(subpath)
+                        results.push(subpath);
                     } 
 
                     if (results.length && paramd.max && (results.length >= paramd.max)) {
-                        return true
+                        return true;
                     }
-                })
+                });
             } catch (x) {
-                console.log("# cfg_find: unexpected exception", x)
+                logger.error(x, {
+                    method: "cfg_find"
+                }, "unexpected exception");
             }
         } else {
-            var filepath = node_path.join(path, name)
+            var filepath = node_path.join(path, name);
             if (node_fs.existsSync(filepath)) {
-                results.push(filepath)
+                results.push(filepath);
             }
         }
 
@@ -157,7 +165,7 @@ exports.cfg_find = function(envd, paths, name, paramd) {
         }
     }
 
-    return results
+    return results;
 };
 
 /**
@@ -187,11 +195,11 @@ exports.cfg_load_json = function(filenames, callback) {
         for (var fi in filenames) {
             try {
                 var filename = filenames[fi];
-                var doc = node_fs.readFileSync(filename, { encoding: 'utf8' })
+                var doc = node_fs.readFileSync(filename, { encoding: 'utf8' });
                 var r = callback({
                     doc: JSON.parse(doc),
                     filename: filename
-                })
+                });
 
                 if (first_doc === null) {
                     first_doc = doc;
@@ -204,12 +212,12 @@ exports.cfg_load_json = function(filenames, callback) {
                     error: "exception reading file",
                     exception: x,
                     filename: filename
-                })
+                });
             }
         }
     }
 
-    return first_doc
+    return first_doc;
 };
 
 /**
@@ -247,11 +255,11 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
         for (var fi in filenames) {
             try {
                 var filename = filenames[fi];
-                var doc = node_fs.readFileSync(filename, { encoding: encoding })
+                var doc = node_fs.readFileSync(filename, { encoding: encoding });
                 var r = callback({
                     doc: doc,
                     filename: filename
-                })
+                });
 
                 if (first_doc === null) {
                     first_doc = doc;
@@ -264,12 +272,12 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
                     error: "exception reading file",
                     exception: x,
                     filename: filename
-                })
+                });
             }
         }
     }
 
-    return first_doc
+    return first_doc;
 };
 
 /**
@@ -303,10 +311,10 @@ exports.cfg_load_js = function(filenames, callback) {
             try {
                 var filename = filenames[fi];
                 if (!filename.match(/^([.]\/|[.][.]\/|\/)/)) {
-                    filename = "./" + filename
+                    filename = "./" + filename;
                 }
-                if (filename.substring(0, 1) != "/") {
-                    filename = node_path.join(process.cwd(), filename)
+                if (filename.substring(0, 1) !== "/") {
+                    filename = node_path.join(process.cwd(), filename);
                 }
 
                 var doc = require(filename);
@@ -326,12 +334,12 @@ exports.cfg_load_js = function(filenames, callback) {
                     error: "exception reading file",
                     exception: x,
                     filename: filename
-                })
+                });
             }
         }
     }
 
-    return first_doc
+    return first_doc;
 };
 
 /**
@@ -357,31 +365,30 @@ exports.cfg_load_js = function(filenames, callback) {
  *  The envd
  */
 exports.cfg_envd = function(envd) {
-    var envd = _.defaults(envd, {})
+    envd = _.defaults(envd, {});
     
     for (var key in process.env) {
-        var value = process.env[key]
+        var value = process.env[key];
         if (!envd[key] && _.isString(value)) {
-            envd[key] = value
+            envd[key] = value;
         }
     }
 
     if (!envd.IOTDB_CFG) {
-        envd.IOTDB_CFG = node_path.join(process.env['HOME'], ".iotdb")
+        envd.IOTDB_CFG = node_path.join(process.env['HOME'], ".iotdb");
     }
 
     if (!envd.IOTDB_INSTALL) {
-        envd.IOTDB_INSTALL = __dirname
+        envd.IOTDB_INSTALL = __dirname;
     }
 
     if (!envd.IOTDB_PROJECT) {
-        envd.IOTDB_PROJECT = node_path.dirname(process.argv[1])
+        envd.IOTDB_PROJECT = node_path.dirname(process.argv[1]);
     }
 
     if (!envd.IOTDB_USER) {
-        envd.IOTDB_USER = "nobody"
+        envd.IOTDB_USER = "nobody";
     }
 
-    return envd
+    return envd;
 };
-
