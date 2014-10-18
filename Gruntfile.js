@@ -24,11 +24,12 @@ module.exports = function (grunt) {
                     'attribute.js',
                     'cfg.js',
                     'driver.js',
+                    'graph.js',
                     'iotdb.js',
                     'meta.js',
                     'model.js',
                     'store.js',
-                    'graph.js',
+                    'thing_array.js',
                 ]
             },
             test: {

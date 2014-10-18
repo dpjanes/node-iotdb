@@ -31,12 +31,12 @@ var assert = require('assert');
 
 /* --- constants --- */
 var VERBOSE = true;
-var EVENT_THING_NEW = 'EVENT_THING_NEW'
-var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED'
-var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED'
+var EVENT_THING_NEW = 'EVENT_THING_NEW';
+var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED';
+var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED';
 
-var KEY_SETTER = 'SETTER'
-var array_id = 0
+var KEY_SETTER = 'SETTER';
+var array_id = 0;
 
 /**
  *  An array for holding {@link Thing}s. When the
@@ -51,34 +51,34 @@ var array_id = 0
  *  @constructor
  */
 var ThingArray = function(paramd) {
-    var self = this
+    var self = this;
 
-    paramd = _.defaults(paramd, {})
+    paramd = _.defaults(paramd, {});
 
-    self.array_id = '__thing_array_' + array_id++
-    self.length = 0
-    self.transaction_depth = 0
+    self.array_id = '__thing_array_' + array_id++;
+    self.length = 0;
+    self.transaction_depth = 0;
 
     /*
      *  If paramd.persist is true, create an array for peristing commands
      */
-    this._persistds = null
+    this._persistds = null;
     if (paramd.persist) {
-        this._persistds = []
+        this._persistds = [];
     }
 
     events.EventEmitter.call(self);
 };
 
-ThingArray.prototype = new Array;
+ThingArray.prototype = new Array();
 util.inherits(ThingArray, events.EventEmitter);
-ThingArray.prototype._instanceof_ThingArray = true
+ThingArray.prototype._instanceof_ThingArray = true;
 
 /**
  *  Add a new thing to this ThingArray.
  */
 ThingArray.prototype.push = function(thing, paramd) {
-    var self = this
+    var self = this;
 
     /*
      *  If the Thing is already in the array
@@ -88,7 +88,7 @@ ThingArray.prototype.push = function(thing, paramd) {
     for (var ti = 0; ti < self.length; ti++) {
         var t = self[ti];
         if (t === thing) {
-            console.log("# ThingArray.push", "preventing same Thing from being pushed", thing.thing_id())
+            console.log("# ThingArray.push", "preventing same Thing from being pushed", thing.thing_id());
             return;
         }
     }
@@ -98,36 +98,36 @@ ThingArray.prototype.push = function(thing, paramd) {
     paramd = _.defaults(paramd, {
         emit_pushed: true,
         emit_new: true
-    })
+    });
 
-    thing[self.array_id] = self
+    thing[self.array_id] = self;
     Array.prototype.push.call(self, thing);
 
     /*
      *  event dispatch
      */
     if (paramd.emit_pushed) {
-        self.emit(EVENT_THING_PUSHED, thing)
+        self.emit(EVENT_THING_PUSHED, thing);
     }
     if (paramd.emit_new) {
-        self.emit(EVENT_THING_NEW, thing)
+        self.emit(EVENT_THING_NEW, thing);
     }
 
     /*
      *  Do persistent commands. Always within a transaction
      */
     if ((self._persistds != null) && (self._persistds.length > 0)) {
-        thing.start()
+        thing.start();
 
         for (var pi in self._persistds) {
-            var pd = self._persistds[pi]
+            var pd = self._persistds[pi];
             pd.f.apply(thing, Array.prototype.slice.call(pd.av));
         }
 
-        thing.end()
+        thing.end();
     }
 
-    return self
+    return self;
 };
 
 /**
@@ -135,7 +135,7 @@ ThingArray.prototype.push = function(thing, paramd) {
  *  will be persisted with this key
  */
 ThingArray.prototype._persist_command = function(f, av, key) {
-    var self = this
+    var self = this;
 
     if (self._persistds === null) {
         return;
@@ -145,56 +145,58 @@ ThingArray.prototype._persist_command = function(f, av, key) {
         f: f,
         av: av,
         key: key
-    }
+    };
 
     /*
      *  If not in a transaction, there can only be one Setter
      */
     if ((self.transaction_depth === 0) && (key === KEY_SETTER)) {
         for (var pi = 0; pi < self._persistds.length; pi++) {
-            var _persistd = self._persistds[pi]
+            var _persistd = self._persistds[pi];
             if (_persistd.key === KEY_SETTER) {
-                self._persistds.splice(pi--, 1)
+                self._persistds.splice(pi--, 1);
             }
         }
         
     }
 
-    self._persistds.push(persistd)
+    self._persistds.push(persistd);
 };
 
 /**
  */
 ThingArray.prototype.splice = function(index, howmany, add1) {
-    var self = this
+    var self = this;
 
     // sorry
-    assert.ok(add1 === undefined)
+    assert.ok(add1 === undefined);
 
     if (howmany) {
         for (var i = 0; i < howmany; i++) {
-            var x = index + i
+            var x = index + i;
             if (x < self.length) {
-                delete self[x][self.array_id]
+                delete self[x][self.array_id];
             }
         }
     }
 
-    Array.prototype.splice.apply(self, arguments)
+    Array.prototype.splice.apply(self, arguments);
 
-    return self
+    return self;
 };
 
 /**
  *  Return true iff thing is in this
  */
 ThingArray.prototype.contains = function(thing) {
+    var self = this;
+
     if (!thing) {
-        return false
+        return false;
     } else if (_.isModel(thing)) {
-        return false
+        return false;
     } else {
-        return thing[self.array_id] = self
+        return thing[self.array_id] = self;
     }
 };
 
@@ -208,7 +210,7 @@ ThingArray.prototype.contains = function(thing) {
 ThingArray.prototype.start = function() {
     var self = this;
 
-    self.transaction_depth++
+    self.transaction_depth++;
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
@@ -227,8 +229,8 @@ ThingArray.prototype.start = function() {
 ThingArray.prototype.end = function() {
     var self = this;
 
-    self.transaction_depth--
-    assert.ok(self.transaction_depth >= 0)
+    self.transaction_depth--;
+    assert.ok(self.transaction_depth >= 0);
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
@@ -241,33 +243,36 @@ ThingArray.prototype.end = function() {
  *  Merge another array into this one
  */
 ThingArray.prototype.merge = function(new_items) {
-    var self = this
+    var self = this;
 
     var _merger = function(srcs, out_items) {
+        var o;
+        var oi;
+
         /**
          *  Existing things
          */
-        var oidd = {}
+        var oidd = {};
 
-        for (var oi = 0; oi < out_items.length; oi++) {
-            var o = out_items[oi]
-            oidd[o.thing_id()] = 1
+        for (oi = 0; oi < out_items.length; oi++) {
+            o = out_items[oi];
+            oidd[o.thing_id()] = 1;
         }
 
         /**
          *  New things, from any of the srcs
          */
         for (var si in srcs) {
-            var src = srcs[si]
+            var src = srcs[si];
 
             for (var ii = 0; ii < src.length; ii++) {
                 var thing = src[ii];
-                var thing_id = thing.thing_id()
+                var thing_id = thing.thing_id();
 
                 if (oidd[thing_id]) {
-                    delete oidd[thing_id]
+                    delete oidd[thing_id];
                 } else {
-                    out_items.push(thing, { emit_pushed: false })
+                    out_items.push(thing, { emit_pushed: false });
                 }
             }
         }
@@ -275,13 +280,13 @@ ThingArray.prototype.merge = function(new_items) {
         /**
          *  remove things that no longer match
          */
-        for (var oi = 0; oi < out_items.length; oi++) {
-            var o = out_items[oi]
+        for (oi = 0; oi < out_items.length; oi++) {
+            o = out_items[oi];
             if (!oidd[o.thing_id()]) {
                 continue;
             }
 
-            out_items.splice(oi--, 1)
+            out_items.splice(oi--, 1);
         }
 
         /*
@@ -289,32 +294,32 @@ ThingArray.prototype.merge = function(new_items) {
          *  even though this list may not have changed, filters 
          *  downstream may have changed
          */
-        out_items.things_changed()
-    }
+        out_items.things_changed();
+    };
 
     /*
      *  Merge (XXX: not sure if should always be persist)
      */
-    var out_items = new ThingArray({ persist: true })
+    var out_items = new ThingArray({ persist: true });
     var srcs = [
         self,
         new_items
-    ]
+    ];
 
-    _merger(srcs, out_items)
+    _merger(srcs, out_items);
 
     /*
      *  Persist the merging
      */
     for (var si in srcs) {
-        var src = srcs[si]
+        var src = srcs[si];
         if (src._persistds === null) {
             continue;
         }
 
         events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, function() {
-            _merger(srcs, out_items)
-        })
+            _merger(srcs, out_items);
+        });
     }
 
     return out_items;
@@ -339,7 +344,7 @@ ThingArray.prototype.merge = function(new_items) {
  *  @return {this}
  */
 ThingArray.prototype.connect = function() {
-    var self = this
+    var self = this;
     var iot = require('./iotdb').iot();
 
     return  self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
@@ -358,7 +363,7 @@ ThingArray.prototype.set = function() {
         item.set.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER)
+    self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
 
     return self;
 };
@@ -376,7 +381,7 @@ ThingArray.prototype.update = function() {
         item.update.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER)
+    self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
 
     return self;
 };
@@ -395,7 +400,7 @@ ThingArray.prototype.pull = function() {
         item.pull.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.pull, arguments)
+    self._persist_command(model.Model.prototype.pull, arguments);
 
     /*
      *  Apply to new things
@@ -425,7 +430,7 @@ ThingArray.prototype.tag = function() {
         item.tag.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.tag, arguments)
+    self._persist_command(model.Model.prototype.tag, arguments);
 
     return self;
 };
@@ -443,7 +448,7 @@ ThingArray.prototype.on = function() {
         item.on.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.on, arguments)
+    self._persist_command(model.Model.prototype.on, arguments);
 
     /*
      *  Apply to new things
@@ -466,14 +471,14 @@ ThingArray.prototype.on = function() {
  */
 ThingArray.prototype.on_change = function() {
     var self = this;
-    var av = arguments
+    var av = arguments;
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.on_change.apply(item, Array.prototype.slice.call(av));
     }
 
-    self._persist_command(model.Model.prototype.on_change, arguments)
+    self._persist_command(model.Model.prototype.on_change, arguments);
 
     /*
      *  Apply to new things
@@ -496,14 +501,14 @@ ThingArray.prototype.on_change = function() {
  */
 ThingArray.prototype.on_meta = function() {
     var self = this;
-    var av = arguments
+    var av = arguments;
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.on_meta.apply(item, Array.prototype.slice.call(av));
     }
 
-    self._persist_command(model.Model.prototype.on_meta, arguments)
+    self._persist_command(model.Model.prototype.on_meta, arguments);
 
     /*
      *  Apply to new things
@@ -528,12 +533,12 @@ ThingArray.prototype.on_thing = function(callback) {
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
-        callback(item)
+        callback(item);
     }
 
     events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(thing) {
-        callback(thing)
-    })
+        callback(thing);
+    });
 
     return self;
 };
@@ -547,13 +552,13 @@ ThingArray.prototype.on_thing = function(callback) {
  */
 ThingArray.prototype.metas = function(paramd) {
     var self = this;
-    var paramd = _.defaults(paramd, {})
+    paramd = _.defaults(paramd, {});
 
-    var metas = []
+    var metas = [];
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
-        metas.push(item.meta().state())
+        metas.push(item.meta().state());
     }
 
     return metas;
@@ -566,7 +571,7 @@ ThingArray.prototype.metas = function(paramd) {
 ThingArray.prototype.things_changed = function() {
     var self = this;
 
-    self.emit(EVENT_THINGS_CHANGED)
+    self.emit(EVENT_THINGS_CHANGED);
 };
 
 
@@ -581,39 +586,39 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         _.expand("iot:place-floor"),
         _.expand("iot:place-placement"),
     ];
-    var meta = thing.meta()
+    var meta = thing.meta();
 
     for (var dpredicate in d) {
         var dobject = d[dpredicate];
         if (dpredicate === "_location") {
-            dpredicate = _.expand("iot:place-location")
+            dpredicate = _.expand("iot:place-location");
         } else if (dpredicate === "_room") {
-            dpredicate = _.expand("iot:place-room")
+            dpredicate = _.expand("iot:place-room");
         } else if (dpredicate === "_floor") {
-            dpredicate = _.expand("iot:place-floor")
+            dpredicate = _.expand("iot:place-floor");
         } else if (dpredicate === "_driver") {
-            var driver_got = thing.identity().driver
-            var driver_want = dobject
+            var driver_got = thing.identity().driver;
+            var driver_want = dobject;
 
-            if (driver_got != driver_want) {
-                return false
+            if (driver_got !== driver_want) {
+                return false;
             }
 
             continue;
         } else if (dpredicate === "_name") {
-            var name = meta.get('iot:name')
-            if (name != dobject) {
-                return false
+            var name = meta.get('iot:name');
+            if (name !== dobject) {
+                return false;
             }
             continue;
         } else if (dpredicate === "_code") {
-            if (thing.code != dobject) {
-                return false
+            if (thing.code !== dobject) {
+                return false;
             }
             continue;
         } else if (dpredicate === "_tag") {
             if (!thing.has_tag(dobject)) {
-                return false
+                return false;
             }
             continue;
         } else {
@@ -621,7 +626,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         }
 
 
-        var value = meta.get(dpredicate)
+        var value = meta.get(dpredicate);
         if (value === undefined) {
             return false;
         } else if (_.isArray(value)) {
@@ -631,14 +636,16 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
         }
     }
 
-    return true
+    return true;
 };
 
 /**
  */
 ThingArray.prototype.filter = function(d) {
     var self = this;
-    var persist = this._persistds !== null
+    var persist = this._persistds !== null;
+    var o;
+    var oi;
 
     var out_items = new ThingArray({
         persist: persist
@@ -663,22 +670,22 @@ ThingArray.prototype.filter = function(d) {
     if (persist) {
         events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function() {
             // existing things by ID
-            var oidd = {}
+            var oidd = {};
 
-            for (var oi = 0; oi < out_items.length; oi++) {
-                var o = out_items[oi]
-                oidd[o.thing_id()] = 1
+            for (oi = 0; oi < out_items.length; oi++) {
+                o = out_items[oi];
+                oidd[o.thing_id()] = 1;
             }
 
             // find new things matching
-            var is_updated = false
+            var is_updated = false;
 
             // console.log("! ThingArray.filter/things_changed: oidd (A)", oidd)
             // console.log("! ThingArray.filter/things_changed: filter", d)
 
             for (var ii = 0; ii < self.length; ii++) {
                 var thing = self[ii];
-                var thing_id = thing.thing_id()
+                var thing_id = thing.thing_id();
 
                 if (!self._filter_test(d, iot, thing)) {
                     continue;
@@ -686,26 +693,26 @@ ThingArray.prototype.filter = function(d) {
 
                 if (oidd[thing_id]) {
                     // console.log("! ThingArray.filter/things_changed: pass", thing_id)
-                    delete oidd[thing_id]
+                    delete oidd[thing_id];
                 } else {
                     // console.log("! ThingArray.filter/things_changed: found a new match", thing_id)
-                    out_items.push(thing, { emit_pushed: false })
-                    is_updated = true
+                    out_items.push(thing, { emit_pushed: false });
+                    is_updated = true;
                 }
             }
 
             // console.log("! ThingArray.filter/things_changed: oidd (B)", oidd)
 
             // remove things that no longer match
-            for (var oi = 0; oi < out_items.length; oi++) {
-                var o = out_items[oi]
+            for (oi = 0; oi < out_items.length; oi++) {
+                o = out_items[oi];
                 if (!oidd[o.thing_id()]) {
                     continue;
                 }
 
                 // console.log("! ThingArray.filter/things_changed: remove old match", o.thing_id())
-                out_items.splice(oi--, 1)
-                is_updated = true
+                out_items.splice(oi--, 1);
+                is_updated = true;
             }
 
             /*
@@ -713,8 +720,8 @@ ThingArray.prototype.filter = function(d) {
              *  even though this list may not have changed, filters 
              *  downstream may have changed
              */
-            out_items.things_changed()
-        })
+            out_items.things_changed();
+        });
 
         /*
          *  Things being added propagates downstream. Note how
@@ -722,73 +729,73 @@ ThingArray.prototype.filter = function(d) {
          *  unnecessarily being called
          */
         events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function(thing) {
-            out_items.things_changed()
-        })
+            out_items.things_changed();
+        });
     }
 
     return out_items;
 };
 
 ThingArray.prototype.with_room = function(name) {
-    return this.filter({ "iot:place-room" : name })
+    return this.filter({ "iot:place-room" : name });
 };
 
 ThingArray.prototype.with_floor = function(name) {
-    return this.filter({ "iot:place-floor" : name })
+    return this.filter({ "iot:place-floor" : name });
 };
 
 ThingArray.prototype.with_location = function(name) {
-    return this.filter({ "iot:place-location" : name })
+    return this.filter({ "iot:place-location" : name });
 };
 
 ThingArray.prototype.with_code = function(code) {
-    return this.filter({ "_code" : code })
+    return this.filter({ "_code" : code });
 };
 
 ThingArray.prototype.with_name = function(name) {
-    return this.filter({ "_name" : name })
+    return this.filter({ "_name" : name });
 };
 
 ThingArray.prototype.with_number = function(number) {
-    return this.filter({ "iot:number" : parseInt(number) })
+    return this.filter({ "iot:number" : parseInt(number) });
 };
 
 ThingArray.prototype.with_tag = function(tag) {
-    return this.filter({ "_tag" : tag })
+    return this.filter({ "_tag" : tag });
 };
 
 ThingArray.prototype.with_facet = function(facet) {
-    return this.filter({ "iot:facet" : _.expand(facet, "iot-facet:") })
+    return this.filter({ "iot:facet" : _.expand(facet, "iot-facet:") });
 };
 
 ThingArray.prototype.with_driver = function(driver) {
-    return this.filter({ "_driver" : _.expand(driver, "iot-driver:") })
+    return this.filter({ "_driver" : _.expand(driver, "iot-driver:") });
 };
 
 ThingArray.prototype.with_model = function(model) {
     var iot = require('./iotdb').iot();
 
-    var modeld = {}
-    iot._clarify_model(modeld, model)
+    var modeld = {};
+    iot._clarify_model(modeld, model);
 
-    return this.filter({ "_code" : modeld.model_code })
+    return this.filter({ "_code" : modeld.model_code });
 };
 
 
 ThingArray.prototype.apply = function(paramd, f) {
-    var self = this
+    var self = this;
 
     if (_.isFunction(paramd)) {
-        f = paramd
-        paramd = {}
+        f = paramd;
+        paramd = {};
     }
 
-    var results = []
+    var results = [];
     for (var ii = 0; ii < self.length; ii++) {
         var in_item = self[ii];
-        var result = f(in_item, paramd)
+        var result = f(in_item, paramd);
         if (result !== undefined) {
-            results.push(result)
+            results.push(result);
         }
     }
     return results;
@@ -797,7 +804,7 @@ ThingArray.prototype.apply = function(paramd, f) {
 ThingArray.prototype.after = function(delay, f) {
     var self = this;
 
-    setTimeout(f, delay, self)
+    setTimeout(f, delay, self);
 };
 
 exports.ThingArray = ThingArray;
