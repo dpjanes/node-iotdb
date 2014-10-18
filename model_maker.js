@@ -6,13 +6,13 @@
  *  2014-01-01
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -82,7 +82,7 @@ var HueLight = model.make_model('HueLight')
  *
  *  @constructor
  */
-var ModelMaker = function(_code) {
+var ModelMaker = function (_code) {
     this.__validator = null;
     this.__driver_setup = null;
     this.__driver_in = null;
@@ -111,7 +111,7 @@ var ModelMaker = function(_code) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.code = function(_code) {
+ModelMaker.prototype.code = function (_code) {
     var self = this;
 
     self.__code = _.identifier_to_dash_case(_code);
@@ -129,7 +129,7 @@ ModelMaker.prototype.code = function(_code) {
  *  @return {this}
  *  this
  */
-ModelMaker.prototype.name = function(value) {
+ModelMaker.prototype.name = function (value) {
     var self = this;
 
     self.__name = value;
@@ -145,7 +145,7 @@ ModelMaker.prototype.name = function(value) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.description = function(value) {
+ModelMaker.prototype.description = function (value) {
     var self = this;
 
     self.__description = value;
@@ -162,7 +162,7 @@ ModelMaker.prototype.description = function(value) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.help = function(value) {
+ModelMaker.prototype.help = function (value) {
     var self = this;
 
     self.__help = value;
@@ -172,13 +172,13 @@ ModelMaker.prototype.help = function(value) {
 
 /**
  */
-ModelMaker.prototype.product = function(value) {
+ModelMaker.prototype.product = function (value) {
     return this;
 };
 
 /**
  */
-ModelMaker.prototype.facet = function(_value) {
+ModelMaker.prototype.facet = function (_value) {
     if (_value.match(/^:.*[.]/)) {
         var parts = _value.split(".");
         for (var pi = 0; pi < parts.length; pi++) {
@@ -197,7 +197,7 @@ ModelMaker.prototype.facet = function(_value) {
  *  Define the {@link Driver#identity Driver.identity}
  *  for this Model. When a Driver finds an actual devices
  *  and need a Thing to describe it, it basically goes out
- *  and looks at all the Things and sees if it has a 
+ *  and looks at all the Things and sees if it has a
  *  driver_identity to match.
  *
  *  @param {string|dictionary} d
@@ -210,7 +210,7 @@ ModelMaker.prototype.facet = function(_value) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.driver_identity = function(identity) {
+ModelMaker.prototype.driver_identity = function (identity) {
     var self = this;
 
     self.driver_identityd = _.identity_expand(identity);
@@ -230,12 +230,12 @@ ModelMaker.prototype.driver_identity = function(identity) {
  *  A simple string to name the subthing
  *
  *  @param {function} subthing_class
- *  Inherit all the attributes and subthings from this class. 
+ *  Inherit all the attributes and subthings from this class.
  *  Don't pass an Object, pass the class function.
  *
  *  @return {this}
  */
-ModelMaker.prototype.subthing = function(code, subthing_class) {
+ModelMaker.prototype.subthing = function (code, subthing_class) {
     var self = this;
 
     self.subthingd[code] = subthing_class;
@@ -252,16 +252,16 @@ ModelMaker.prototype.subthing = function(code, subthing_class) {
  *  final model will have superclass=@{link Thing}
  *
  *  @param {function} _inherit
- *  Inherit all the attributes and subthings from this class. 
+ *  Inherit all the attributes and subthings from this class.
  *  Don't pass an Object, pass the class function.
  *
  *  @return {this}
  */
-ModelMaker.prototype.inherit = function(inherit_class) {
+ModelMaker.prototype.inherit = function (inherit_class) {
     var self = this;
 
     var inherit = new inherit_class();
-    inherit.__attributes.map(function(attribute) {
+    inherit.__attributes.map(function (attribute) {
         self.attribute(attribute);
     });
 
@@ -279,7 +279,7 @@ ModelMaker.prototype.inherit = function(inherit_class) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.attribute = function(attribute) {
+ModelMaker.prototype.attribute = function (attribute) {
     var self = this;
 
     var code = attribute.get_code();
@@ -308,7 +308,7 @@ ModelMaker.prototype.attribute = function(attribute) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.initializer = function(attribute) {
+ModelMaker.prototype.initializer = function (attribute) {
     var self = this;
 
     delete attribute[_.expand("iot:purpose")];
@@ -322,7 +322,7 @@ ModelMaker.prototype.initializer = function(attribute) {
 /**
  *  Defines a control for a 'value' attribute
  */
-ModelMaker.prototype.link_control_reading = function(control_attribute_code, reading_attribute_code) {
+ModelMaker.prototype.link_control_reading = function (control_attribute_code, reading_attribute_code) {
     var self = this;
 
     reading_attribute_code = reading_attribute_code.replace(/^:/, '');
@@ -346,7 +346,7 @@ ModelMaker.prototype.link_control_reading = function(control_attribute_code, rea
 /**
  *  Defines a control for a 'value' attribute
  */
-ModelMaker.prototype.make_attribute_control = function(reading_attribute_code, control_attribute_code) {
+ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, control_attribute_code) {
     var self = this;
 
     assert.ok(_.isString(reading_attribute_code));
@@ -374,7 +374,7 @@ ModelMaker.prototype.make_attribute_control = function(reading_attribute_code, c
 /**
  *  Defines a value for a 'control' attribute
  */
-ModelMaker.prototype.make_attribute_reading = function(control_attribute_code, reading_attribute_code) {
+ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, reading_attribute_code) {
     var self = this;
 
     assert.ok(_.isString(control_attribute_code));
@@ -401,7 +401,7 @@ ModelMaker.prototype.make_attribute_reading = function(control_attribute_code, r
 
 /**
  */
-ModelMaker.prototype.vector = function(attribute_codes) {
+ModelMaker.prototype.vector = function (attribute_codes) {
     return this;
 };
 
@@ -421,7 +421,7 @@ ModelMaker.prototype.vector = function(attribute_codes) {
  *
  *  @return {this}
  */
-ModelMaker.prototype.validator = function(validator) {
+ModelMaker.prototype.validator = function (validator) {
     var self = this;
 
     self.__validator = validator;
@@ -431,7 +431,7 @@ ModelMaker.prototype.validator = function(validator) {
 
 /**
  *  Return an object that is passed to the {@link Driver}
- *  in the function {@link Driver#setup setup} as 
+ *  in the function {@link Driver#setup setup} as
  *  <code>param.initd</code>.
  *
  *  <p>
@@ -440,12 +440,12 @@ ModelMaker.prototype.validator = function(validator) {
  *
  *  <p>
  *  The meaning the return value is entirely
- *  defined by the {@link Driver}. 
+ *  defined by the {@link Driver}.
  *
  *  @return {dictionary}
  *  A dictionary that makes sense to the Driver
  */
-ModelMaker.prototype.driver_setup = function(driver_setup) {
+ModelMaker.prototype.driver_setup = function (driver_setup) {
     var self = this;
 
     self.__driver_setup = driver_setup;
@@ -454,15 +454,15 @@ ModelMaker.prototype.driver_setup = function(driver_setup) {
 };
 
 /**
- *  Define a function that translates between the 
- *  Driver's state and what the Thing's. 
+ *  Define a function that translates between the
+ *  Driver's state and what the Thing's.
  *
- *  @param {ModelMaker~driver_in_function} driver_in 
+ *  @param {ModelMaker~driver_in_function} driver_in
  *  The function that does this.
  *
  *  @return {this}
  */
-ModelMaker.prototype.driver_in = function(driver_in) {
+ModelMaker.prototype.driver_in = function (driver_in) {
     var self = this;
 
     self.__driver_in = driver_in;
@@ -475,9 +475,9 @@ ModelMaker.prototype.driver_in = function(driver_in) {
  *  See {@link ModelMaker#driver_in ModelMaker.driver_in} and
  *  {@link Thing#driver_in Model.driver_in}
  *
- *  @param {dictionary} paramd 
+ *  @param {dictionary} paramd
  *  @param {dictionary} paramd.initd
- *  An invariant dictionary, passed in when 
+ *  An invariant dictionary, passed in when
  *  the Thing is created.
  *
  *  @param {dictionary} paramd.attributed
@@ -500,16 +500,16 @@ ModelMaker.prototype.driver_in = function(driver_in) {
  **/
 
 /**
- *  Define a function that translates between the 
+ *  Define a function that translates between the
  *  Thing's state and what the Driver's
  *
  *  @param {ModelMaker~driver_out_function} driver_out
  *
  *  @return {this}
  */
-ModelMaker.prototype.driver_out = function(driver_out) {
+ModelMaker.prototype.driver_out = function (driver_out) {
     var self = this;
-    
+
     self.__driver_out = driver_out;
 
     return self;
@@ -552,18 +552,18 @@ ModelMaker.prototype.driver_out = function(driver_out) {
  *  @return {function}
  *  the class function for the Thing
  */
-ModelMaker.prototype.make = function() {
+ModelMaker.prototype.make = function () {
     var self = this;
 
     if (!self.__code) {
         throw new Error("ModelMaker.make: 'code' must be defined");
     }
 
-    var new_thing = function(paramd) {
+    var new_thing = function (paramd) {
         paramd = paramd !== undefined ? paramd : {};
 
-        this.driver_instance = ( paramd.driver_instance !== undefined) ? paramd.driver_instance : undefined;
-        this.initd = ( paramd.initd !== undefined) ? paramd.initd : {};
+        this.driver_instance = (paramd.driver_instance !== undefined) ? paramd.driver_instance : undefined;
+        this.initd = (paramd.initd !== undefined) ? paramd.initd : {};
 
         var iot = require('./iotdb').iot();
 
@@ -615,8 +615,8 @@ ModelMaker.prototype.make = function() {
         this.stacks = [];
 
         /*
-         *  Complicated because subthings can be passed in 
-         *  as strings, which mean they have to be looked up 
+         *  Complicated because subthings can be passed in
+         *  as strings, which mean they have to be looked up
          *  using IOT. This adds a whole asynchronous element
          *  too which has to be accounted for in IOT
          */
@@ -646,7 +646,7 @@ ModelMaker.prototype.make = function() {
                     // self.subthingd[code] = "http://xxx"
                 } else {
                     var outer_this = this;
-                    iot.ask_model(d, function(callbackd) {
+                    iot.ask_model(d, function (callbackd) {
                         if (callbackd.error) {
                             console.log("# ModelMaker.make: Model not found", "\n ", model, callbackd.error);
                         } else if (callbackd.model_exemplar) {
@@ -661,7 +661,7 @@ ModelMaker.prototype.make = function() {
             }
         }
 
-        this.ostated = {};    // scratchpad
+        this.ostated = {}; // scratchpad
         this.stated = {};
         for (var acode in this.attributed) {
             var a = this.attributed[acode];
@@ -679,7 +679,7 @@ ModelMaker.prototype.make = function() {
 /**
  *  Make the special "Generic" model
  */
-ModelMaker.prototype.make_generic = function() {
+ModelMaker.prototype.make_generic = function () {
     var generic = require("./generic");
     this.__code = "generic";
     var model = this.make();

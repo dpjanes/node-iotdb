@@ -6,13 +6,13 @@
  *  2014-01-01
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,12 +45,12 @@ var array_id = 0;
  *  {@link ThingArray#start set},
  *  {@link ThingArray#start end}, or
  *  {@link ThingArray#start get}
- *  are called, that exact method with all the 
+ *  are called, that exact method with all the
  *  arguments are called on each item in the array.
  *
  *  @constructor
  */
-var ThingArray = function(paramd) {
+var ThingArray = function (paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {});
@@ -77,12 +77,12 @@ ThingArray.prototype._instanceof_ThingArray = true;
 /**
  *  Add a new thing to this ThingArray.
  */
-ThingArray.prototype.push = function(thing, paramd) {
+ThingArray.prototype.push = function (thing, paramd) {
     var self = this;
 
     /*
      *  If the Thing is already in the array
-     *  we do nothing. There may be a deeper bug 
+     *  we do nothing. There may be a deeper bug
      *  causing this to happen, but I can't find it
      */
     for (var ti = 0; ti < self.length; ti++) {
@@ -134,7 +134,7 @@ ThingArray.prototype.push = function(thing, paramd) {
  *  @param {string} key - if used, only the latest command
  *  will be persisted with this key
  */
-ThingArray.prototype._persist_command = function(f, av, key) {
+ThingArray.prototype._persist_command = function (f, av, key) {
     var self = this;
 
     if (self._persistds === null) {
@@ -157,7 +157,7 @@ ThingArray.prototype._persist_command = function(f, av, key) {
                 self._persistds.splice(pi--, 1);
             }
         }
-        
+
     }
 
     self._persistds.push(persistd);
@@ -165,7 +165,7 @@ ThingArray.prototype._persist_command = function(f, av, key) {
 
 /**
  */
-ThingArray.prototype.splice = function(index, howmany, add1) {
+ThingArray.prototype.splice = function (index, howmany, add1) {
     var self = this;
 
     // sorry
@@ -188,7 +188,7 @@ ThingArray.prototype.splice = function(index, howmany, add1) {
 /**
  *  Return true iff thing is in this
  */
-ThingArray.prototype.contains = function(thing) {
+ThingArray.prototype.contains = function (thing) {
     var self = this;
 
     if (!thing) {
@@ -207,7 +207,7 @@ ThingArray.prototype.contains = function(thing) {
  *
  *  @return {this}
  */
-ThingArray.prototype.start = function() {
+ThingArray.prototype.start = function () {
     var self = this;
 
     self.transaction_depth++;
@@ -226,7 +226,7 @@ ThingArray.prototype.start = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.end = function() {
+ThingArray.prototype.end = function () {
     var self = this;
 
     self.transaction_depth--;
@@ -242,10 +242,10 @@ ThingArray.prototype.end = function() {
 /**
  *  Merge another array into this one
  */
-ThingArray.prototype.merge = function(new_items) {
+ThingArray.prototype.merge = function (new_items) {
     var self = this;
 
-    var _merger = function(srcs, out_items) {
+    var _merger = function (srcs, out_items) {
         var o;
         var oi;
 
@@ -272,7 +272,9 @@ ThingArray.prototype.merge = function(new_items) {
                 if (oidd[thing_id]) {
                     delete oidd[thing_id];
                 } else {
-                    out_items.push(thing, { emit_pushed: false });
+                    out_items.push(thing, {
+                        emit_pushed: false
+                    });
                 }
             }
         }
@@ -291,7 +293,7 @@ ThingArray.prototype.merge = function(new_items) {
 
         /*
          *  notify downstream - note that we always do this because
-         *  even though this list may not have changed, filters 
+         *  even though this list may not have changed, filters
          *  downstream may have changed
          */
         out_items.things_changed();
@@ -300,7 +302,9 @@ ThingArray.prototype.merge = function(new_items) {
     /*
      *  Merge (XXX: not sure if should always be persist)
      */
-    var out_items = new ThingArray({ persist: true });
+    var out_items = new ThingArray({
+        persist: true
+    });
     var srcs = [
         self,
         new_items
@@ -317,7 +321,7 @@ ThingArray.prototype.merge = function(new_items) {
             continue;
         }
 
-        events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, function() {
+        events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, function () {
             _merger(srcs, out_items);
         });
     }
@@ -343,11 +347,11 @@ ThingArray.prototype.merge = function(new_items) {
  *
  *  @return {this}
  */
-ThingArray.prototype.connect = function() {
+ThingArray.prototype.connect = function () {
     var self = this;
     var iot = require('./iotdb').iot();
 
-    return  self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
+    return self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
 };
 
 /**
@@ -356,7 +360,7 @@ ThingArray.prototype.connect = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.set = function() {
+ThingArray.prototype.set = function () {
     var self = this;
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
@@ -374,7 +378,7 @@ ThingArray.prototype.set = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.update = function() {
+ThingArray.prototype.update = function () {
     var self = this;
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
@@ -392,7 +396,7 @@ ThingArray.prototype.update = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.pull = function() {
+ThingArray.prototype.pull = function () {
     var self = this;
 
     for (var ii = 0; ii < self.length; ii++) {
@@ -422,7 +426,7 @@ ThingArray.prototype.pull = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.tag = function() {
+ThingArray.prototype.tag = function () {
     var self = this;
 
     for (var ii = 0; ii < self.length; ii++) {
@@ -441,7 +445,7 @@ ThingArray.prototype.tag = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.on = function() {
+ThingArray.prototype.on = function () {
     var self = this;
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
@@ -465,11 +469,11 @@ ThingArray.prototype.on = function() {
 
 /**
  *  Call {@link Thing#on Model.on_change} on
- *  every item in the ThingArray. 
+ *  every item in the ThingArray.
  *
  *  @return {this}
  */
-ThingArray.prototype.on_change = function() {
+ThingArray.prototype.on_change = function () {
     var self = this;
     var av = arguments;
 
@@ -499,7 +503,7 @@ ThingArray.prototype.on_change = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.on_meta = function() {
+ThingArray.prototype.on_meta = function () {
     var self = this;
     var av = arguments;
 
@@ -528,7 +532,7 @@ ThingArray.prototype.on_meta = function() {
  *
  *  @return {this}
  */
-ThingArray.prototype.on_thing = function(callback) {
+ThingArray.prototype.on_thing = function (callback) {
     var self = this;
 
     for (var ii = 0; ii < self.length; ii++) {
@@ -536,7 +540,7 @@ ThingArray.prototype.on_thing = function(callback) {
         callback(item);
     }
 
-    events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(thing) {
+    events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function (thing) {
         callback(thing);
     });
 
@@ -548,9 +552,9 @@ ThingArray.prototype.on_thing = function(callback) {
  *  every item in the ThingArray and return
  *  the result as an Array
  *
- *  @return 
+ *  @return
  */
-ThingArray.prototype.metas = function(paramd) {
+ThingArray.prototype.metas = function (paramd) {
     var self = this;
     paramd = _.defaults(paramd, {});
 
@@ -568,7 +572,7 @@ ThingArray.prototype.metas = function(paramd) {
  *  Somehow or another, the underlying things were changed.
  *  This will bring all downstream ThingArrays into order
  */
-ThingArray.prototype.things_changed = function() {
+ThingArray.prototype.things_changed = function () {
     var self = this;
 
     self.emit(EVENT_THINGS_CHANGED);
@@ -577,7 +581,7 @@ ThingArray.prototype.things_changed = function() {
 
 /* --- */
 
-ThingArray.prototype._filter_test = function(d, iot, thing) {
+ThingArray.prototype._filter_test = function (d, iot, thing) {
     var thing_place_iri = thing.place_iri();
     var thing_thing_iri = thing.thing_iri();
     var place_predicates = [
@@ -641,7 +645,7 @@ ThingArray.prototype._filter_test = function(d, iot, thing) {
 
 /**
  */
-ThingArray.prototype.filter = function(d) {
+ThingArray.prototype.filter = function (d) {
     var self = this;
     var persist = this._persistds !== null;
     var o;
@@ -668,7 +672,7 @@ ThingArray.prototype.filter = function(d) {
      *  When 'Things Changed' && persist: update the list.
      */
     if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function() {
+        events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
             // existing things by ID
             var oidd = {};
 
@@ -696,7 +700,9 @@ ThingArray.prototype.filter = function(d) {
                     delete oidd[thing_id];
                 } else {
                     // console.log("! ThingArray.filter/things_changed: found a new match", thing_id)
-                    out_items.push(thing, { emit_pushed: false });
+                    out_items.push(thing, {
+                        emit_pushed: false
+                    });
                     is_updated = true;
                 }
             }
@@ -717,7 +723,7 @@ ThingArray.prototype.filter = function(d) {
 
             /*
              *  notify downstream - note that we always do this because
-             *  even though this list may not have changed, filters 
+             *  even though this list may not have changed, filters
              *  downstream may have changed
              */
             out_items.things_changed();
@@ -728,7 +734,7 @@ ThingArray.prototype.filter = function(d) {
          *  above with { emit_pushed: false } we stop this from being
          *  unnecessarily being called
          */
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function(thing) {
+        events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
             out_items.things_changed();
         });
     }
@@ -736,53 +742,73 @@ ThingArray.prototype.filter = function(d) {
     return out_items;
 };
 
-ThingArray.prototype.with_room = function(name) {
-    return this.filter({ "iot:place-room" : name });
+ThingArray.prototype.with_room = function (name) {
+    return this.filter({
+        "iot:place-room": name
+    });
 };
 
-ThingArray.prototype.with_floor = function(name) {
-    return this.filter({ "iot:place-floor" : name });
+ThingArray.prototype.with_floor = function (name) {
+    return this.filter({
+        "iot:place-floor": name
+    });
 };
 
-ThingArray.prototype.with_location = function(name) {
-    return this.filter({ "iot:place-location" : name });
+ThingArray.prototype.with_location = function (name) {
+    return this.filter({
+        "iot:place-location": name
+    });
 };
 
-ThingArray.prototype.with_code = function(code) {
-    return this.filter({ "_code" : code });
+ThingArray.prototype.with_code = function (code) {
+    return this.filter({
+        "_code": code
+    });
 };
 
-ThingArray.prototype.with_name = function(name) {
-    return this.filter({ "_name" : name });
+ThingArray.prototype.with_name = function (name) {
+    return this.filter({
+        "_name": name
+    });
 };
 
-ThingArray.prototype.with_number = function(number) {
-    return this.filter({ "iot:number" : parseInt(number) });
+ThingArray.prototype.with_number = function (number) {
+    return this.filter({
+        "iot:number": parseInt(number)
+    });
 };
 
-ThingArray.prototype.with_tag = function(tag) {
-    return this.filter({ "_tag" : tag });
+ThingArray.prototype.with_tag = function (tag) {
+    return this.filter({
+        "_tag": tag
+    });
 };
 
-ThingArray.prototype.with_facet = function(facet) {
-    return this.filter({ "iot:facet" : _.expand(facet, "iot-facet:") });
+ThingArray.prototype.with_facet = function (facet) {
+    return this.filter({
+        "iot:facet": _.expand(facet, "iot-facet:")
+    });
 };
 
-ThingArray.prototype.with_driver = function(driver) {
-    return this.filter({ "_driver" : _.expand(driver, "iot-driver:") });
+ThingArray.prototype.with_driver = function (driver) {
+    return this.filter({
+        "_driver": _.expand(driver, "iot-driver:")
+    });
 };
 
-ThingArray.prototype.with_model = function(model) {
+ThingArray.prototype.with_model = function (model) {
     var iot = require('./iotdb').iot();
 
     var modeld = {};
     iot._clarify_model(modeld, model);
 
-    return this.filter({ "_code" : modeld.model_code });
+    return this.filter({
+        "_code": modeld.model_code
+    });
 };
 
 
-ThingArray.prototype.apply = function(paramd, f) {
+ThingArray.prototype.apply = function (paramd, f) {
     var self = this;
 
     if (_.isFunction(paramd)) {
@@ -801,7 +827,7 @@ ThingArray.prototype.apply = function(paramd, f) {
     return results;
 };
 
-ThingArray.prototype.after = function(delay, f) {
+ThingArray.prototype.after = function (delay, f) {
     var self = this;
 
     setTimeout(f, delay, self);

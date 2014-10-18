@@ -6,13 +6,13 @@
  *  2014-05-29
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ var logger = bunyan.createLogger({
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
  */
-var Meta = function(iot, thing) {
+var Meta = function (iot, thing) {
     var self = this;
 
     self.iot = iot;
@@ -50,7 +50,7 @@ var Meta = function(iot, thing) {
 /**
  *  Return the metadata
  */
-Meta.prototype.state = function() {
+Meta.prototype.state = function () {
     var self = this;
 
     var metad = {};
@@ -81,15 +81,15 @@ Meta.prototype.state = function() {
 };
 
 /**
- *  Returns meta value for the key. 
+ *  Returns meta value for the key.
  *
  *  @param {string} key
- *  An IRI or expandable string 
+ *  An IRI or expandable string
  *
  *  @param {*} otherwise
  *  The value to return if the key is not for
  */
-Meta.prototype.get = function(key, otherwise) {
+Meta.prototype.get = function (key, otherwise) {
     var self = this;
     assert.ok(self.thing_iri);
 
@@ -108,12 +108,12 @@ Meta.prototype.get = function(key, otherwise) {
  *  Set a metavalue
  *
  *  @param {string} key
- *  An IRI or expandable string 
+ *  An IRI or expandable string
  *
  *  @param {*} value
  *  Value to set (should be simple or an Array of simple). Not expanded.
  */
-Meta.prototype.set = function(key, value) {
+Meta.prototype.set = function (key, value) {
     var self = this;
     assert.ok(self.thing_iri);
 

@@ -8,13 +8,13 @@
  *  Configuration helpers
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,8 +47,8 @@ var logger = bunyan.createLogger({
  *  @return {string}
  *  the string with replacements done
  */
-exports.cfg_expand = function(envd, string) {
-    return string.replace(/[$]([A-Za-z_0-9]+)/g, function(match, variable) {
+exports.cfg_expand = function (envd, string) {
+    return string.replace(/[$]([A-Za-z_0-9]+)/g, function (match, variable) {
         var replace = envd[variable];
         return replace ? replace : "";
     });
@@ -78,7 +78,7 @@ exports.cfg_expand = function(envd, string) {
  *  Return files beginning with '.' in the results (default: false).
  *  Note that '.' and '..' are never returned
  */
-exports.cfg_find = function(envd, paths, name, paramd) {
+exports.cfg_find = function (envd, paths, name, paramd) {
     paramd = _.defaults(paramd, {
         max: 0,
         expand: true,
@@ -93,7 +93,7 @@ exports.cfg_find = function(envd, paths, name, paramd) {
 
     for (var pi in paths) {
         var path = paths[pi];
-        
+
         if (paramd.expand) {
             path = exports.cfg_expand(envd, path);
         }
@@ -109,7 +109,7 @@ exports.cfg_find = function(envd, paths, name, paramd) {
         }
 
         if ((name === null) || (name === undefined) || _.isRegExp(name)) {
-            var list_files = function(path, callback) {
+            var list_files = function (path, callback) {
                 var is_recursive = path.match(/[\/][\/]$/);
                 var files = node_fs.readdirSync(path);
                 files.sort();
@@ -135,14 +135,14 @@ exports.cfg_find = function(envd, paths, name, paramd) {
                     }
                 }
             };
-            
+
             try {
-                list_files(path, function(subpath, file) {
+                list_files(path, function (subpath, file) {
                     if ((name === null) || (name === undefined)) {
                         results.push(subpath);
                     } else if (file.match(name)) {
                         results.push(subpath);
-                    } 
+                    }
 
                     if (results.length && paramd.max && (results.length >= paramd.max)) {
                         return true;
@@ -175,7 +175,7 @@ exports.cfg_find = function(envd, paths, name, paramd) {
  *  An array of filenames, as returned by {@link cfg_find}.
  *
  *  @param {function} callback
- *  Callback with a single dictionary argument <code>paramd</code>. 
+ *  Callback with a single dictionary argument <code>paramd</code>.
  *  If the JSON document is read it will be passed as <code>paramd.doc</code>.
  *  If there is an error it will be in <code>paramd.error</code>
  *  If there is an exception asssociated with the error, it
@@ -184,18 +184,19 @@ exports.cfg_find = function(envd, paths, name, paramd) {
  *  <p>
  *  If the callback returns <code>true</code>, we're finished
  *
- *  @return 
+ *  @return
  *  The first document successfully read
  */
-exports.cfg_load_json = function(filenames, callback) {
+exports.cfg_load_json = function (filenames, callback) {
     var first_doc = null;
 
-    if (!filenames.length) {
-    } else {
+    if (!filenames.length) {} else {
         for (var fi in filenames) {
             try {
                 var filename = filenames[fi];
-                var doc = node_fs.readFileSync(filename, { encoding: 'utf8' });
+                var doc = node_fs.readFileSync(filename, {
+                    encoding: 'utf8'
+                });
                 var r = callback({
                     doc: JSON.parse(doc),
                     filename: filename
@@ -221,7 +222,7 @@ exports.cfg_load_json = function(filenames, callback) {
 };
 
 /**
- *  Load files and call the callback. 
+ *  Load files and call the callback.
  *
  *  @param {array} filenames
  *  An array of filenames, as returned by {@link cfg_find}.
@@ -230,7 +231,7 @@ exports.cfg_load_json = function(filenames, callback) {
  *  OPTIONAL The encoding. If not specified, we use 'utf-8'
  *
  *  @param {function} callback
- *  Callback with a single dictionary argument <code>paramd</code>. 
+ *  Callback with a single dictionary argument <code>paramd</code>.
  *  If the document is read it will be passed as <code>paramd.doc</code>.
  *  If there is an error it will be in <code>paramd.error</code>
  *  If there is an exception asssociated with the error, it
@@ -239,10 +240,10 @@ exports.cfg_load_json = function(filenames, callback) {
  *  <p>
  *  If the callback returns <code>true</code>, we're finished
  *
- *  @return 
+ *  @return
  *  The first document successfully read
  */
-exports.cfg_load_file = function(filenames, encoding, callback) {
+exports.cfg_load_file = function (filenames, encoding, callback) {
     var first_doc = null;
 
     if (_.isFunction(encoding)) {
@@ -250,12 +251,13 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
         encoding = "utf-8";
     }
 
-    if (!filenames.length) {
-    } else {
+    if (!filenames.length) {} else {
         for (var fi in filenames) {
             try {
                 var filename = filenames[fi];
-                var doc = node_fs.readFileSync(filename, { encoding: encoding });
+                var doc = node_fs.readFileSync(filename, {
+                    encoding: encoding
+                });
                 var r = callback({
                     doc: doc,
                     filename: filename
@@ -281,7 +283,7 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
 };
 
 /**
- *  Load Javascript/Node modules and call the callback. 
+ *  Load Javascript/Node modules and call the callback.
  *
  *  @param {array} filenames
  *  An array of filenames, as returned by {@link cfg_find}.
@@ -290,7 +292,7 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
  *  OPTIONAL The encoding. If not specified, we use 'utf-8'
  *
  *  @param {function} callback
- *  Callback with a single dictionary argument <code>paramd</code>. 
+ *  Callback with a single dictionary argument <code>paramd</code>.
  *  If the document/module is read it will be passed as <code>paramd.doc</code>.
  *  If there is an error it will be in <code>paramd.error</code>
  *  If there is an exception asssociated with the error, it
@@ -299,14 +301,13 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
  *  <p>
  *  If the callback returns <code>true</code>, we're finished
  *
- *  @return 
+ *  @return
  *  The first document successfully read
  */
-exports.cfg_load_js = function(filenames, callback) {
+exports.cfg_load_js = function (filenames, callback) {
     var first_doc = null;
 
-    if (!filenames.length) {
-    } else {
+    if (!filenames.length) {} else {
         for (var fi in filenames) {
             try {
                 var filename = filenames[fi];
@@ -364,9 +365,9 @@ exports.cfg_load_js = function(filenames, callback) {
  *  @return {dictionary}
  *  The envd
  */
-exports.cfg_envd = function(envd) {
+exports.cfg_envd = function (envd) {
     envd = _.defaults(envd, {});
-    
+
     for (var key in process.env) {
         var value = process.env[key];
         if (!envd[key] && _.isString(value)) {

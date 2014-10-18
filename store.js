@@ -6,13 +6,13 @@
  *  2013-12-22
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,7 +44,7 @@ var VERBOSE = true;
  *  - Phant.io
  *  - Dweet.io
  */
-var Store = function() {
+var Store = function () {
     var self = this;
 
     self.things = null;
@@ -53,7 +53,7 @@ var Store = function() {
 /**
  *  Track all changes to the thing(s) using the store
  */
-Store.prototype.track = function(paramd) {
+Store.prototype.track = function (paramd) {
     var self = this;
 
     /*
@@ -61,7 +61,7 @@ Store.prototype.track = function(paramd) {
      */
     if (_.isModel(paramd)) {
         paramd = {
-            things: [ paramd ]
+            things: [paramd]
         };
     } else if (_.isThingArray(paramd)) {
         paramd = {
@@ -72,10 +72,9 @@ Store.prototype.track = function(paramd) {
             things: paramd
         };
     } else if (paramd.thing) {
-        paramd.things = [ paramd.thing ];
+        paramd.things = [paramd.thing];
         delete paramd["thing"];
-    } else if (paramd.things) {
-    } else {
+    } else if (paramd.things) {} else {
         logger.error({
             method: "track",
             cause: "likly programmer error"
@@ -89,7 +88,7 @@ Store.prototype.track = function(paramd) {
     assert.ok(paramd.things !== undefined);
 
     var src = null;
-    
+
     if (_.isThingArray(paramd.things)) {
         src = paramd;
     } else if (_.isArray(paramd)) {
@@ -111,16 +110,16 @@ Store.prototype.track = function(paramd) {
      *  Magically track changes to the ThingArray
      */
     self.things = paramd.things.filter();
-    self.things._things_changed  = self.things.things_changed;
-    self.things.things_changed = function() {
+    self.things._things_changed = self.things.things_changed;
+    self.things.things_changed = function () {
         self.things._things_changed();
         self.things_changed();
     };
 
-    self.things.on_change(function(thing) {
+    self.things.on_change(function (thing) {
         self.on_change(thing);
     });
-    
+
     // console.log("# Store.track: NOT IMPLEMENETED", paramd)
 };
 
@@ -128,14 +127,14 @@ Store.prototype.track = function(paramd) {
  *  This is called whenever underlying Array of things are changed.
  *  This is magically hooked up in 'track'
  */
-Store.prototype.things_changed = function() {
+Store.prototype.things_changed = function () {
     var self = this;
     // console.log("# Store.track", "THINGS CHANGED", self.things.length)
 };
 
 /*
  */
-Store.prototype.on_change = function(thing) {
+Store.prototype.on_change = function (thing) {
     var self = this;
     logger.error({
         method: "on_change",
@@ -146,7 +145,7 @@ Store.prototype.on_change = function(thing) {
 
 /**
  */
-Store.prototype.configure_thing = function(thing, ad, callback) {
+Store.prototype.configure_thing = function (thing, ad, callback) {
     logger.info({
         method: "configure_thing"
     }, "this thing does not need to be configured");

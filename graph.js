@@ -8,13 +8,13 @@
  *  Nodejs IOTDB control
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ var logger = bunyan.createLogger({
     module: 'graph',
 });
 
-var GraphManager = function(iot) {
+var GraphManager = function (iot) {
     events.EventEmitter.call(this);
 
     this.iot = iot;
@@ -59,15 +59,15 @@ GraphManager.EVENT_UPDATED_PLACE = "graph_updated_place";
 GraphManager.EVENT_UPDATED_MODEL = "graph_updated_model";
 
 /* states in IRId */
-GraphManager.IRI_LOADING = "loading";                // in process of downloading from IOTDB
-GraphManager.IRI_PROCESSING = "processing";          // in process of downloading from IOTDB
-GraphManager.IRI_LOADED = "loaded";                  // successfully downloaded from ITODB
-GraphManager.IRI_NOT_FOUND = "not_found";            // 404 from server
-GraphManager.IRI_NOT_AVAILABLE = "not_available";    // server could not be contacted
+GraphManager.IRI_LOADING = "loading"; // in process of downloading from IOTDB
+GraphManager.IRI_PROCESSING = "processing"; // in process of downloading from IOTDB
+GraphManager.IRI_LOADED = "loaded"; // successfully downloaded from ITODB
+GraphManager.IRI_NOT_FOUND = "not_found"; // 404 from server
+GraphManager.IRI_NOT_AVAILABLE = "not_available"; // server could not be contacted
 
-GraphManager.prototype.wire = function() {
+GraphManager.prototype.wire = function () {
     var self = this;
-    self.iot.on(GraphManager.EVENT_UPDATED_GRAPH, function(url) {
+    self.iot.on(GraphManager.EVENT_UPDATED_GRAPH, function (url) {
         self._onGraphUpdatedGraph(url);
     });
 };
@@ -75,7 +75,7 @@ GraphManager.prototype.wire = function() {
 /*
  *  Interface
  */
-GraphManager.prototype.clear = function() {
+GraphManager.prototype.clear = function () {
     if (rdf.TripletGraph) {
         this.graph = new rdf.TripletGraph();
     } else if (rdf.Graph) {
@@ -91,7 +91,7 @@ GraphManager.prototype.clear = function() {
  *  This function will return true iff
  *  nothing is loading or being processed.
  */
-GraphManager.prototype.is_active = function() {
+GraphManager.prototype.is_active = function () {
     var self = this;
     for (var iri in self.irid) {
         var status = self.irid[iri];
@@ -107,15 +107,15 @@ GraphManager.prototype.is_active = function() {
 
 /**
  */
-GraphManager.prototype.load_jsonld = function(jd) {
+GraphManager.prototype.load_jsonld = function (jd) {
     var self = this;
 
-    jsonld.flatten(jd, function(error, robjectds) {
+    jsonld.flatten(jd, function (error, robjectds) {
         self._load_flattened(error, jd, robjectds);
     });
 };
 
-GraphManager.prototype.has_subject = function(subject) {
+GraphManager.prototype.has_subject = function (subject) {
     var self = this;
     var ts = self.graph.match(
         _.expand(subject),
@@ -125,7 +125,7 @@ GraphManager.prototype.has_subject = function(subject) {
     return ts.length ? true : false;
 };
 
-GraphManager.prototype.get_object = function(subject, predicate) {
+GraphManager.prototype.get_object = function (subject, predicate) {
     var self = this;
     var ts = self.graph.match(
         _.expand(subject),
@@ -133,7 +133,7 @@ GraphManager.prototype.get_object = function(subject, predicate) {
         null
     );
     if (!ts.length) {
-        return  null;
+        return null;
     }
 
     if (_.isString(ts[0].object)) {
@@ -143,7 +143,7 @@ GraphManager.prototype.get_object = function(subject, predicate) {
     }
 };
 
-GraphManager.prototype.get_subjects = function(predicate, object) {
+GraphManager.prototype.get_subjects = function (predicate, object) {
     var self = this;
     var ts = self.graph.match(
         null,
@@ -152,7 +152,7 @@ GraphManager.prototype.get_subjects = function(predicate, object) {
     );
 
     var resultd = {};
-    ts.map(function(t) {
+    ts.map(function (t) {
         if (_.isString(t.subject)) {
             resultd[t.subject] = true;
         } else {
@@ -162,7 +162,7 @@ GraphManager.prototype.get_subjects = function(predicate, object) {
     return Object.keys(resultd);
 };
 
-GraphManager.prototype.get_objects = function(subject, predicate) {
+GraphManager.prototype.get_objects = function (subject, predicate) {
     var self = this;
     var ts = self.graph.match(
         _.expand(subject),
@@ -171,7 +171,7 @@ GraphManager.prototype.get_objects = function(subject, predicate) {
     );
 
     var resultd = {};
-    ts.map(function(t) {
+    ts.map(function (t) {
         if (_.isString(t.object)) {
             resultd[t.object] = true;
         } else {
@@ -181,11 +181,10 @@ GraphManager.prototype.get_objects = function(subject, predicate) {
     return Object.keys(resultd);
 };
 
-GraphManager.prototype.get_dictionary = function(subject, paramd) {
+GraphManager.prototype.get_dictionary = function (subject, paramd) {
     var self = this;
 
-    paramd = _.defaults(paramd, {
-    });
+    paramd = _.defaults(paramd, {});
 
     var d = {};
     var ts = self.get_triples(subject, null, null, paramd);
@@ -202,7 +201,7 @@ GraphManager.prototype.get_dictionary = function(subject, paramd) {
     return d;
 };
 
-GraphManager.prototype.get_triples = function(subject, predicate, object, paramd) {
+GraphManager.prototype.get_triples = function (subject, predicate, object, paramd) {
     var self = this;
 
     paramd = (paramd === undefined) ? {} : paramd;
@@ -225,7 +224,7 @@ GraphManager.prototype.get_triples = function(subject, predicate, object, paramd
 
     var ts = self.graph.match(subject, predicate, object);
 
-    ts.map(function(t) {
+    ts.map(function (t) {
         if (paramd.compact_subject) {
             t.subject = _.compact(t.subject);
         }
@@ -245,7 +244,7 @@ GraphManager.prototype.get_triples = function(subject, predicate, object, paramd
     return ts;
 };
 
-GraphManager.prototype.has_type = function(subject, type) {
+GraphManager.prototype.has_type = function (subject, type) {
     var self = this;
     type = _.expand(type);
     subject = _.expand(subject);
@@ -259,7 +258,7 @@ GraphManager.prototype.has_type = function(subject, type) {
     return false;
 };
 
-GraphManager.prototype.contains_triple = function(subject, predicate, object) {
+GraphManager.prototype.contains_triple = function (subject, predicate, object) {
     return this.iot.gm.graph.match(
         _.expand(subject),
         _.expand(predicate),
@@ -273,15 +272,17 @@ GraphManager.prototype.contains_triple = function(subject, predicate, object) {
  *  <p>
  *  The URL for the graph item is always "file:///<basename>"
  *  We do join the @id and @base. The only thing we're really interested in is getting
- *  the last path component, which we then convert 
+ *  the last path component, which we then convert
  *  to file:///<component>
  *
  *  @param {string} filename
  *  the file to load
  */
-GraphManager.prototype.load_file = function(filename) {
+GraphManager.prototype.load_file = function (filename) {
     var self = this;
-    fs.readFile(filename, { encoding: 'utf8' }, function(error, data) {
+    fs.readFile(filename, {
+        encoding: 'utf8'
+    }, function (error, data) {
         if (error) {
             console.log("GraphManager.load_file", "not ok", "filename", filename, "error", error);
             return;
@@ -291,7 +292,7 @@ GraphManager.prototype.load_file = function(filename) {
 
         /*
          *  We make sure this looks like it came from the filesystem,
-         *  munging the URLs where possible. Note that there's an 
+         *  munging the URLs where possible. Note that there's an
          *  expectation here that data looks like it came from IOTDB
          *  where the JSON-LD data has already been run through compact &c
          *  so that '@context.@base' controls all the relative pathnames
@@ -326,7 +327,7 @@ GraphManager.prototype.load_file = function(filename) {
     });
 };
 
-GraphManager.prototype.load_iri = function(iri, callback) {
+GraphManager.prototype.load_iri = function (iri, callback) {
     var self = this;
     var headerd = {
         'Accept': 'application/ld+json'
@@ -345,7 +346,7 @@ GraphManager.prototype.load_iri = function(iri, callback) {
         .get(iri)
         .followAllRedirects(true)
         .headers(headerd)
-        .end(function(result) {
+        .end(function (result) {
             if (!result.ok) {
                 if (result.status === 404) {
                     self.failed_iri(iri, GraphManager.IRI_NOT_FOUND, result.status);
@@ -374,8 +375,7 @@ GraphManager.prototype.load_iri = function(iri, callback) {
                 if (_.isString(result.body)) {
                     try {
                         bodyd = JSON.parse(result.body);
-                    }
-                    catch (x) {
+                    } catch (x) {
                         logger.error({
                             method: "load_iri",
                             iri: iri,
@@ -397,11 +397,10 @@ GraphManager.prototype.load_iri = function(iri, callback) {
 
                 self.loaded_iri(iri, bodyd, callback);
             }
-        })
-    ;
+        });
 };
 
-GraphManager.prototype.failed_iri = function(iri, iri_status, status) {
+GraphManager.prototype.failed_iri = function (iri, iri_status, status) {
     var self = this;
 
     // console.log("- GraphManager.failed_iri", "\n  iri", iri, "\n  result", status)
@@ -416,7 +415,7 @@ GraphManager.prototype.failed_iri = function(iri, iri_status, status) {
     self.iot.emit(GraphManager.EVENT_FAILED_IRI, iri);
 };
 
-GraphManager.prototype.loaded_iri = function(iri, jd, callback) {
+GraphManager.prototype.loaded_iri = function (iri, jd, callback) {
     var self = this;
 
     var loading_status = self.irid[iri];
@@ -437,13 +436,13 @@ GraphManager.prototype.loaded_iri = function(iri, jd, callback) {
     }
 };
 
-GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
+GraphManager.prototype._onGraphUpdatedGraph = function (iri) {
     var self = this;
 
     // console.log(self.irid)
 
     self.irid[iri] = GraphManager.IRI_LOADED;
-    
+
     if (self.has_type(iri, "iot:Thing")) {
         // console.log("- GraphManger._onUpdatedGraph:", "\n ", "got iot:Thing", iri)
         logger.info({
@@ -460,9 +459,9 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
         }, "got iot:system");
 
         var devices = self.get_objects(
-            self.iot.iotdb_prefix + "/" + self.iot.username + "/things/uuid", 
+            self.iot.iotdb_prefix + "/" + self.iot.username + "/things/uuid",
             self.iot.iotdb_prefix + "/" + self.iot.username + "/things/uuid#links");
-        devices.map(function(device) {
+        devices.map(function (device) {
             self.load_iri(device);
         });
     } else if (self.has_type(iri, "iot:Place")) {
@@ -507,21 +506,21 @@ GraphManager.prototype._onGraphUpdatedGraph = function(iri) {
 /*
  *  Internals
  */
-GraphManager.prototype._load_flattened = function(error, jd, robjectds) {
+GraphManager.prototype._load_flattened = function (error, jd, robjectds) {
     if (error) {
         console.log("GraphManager._load_flattened: error", _.format(error));
         return;
     }
 
     var self = this;
-    robjectds.map(function(robjectd) {
+    robjectds.map(function (robjectd) {
         self._load_flattened_object(robjectd);
     });
 
     self.iot.emit(GraphManager.EVENT_UPDATED_GRAPH, jd['@id']);
 };
 
-GraphManager.prototype._load_flattened_object = function(robjectd) {
+GraphManager.prototype._load_flattened_object = function (robjectd) {
     var self = this;
 
     var node_subject = robjectd['@id'];
@@ -531,29 +530,29 @@ GraphManager.prototype._load_flattened_object = function(robjectd) {
 
     var node_types = robjectd['@type'];
     if (node_types) {
-        node_types.map(function(node_type) {
+        node_types.map(function (node_type) {
             self._load_node({
-                node_subject : node_subject,
-                node_predicate : _.rdf_type,
-                node_object_id : node_type
+                node_subject: node_subject,
+                node_predicate: _.rdf_type,
+                node_object_id: node_type
             });
         });
     }
 
-    Object.keys(robjectd).map(function(node_predicate) {
+    Object.keys(robjectd).map(function (node_predicate) {
         if (node_predicate.substring(0, 1) === '@') {
             return;
         }
 
         var node_objectds = robjectd[node_predicate];
-        node_objectds.map(function(node_objectd) {
+        node_objectds.map(function (node_objectd) {
             self._load_node({
-                node_subject : node_subject,
-                node_predicate : node_predicate,
-                node_objectd : node_objectd,
-                node_object_id : node_objectd['@id'],
-                node_object_value : node_objectd['@value'],
-                node_types : node_types,
+                node_subject: node_subject,
+                node_predicate: node_predicate,
+                node_objectd: node_objectd,
+                node_object_id: node_objectd['@id'],
+                node_object_value: node_objectd['@value'],
+                node_types: node_types,
             });
         });
     });
@@ -561,16 +560,17 @@ GraphManager.prototype._load_flattened_object = function(robjectd) {
     self.iot.emit(GraphManager.EVENT_UPDATED_SUBJECT, node_subject);
 };
 
-GraphManager.prototype._load_node = function(noded) {
+GraphManager.prototype._load_node = function (noded) {
     var self = this;
     var env = rdf.environment;
     var t;
 
     // console.log(noded);
     if (noded.node_object_id !== undefined) {
-        if (this.verbose) { console.log("subject", noded.node_subject, 
-            "\n", "predicate", noded.node_predicate, 
-            "\n", "object(url)", noded.node_object_id);
+        if (this.verbose) {
+            console.log("subject", noded.node_subject,
+                "\n", "predicate", noded.node_predicate,
+                "\n", "object(url)", noded.node_object_id);
         }
 
         t = env.createTriple(
@@ -578,16 +578,16 @@ GraphManager.prototype._load_node = function(noded) {
             noded.node_predicate,
             noded.node_object_id
         );
-            
+
         self.graph.add(t);
         return;
     }
 
     if (noded.node_object_value !== undefined) {
         if (this.verbose) {
-            console.log("subject", noded.node_subject, 
-            "\n", "predicate", noded.node_predicate, 
-            "\n", "object(value)", noded.node_object_value);
+            console.log("subject", noded.node_subject,
+                "\n", "predicate", noded.node_predicate,
+                "\n", "object(value)", noded.node_object_value);
         }
 
         t = env.createTriple(
@@ -608,5 +608,3 @@ GraphManager.prototype._load_node = function(noded) {
  *  API
  */
 exports.GraphManager = GraphManager;
-
-

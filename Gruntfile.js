@@ -28,10 +28,10 @@ module.exports = function (grunt) {
                     'iotdb.js',
                     'meta.js',
                     'model.js',
+                    'model_maker.js',
+                    'queue.js',
                     'store.js',
                     'thing_array.js',
-                    'queue.js',
-                    'model_maker.js',
                 ]
             },
             test: {
@@ -56,7 +56,16 @@ module.exports = function (grunt) {
             files: [
                 'Gruntfile.js',
                 'attribute.js',
-                'iotdb.js'
+                'cfg.js',
+                'driver.js',
+                'graph.js',
+                'iotdb.js',
+                'meta.js',
+                'model.js',
+                'model_maker.js',
+                'queue.js',
+                'store.js',
+                'thing_array.js',
             ],
             options: {
                 js: {

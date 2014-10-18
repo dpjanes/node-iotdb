@@ -6,13 +6,13 @@
  *  2013-12-22
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,9 +51,9 @@ var logger = bunyan.createLogger({
  *  see {@ThinkMaker} constructor
  *
  *  @return
- *  a new ModelMaker instance 
+ *  a new ModelMaker instance
  */
-var make_model = function(_name) {
+var make_model = function (_name) {
     return new model_maker.ModelMaker(_name);
 };
 
@@ -112,14 +112,13 @@ thing
  *
  *  @constructor
  */
-var Model = function() {
-};
+var Model = function () {};
 
 /**
  *  @callback Thing~subclass
  *
  *  All subclasses of Thing take a single
- *  argument <code>paramd</code>. All the 
+ *  argument <code>paramd</code>. All the
  *  options are optional.
  *
  *  @param {dictionary} paramd
@@ -145,25 +144,25 @@ var Model = function() {
  *  see source code for {@link ModelMaker#make ModelMaker.make}
  *  </i></p>
  */
-Model.prototype.make = function(paramd) {
+Model.prototype.make = function (paramd) {
     return new this.__make(paramd);
 };
 
 /**
  */
-Model.prototype.isa = function(classf) {
+Model.prototype.isa = function (classf) {
     return classf === this.__make;
 };
 
 /**
  */
-Model.prototype.get_code = function() {
+Model.prototype.get_code = function () {
     return this.code;
 };
 
 /**
  */
-Model.prototype.state = function() {
+Model.prototype.state = function () {
     var self = this;
     var d = _.deepCopy(self.stated);
 
@@ -178,27 +177,27 @@ Model.prototype.state = function() {
 
 /**
  */
-Model.prototype.attributes = function() {
+Model.prototype.attributes = function () {
     var self = this;
     return self.__attributes;
 };
 
 /**
- *  Return a duplicate of this Thing that 
+ *  Return a duplicate of this Thing that
  *  cannot be manipulated further. This is
  *  used (e.g.) when you need to keep a particular
  *  sensor state
  */
-Model.prototype.freeze = function() {
+Model.prototype.freeze = function () {
     var self = this;
 
     var new_thing = self.make();
     new_thing.stated = _.deepCopy(self.stated);
 
-    new_thing.update = function() {
+    new_thing.update = function () {
         throw new Error("You cannot call 'update' on a frozen Thing");
     };
-    new_thing.set = function() {
+    new_thing.set = function () {
         throw new Error("You cannot call 'set' on a frozen Thing");
     };
 
@@ -208,7 +207,7 @@ Model.prototype.freeze = function() {
 /**
  *  Tags are for locally identitfying devices
  */
-Model.prototype.has_tag = function(tag) {
+Model.prototype.has_tag = function (tag) {
     return _.ld_contains(this.initd, "tag", tag);
 
     /*
@@ -237,21 +236,21 @@ Model.prototype.has_tag = function(tag) {
  *  @return {dictionary}
  *  JSON-LD dictionary
  */
-Model.prototype.jsonld = function(paramd) {
+Model.prototype.jsonld = function (paramd) {
     var self = this;
     var key;
     var value;
 
-    paramd = ( paramd !== undefined ) ? paramd : {};
-    paramd.base = ( paramd.base !== undefined) ? paramd.base : ( "file:///" + self.code + "");
-    paramd.context = ( paramd.context !== undefined) ? paramd.context : true;
-    paramd.path = ( paramd.path !== undefined) ? paramd.path : "";
+    paramd = (paramd !== undefined) ? paramd : {};
+    paramd.base = (paramd.base !== undefined) ? paramd.base : ("file:///" + self.code + "");
+    paramd.context = (paramd.context !== undefined) ? paramd.context : true;
+    paramd.path = (paramd.path !== undefined) ? paramd.path : "";
 
     var rd = {};
 
     if (paramd.context) {
         var cd = {};
-        cd["@base"] = paramd.base ;
+        cd["@base"] = paramd.base;
         if (paramd.include_state) {
             cd["@vocab"] = paramd.base + "#";
         }
@@ -288,7 +287,7 @@ Model.prototype.jsonld = function(paramd) {
         var ad = {};
         // ad[_.expand('iot:name')] = attribute.get_code()
         ads.push(ad);
-        
+
         for (key in attribute) {
             if (!attribute.hasOwnProperty(key)) {
                 continue;
@@ -306,7 +305,7 @@ Model.prototype.jsonld = function(paramd) {
                     continue;
                 }
             }
-            
+
             if (key === "__validator") {
                 ad[_.expand("iot-iotdb:iotdb-attribute-validator")] = value;
             } else if (key === "@id") {
@@ -326,7 +325,7 @@ Model.prototype.jsonld = function(paramd) {
         var initializer = self.initializers[ix];
         var ind = {};
         var any = false;
-        
+
         for (key in initializer) {
             if (!initializer.hasOwnProperty(key)) {
                 continue;
@@ -338,10 +337,8 @@ Model.prototype.jsonld = function(paramd) {
             } else if (_.isFunction(value)) {
                 continue;
             }
-            
-            if (key === "__validator") {
-            } else if (key === "@id") {
-            } else {
+
+            if (key === "__validator") {} else if (key === "@id") {} else {
                 ind[key] = value;
                 any = true;
             }
@@ -392,7 +389,7 @@ Model.prototype.jsonld = function(paramd) {
             rd[_.expand("iot-iotdb:driver-identity")] = dids;
         }
     }
-    
+
     return rd;
 };
 
@@ -407,7 +404,7 @@ Model.prototype.jsonld = function(paramd) {
  *  @return {*}
  *  The current value in the state
  */
-Model.prototype.get = function(find_key) {
+Model.prototype.get = function (find_key) {
     var self = this;
 
     var subthing = self.subthingd[find_key];
@@ -444,7 +441,7 @@ Model.prototype.get = function(find_key) {
 };
 
 /**
- *  Set a value. 
+ *  Set a value.
  *
  *  <p>
  *  If this is not in a {@link Thing#start Model.start}/{@link Thing#end Model.end}
@@ -462,7 +459,7 @@ Model.prototype.get = function(find_key) {
  *  @param {*} new_value
  *  The value to set
  */
-Model.prototype.set = function(find_key, new_value) {
+Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
     var rd = self._find(find_key);
@@ -518,7 +515,7 @@ Model.prototype.set = function(find_key, new_value) {
  *  <p>
  *  NOT FINISHED - NEEDS TO DEAL WITH SUBTHINGS
  */
-Model.prototype.update = function(updated, paramd) {
+Model.prototype.update = function (updated, paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
@@ -549,7 +546,7 @@ Model.prototype.update = function(updated, paramd) {
  *  Default false
  *
  *  @param {boolean} paramd.validate
- *  If true, validate changes. This may be false when 
+ *  If true, validate changes. This may be false when
  *  the driver is setting values.
  *  Default false
  *
@@ -560,12 +557,12 @@ Model.prototype.update = function(updated, paramd) {
  *  @return
  *  this
  */
-Model.prototype.start = function(paramd) {
+Model.prototype.start = function (paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
-        notify: false,  
-        validate: true,   
+        notify: false,
+        validate: true,
         push: true
     });
 
@@ -585,10 +582,10 @@ Model.prototype.start = function(paramd) {
 };
 
 /**
- *  End a transaction. 
+ *  End a transaction.
  *  Pending pushes/notification/validation
  *  caused by {@link Thing#set Model.set}
- *  will be done. 
+ *  will be done.
  *  There must be a corresponding {@link Thing#start Model.start}
  *  called earlier. (<code>paramd</code> is set in the start).
  *
@@ -610,7 +607,7 @@ Model.prototype.start = function(paramd) {
  *  @return
  *  this
  */
-Model.prototype.end = function() {
+Model.prototype.end = function () {
     var self = this;
 
     for (var subthing_key in self.subthingd) {
@@ -641,12 +638,12 @@ Model.prototype.end = function() {
  *  @return
  *  this
  */
-Model.prototype.parent = function() {
+Model.prototype.parent = function () {
     return this.__parent_thing;
 };
 
 /**
- *  Register for a callback. See {@link Thing#end Model.end} 
+ *  Register for a callback. See {@link Thing#end Model.end}
  *  for when callbacks will occcur. Note that
  *  also that we try to supress callbacks
  *  if the value hasn't changed, though there's
@@ -657,13 +654,13 @@ Model.prototype.parent = function() {
  *  (see {@link Thing#_find Model.find} for possibilites)
  *
  *  @param {function} callback
- *  The callback function, which takes 
+ *  The callback function, which takes
  *  ( thing, attribute, new_value ) as arguments
  *
  *  @return
  *  this
  */
-Model.prototype.on = function(find_key, callback) {
+Model.prototype.on = function (find_key, callback) {
     var self = this;
     var attribute_key = null;
     var callbacks = null;
@@ -723,16 +720,16 @@ Model.prototype.on = function(find_key, callback) {
  *  is triggered at the of a update transaction.
  *
  *  @param {function} callback
- *  The callback function, which takes 
+ *  The callback function, which takes
  *  ( thing, changed_attributes ) as arguments
  *
  */
-Model.prototype.on_change = function(callback) {
+Model.prototype.on_change = function (callback) {
     var self = this;
 
     assert.ok(_.isFunction(callback));
 
-    self.__emitter.on(EVENT_THING_CHANGED, function(thing) {
+    self.__emitter.on(EVENT_THING_CHANGED, function (thing) {
         callback(self, []);
     });
 
@@ -742,12 +739,12 @@ Model.prototype.on_change = function(callback) {
 /**
  *  On metadata change (including reachablity)
  */
-Model.prototype.on_meta = function(callback) {
+Model.prototype.on_meta = function (callback) {
     var self = this;
 
     assert.ok(_.isFunction(callback));
 
-    self.__emitter.on(EVENT_META_CHANGED, function(thing) {
+    self.__emitter.on(EVENT_META_CHANGED, function (thing) {
         callback(self, []);
     });
 
@@ -757,7 +754,7 @@ Model.prototype.on_meta = function(callback) {
 /*
  *  Send a notification that the metadata has been changed
  */
-Model.prototype.meta_changed = function() {
+Model.prototype.meta_changed = function () {
     this.__emitter.emit(EVENT_META_CHANGED, true);
 };
 
@@ -767,7 +764,7 @@ Model.prototype.meta_changed = function() {
  *
  *  <p>
  *  If __driver_supported is called, this function is called.
- *  Otherwise the {@link Thing#driver_identityd} is 
+ *  Otherwise the {@link Thing#driver_identityd} is
  *  checked. This array is set up by the function
  *  {@link Thing#driver_identity}. It may be called multiple
  *  times when setting up the thing so
@@ -791,7 +788,7 @@ Model.prototype.meta_changed = function() {
  *  @return {boolean}
  *  true iff this Thing works for the driver
  */
-Model.prototype.is_driver_supported = function(driver, otherwise) {
+Model.prototype.is_driver_supported = function (driver, otherwise) {
     var self = this;
 
     if (self.__driver_supported) {
@@ -828,7 +825,7 @@ Model.prototype.is_driver_supported = function(driver, otherwise) {
  *  @return {dictionary}
  *  An idenitity object
  */
-Model.prototype.identity = function(kitchen_sink) {
+Model.prototype.identity = function (kitchen_sink) {
     if (this.driver_instance) {
         return this.driver_instance.identity(kitchen_sink);
     } else {
@@ -836,12 +833,12 @@ Model.prototype.identity = function(kitchen_sink) {
         logger.error({
             method: "identity",
         }, "returning null self.driver_instance=null");
-        
+
         return null;
     }
 };
 
-Model.prototype.thing_id = function() {
+Model.prototype.thing_id = function () {
     var id = this.identity();
     if (id) {
         return id.thing_id;
@@ -850,7 +847,7 @@ Model.prototype.thing_id = function() {
         logger.error({
             method: "thing_id",
         }, "returning null self.identity=null");
-        
+
         return null;
     }
 };
@@ -858,14 +855,14 @@ Model.prototype.thing_id = function() {
 /**
  *  Call a thing to fill in <code>paramd.initd</code>
  *  <p>
- *  Usually called from 
- *  {@link IOT#discover_nearby IOT.discover_nearby} or 
+ *  Usually called from
+ *  {@link IOT#discover_nearby IOT.discover_nearby} or
  *  {@link IOT#discover_thing IOT.discover_thing}.
  *
  *  @param {dictionary} paramd
  *  See {@link Driver#setup Driver.setup}
  */
-Model.prototype.driver_setup = function(paramd) {
+Model.prototype.driver_setup = function (paramd) {
     var self = this;
 
     if (self.__driver_setup) {
@@ -874,8 +871,8 @@ Model.prototype.driver_setup = function(paramd) {
 };
 
 /**
- *  Translates between the Driver's state and what the Thing's. 
- *  Typically this will be done with a function 
+ *  Translates between the Driver's state and what the Thing's.
+ *  Typically this will be done with a function
  *  defined by {@link ModelMaker#driver_in ModelMaker.driver_in}.
  *
  *  <p>
@@ -885,7 +882,7 @@ Model.prototype.driver_setup = function(paramd) {
  *  @param {dictionary} paramd
  *  See {@link ModelMaker~driver_out_function ModelMaker.driver_out_function}
  */
-Model.prototype.driver_in = function(paramd) {
+Model.prototype.driver_in = function (paramd) {
     var self = this;
 
     if (self.__driver_in) {
@@ -909,7 +906,7 @@ Model.prototype.driver_in = function(paramd) {
  *  @param {dictionary} paramd
  *  See {@link ModelMaker~driver_in_function ModelMaker.driver_in_function}
  */
-Model.prototype.driver_out = function(paramd) {
+Model.prototype.driver_out = function (paramd) {
     var self = this;
 
     if (self.__driver_out) {
@@ -930,7 +927,7 @@ Model.prototype.driver_out = function(paramd) {
  *
  *  @return {this}
  */
-Model.prototype.pull = function() {
+Model.prototype.pull = function () {
     var self = this;
 
     if (!self.driver_instance) {
@@ -941,14 +938,14 @@ Model.prototype.pull = function() {
         }, "no driver_instance?");
         return;
     }
-    
+
     /* --- allow model opportunity to send a message */
     var paramd = {
         is_pull: true,
         initd: self.initd,
         driverd: {},
         thingd: {},
-        libs : libs.libs,
+        libs: libs.libs,
         scratchd: self.__scratchd
     };
     self.driver_out(paramd);
@@ -964,8 +961,7 @@ Model.prototype.pull = function() {
 };
 
 /* --- internals --- */
-Model.prototype._do_driver = function(attribute) {
-};
+Model.prototype._do_driver = function (attribute) {};
 
 /**
  *  Push this updated attribute's value
@@ -984,7 +980,7 @@ Model.prototype._do_driver = function(attribute) {
  *
  *  @protected
  */
-Model.prototype._do_push = function(attribute, immediate) {
+Model.prototype._do_push = function (attribute, immediate) {
     var self = this;
 
     if ((self.stacks.length === 0) || immediate) {
@@ -1003,7 +999,7 @@ Model.prototype._do_push = function(attribute, immediate) {
     }
 };
 
-Model.prototype._deep_copy_state = function(thing, use_push_keys) {
+Model.prototype._deep_copy_state = function (thing, use_push_keys) {
     var self = this;
     var d = {};
 
@@ -1035,7 +1031,7 @@ Model.prototype._deep_copy_state = function(thing, use_push_keys) {
  *
  *  @protected
  */
-Model.prototype._do_pushes = function(attributed) {
+Model.prototype._do_pushes = function (attributed) {
     var self = this;
 
     // this magically does things to '__deep_copy_state'
@@ -1060,7 +1056,7 @@ Model.prototype._do_pushes = function(attributed) {
         initd: self.initd,
         driverd: {},
         thingd: self._deep_copy_state(self, true),
-        libs : libs.libs,
+        libs: libs.libs,
         scratchd: self.__scratchd
     };
     self.driver_out(paramd);
@@ -1073,7 +1069,7 @@ Model.prototype._do_pushes = function(attributed) {
 };
 
 /**
- *  Validate this updated attribute. 
+ *  Validate this updated attribute.
  *
  *  If there is a no stack or immediate is
  *  <b>true</b>, do the validation immediately.
@@ -1087,7 +1083,7 @@ Model.prototype._do_pushes = function(attributed) {
  *
  *  @protected
  */
-Model.prototype._do_validate = function(attribute, immediate) {
+Model.prototype._do_validate = function (attribute, immediate) {
     var self = this;
 
     if ((self.stacks.length === 0) || immediate) {
@@ -1105,12 +1101,12 @@ Model.prototype._do_validate = function(attribute, immediate) {
  *  Validate all the attributes, then this thing as a whole
  *
  *  @param attributed
- *  A dictionary of {@link Attribute}, which are all the changed 
+ *  A dictionary of {@link Attribute}, which are all the changed
  *  attributes.
  *
  *  @protected
  */
-Model.prototype._do_validates = function(attributed) {
+Model.prototype._do_validates = function (attributed) {
     var self = this;
     var paramd;
     var code;
@@ -1122,7 +1118,7 @@ Model.prototype._do_validates = function(attributed) {
         paramd = {
             value: self.stated[code],
             code: code,
-            libs : libs.libs
+            libs: libs.libs
         };
 
         attribute.validate(paramd);
@@ -1136,14 +1132,18 @@ Model.prototype._do_validates = function(attributed) {
 
     if (self.__validator) {
         paramd = {
-            codes: _.keys(attributed),          // attributes that have changed
-            thingd: _.deepCopy(self.stated),    // the current state of the model
-            changed: {},                        // update these values (passed back)
-            libs : libs.libs
+            codes: _.keys(attributed), // attributes that have changed
+            thingd: _.deepCopy(self.stated), // the current state of the model
+            changed: {}, // update these values (passed back)
+            libs: libs.libs
         };
         self.__validator(paramd);
 
-        self.start({ notify: false, validate: false, push: true });
+        self.start({
+            notify: false,
+            validate: false,
+            push: true
+        });
         for (code in paramd.changed) {
             self.set(code, paramd.changed[code]);
         }
@@ -1152,7 +1152,7 @@ Model.prototype._do_validates = function(attributed) {
 };
 
 /**
- *  Notify listened of this updated attribute. 
+ *  Notify listened of this updated attribute.
  *
  *  If there is a no stack or immediate is
  *  <b>true</b>, do the notifications immediately.
@@ -1166,7 +1166,7 @@ Model.prototype._do_validates = function(attributed) {
  *
  *  @protected
  */
-Model.prototype._do_notify = function(attribute, immediate) {
+Model.prototype._do_notify = function (attribute, immediate) {
     var self = this;
 
     if ((self.stacks.length === 0) || immediate) {
@@ -1189,12 +1189,12 @@ Model.prototype._do_notify = function(attribute, immediate) {
  *  XXX - There's likely a billion things wrong with this code
  *
  *  @param attributed
- *  A dictionary of {@link Attribute}, which are all the changed 
+ *  A dictionary of {@link Attribute}, which are all the changed
  *  attributes.
  *
  *  @protected
  */
-Model.prototype._do_notifies = function(attributed) {
+Model.prototype._do_notifies = function (attributed) {
     var self = this;
     var any = false;
 
@@ -1211,7 +1211,7 @@ Model.prototype._do_notifies = function(attributed) {
                 callbacks = thing.callbacksd[null];
             }
             if (callbacks) {
-                callbacks.map(function(callback) {
+                callbacks.map(function (callback) {
                     callback(self, attribute, attribute_value);
                 });
             }
@@ -1240,23 +1240,23 @@ Model.prototype._do_notifies = function(attributed) {
  *  <ul>
  *  <li>
  *  If it starts with an ":", we convert it to
- *  <code>iot-attribute:part</code> 
+ *  <code>iot-attribute:part</code>
  *  and research
  *  for a <code>iot:purpose</code> with that value.
  *
  *  <li>
- *  If it contains a ":" (past the first character), 
+ *  If it contains a ":" (past the first character),
  *  we {@link helpers:expand expand} and research
  *  for a <code>iot:purpose</code> with that value.
  *
  *  <li>
- *  Otherwise we look for an attribute with that key. 
- *  If it's found, we return a dictionary with 
+ *  Otherwise we look for an attribute with that key.
+ *  If it's found, we return a dictionary with
  *  <code>{ attribute: attribute, thing: containing-thing }</code>
  *
  *  <li>
- *  Otherwise we look for an subthing with that key. 
- *  If it's found, we return a dictionary with 
+ *  Otherwise we look for an subthing with that key.
+ *  If it's found, we return a dictionary with
  *  <code>{ subthing: subthing, thing: containing-thing }</code>
  *  </ul>
  *
@@ -1271,7 +1271,7 @@ Model.prototype._do_notifies = function(attributed) {
  *
  *  @protected
  */
-Model.prototype._find = function(find_key) {
+Model.prototype._find = function (find_key) {
     var self = this;
     var d;
     var subthing;
@@ -1331,7 +1331,7 @@ Model.prototype._find = function(find_key) {
             for (var match_key in find_key) {
                 /*
                  *  Somewhat hacky - we always ignore '@'
-                 *  values and we ignore iot:name (because 
+                 *  values and we ignore iot:name (because
                  *  iotdb.make_attribute always adds a name)
                  */
                 if (match_key === iot_name) {
@@ -1379,7 +1379,7 @@ Model.prototype._find = function(find_key) {
 /**
  *  Return the IOTDB Thing IRI for this Thing
  */
-Model.prototype.thing_iri = function() {
+Model.prototype.thing_iri = function () {
     return require('./iotdb').iot().thing_iri(this);
 };
 
@@ -1388,14 +1388,14 @@ Model.prototype.thing_iri = function() {
  *  be loaded into the graph.
  *
  *  @param {string|Thing} self
- *  If a string, it is expected to be the 'thing_id' for 
+ *  If a string, it is expected to be the 'thing_id' for
  *  the Model.
  *
  *  @return {string|null}
  *  The IRI on IOTDB for the Place assigned to this Model. If there
  *  is no Place assigned or the Thing is not loaded, null is returned
  */
-Model.prototype.place_iri = function() {
+Model.prototype.place_iri = function () {
     var self = this;
 
     var iot = require('./iotdb').iot();
@@ -1421,14 +1421,14 @@ Model.prototype.place_iri = function() {
  *  must have been loaded into the Graph.
  *
  *  @param {string|Thing} self
- *  If a string, it is expected to be the 'thing_id' for 
+ *  If a string, it is expected to be the 'thing_id' for
  *  the Model.
  *
  *  @return {string|null}
  *  The IRI on IOTDB for the Thing's Model.
  *  If the Thing is not loaded, null is returned
  */
-Model.prototype.model_iri = function() {
+Model.prototype.model_iri = function () {
     var self = this;
 
     var iot = require('./iotdb').iot();
@@ -1450,13 +1450,13 @@ Model.prototype.model_iri = function() {
 };
 
 /**
- *  Return the IOTDB Model IRI for this Thing, based on the 
+ *  Return the IOTDB Model IRI for this Thing, based on the
  *  model_code. Does not depend on the Graph.
  *
  *  @return {string}
  *  The IRI on IOTDB for the Thing's Model.
  */
-Model.prototype.model_code_iri = function() {
+Model.prototype.model_code_iri = function () {
     var self = this;
 
     var iot = require('./iotdb').iot();
@@ -1476,7 +1476,7 @@ Model.prototype.model_code_iri = function() {
  *  Return an object to access and
  *  manipulate the Metadata.
  */
-Model.prototype.meta = function() {
+Model.prototype.meta = function () {
     var self = this;
 
     if (self.__meta_thing === undefined) {
@@ -1498,12 +1498,12 @@ Model.prototype.meta = function() {
 
 /**
  *  Add a tag to this Model. Tags are temporary
- *  labels, they are not persisted to IOTDB 
+ *  labels, they are not persisted to IOTDB
  *  (or the metadata in general).
  *
  *  @param {string} tag
  */
-Model.prototype.tag = function(tag) {
+Model.prototype.tag = function (tag) {
     var self = this;
 
     assert.ok(_.isString(tag));
@@ -1513,7 +1513,7 @@ Model.prototype.tag = function(tag) {
 
 /**
  */
-Model.prototype.reachable = function() {
+Model.prototype.reachable = function () {
     var self = this;
 
     if (!self.driver_instance) {
@@ -1526,7 +1526,7 @@ Model.prototype.reachable = function() {
 /**
  *  Return the metadata of the driver
  */
-Model.prototype.driver_meta = function() {
+Model.prototype.driver_meta = function () {
     var self = this;
 
     if (self.driver_instance) {

@@ -8,13 +8,13 @@
  *  The driver protocol
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,8 +43,8 @@ var EVENT_DISCONNECT = 'disconnect';
  *  except exist.
  *
  *  @classdesc
- *  Drivers deal with the nasty business of actually 
- *  talking to the real devices. 
+ *  Drivers deal with the nasty business of actually
+ *  talking to the real devices.
  *
  *  <p>
  *  {@link Driver Drivers} are bound to things {@link Thing Things}
@@ -54,7 +54,7 @@ var EVENT_DISCONNECT = 'disconnect';
  *
  *  @constructor
  */
-var Driver = function() {
+var Driver = function () {
     // WE REALLY NEED TO FIX UP MQTT
     events.EventEmitter.call(this);
     this.setMaxListeners(25);
@@ -66,13 +66,13 @@ util.inherits(Driver, events.EventEmitter);
  *  Every subclass must call this in their constructor
  *  function. Sorry, because Javascript!
  */
-Driver.prototype.driver_construct = function() {
+Driver.prototype.driver_construct = function () {
     var self = this;
 
     self.unique_id = id_counter++;
     self.thing = null;
     self.verbose = false;
-    self.driver = null;     // should be redefined in subclasses
+    self.driver = null; // should be redefined in subclasses
 
     self.disconnected = false;
 
@@ -116,11 +116,11 @@ Driver.prototype.driver_construct = function() {
  *  @return {dictionary}
  *  An idenitity object
  */
-Driver.prototype.identity = function(kitchen_sink) {
+Driver.prototype.identity = function (kitchen_sink) {
     return {};
 };
 
-Driver.prototype.thing_id = function() {
+Driver.prototype.thing_id = function () {
     var self = this;
     var d = self.identity();
     if (d) {
@@ -138,7 +138,7 @@ Driver.prototype.thing_id = function() {
  *  Subclasses <b>MUST</b> chain to this function using
  *  <code>driver.Driver.prototype.register.call(self, iot)</code>.
  */
-Driver.prototype.register = function(iot) {
+Driver.prototype.register = function (iot) {
     var self = this;
 
     // self.mqtt_host = self.cfg_get('mqtt_host', "XXXXXXX")
@@ -147,12 +147,12 @@ Driver.prototype.register = function(iot) {
 
 /**
  *  This is a very special function that's called usually outside
- *  of the context of this 
+ *  of the context of this
  *
  *  @param {dictionary|undefined} ad
  *  Random arguments
  */
-Driver.prototype.configure = function(ad, callback) {
+Driver.prototype.configure = function (ad, callback) {
     logger.debug({
         method: "configure",
         id: this.unique_id
@@ -165,14 +165,14 @@ Driver.prototype.configure = function(ad, callback) {
  *
  *  @param {dictionary|null} paramd
  *  @param {dictionary} paramd.initd
- *  Init data that will be used creating the thing after discover. 
+ *  Init data that will be used creating the thing after discover.
  *  Not always present. This is handy if you have to do
  *  some pre-filtering on what's created, like with MQTT
  *
  *  @param {Driver~discover_callback} discover_callback
  *  Called with the bound driver
  */
-Driver.prototype.discover = function(paramd, discover_callback) {
+Driver.prototype.discover = function (paramd, discover_callback) {
     logger.error({
         method: "discover",
         id: this.unique_id,
@@ -182,7 +182,7 @@ Driver.prototype.discover = function(paramd, discover_callback) {
 
 /**
  *  @callback Driver~discover_callback
- *  See 
+ *  See
  *  {@link Driver#discover_nearby Driver.discover_nearby} and
  *  {@link Driver#discover_nearby Driver.discover_thing}.
  *  These functions are typically invoked by
@@ -194,9 +194,9 @@ Driver.prototype.discover = function(paramd, discover_callback) {
  */
 
 /**
- *  Setup the Driver. 
- *  Usually called from 
- *  {@link IOT#discover_nearby IOT.discover_nearby} or 
+ *  Setup the Driver.
+ *  Usually called from
+ *  {@link IOT#discover_nearby IOT.discover_nearby} or
  *  {@link IOT#discover_thing IOT.discover_thing}
  *  after a driver has been found.
  *
@@ -212,15 +212,15 @@ Driver.prototype.discover = function(paramd, discover_callback) {
  *  @param {dictionary} paramd.initd
  *  Invariant data that can be passed from the Model.
  *  Take it or leave it (see {@link JSONDriver})
- *  In can also b ffilled in by 
- *  {@link Thing#setup_driver Model.setup_driver}. 
+ *  In can also b ffilled in by
+ *  {@link Thing#setup_driver Model.setup_driver}.
  *  Typically it will have instructions for setting up the driver,
  *  saying what you want monitored, what aspects of the driver
  *  you are working with and so forth
  *
  *  @return {this}
  */
-Driver.prototype.setup = function(paramd) {
+Driver.prototype.setup = function (paramd) {
     var self = this;
 
     if (paramd.thing !== undefined) {
@@ -246,7 +246,7 @@ Driver.prototype.setup = function(paramd) {
  *
  *  @return {this}
  */
-Driver.prototype.disconnect = function() {
+Driver.prototype.disconnect = function () {
     var self = this;
 
     self.disconnected = true;
@@ -254,7 +254,7 @@ Driver.prototype.disconnect = function() {
 
     if (self.thing) {
         var the_thing = self.thing;
-        process.nextTick(function() {
+        process.nextTick(function () {
             the_thing.meta_changed();
         });
     }
@@ -268,7 +268,7 @@ Driver.prototype.disconnect = function() {
  *
  *  No need to chain if you know what you are doing
  */
-Driver.prototype.shutdown = function() {
+Driver.prototype.shutdown = function () {
     this.disconnect();
 
     return 0;
@@ -292,13 +292,13 @@ Driver.prototype.shutdown = function() {
  *
  *  @param {dictionary} paramd.attributed
  *  The attributes that we modified. Typically not used in
- *  drivers, 'driverd' will have all the correct 
+ *  drivers, 'driverd' will have all the correct
  *  values.
  *
  *  @return {this}
  *  this
  */
-Driver.prototype.push = function(paramd) {
+Driver.prototype.push = function (paramd) {
     var self = this;
 
     logger.error({
@@ -318,7 +318,7 @@ Driver.prototype.push = function(paramd) {
  *
  *  @return {this}
  */
-Driver.prototype.pull = function() {
+Driver.prototype.pull = function () {
     var self = this;
 
     logger.error({
@@ -332,7 +332,7 @@ Driver.prototype.pull = function() {
 /**
  *  Can this driver be reached (as far as we know)
  */
-Driver.prototype.reachable = function() {
+Driver.prototype.reachable = function () {
     return true;
 };
 
@@ -341,7 +341,7 @@ Driver.prototype.reachable = function() {
  *
  *  @return {this}
  */
-Driver.prototype.meta = function() {
+Driver.prototype.meta = function () {
     var self = this;
 
     var metad = self.driver_meta();
@@ -378,7 +378,7 @@ Driver.prototype.meta = function() {
  *  should be used mainly be 'meta' above,
  *  which does all needed translation work
  */
-Driver.prototype.driver_meta = function() {
+Driver.prototype.driver_meta = function () {
     return {};
 };
 
@@ -386,7 +386,7 @@ Driver.prototype.driver_meta = function() {
 /**
  *  This should only be called by subclases
  */
-Driver.prototype.pulled = function(driverd) {
+Driver.prototype.pulled = function (driverd) {
     var self = this;
 
     /* metadata update */
@@ -423,7 +423,7 @@ Driver.prototype.pulled = function(driverd) {
         id: self.unique_id
     }, "pulled");
 
-    self.thing.update(paramd.thingd, { 
+    self.thing.update(paramd.thingd, {
         notify: true,
         push: false
     });
@@ -432,7 +432,7 @@ Driver.prototype.pulled = function(driverd) {
 /**
  *  MQTT built in
  */
-Driver.prototype.mqtt_subscribe = function() {
+Driver.prototype.mqtt_subscribe = function () {
     var self = this;
 
     if (!(self.mqtt_host && self.mqtt_port && self.mqtt_topic)) {
@@ -472,7 +472,7 @@ Driver.prototype.mqtt_subscribe = function() {
         thing_id: self.thing_id()
     }, "subscribed");
 
-    var on_message = function(in_topic, in_message) {
+    var on_message = function (in_topic, in_message) {
         // console.log("- Driver.mqtt_subscribe/on(message): MQTT receive:", in_topic, in_message)
         logger.info({
             method: "mqtt_subscribe",
@@ -493,7 +493,7 @@ Driver.prototype.mqtt_subscribe = function() {
     };
     mqtt_client.on('message', on_message);
 
-    self.on(EVENT_DISCONNECT, function() {
+    self.on(EVENT_DISCONNECT, function () {
         // console.log("# Driver.mqtt_subscribe/DISCONNECT", "thing_id", self.thing_id())
         mqtt_client.removeListener('message', on_message);
     });
@@ -506,7 +506,7 @@ Driver.prototype.mqtt_subscribe = function() {
  *
  *  @protected
  */
-Driver.prototype.mqtt_init = function(initd) {
+Driver.prototype.mqtt_init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -538,17 +538,17 @@ Driver.prototype.mqtt_init = function(initd) {
 /**
  *  Handle received MQTT messages. May be redefined by subclasses
  */
-Driver.prototype.on_mqtt_message = function(in_topic, in_message) {
+Driver.prototype.on_mqtt_message = function (in_topic, in_message) {
     var self = this;
 
     self.handle_mqtt_message(in_topic, in_message);
 };
 
 /**
- *  This is the standard way of handling messages, isolated so 
+ *  This is the standard way of handling messages, isolated so
  *  this code can be reused
  */
-Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
+Driver.prototype.handle_mqtt_message = function (in_topic, in_message) {
     var self = this;
 
     if (self.mqtt_json) {
@@ -567,7 +567,7 @@ Driver.prototype.handle_mqtt_message = function(in_topic, in_message) {
 /**
  *  Initialize polling
  */
-Driver.prototype.poll_init = function(initd) {
+Driver.prototype.poll_init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -581,7 +581,7 @@ Driver.prototype.poll_init = function(initd) {
 /**
  *  Reschedule polling
  */
-Driver.prototype.poll_reschedule = function() {
+Driver.prototype.poll_reschedule = function () {
     var self = this;
 
     if (!self.poll_delta) {
@@ -592,7 +592,7 @@ Driver.prototype.poll_reschedule = function() {
         clearTimeout(self.poll_timer_id);
     }
 
-    self.poll_timer_id = setInterval(function() {
+    self.poll_timer_id = setInterval(function () {
         if (self.thing) {
             self.thing.pull();
         }
@@ -602,12 +602,12 @@ Driver.prototype.poll_reschedule = function() {
 /**
  *  Helper function to report an issue
  */
-Driver.prototype.report_issue = function() {
+Driver.prototype.report_issue = function () {
     var self = this;
 
     var iot = require('./iotdb').iot();
     if (!iot) {
-		return;
+        return;
     }
 
     return iot.report_issue.apply(iot, arguments);
@@ -616,7 +616,7 @@ Driver.prototype.report_issue = function() {
 /**
  *  Helper function to gGet a value from the IOT.Keystore
  */
-Driver.prototype.cfg_get = function(key, otherwise) {
+Driver.prototype.cfg_get = function (key, otherwise) {
     var self = this;
 
     var iot = require('./iotdb').iot();
@@ -636,4 +636,3 @@ Driver.prototype.cfg_get = function(key, otherwise) {
  *  API
  */
 exports.Driver = Driver;
-
