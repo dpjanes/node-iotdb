@@ -37,7 +37,7 @@ exports.parse_link = function(link) {
         // link
         var d = _see_link(link)
         if (!d) {
-            break
+            break;
         } else {
             link = d.link
         }
@@ -49,14 +49,14 @@ exports.parse_link = function(link) {
         while (true) {
             var d = _see_semicolon(link)
             if (!d) {
-                break
+                break;
             } else {
                 link = d.link
             }
 
             var d = _see_extension(link)
             if (!d) {
-                break
+                break;
             } else {
                 link = d.link
             }
@@ -66,7 +66,7 @@ exports.parse_link = function(link) {
 
         var d = _see_comma(link)
         if (!d) {
-            break
+            break;
         } else {
             link = d.link
         }

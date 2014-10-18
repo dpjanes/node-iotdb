@@ -120,11 +120,11 @@ exports.cfg_find = function(envd, paths, name, paramd) {
                     var subpath_stbuf = node_fs.statSync(subpath)
                     if (subpath_stbuf.isFile()) {
                         if (callback(subpath, file)) {
-                            break
+                            break;
                         }
                     } else if (is_recursive && subpath_stbuf.isDirectory()) {
                         if (list_files(subpath + "//", callback)) {
-                            break
+                            break;
                         }
                     }
                 }
@@ -197,7 +197,7 @@ exports.cfg_load_json = function(filenames, callback) {
                     first_doc = doc;
                 }
                 if (r) {
-                    break
+                    break;
                 }
             } catch (x) {
                 callback({
@@ -257,7 +257,7 @@ exports.cfg_load_file = function(filenames, encoding, callback) {
                     first_doc = doc;
                 }
                 if (r) {
-                    break
+                    break;
                 }
             } catch (x) {
                 callback({

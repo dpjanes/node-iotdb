@@ -228,7 +228,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
             self.mqtt_port = mqtt_port
             self.mqtt_topic = mqtt_topic
             self.mqtt_subscribe()
-            break
+            break;
         }
     }
 };
