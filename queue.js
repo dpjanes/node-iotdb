@@ -20,6 +20,14 @@
  *  limitations under the License.
  */
 
+"use strict";
+
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'queue',
+});
+
 /**
  *  Make a FIFOQueue called 'name'.
  *
@@ -41,13 +49,13 @@
  *
  *  @constructor
  */
-FIFOQueue = function(name, paramd) {
+var FIFOQueue = function(name, paramd) {
     var self = this;
 
-    paramd = ( paramd !== undefined ) ? paramd : {}
+    paramd = ( paramd !== undefined ) ? paramd : {};
 
     self.name = ( name !== undefined ) ? name : "unnamed-queue";
-    self.qitems = []
+    self.qitems = [];
     self.qurrents = [];
     self.qn = ( paramd.qn !== undefined ) ? paramd.qn : 1;
     self.qid = 0;
@@ -96,7 +104,11 @@ FIFOQueue.prototype.add = function(qitem) {
     }
 
     if (self.qitems.length > 10) {
-        console.log("FIFOQueue(" + self.name + ").add: warning - long queue", self.qitems.length)
+        logger.warn({
+            method: "add",
+            name: self.name,
+            length: self.qitems.length
+        }, "warning - long queue");
     }
 };
 
@@ -105,7 +117,7 @@ FIFOQueue.prototype.add = function(qitem) {
  */
 FIFOQueue.prototype.pause = function() {
     var self = this;
-    self.paused = true
+    self.paused = true;
 };
 
 /**
@@ -115,8 +127,8 @@ FIFOQueue.prototype.resume = function() {
     var self = this;
 
     if (self.paused) {
-        self.paused = false
-        self.run()
+        self.paused = false;
+        self.run();
     }
 };
 
@@ -140,7 +152,10 @@ FIFOQueue.prototype.finished = function(qitem) {
     }
 
     if (!found) {
-        console.log("FIFOQueue(" + self.name + ").add: warning - WEIRD state, maybe this qitem is wrong?")
+        logger.error({
+            method: "finished",
+            name: self.name
+        }, "warning - WEIRD state, maybe this qitem is wrong?");
     }
 
     if (!self.paused) {
@@ -160,7 +175,7 @@ FIFOQueue.prototype.run = function() {
         return;
     }
 
-    if (self.qitems.length == 0) {
+    if (self.qitems.length === 0) {
         return;
     }
 
@@ -172,4 +187,4 @@ FIFOQueue.prototype.run = function() {
 };
 
 /* --- API --- */
-exports.FIFOQueue = FIFOQueue
+exports.FIFOQueue = FIFOQueue;

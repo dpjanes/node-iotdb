@@ -30,6 +30,7 @@ module.exports = function (grunt) {
                     'model.js',
                     'store.js',
                     'thing_array.js',
+                    'queue.js',
                 ]
             },
             test: {
