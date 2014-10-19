@@ -35,6 +35,7 @@ module.exports = function (grunt) {
                     'thing_array.js',
                     'drivers/*.js',
                     'stores/*.js',
+                    'libs/*.js',
                 ]
             },
             test: {
@@ -60,6 +61,7 @@ module.exports = function (grunt) {
                 '*.js',
                 'drivers/*js',
                 'stores/*.js',
+                'libs/*.js',
             ],
             options: {
                 js: {

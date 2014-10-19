@@ -13,13 +13,13 @@
  *  http://stackoverflow.com/a/9493060/96338
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@
  *  limitations under the License.
  */
 
-var Color = function(value) {
+var Color = function (value) {
     var self = this;
 
     var r = 0;
@@ -41,73 +41,92 @@ var Color = function(value) {
     if (value !== undefined) {
         self.parseColor(value);
     }
-}
+};
 
-Color.prototype.parseColor = function(value) {
+Color.prototype.parseColor = function (value) {
     var self = this;
+    var match;
 
     if (!value) {
-        console.trace()
-        return self
+        console.trace();
+        return self;
     }
 
-    var match = value.match(/^#?([0-9A-Za-z]{2})([0-9A-Za-z]{2})([0-9A-Za-z]{2})$/)
+    match = value.match(/^#?([0-9A-Za-z]{2})([0-9A-Za-z]{2})([0-9A-Za-z]{2})$/);
     if (match) {
         self.set_rgb_255(parseInt(match[1], 16), parseInt(match[2], 16), parseInt(match[3], 16));
-        return self
+        return self;
     }
 
-    var match = value.match(/^hsl\(([.\d]+),([.\d]+),([.\d]+)\);*$/)
+    match = value.match(/^hsl\(([.\d]+),([.\d]+),([.\d]+)\);*$/);
     if (match) {
         self.set_hsl(parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3]));
-        return self
+        return self;
     }
 
-    var match = value.match(/^rgb\(([\d]+),([\d]+),([\d]+)\);*$/)
+    match = value.match(/^rgb\(([\d]+),([\d]+),([\d]+)\);*$/);
     if (match) {
         self.set_rgb_255(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-        return self
+        return self;
     }
 
-    return self
-}
+    return self;
+};
 
-Color.prototype.set_rgb_1 = function(r, g, b) {
+Color.prototype.set_rgb_1 = function (r, g, b) {
     var self = this;
 
-    if (r !== undefined) self.r = r;
-    if (g !== undefined) self.g = g;
-    if (b !== undefined) self.b = b;
+    if (r !== undefined) {
+        self.r = r;
+    }
+    if (g !== undefined) {
+        self.g = g;
+    }
+    if (b !== undefined) {
+        self.b = b;
+    }
     self._rgb_to_hsl();
 
-    return self
-}
+    return self;
+};
 
-Color.prototype.set_rgb_255 = function(r, g, b) {
+Color.prototype.set_rgb_255 = function (r, g, b) {
     var self = this;
 
 
-    if (r !== undefined) self.r = r / 255.0;
-    if (g !== undefined) self.g = g / 255.0;
-    if (b !== undefined) self.b = b / 255.0;
+    if (r !== undefined) {
+        self.r = r / 255.0;
+    }
+    if (g !== undefined) {
+        self.g = g / 255.0;
+    }
+    if (b !== undefined) {
+        self.b = b / 255.0;
+    }
 
     self._rgb_to_hsl();
 
-    return self
-}
+    return self;
+};
 
-Color.prototype.set_hsl = function(h, s, l) {
+Color.prototype.set_hsl = function (h, s, l) {
     var self = this;
 
-    if (h !== undefined) self.h = h;
-    if (s !== undefined) self.s = s;
-    if (l !== undefined) self.l = l;
+    if (h !== undefined) {
+        self.h = h;
+    }
+    if (s !== undefined) {
+        self.s = s;
+    }
+    if (l !== undefined) {
+        self.l = l;
+    }
     self._hsl_to_rgb();
 
-    return self
-}
+    return self;
+};
 
-Color.prototype.get_hex = function() {
+Color.prototype.get_hex = function () {
     var self = this;
 
     var r = Math.floor(self.r * 255);
@@ -115,77 +134,101 @@ Color.prototype.get_hex = function() {
     var b = Math.floor(self.b * 255);
 
     var r$ = r.toString(16);
-    if (r$.length == 1) r$ = "0" + r$;
+    if (r$.length === 1) {
+        r$ = "0" + r$;
+    }
     var g$ = g.toString(16);
-    if (g$.length == 1) g$ = "0" + g$;
+    if (g$.length === 1) {
+        g$ = "0" + g$;
+    }
     var b$ = b.toString(16);
-    if (b$.length == 1) b$ = "0" + b$;
+    if (b$.length === 1) {
+        b$ = "0" + b$;
+    }
 
     return "#" + r$ + g$ + b$;
-}
+};
 
-Color.prototype.get_rgb = function() {
+Color.prototype.get_rgb = function () {
     var self = this;
 
     return "rgb(" + self.r + "," + self.g + "," + self.b + ")";
-}
+};
 
-Color.prototype.get_hsl = function() {
+Color.prototype.get_hsl = function () {
     var self = this;
 
     return "hsl(" + self.h + "," + self.s + "," + self.l + ")";
-}
+};
 
-Color.prototype._hsl_to_rgb = function() {
+var _hue2rgb = function (p, q, t) {
+    if (t < 0) {
+        t += 1;
+    }
+    if (t > 1) {
+        t -= 1;
+    }
+    if (t < 1 / 6) {
+        return p + (q - p) * 6 * t;
+    }
+    if (t < 1 / 2) {
+        return q;
+    }
+    if (t < 2 / 3) {
+        return p + (q - p) * (2 / 3 - t) * 6;
+    }
+    return p;
+};
+
+Color.prototype._hsl_to_rgb = function () {
     var self = this;
 
-    var h = self.h
-    var s = self.s
-    var l = self.l
+    var h = self.h;
+    var s = self.s;
+    var l = self.l;
     var r, g, b;
 
-    if(s == 0){
+    if (s === 0) {
         r = g = b = l; // achromatic
-    }else{
-        function hue2rgb(p, q, t){
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        }
+    } else {
 
         var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
         var p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1/3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
+        r = _hue2rgb(p, q, h + 1 / 3);
+        g = _hue2rgb(p, q, h);
+        b = _hue2rgb(p, q, h - 1 / 3);
     }
 
     self.r = r;
     self.g = g;
     self.b = b;
-}
+};
 
-Color.prototype._rgb_to_hsl = function(){
+Color.prototype._rgb_to_hsl = function () {
     var self = this;
 
     var r = self.r;
     var g = self.g;
     var b = self.b;
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
     var h, s, l = (max + min) / 2;
 
-    if(max == min){
+    if (max === min) {
         h = s = 0; // achromatic
-    }else{
+    } else {
         var d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch(max){
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
+        switch (max) {
+        case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+        case g:
+            h = (b - r) / d + 2;
+            break;
+        case b:
+            h = (r - g) / d + 4;
+            break;
         }
         h /= 6;
     }
@@ -193,7 +236,7 @@ Color.prototype._rgb_to_hsl = function(){
     self.h = h;
     self.s = s;
     self.l = l;
-}
+};
 
 /*
 var color = new Color("#FF0000");
@@ -220,4 +263,4 @@ var rgb_1 = hsl_to_rgb(hsl)
 console.log(color, rgb_1, hsl)
 */
 
-exports.Color = Color
+exports.Color = Color;
