@@ -21,7 +21,18 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: [
-                    '*.js',
+                    'attribute.js',
+                    'cfg.js',
+                    'driver.js',
+                    'generic.js',
+                    'graph.js',
+                    'iotdb.js',
+                    'meta.js',
+                    'model.js',
+                    'model_maker.js',
+                    'queue.js',
+                    'store.js',
+                    'thing_array.js',
                     'drivers/*.js',
                 ]
             },

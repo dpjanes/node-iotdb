@@ -30,11 +30,11 @@ var libs = require("./libs/libs");
 
 /* -- */
 var FakeAttribute = function (key) {
-    this.key = key
+    this.key = key;
 };
 
 FakeAttribute.prototype.get_code = function () {
-    return this.key
+    return this.key;
 };
 
 FakeAttribute.prototype.validate = function () {};
@@ -53,7 +53,7 @@ var VERBOSE = true;
  *  a new ModelMaker instance
  */
 exports.make_generic = function () {
-    return (new model_maker.ModelMaker()).make_generic()
+    return (new model_maker.ModelMaker()).make_generic();
 };
 
 /**
@@ -65,7 +65,7 @@ exports.make_generic = function () {
  */
 var Generic = function () {};
 
-Generic.prototype = new model.Model
+Generic.prototype = new model.Model();
 
 /**
  *  Get a value from the state.
@@ -82,23 +82,23 @@ Generic.prototype.get = function (find_key) {
     /*
      *  Find the attribute to actually update
      */
-    var d = self.stated
-    var subkeys = find_key.split('/')
-    var lastkey = subkeys[subkeys.length - 1]
+    var d = self.stated;
+    var subkeys = find_key.split('/');
+    var lastkey = subkeys[subkeys.length - 1];
 
     for (var ski = 0; ski < subkeys.length - 1; ski++) {
         var subkey = subkeys[ski];
-        var subd = d[subkey]
+        var subd = d[subkey];
         if (subd === undefined) {
-            return undefined
+            return undefined;
         } else if (_.isObject(subd)) {
-            d = subd
+            d = subd;
         } else {
-            return undefined
+            return undefined;
         }
     }
 
-    return d[lastkey]
+    return d[lastkey];
 };
 
 /**
@@ -126,39 +126,39 @@ Generic.prototype.set = function (find_key, new_value) {
     /*
      *  Find the attribute to actually update
      */
-    var d = self.stated
-    var subkeys = find_key.split('/')
-    var lastkey = subkeys[subkeys.length - 1]
+    var d = self.stated;
+    var subkeys = find_key.split('/');
+    var lastkey = subkeys[subkeys.length - 1];
 
     for (var ski = 0; ski < subkeys.length - 1; ski++) {
         var subkey = subkeys[ski];
-        var subd = d[subkey]
+        var subd = d[subkey];
         if (subd === undefined) {
-            subd = {}
-            d[subkey] = subd
+            subd = {};
+            d[subkey] = subd;
         } else if (_.isObject(subd)) {} else {
-            console.log("# Generic.set: key incompatible with current state", find_key)
+            console.log("# Generic.set: key incompatible with current state", find_key);
             return;
         }
 
-        d = subd
+        d = subd;
     }
 
     /*
      *  Update it if it's changed
      */
-    if (d[lastkey] == new_value) {
+    if (d[lastkey] === new_value) {
         return;
     }
 
-    d[lastkey] = new_value
+    d[lastkey] = new_value;
 
     /*
      *  Track changes
      */
-    var attribute = new FakeAttribute(find_key)
+    var attribute = new FakeAttribute(find_key);
 
-    self._do_validate(attribute, false)
+    self._do_validate(attribute, false);
     self._do_notify(attribute, false);
     self._do_push(attribute, false);
 
@@ -175,9 +175,9 @@ Generic.prototype.update = function (updated, paramd) {
 
     paramd = _.defaults(paramd, {
         notify: true
-    })
+    });
 
-    self.start(paramd)
+    self.start(paramd);
     for (var key in updated) {
         self.set(key, updated[key]);
     }
@@ -194,14 +194,14 @@ Generic.prototype.start = function (paramd) {
         notify: false,
         validate: true,
         push: true
-    })
+    });
 
     self.stacks.push({
         paramd: paramd,
         attribute_notifyd: {},
         attribute_validated: {},
         attribute_pushd: {},
-    })
+    });
 
     return self;
 };
@@ -251,13 +251,13 @@ Generic.prototype.on = function (find_key, callback) {
 
     var callbacks = self.callbacksd[find_key];
     if (callbacks === undefined) {
-        callbacks = []
-        self.callbacksd[find_key] = callbacks
+        callbacks = [];
+        self.callbacksd[find_key] = callbacks;
     }
 
     callbacks.push(callback);
 
-    return self
+    return self;
 };
 
 /**
@@ -273,10 +273,10 @@ Generic.prototype.on_change = function (callback) {
     var self = this;
 
     require('./iotdb').iot().on("thing_changed", function (thing) {
-        if (thing == self) {
-            callback(self, [])
+        if (thing === self) {
+            callback(self, []);
         }
-    })
+    });
 
     return self;
 };
@@ -299,7 +299,7 @@ Generic.prototype._do_validates = function (attributed) {
             thingd: _.deepCopy(self.stated), // the current state of the model
             changed: {}, // update these values (passed back)
             libs: libs.libs
-        }
+        };
         self.__validator(paramd);
 
         self.start({
@@ -316,10 +316,10 @@ Generic.prototype._do_validates = function (attributed) {
 
 Generic.prototype._do_notifies = function (attributed) {
     var self = this;
-    var any = false
+    var any = false;
 
     for (var attribute_key in attributed) {
-        any = true
+        any = true;
 
         var attribute = attributed[attribute_key];
         var attribute_value = self.get(attribute_key);
