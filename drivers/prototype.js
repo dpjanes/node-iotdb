@@ -46,12 +46,12 @@ var ProtoDriver = function (paramd) {
         verbose: false,
         driver: "iot-driver:proto",
         initd: {}
-    })
+    });
 
-    self.verbose = paramd.verbose
-    self.driver = _.expand(paramd.driver)
+    self.verbose = paramd.verbose;
+    self.driver = _.expand(paramd.driver);
 
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
     return self;
 };
@@ -72,7 +72,7 @@ ProtoDriver.prototype._init = function (initd) {
         return;
     }
     if (initd.iri) {
-        self.iri = initd.iri
+        self.iri = initd.iri;
     }
 };
 
@@ -83,8 +83,8 @@ ProtoDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
-        var identityd = {}
-        identityd["driver"] = self.driver
+        var identityd = {};
+        identityd["driver"] = self.driver;
 
         _.thing_id(identityd);
 
@@ -103,7 +103,7 @@ ProtoDriver.prototype.setup = function (paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
     return self;
 };
@@ -154,4 +154,4 @@ ProtoDriver.prototype.pull = function () {
 /*
  *  API
  */
-exports.Driver = ProtoDriver
+exports.Driver = ProtoDriver;

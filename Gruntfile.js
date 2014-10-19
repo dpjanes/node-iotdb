@@ -21,22 +21,8 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: [
-                    'attribute.js',
-                    'cfg.js',
-                    'driver.js',
-                    'graph.js',
-                    'iotdb.js',
-                    'meta.js',
-                    'model.js',
-                    'model_maker.js',
-                    'queue.js',
-                    'store.js',
-                    'thing_array.js',
-                    'drivers/ble.js',
-                    'drivers/hue.js',
-                    'drivers/upnp.js',
-                    'drivers/twitter.js',
-                    'drivers/feed.js',
+                    '*.js',
+                    'drivers/*.js',
                 ]
             },
             test: {

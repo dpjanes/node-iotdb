@@ -51,14 +51,14 @@ var RESTDriver = function (paramd) {
         verbose: false,
         driver: "iot-driver:rest",
         initd: {}
-    })
+    });
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver)
-    self.iri = null
-    self.content_type = "application/json"
+    self.driver = _.expand(paramd.driver);
+    self.iri = null;
+    self.content_type = "application/json";
 
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
     return self;
 };
@@ -79,14 +79,14 @@ RESTDriver.prototype._init = function (initd) {
         return;
     }
     if (initd.iri) {
-        self.iri = initd.iri
+        self.iri = initd.iri;
     }
     if (initd.content_type) {
-        self.content_type = initd.content_type
+        self.content_type = initd.content_type;
     }
 
-    self.poll_init(initd)
-    self.mqtt_init(initd)
+    self.poll_init(initd);
+    self.mqtt_init(initd);
 };
 
 /**
@@ -96,12 +96,12 @@ RESTDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
-        var identityd = {}
-        identityd["driver"] = self.driver
+        var identityd = {};
+        identityd["driver"] = self.driver;
 
         // once the driver is 'setup' this will have a value
         if (self.iri) {
-            identityd["iri"] = self.iri
+            identityd["iri"] = self.iri;
         }
 
         _.thing_id(identityd);
@@ -124,10 +124,10 @@ RESTDriver.prototype.setup = function (paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
     if (self.mqtt_topic) {
-        self.mqtt_subscribe()
+        self.mqtt_subscribe();
     }
 
     return self;
@@ -185,7 +185,7 @@ RESTDriver.prototype.push = function (paramd) {
                     console.log("- RESTDriver.push/.end.body", result.body);
                 });
         }
-    }
+    };
     queue.add(qitem);
 
     return self;
@@ -197,38 +197,38 @@ RESTDriver.prototype._parse_headers = function (headers) {
     if (self.__parsed_headers) {
         return;
     } else {
-        self.__parsed_headers = true
+        self.__parsed_headers = true;
     }
 
     /*
      *  rel="mqtt"
      */
     if (headers.link) {
-        var linkdd = iotdb.libs.http.parse_link(headers.link)
+        var linkdd = iotdb.libs.http.parse_link(headers.link);
         for (var mqtt_url in linkdd) {
-            var linkd = linkdd[mqtt_url]
+            var linkd = linkdd[mqtt_url];
             if (linkd.rel !== "mqtt") {
                 continue;
             }
 
-            var mqtt_host = null
-            var mqtt_port = 1833
-            var mqtt_topic = ""
+            var mqtt_host = null;
+            var mqtt_port = 1833;
+            var mqtt_topic = "";
 
-            var mqtt_urlp = node_url.parse(mqtt_url)
+            var mqtt_urlp = node_url.parse(mqtt_url);
             if (mqtt_urlp.protocol !== "tcp:") {
                 continue;
             }
 
-            mqtt_port = parseInt(mqtt_urlp.port)
-            mqtt_host = mqtt_urlp.hostname
+            mqtt_port = parseInt(mqtt_urlp.port);
+            mqtt_host = mqtt_urlp.hostname;
 
             if (linkd.topic) {
-                mqtt_topic = linkd.topic
+                mqtt_topic = linkd.topic;
             } else {
-                var irip = node_url.parse(self.iri)
+                var irip = node_url.parse(self.iri);
                 if (irip.path) {
-                    mqtt_topic = irip.path.replace(/^\//, '')
+                    mqtt_topic = irip.path.replace(/^\//, '');
                 }
             }
 
@@ -236,12 +236,12 @@ RESTDriver.prototype._parse_headers = function (headers) {
                 "\n  mqtt_host", mqtt_host,
                 "\n  mqtt_port", mqtt_port,
                 "\n  mqtt_topic", mqtt_topic
-            )
+            );
 
-            self.mqtt_host = mqtt_host
-            self.mqtt_port = mqtt_port
-            self.mqtt_topic = mqtt_topic
-            self.mqtt_subscribe()
+            self.mqtt_host = mqtt_host;
+            self.mqtt_port = mqtt_port;
+            self.mqtt_topic = mqtt_topic;
+            self.mqtt_subscribe();
             break;
         }
     }
@@ -279,28 +279,28 @@ RESTDriver.prototype.pull = function () {
                         return;
                     }
 
-                    self._parse_headers(result.headers)
+                    self._parse_headers(result.headers);
 
                     if (self.content_type === "application/json") {
-                        self.pulled(result.body)
+                        self.pulled(result.body);
                     } else if (self.content_type.match(/application\/[^+]*[+]json/)) {
-                        self.pulled(result.body)
+                        self.pulled(result.body);
                     } else if ((self.content_type === "application/xml") || (self.content_type === "text/xml")) {
                         xml2js.parseString(result.body, function (err, result) {
-                            self.pulled(result)
+                            self.pulled(result);
                         });
                     } else {
-                        console.log("# RESTDriver.pull/.end - unknown content_type", self.content_type)
+                        console.log("# RESTDriver.pull/.end - unknown content_type", self.content_type);
                         return;
                     }
 
                     /*
                      *  Schedule the next data pull
                      */
-                    self.poll_reschedule()
+                    self.poll_reschedule();
                 });
         }
-    }
+    };
     queue.add(qitem);
 
     return self;
@@ -310,11 +310,11 @@ RESTDriver.prototype.pull = function () {
  *  See {@link Driver#handle_mqtt_message Driver.handle_mqtt_message}
  */
 RESTDriver.prototype.handle_mqtt_message = function (in_topic, in_message) {
-    console.log("- RESTDriver.handle_mqtt_message: received update, pulling")
-    this.pull()
+    console.log("- RESTDriver.handle_mqtt_message: received update, pulling");
+    this.pull();
 };
 
 /*
  *  API
  */
-exports.Driver = RESTDriver
+exports.Driver = RESTDriver;

@@ -87,4 +87,4 @@ NullDriver.prototype.pull = function () {
 /*
  *  API
  */
-exports.Driver = NullDriver
+exports.Driver = NullDriver;

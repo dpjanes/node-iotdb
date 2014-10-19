@@ -50,21 +50,21 @@ var SmartThingsDriver = function (paramd) {
         driver: "iot-driver:smartthings",
         initd: {},
         metad: {}
-    })
+    });
 
-    self.verbose = paramd.verbose
-    self.driver = _.expand(paramd.driver)
+    self.verbose = paramd.verbose;
+    self.driver = _.expand(paramd.driver);
 
     // smartthings values, setup in setup
     self.id = null;
     self.type = null;
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
-    self.metad = {}
+    self.metad = {};
     if (paramd && paramd.metad) {
-        self.metad = _.extend(paramd.metad)
+        self.metad = _.extend(paramd.metad);
     }
-    self.metad["schema:manufacturer"] = "http://www.smartthings.com/"
+    self.metad["schema:manufacturer"] = "http://www.smartthings.com/";
 
     return self;
 };
@@ -85,13 +85,13 @@ SmartThingsDriver.prototype._init = function (initd) {
         return;
     }
     if (initd.type) {
-        self.type = initd.type
+        self.type = initd.type;
     }
     if (initd.id) {
-        self.id = initd.id
+        self.id = initd.id;
     }
 
-    self.mqtt_init(initd)
+    self.mqtt_init(initd);
 };
 
 /**
@@ -103,25 +103,25 @@ SmartThingsDriver.prototype.register = function (iot) {
     driver.Driver.prototype.register.call(self, iot);
 
     if (st === null) {
-        st = new SmartThings()
+        st = new SmartThings();
 
-        var oauthd = iot.cfg_get_oauthd("https://graph.api.smartthings.com/", null)
+        var oauthd = iot.cfg_get_oauthd("https://graph.api.smartthings.com/", null);
         if (oauthd === null) {
-            console.log("############################## ")
-            console.log("# SmartThingsDriver.register: SmartThings not configured")
-            console.log("# (instructions coming)")
-            console.log("############################## ")
+            console.log("############################## ");
+            console.log("# SmartThingsDriver.register: SmartThings not configured");
+            console.log("# (instructions coming)");
+            console.log("############################## ");
 
             self.report_issue({
                 section: "drivers",
                 name: "smartthings",
                 message: "not configured (instructions coming)"
-            })
+            });
             return;
         }
 
-        st.load_settings(oauthd)
-        st.request_endpoint()
+        st.load_settings(oauthd);
+        st.request_endpoint();
     }
 };
 
@@ -132,13 +132,13 @@ SmartThingsDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
-        var identityd = {}
-        identityd["driver"] = self.driver
+        var identityd = {};
+        identityd["driver"] = self.driver;
         if (self.id) {
-            identityd["id"] = self.id
+            identityd["id"] = self.id;
         }
         if (self.type) {
-            identityd["type"] = self.type
+            identityd["type"] = self.type;
         }
 
         _.thing_id(identityd);
@@ -149,7 +149,7 @@ SmartThingsDriver.prototype.identity = function (kitchen_sink) {
     return self.__identityd;
 };
 
-var __message_no_username = false
+var __message_no_username = false;
 
 /**
  *  See {@link Driver#setup Driver.setup}
@@ -160,33 +160,32 @@ SmartThingsDriver.prototype.setup = function (paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-
     var iot = require('../iotdb').iot();
     if (!iot.username || (iot.username === "nobody")) {
         if (!__message_no_username) {
-            __message_no_username = true
+            __message_no_username = true;
 
-            console.log("############################## ")
-            console.log("# SmartThings.setup: iot.username is not assigned")
-            console.log("# - cannot use SmartThings with MQTT until this is done")
-            console.log("# - updates will not be received!")
-            console.log("# - run this command")
-            console.log("#")
-            console.log("#   iotdb-control iotdb-oauth")
-            console.log("#")
-            console.log("############################## ")
+            console.log("############################## ");
+            console.log("# SmartThings.setup: iot.username is not assigned");
+            console.log("# - cannot use SmartThings with MQTT until this is done");
+            console.log("# - updates will not be received!");
+            console.log("# - run this command");
+            console.log("#");
+            console.log("#   iotdb-control iotdb-oauth");
+            console.log("#");
+            console.log("############################## ");
         }
 
         return;
     }
 
     if (paramd.initd) {
-        self._init(paramd.initd)
+        self._init(paramd.initd);
     }
 
     if (self.type && self.id) {
         self.mqtt_topic = "u/" + iot.username + "/st/" + self.type + "/" + self.id;
-        self.mqtt_subscribe()
+        self.mqtt_subscribe();
     }
 
     return self;
@@ -203,9 +202,9 @@ SmartThingsDriver.prototype.handle_mqtt_message = function (in_topic, in_message
     }
 
     try {
-        var in_messaged = JSON.parse(in_message)
-        delete in_messaged['timestamp']
-        self.pulled(in_messaged)
+        var in_messaged = JSON.parse(in_message);
+        delete in_messaged['timestamp'];
+        self.pulled(in_messaged);
     } catch (x) {
         // console.log("# SmartThingsDriver.handle_mqtt_message: MQTT receive: exception ignored", x, "\n ", x.stack)
         logger.error(x, {
@@ -241,18 +240,18 @@ SmartThingsDriver.prototype.discover = function (paramd, discover_callback) {
                     "iot:name": device.label,
                     "iot:dsid": _.expand("iot-driver:smartthings/" + device.id)
                 }
-            })
+            });
 
-            discover_callback(driver)
+            discover_callback(driver);
         }
-    })
+    });
 
     if (!st.endpointd.url) {
         st.on("endpoint", function () {
-            self._request_all_devices()
-        })
+            self._request_all_devices();
+        });
     } else {
-        self._request_all_devices()
+        self._request_all_devices();
     }
 };
 
@@ -264,11 +263,11 @@ SmartThingsDriver.prototype._request_all_devices = function () {
         "temperature",
         "threeAxis",
         "motion"
-    ]
+    ];
 
     for (var dti in dtypes) {
-        var dtype = dtypes[dti]
-        st.request_devices(dtype)
+        var dtype = dtypes[dti];
+        st.request_devices(dtype);
     }
 };
 
@@ -327,4 +326,4 @@ SmartThingsDriver.prototype.driver_meta = function () {
 /*
  *  API
  */
-exports.Driver = SmartThingsDriver
+exports.Driver = SmartThingsDriver;
