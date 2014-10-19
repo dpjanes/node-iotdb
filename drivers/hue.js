@@ -277,9 +277,10 @@ HueDriver.prototype._service_by_urn = function(service_urn) {
  */
 HueDriver.prototype.identity = function(kitchen_sink) {
     var self = this;
+    var identityd;
 
     if (self.__identityd === undefined) {
-        var identityd = {};
+        identityd = {};
         identityd["driver"] = self.driver;
 
         if (self.upnp_device) {
@@ -294,7 +295,7 @@ HueDriver.prototype.identity = function(kitchen_sink) {
     }
 
     if (kitchen_sink && self.upnp_device) {
-        var identityd = _.deepCopy(self.__identityd);
+        identityd = _.deepCopy(self.__identityd);
         var keys = _.keys(self.upnp_device);
         for (var kx in keys) {
             var key = keys[kx];

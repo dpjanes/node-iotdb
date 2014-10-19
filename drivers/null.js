@@ -46,7 +46,7 @@ var NullDriver = function(verbose) {
     return self;
 };
 
-NullDriver.prototype = new driver.Driver;
+NullDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 

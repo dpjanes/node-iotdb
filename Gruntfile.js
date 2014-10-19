@@ -34,6 +34,7 @@ module.exports = function (grunt) {
                     'thing_array.js',
                     'drivers/ble.js',
                     'drivers/hue.js',
+                    'drivers/upnp.js',
                 ]
             },
             test: {

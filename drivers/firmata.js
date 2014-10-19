@@ -130,7 +130,7 @@ var FirmataDriver = function(paramd) {
     return self;
 };
 
-FirmataDriver.prototype = new driver.Driver;
+FirmataDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
@@ -181,22 +181,22 @@ FirmataDriver.prototype._setup_code = function(code, code_value, initd) {
     for (var pi in parts) {
         var part = parts[pi]
         var kv = part.split("=")
-        if (kv.length == 2) {
+        if (kv.length === 2) {
             var key = kv[0]
             var value = kv[1]
 
-            if (key == "mode") {
+            if (key === "mode") {
                 pind.mode = value
-                if (pind.mode.indexOf("sysex-") == 0) {
+                if (pind.mode.indexOf("sysex-") === 0) {
                     if (pind.sysex === null) {
                         pind.sysex = 0
                     }
                 }
-            } else if (key == "pin") {
+            } else if (key === "pin") {
                 pind.pin = value
-            } else if (key == "extension") {
+            } else if (key === "extension") {
                 pind.extension = value
-            } else if (key == "sysex") {
+            } else if (key === "sysex") {
                 pind.sysex = value
             } else {
                 console.log("# FirmataDriver._setup_code: unknown key",
@@ -277,29 +277,29 @@ FirmataDriver.prototype.identity = function(kitchen_sink) {
 FirmataDriver.prototype._setup_pind = function(pind) {
     var self = this;
 
-    if ((pind.mode == "output") || (pind.mode == "digital-output")) {
+    if ((pind.mode === "output") || (pind.mode === "digital-output")) {
         self._setup_digital_output(pind)
-    } else if ((pind.mode == "pwm") || (pind.mode == "analog-output")) {
+    } else if ((pind.mode === "pwm") || (pind.mode === "analog-output")) {
         self._setup_analog_output(pind)
-    } else if ((pind.mode == "input") || (pind.mode == "digital-input")) {
+    } else if ((pind.mode === "input") || (pind.mode === "digital-input")) {
         self._setup_digital_input(pind)
-    } else if ((pind.mode == "analog") || (pind.mode == "analog-input")) {
+    } else if ((pind.mode === "analog") || (pind.mode === "analog-input")) {
         self._setup_analog_input(pind)
-    } else if (pind.mode == "sysex-input-float") {
+    } else if (pind.mode === "sysex-input-float") {
         self._setup_sysex_input_float(pind)
-    } else if (pind.mode == "sysex-input-int8") {
+    } else if (pind.mode === "sysex-input-int8") {
         self._setup_sysex_input_int8(pind)
-    } else if (pind.mode == "sysex-input-int16") {
+    } else if (pind.mode === "sysex-input-int16") {
         self._setup_sysex_input_int16(pind)
-    } else if (pind.mode == "sysex-input-int32") {
+    } else if (pind.mode === "sysex-input-int32") {
         self._setup_sysex_input_int32(pind)
-    } else if (pind.mode == "sysex-output-float") {
+    } else if (pind.mode === "sysex-output-float") {
         self._setup_output_float(pind)
-    } else if (pind.mode == "sysex-output-int8") {
+    } else if (pind.mode === "sysex-output-int8") {
         self._setup_sysex_output_int8(pind)
-    } else if (pind.mode == "sysex-output-int16") {
+    } else if (pind.mode === "sysex-output-int16") {
         self._setup_sysex_output_int16(pind)
-    } else if (pind.mode == "sysex-output-int32") {
+    } else if (pind.mode === "sysex-output-int32") {
         self._setup_sysex_output_int32(pind)
     } else {
         console.log("# FirmataDriver.push: programming error", pind)
@@ -314,7 +314,7 @@ FirmataDriver.prototype._setup_digital_output = function(pind) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
             var bpd = self.board.pins[pind.pin];
-            if (bpd.supportedModes.indexOf(self.board.MODES.OUTPUT) == -1) {
+            if (bpd.supportedModes.indexOf(self.board.MODES.OUTPUT) === -1) {
                 throw new Error("invalid digital-output pin (mode not supported)")
             }
 
@@ -333,7 +333,7 @@ FirmataDriver.prototype._setup_digital_input = function(pind) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
             var bpd = self.board.pins[pind.pin];
-            if (bpd.supportedModes.indexOf(self.board.MODES.INPUT) == -1) {
+            if (bpd.supportedModes.indexOf(self.board.MODES.INPUT) === -1) {
                 throw new Error("invalid digital-input pin (mode not supported)")
             }
 
@@ -358,7 +358,7 @@ FirmataDriver.prototype._setup_analog_output = function(pind) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
             var bpd = self.board.pins[pind.pin];
-            if (bpd.supportedModes.indexOf(self.board.MODES.PWM) == -1) {
+            if (bpd.supportedModes.indexOf(self.board.MODES.PWM) === -1) {
                 throw new Error("invalid analog-output pin (mode not supported)")
             }
 
@@ -378,7 +378,7 @@ FirmataDriver.prototype._setup_analog_input = function(pind) {
             }
 
             var bpd = self.board.pins[self.board.analogPins[pind.pin]];
-            if (bpd.supportedModes.indexOf(self.board.MODES.ANALOG) == -1) {
+            if (bpd.supportedModes.indexOf(self.board.MODES.ANALOG) === -1) {
                 throw new Error("invalid analog-input pin (mode not supported)")
             }
 
@@ -675,14 +675,14 @@ FirmataDriver.prototype.push = function(paramd) {
             // "\n  attribute", attribute
         )
 
-        if ((pind.mode == "output") || (pind.mode == "digital-output")) {
+        if ((pind.mode === "output") || (pind.mode === "digital-output")) {
             self.queue.add({
                 run: function(queue, qitem) {
                     self.board.digitalWrite(pind.pin, value ? self.board.HIGH : self.board.LOW);
                     queue.finished(qitem);
                 }
             })
-        } else if ((pind.mode == "pwm") || (pind.mode == "analog-output")) {
+        } else if ((pind.mode === "pwm") || (pind.mode === "analog-output")) {
             self.queue.add({
                 run: function(queue, qitem) {
                     value = Math.min(Math.max(0, value), 1)
@@ -692,7 +692,7 @@ FirmataDriver.prototype.push = function(paramd) {
                     queue.finished(qitem);
                 }
             })
-        } else if (pind.mode == "sysex-output-int8") {
+        } else if (pind.mode === "sysex-output-int8") {
             self.queue.add({
                 run: function(queue, qitem) {
                     var outb = new Buffer([

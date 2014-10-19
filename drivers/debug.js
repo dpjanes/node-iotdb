@@ -46,7 +46,7 @@ var DebugDriver = function(identityd) {
     return self;
 };
 
-DebugDriver.prototype = new driver.Driver;
+DebugDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 

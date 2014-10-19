@@ -104,7 +104,7 @@ var TwitterDriver = function(paramd) {
     return self;
 };
 
-TwitterDriver.prototype = new driver.Driver;
+TwitterDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
@@ -117,7 +117,7 @@ TwitterDriver.prototype.register = function(iot) {
     driver.Driver.prototype.register.call(self, iot);
 
     twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com", null)
-    if (twitter_oauthd == null) {
+    if (twitter_oauthd === null) {
         console.log("############################## ")
         console.log("# TwitterDriver.register: no OAuth information found for Twitter")
         console.log("# - This means we cannot access twitter until this is set up")

@@ -65,7 +65,7 @@ var FeedDriver = function(paramd) {
     return self;
 };
 
-FeedDriver.prototype = new driver.Driver;
+FeedDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 

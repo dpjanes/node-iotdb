@@ -81,7 +81,7 @@ var TCPConnectedDriver = function(paramd) {
     return self;
 };
 
-TCPConnectedDriver.prototype = new driver.Driver;
+TCPConnectedDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 var _cp = undefined;
@@ -173,7 +173,7 @@ TCPConnectedDriver.prototype.discover = function(paramd, discover_callback) {
             /*
             tcp.GetRoomStateByName(room.name, function(error,state,level){
                 console.log("State: " + state + " at Level: " + level);
-                if(state == 0){
+                if(state === 0){
                     tcp.TurnOnRoomByName(room);
                 }
             });

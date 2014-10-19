@@ -36,8 +36,8 @@ var logger = bunyan.createLogger({
 var u = require("./libs/upnp-controlpoint");
 var UpnpControlPoint = u.UpnpControlPoint;
 
-var DELTA_SCRUB = 60 * 1000
-var DELTA_SEARCH = 20 * 1000
+var DELTA_SCRUB = 60 * 1000;
+var DELTA_SEARCH = 20 * 1000;
 
 /**
  *  Typically this will be created by one of
@@ -47,37 +47,37 @@ var UPnPDriver = function(upnp_device) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
-    self.driver = _.expand("iot-driver:upnp")
+    self.driver = _.expand("iot-driver:upnp");
 
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
         self.upnp_device.on("device-lost", function() {
-            console.log("- UPnPDriver", "device-lost message received: will forget and try to rediscover")
-            self._forget_device()
-        })
+            console.log("- UPnPDriver", "device-lost message received: will forget and try to rediscover");
+            self._forget_device();
+        });
     }
 
     return self;
 };
 
-UPnPDriver.prototype = new driver.Driver;
+UPnPDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
-var _cp = undefined;
+var _cp;
 
 UPnPDriver.cp = function() {
     if (_cp === undefined) {
-        console.log("- UPnpDriver.cp", "made UpnpControlPoint")
+        console.log("- UPnpDriver.cp", "made UpnpControlPoint");
         _cp = new UpnpControlPoint();
 
         // we periodically kick off a new search to find devices that have come online
         setInterval(function() {
-            _cp.search()
-            _cp.scrub(DELTA_SCRUB)
-        }, DELTA_SEARCH)
+            _cp.search();
+            _cp.scrub(DELTA_SCRUB);
+        }, DELTA_SEARCH);
     }
 
-    return _cp
+    return _cp;
 };
 
 /**
@@ -87,10 +87,10 @@ UPnPDriver.cp = function() {
 UPnPDriver.prototype.discover = function(paramd, discover_callback) {
     var self = this;
 
-    var cp = UPnPDriver.cp()
+    var cp = UPnPDriver.cp();
 
     if (!self.__subscribe_device) {
-        self.__subscribe_device =true
+        self.__subscribe_device = true;
         cp.on("device", function(upnp_device) {
             self._found_device(discover_callback, upnp_device);
         });
@@ -104,13 +104,13 @@ UPnPDriver.prototype.discover = function(paramd, discover_callback) {
  *  See {@link Driver#reachable}
  */
 UPnPDriver.prototype.reachable = function() {
-    var self = this
+    var self = this;
 
     if (!self.upnp_device) {
-        return false
+        return false;
     }
 
-    return true
+    return true;
 };
 
 /**
@@ -118,18 +118,18 @@ UPnPDriver.prototype.reachable = function() {
  *  this Thing/Driver unreachable
  */
 UPnPDriver.prototype._forget_device = function() {
-    var self = this
+    var self = this;
 
     if (!self.upnp_device) {
         return;
     }
     
     if (_cp) {
-        _cp.forget(self.upnp_device)
+        _cp.forget(self.upnp_device);
     }
 
-    self.upnp_device = null
-    self.pulled()
+    self.upnp_device = null;
+    self.pulled();
 };
 
 /**
@@ -139,7 +139,7 @@ UPnPDriver.prototype._found_device = function(discover_callback, upnp_device) {
     var self = this;
 
     console.log("- UPnPDriver._found_device", "deviceType", upnp_device.deviceType);
-    discover_callback(new UPnPDriver(upnp_device))
+    discover_callback(new UPnPDriver(upnp_device));
 };
 
 /**
@@ -148,16 +148,16 @@ UPnPDriver.prototype._service_by_urn = function(service_urn) {
     var self = this;
 
     if (!self.upnp_device) {
-        return null
+        return null;
     }
 
     if (!self.upnp_device.services) {
-        return null
+        return null;
     }
 
     for (var s_name in self.upnp_device.services) {
         var service = self.upnp_device.services[s_name];
-        if (service.serviceType == service_urn) {
+        if (service.serviceType === service_urn) {
             return service;
         }
     }
@@ -173,19 +173,19 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
     var self = this;
 
     if ((self.__identityd === undefined) || kitchen_sink) {
-        var identityd = {}
-        identityd["driver"] = self.driver
+        var identityd = {};
+        identityd["driver"] = self.driver;
 
         if (self.upnp_device) {
-            identityd["deviceType"] = self.upnp_device.deviceType
-            identityd["udn"] = self.upnp_device.udn
+            identityd["deviceType"] = self.upnp_device.deviceType;
+            identityd["udn"] = self.upnp_device.udn;
 
             _.thing_id(identityd);
 
             if (kitchen_sink) {
-                var keys = _.keys(self.upnp_device)
+                var keys = _.keys(self.upnp_device);
                 for (var kx in keys) {
-                    var key = keys[kx]
+                    var key = keys[kx];
                     if (identityd[key] !== undefined) {
                         continue;
                     }
@@ -202,7 +202,7 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
 
         
         if (kitchen_sink) {
-            return identityd
+            return identityd;
         }
 
         self.__identityd = identityd;
@@ -227,7 +227,7 @@ UPnPDriver.prototype.setup = function(paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    var service_urns = paramd.initd.subscribes
+    var service_urns = paramd.initd.subscribes;
     if (service_urns) {
         for (var sui = 0; sui < service_urns.length; sui++) {
             var service_urn = service_urns[sui];
@@ -236,37 +236,37 @@ UPnPDriver.prototype.setup = function(paramd) {
                 console.log("- UPnPDriver.setup: service not found", service_urn);
             } else {
                 var _on_failed = function(code, error) {
-                    console.log("- UPnPDriver.setup/_on_failed", code, error)
-                    self._forget_device()
-                    _remove_listeners()
-                }
+                    console.log("- UPnPDriver.setup/_on_failed", code, error);
+                    self._forget_device();
+                    _remove_listeners();
+                };
 
                 var _on_stateChange = function(valued) {
                     var driverd = {};
                     driverd[service_urn] = valued;
 
-                    self.pulled(driverd)
+                    self.pulled(driverd);
 
                     console.log("- UPnPDriver.setup/_on_stateChange", driverd);
-                }
+                };
 
                 var _on_subscribe = function(error, data) {
                     if (error) {
                         console.log("- UPnPDriver.setup/subscribe", service_urn, error);
-                        self._forget_device()
-                        _remove_listeners()
+                        self._forget_device();
+                        _remove_listeners();
                     }
-                }
+                };
 
                 var _remove_listeners = function() {
                     service.removeListener('failed', _on_failed);
                     service.removeListener('stateChange', _on_stateChange);
-                }
+                };
 
                 console.log("- UPnPDriver.setup: subscribe", service_urn);
-                service.on("failed", _on_failed)
-                service.on("stateChange", _on_stateChange)
-                service.subscribe(_on_subscribe)
+                service.on("failed", _on_failed);
+                service.on("stateChange", _on_stateChange);
+                service.subscribe(_on_subscribe);
             }
         }
     }
@@ -338,23 +338,23 @@ UPnPDriver.prototype.pull = function() {
  *  See {@link Driver#meta Driver.meta}
  */
 UPnPDriver.prototype.driver_meta = function() {
-    var self = this
+    var self = this;
 
     if (!self.upnp_device) {
         return;
     }
 
-    var metad = {}
+    var metad = {};
 
     for (var key in self.upnp_device) {
-        var value = self.upnp_device[key]
+        var value = self.upnp_device[key];
         if (_.isString(value) || _.isNumber(value) || _.isBoolean(value)) {
-            metad[key] = value
+            metad[key] = value;
         }
     }
 
     if (self.upnp_device.udn) {
-        metad["iot:dsid"] = _.expand("iot-driver:upnp/" + self.upnp_device.udn)
+        metad["iot:dsid"] = _.expand("iot-driver:upnp/" + self.upnp_device.udn);
     }
 
     return metad;
@@ -363,4 +363,4 @@ UPnPDriver.prototype.driver_meta = function() {
 /*
  *  API
  */
-exports.Driver = UPnPDriver
+exports.Driver = UPnPDriver;

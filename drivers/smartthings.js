@@ -69,7 +69,7 @@ var SmartThingsDriver = function(paramd) {
     return self;
 };
 
-SmartThingsDriver.prototype = new driver.Driver;
+SmartThingsDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
@@ -102,11 +102,11 @@ SmartThingsDriver.prototype.register = function(iot) {
 
     driver.Driver.prototype.register.call(self, iot);
 
-    if (st == null) {
+    if (st === null) {
         st = new SmartThings()
 
         var oauthd = iot.cfg_get_oauthd("https://graph.api.smartthings.com/", null)
-        if (oauthd == null) {
+        if (oauthd === null) {
             console.log("############################## ")
             console.log("# SmartThingsDriver.register: SmartThings not configured")
             console.log("# (instructions coming)")
@@ -162,7 +162,7 @@ SmartThingsDriver.prototype.setup = function(paramd) {
 
 
     var iot = require('../iotdb').iot();
-    if (!iot.username || (iot.username == "nobody")) {
+    if (!iot.username || (iot.username === "nobody")) {
         if (!__message_no_username) {
             __message_no_username = true
 
@@ -198,7 +198,7 @@ SmartThingsDriver.prototype.setup = function(paramd) {
 SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message) {
     var self = this;
 
-    if (in_topic.substring(0, self.mqtt_topic.length) != self.mqtt_topic) {
+    if (in_topic.substring(0, self.mqtt_topic.length) !== self.mqtt_topic) {
         return;
     }
 

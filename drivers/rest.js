@@ -63,7 +63,7 @@ var RESTDriver = function(paramd) {
     return self;
 };
 
-RESTDriver.prototype = new driver.Driver;
+RESTDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
@@ -206,7 +206,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
         var linkdd = iotdb.libs.http.parse_link(headers.link)
         for (var mqtt_url in linkdd) {
             var linkd = linkdd[mqtt_url]
-            if (linkd.rel != "mqtt") {
+            if (linkd.rel !== "mqtt") {
                 continue;
             }
 
@@ -215,7 +215,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
             var mqtt_topic = ""
 
             var mqtt_urlp = node_url.parse(mqtt_url)
-            if (mqtt_urlp.protocol != "tcp:") {
+            if (mqtt_urlp.protocol !== "tcp:") {
                 continue;
             }
 
@@ -278,11 +278,11 @@ RESTDriver.prototype.pull = function() {
 
                     self._parse_headers(result.headers)
 
-                    if (self.content_type == "application/json") {
+                    if (self.content_type === "application/json") {
                         self.pulled(result.body)
                     } else if (self.content_type.match(/application\/[^+]*[+]json/)) {
                         self.pulled(result.body)
-                    } else if ((self.content_type == "application/xml") || (self.content_type == "text/xml")) {
+                    } else if ((self.content_type === "application/xml") || (self.content_type === "text/xml")) {
                         xml2js.parseString(result.body, function (err, result) {
                             self.pulled(result)
                         });

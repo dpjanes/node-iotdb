@@ -56,7 +56,7 @@ var ProtoDriver = function(paramd) {
     return self;
 };
 
-ProtoDriver.prototype = new driver.Driver;
+ProtoDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
