@@ -59,7 +59,8 @@ module.exports = function (grunt) {
         jsbeautifier: {
             files: [
                 '*.js',
-                'drivers/*js',
+                'drivers/*.js',
+                'drivers/libs/*.js',
                 'stores/*.js',
                 'libs/*.js',
             ],

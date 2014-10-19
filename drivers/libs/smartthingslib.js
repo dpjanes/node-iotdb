@@ -16,7 +16,7 @@ var fs = require('fs')
 var util = require('util')
 var events = require('events')
 
-var SmartThings = function() {
+var SmartThings = function () {
     var self = this;
 
     events.EventEmitter.call(self);
@@ -33,13 +33,13 @@ util.inherits(SmartThings, events.EventEmitter);
  *  <p>
  *  See {@link https://iotdb.org/playground/oauthorize}
  */
-SmartThings.prototype.load_settings = function(o) {
+SmartThings.prototype.load_settings = function (o) {
     var self = this;
 
     if (o === undefined) {
         o = "smartthings.json"
-    } 
-    
+    }
+
     if (typeof o === 'string') {
         var data = fs.readFileSync(filename, 'utf8')
         self.std = JSON.parse(data);
@@ -60,7 +60,7 @@ SmartThings.prototype.load_settings = function(o) {
  *  <p>
  *  The first command you need to call
  */
-SmartThings.prototype.request_endpoint = function() {
+SmartThings.prototype.request_endpoint = function () {
     var self = this;
 
     var endpoints_url = self.std["api"]
@@ -71,7 +71,7 @@ SmartThings.prototype.request_endpoint = function() {
     unirest
         .get(endpoints_url)
         .query(endpoints_paramd)
-        .end(function(result) {
+        .end(function (result) {
             if (!result.ok) {
                 console.log("SmartThings.request_endpoints", "something went wrong", result);
                 return;
@@ -91,7 +91,7 @@ SmartThings.prototype.request_endpoint = function() {
  *  The type of device to request, i.e.
  *  switch, motion, acceleration, contact, presence
  */
-SmartThings.prototype.request_devices = function(device_type) {
+SmartThings.prototype.request_devices = function (device_type) {
     var self = this;
 
     if (!self.endpointd.url) {
@@ -100,21 +100,20 @@ SmartThings.prototype.request_devices = function(device_type) {
     }
 
     var devices_url = "https://graph.api.smartthings.com" + self.endpointd.url + "/" + device_type
-    var devices_paramd = {
-    }
+    var devices_paramd = {}
     var devices_headerd = {
         "Authorization": "Bearer " + self.std["access_token"]
     }
-    
+
     unirest
         .get(devices_url)
         .query(devices_paramd)
         .headers(devices_headerd)
-        .end(function(result) {
+        .end(function (result) {
             if (!result.ok) {
-                console.log("SmartThings.request_devices", "something went wrong", 
+                console.log("SmartThings.request_devices", "something went wrong",
                     "\n url=", devices_url,
-                    "\n error=", result.error, 
+                    "\n error=", result.error,
                     "\n body=", result.body
                 );
                 return;
@@ -134,7 +133,7 @@ SmartThings.prototype.request_devices = function(device_type) {
  *  A request dictinary, for example something like
  *  <code>{ switch: 1 }</code>
  */
-SmartThings.prototype.device_request = function(deviced, requestd) {
+SmartThings.prototype.device_request = function (deviced, requestd) {
     var self = this;
 
     if (!self.endpointd.url) {
@@ -149,18 +148,18 @@ SmartThings.prototype.device_request = function(deviced, requestd) {
     var devices_headerd = {
         "Authorization": "Bearer " + self.std["access_token"]
     }
-    
+
     // console.log("device_url", devices_url, requestd)
     unirest
         .put(devices_url)
         .type('json')
         .send(requestd)
         .headers(devices_headerd)
-        .end(function(result) {
+        .end(function (result) {
             if (!result.ok) {
-                console.log("SmartThings.device_request", "something went wrong", 
+                console.log("SmartThings.device_request", "something went wrong",
                     "\n url=", devices_url,
-                    "\n error=", result.error, 
+                    "\n error=", result.error,
                     "\n body=", result.body
                 );
                 return;
