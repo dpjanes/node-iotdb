@@ -5,16 +5,16 @@
  *  IOTDB.org
  *  2014-08-10
  *
- *  Connect to 
+ *  Connect to
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,14 +32,14 @@ var TCPControlPoint = require('./libs/tcp-connected');
 var queue = new FIFOQueue("TCPConnectedDriver");
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'TCPConnectedDriver',
 });
 
 /**
  */
-var TCPConnectedDriver = function(paramd) {
+var TCPConnectedDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -70,7 +70,7 @@ var TCPConnectedDriver = function(paramd) {
 
     /*
      *  Might consider 'network_id' in future? because multiple
-     *  machines can see this same lamp and we're going 
+     *  machines can see this same lamp and we're going
      *  with room based naming
      */
     var machine_id = self.cfg_get("machine_id", null)
@@ -86,7 +86,7 @@ TCPConnectedDriver.prototype = new driver.Driver();
 /* --- class methods --- */
 var _cp = undefined;
 
-TCPConnectedDriver.cp = function() {
+TCPConnectedDriver.cp = function () {
     if (_cp === undefined) {
         _cp = new TCPControlPoint();
     }
@@ -94,7 +94,7 @@ TCPConnectedDriver.cp = function() {
     return _cp;
 };
 
-TCPConnectedDriver.prototype.driver_meta = function() {
+TCPConnectedDriver.prototype.driver_meta = function () {
     return this.metad;
 };
 
@@ -103,7 +103,7 @@ TCPConnectedDriver.prototype.driver_meta = function() {
  *
  *  @protected
  */
-TCPConnectedDriver.prototype._init = function(initd) {
+TCPConnectedDriver.prototype._init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -114,7 +114,7 @@ TCPConnectedDriver.prototype._init = function(initd) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-TCPConnectedDriver.prototype.identity = function(kitchen_sink) {
+TCPConnectedDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -129,7 +129,7 @@ TCPConnectedDriver.prototype.identity = function(kitchen_sink) {
         // XXX machine-id???
 
         _.thing_id(identityd);
-        
+
         self.__identityd = identityd;
     }
 
@@ -139,7 +139,7 @@ TCPConnectedDriver.prototype.identity = function(kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-TCPConnectedDriver.prototype.setup = function(paramd) {
+TCPConnectedDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -153,11 +153,11 @@ TCPConnectedDriver.prototype.setup = function(paramd) {
 /*
  *  See {@link Driver#discover Driver.discover}
  */
-TCPConnectedDriver.prototype.discover = function(paramd, discover_callback) {
+TCPConnectedDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
     var cp = TCPConnectedDriver.cp();
-    cp.GetState(function(error, rooms) {
+    cp.GetState(function (error, rooms) {
         if (rooms === null) {
             console.log("# TCPConnectDriver.discover/GetState", "no rooms?")
             return;
@@ -188,7 +188,7 @@ TCPConnectedDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-TCPConnectedDriver.prototype.push = function(paramd) {
+TCPConnectedDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -201,8 +201,7 @@ TCPConnectedDriver.prototype.push = function(paramd) {
     var cp = TCPConnectedDriver.cp();
     var pulled = null
 
-    if (paramd.driverd.brightness === undefined) {
-    } else if (paramd.driverd.brightness > 0) {
+    if (paramd.driverd.brightness === undefined) {} else if (paramd.driverd.brightness > 0) {
         if (!paramd.driverd.on) {
             paramd.driverd.on = true
 
@@ -227,8 +226,7 @@ TCPConnectedDriver.prototype.push = function(paramd) {
         cp.SetRoomLevelByName(self.room.name, b)
     }
 
-    if (paramd.driverd.on === undefined) {
-    } else if (paramd.driverd.on === true) {
+    if (paramd.driverd.on === undefined) {} else if (paramd.driverd.on === true) {
         cp.TurnOnRoomByName(self.room);
     } else if (paramd.driverd.on === false) {
         cp.TurnOffRoomByName(self.room);
@@ -247,7 +245,7 @@ TCPConnectedDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-TCPConnectedDriver.prototype.pull = function(paramd) {
+TCPConnectedDriver.prototype.pull = function (paramd) {
     var self = this;
 
     logger.info({

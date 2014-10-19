@@ -58,18 +58,8 @@ module.exports = function (grunt) {
         },
         jsbeautifier: {
             files: [
-                'Gruntfile.js',
-                'attribute.js',
-                'cfg.js',
-                'driver.js',
-                'graph.js',
-                'iotdb.js',
-                'meta.js',
-                'model.js',
-                'model_maker.js',
-                'queue.js',
-                'store.js',
-                'thing_array.js',
+                '*.js',
+                'drivers/*js',
             ],
             options: {
                 js: {

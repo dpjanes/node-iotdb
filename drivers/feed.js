@@ -8,13 +8,13 @@
  *  Connect to RSS / Atom feeds
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,14 +36,14 @@ var FIFOQueue = require('../queue').FIFOQueue;
 var queue = new FIFOQueue("FeedDriver");
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'FeedDriver',
 });
 
 /**
  */
-var FeedDriver = function(paramd) {
+var FeedDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -74,7 +74,7 @@ FeedDriver.prototype = new driver.Driver();
  *
  *  @protected
  */
-FeedDriver.prototype._init = function(initd) {
+FeedDriver.prototype._init = function (initd) {
     var self = this;
 
     initd = _.defaults(initd, {
@@ -100,7 +100,7 @@ FeedDriver.prototype._init = function(initd) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-FeedDriver.prototype.identity = function(kitchen_sink) {
+FeedDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -111,7 +111,7 @@ FeedDriver.prototype.identity = function(kitchen_sink) {
             identityd["iri"] = self.iri
         }
         _.thing_id(identityd);
-        
+
         self.__identityd = identityd;
     }
 
@@ -121,7 +121,7 @@ FeedDriver.prototype.identity = function(kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-FeedDriver.prototype.setup = function(paramd) {
+FeedDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -136,7 +136,7 @@ FeedDriver.prototype.setup = function(paramd) {
 /*
  *  See {@link Driver#discover Driver.discover}
  */
-FeedDriver.prototype.discover = function(paramd, discover_callback) {
+FeedDriver.prototype.discover = function (paramd, discover_callback) {
     if (paramd.initd === undefined) {
         // console.log("# FeedDriver.discover: no nearby discovery (not a problem)")
         logger.warn({
@@ -154,7 +154,7 @@ FeedDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-FeedDriver.prototype.push = function(paramd) {
+FeedDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -173,7 +173,7 @@ FeedDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-FeedDriver.prototype.pull = function() {
+FeedDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -187,13 +187,13 @@ FeedDriver.prototype.pull = function() {
 };
 
 /* --- Internals --- */
-FeedDriver.prototype._fetch = function() {
+FeedDriver.prototype._fetch = function () {
     var self = this;
 
     console.log("- FeedDriver._fetch", "iri", self.iri)
     unirest
         .get(self.iri)
-        .end(function(result) {
+        .end(function (result) {
             if (result.error) {
                 console.log("# FeedDriver._fetch: can't get feed", result.error)
             } else {
@@ -204,7 +204,7 @@ FeedDriver.prototype._fetch = function() {
         })
 };
 
-FeedDriver.prototype._process = function(body) {
+FeedDriver.prototype._process = function (body) {
     var self = this;
 
     var s = new stream.Readable();
@@ -215,9 +215,8 @@ FeedDriver.prototype._process = function(body) {
     var fp = new FeedParser({
         feedurl: self.iri
     })
-    fp.on('error', function() {
-    })
-    fp.on('readable', function() {
+    fp.on('error', function () {})
+    fp.on('readable', function () {
         var stream = this
         var item = null;
         while (item = stream.read()) {
@@ -234,7 +233,7 @@ FeedDriver.prototype._process = function(body) {
             if (!date) {
                 if (self.fresh) {
                     continue;
-                } 
+                }
             } else {
                 var is_fresh = date.getTime() >= self.started.getTime()
                 if (self.fresh && !is_fresh) {
@@ -251,7 +250,7 @@ FeedDriver.prototype._process = function(body) {
     s.pipe(fp)
 };
 
-FeedDriver.prototype._flatten = function(od) {
+FeedDriver.prototype._flatten = function (od) {
     var self = this;
 
     var nd = {}
@@ -260,7 +259,7 @@ FeedDriver.prototype._flatten = function(od) {
         var ovalue = od[okey]
         var nkey = okey.toLowerCase().replace(/[^a-z0-9]/g, '_')
 
-        if (_.isString(ovalue))  {
+        if (_.isString(ovalue)) {
             if (ovalue.length !== 0) {
                 nd[nkey] = ovalue
             }
@@ -300,4 +299,3 @@ FeedDriver.prototype._flatten = function(od) {
 
 /* --- API --- */
 exports.Driver = FeedDriver
-

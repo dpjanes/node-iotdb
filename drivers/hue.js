@@ -8,13 +8,13 @@
  *  Talk to Philips Hue devices
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ var UPnPDriver = require('./upnp').Driver;
 var queue = new FIFOQueue("HueDriver");
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'HueDriver',
 });
@@ -50,7 +50,7 @@ var OFFSET_PULL = 200000;
  *  Typically this will be created by one of
  *  the discover_* functions
  */
-var HueDriver = function(paramd) {
+var HueDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -81,17 +81,17 @@ HueDriver.prototype = new driver.Driver();
 /**
  *  Find Hue Hubs and associate an account name with them.
  */
-HueDriver.prototype.configure = function(ad, callback) {
+HueDriver.prototype.configure = function (ad, callback) {
     var self = this;
 
     var cp = UPnPDriver.cp();
-    cp.on("device", function(upnp_device) {
+    cp.on("device", function (upnp_device) {
         self._configure_device(upnp_device, callback);
     });
     cp.search();
 };
 
-HueDriver.prototype._configure_device = function(upnp_device, callback) {
+HueDriver.prototype._configure_device = function (upnp_device, callback) {
     var self = this;
 
     var crypto = require('crypto');
@@ -125,22 +125,24 @@ HueDriver.prototype._configure_device = function(upnp_device, callback) {
     hasher.update("Hue");
     hasher.update("" + Math.random());
     account_value = "hue" + hasher.digest("hex").substring(0, 16);
-    
+
     var count = 5;
-    var timerId = timers.setInterval(function() {
+    var timerId = timers.setInterval(function () {
         if (count === 0) {
             timers.clearTimeout(timerId);
 
             var url = "http://" + upnp_device.host + ":" + upnp_device.port + "/api";
             unirest
                 .post(url)
-                .headers({ 'Accept': 'application/json' })
+                .headers({
+                    'Accept': 'application/json'
+                })
                 .type('json')
                 .send({
                     devicetype: "test user",
                     username: account_value
                 })
-                .end(function(result) {
+                .end(function (result) {
                     if (!result.ok) {
                         console.log("# HueDriver.configure", "not ok", "url", url, "result", result.text);
                     } else if (result.body && result.body.length && result.body[0].error) {
@@ -154,8 +156,7 @@ HueDriver.prototype._configure_device = function(upnp_device, callback) {
 
                         console.log("+ HueDriver.configure", "SUCCESS!");
                     }
-                })
-            ;
+                });
         } else {
             console.log("+ Press the button and keep it pressed!", count);
             count--;
@@ -167,11 +168,11 @@ HueDriver.prototype._configure_device = function(upnp_device, callback) {
  *  See {@link Driver#discover Driver.discover}
  *  - Scan the local network for Hues
  */
-HueDriver.prototype.discover = function(paramd, discover_callback) {
+HueDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
     var cp = UPnPDriver.cp();
-    cp.on("device", function(upnp_device) {
+    cp.on("device", function (upnp_device) {
         self._foundDevice(discover_callback, upnp_device);
     });
     cp.search();
@@ -183,7 +184,7 @@ var __message_configure = false;
  *  This does the work of creating a new device and calling the callback
  *  (which is usally IOT)
  */
-HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
+HueDriver.prototype._foundDevice = function (discover_callback, upnp_device) {
     var self = this;
 
     console.log("- HueDriver._foundDevice", "device", upnp_device.deviceType);
@@ -211,12 +212,12 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
             console.log("#   iotdb-control configure-driver hue --global");
             console.log("#");
             console.log("############################## ");
-			
-			self.report_issue({
-				section: "drivers",
-				name: "hue",
-				message: "configure with: $ iotdb-control configure-driver hue --global"
-			});
+
+            self.report_issue({
+                section: "drivers",
+                name: "hue",
+                message: "configure with: $ iotdb-control configure-driver hue --global"
+            });
         }
         return;
     }
@@ -225,7 +226,7 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
     unirest
         .get(url)
         .set('Accept', 'application/json')
-        .end(function(result) {
+        .end(function (result) {
             if (!result.ok) {
                 console.log("not ok", "url", url, "result", result.text);
                 return;
@@ -248,17 +249,16 @@ HueDriver.prototype._foundDevice = function(discover_callback, upnp_device) {
                 }
 
                 discover_callback(new HueDriver({
-                    upnp_device: upnp_device, 
-                    light: light, 
+                    upnp_device: upnp_device,
+                    light: light,
                     username: account_value,
                     metad: metad
                 }));
             }
-        })
-    ;
+        });
 };
 
-HueDriver.prototype._service_by_urn = function(service_urn) {
+HueDriver.prototype._service_by_urn = function (service_urn) {
     var self = this;
 
     for (var s_name in self.upnp_device.services) {
@@ -275,7 +275,7 @@ HueDriver.prototype._service_by_urn = function(service_urn) {
 /**
  *  See {@link Driver#identity}
  */
-HueDriver.prototype.identity = function(kitchen_sink) {
+HueDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
     var identityd;
 
@@ -320,7 +320,7 @@ HueDriver.prototype.identity = function(kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-HueDriver.prototype.setup = function(paramd) {
+HueDriver.prototype.setup = function (paramd) {
     var self = this;
     // console.log("- UPnDriver.setup");
     logger.info({
@@ -336,7 +336,7 @@ HueDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#push}
  */
-HueDriver.prototype.push = function(paramd) {
+HueDriver.prototype.push = function (paramd) {
     var self = this;
 
     // console.log("- HueDriver.push called", paramd.driverd);
@@ -346,8 +346,7 @@ HueDriver.prototype.push = function(paramd) {
         driverd: paramd.driverd
     }, "called");
 
-    var putd = {
-    };
+    var putd = {};
 
     if (paramd.driverd.on !== undefined) {
         putd.on = paramd.driverd.on;
@@ -380,7 +379,7 @@ HueDriver.prototype.push = function(paramd) {
 
     var qitem = {
         id: self.light + OFFSET_PUSH,
-        run: function() {
+        run: function () {
             var url = self.iri + "/api/" + self.username + "/lights/" + self.light + "/state/";
             // console.log("- do", url);
             logger.debug({
@@ -390,10 +389,12 @@ HueDriver.prototype.push = function(paramd) {
 
             unirest
                 .put(url)
-                .headers({ 'Accept': 'application/json' })
+                .headers({
+                    'Accept': 'application/json'
+                })
                 .type('json')
                 .send(putd)
-                .end(function(result) {
+                .end(function (result) {
                     queue.finished(qitem);
                     if (!result.ok) {
                         console.log("# HueDriver.push", "not ok", "url", url, "result", result.text);
@@ -401,8 +402,7 @@ HueDriver.prototype.push = function(paramd) {
                     }
 
                     console.log("- HueDriver.push", result.body);
-                })
-            ;
+                });
         }
     };
     queue.add(qitem);
@@ -416,7 +416,7 @@ HueDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-HueDriver.prototype.pull = function() {
+HueDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -426,7 +426,7 @@ HueDriver.prototype.pull = function() {
 
     var qitem = {
         id: self.light + OFFSET_PULL,
-        run: function() {
+        run: function () {
             var url = self.iri + "/api/" + self.username + "/lights/" + self.light;
             // console.log("- do", url);
             logger.debug({
@@ -435,15 +435,17 @@ HueDriver.prototype.pull = function() {
             }, "do");
             unirest
                 .get(url)
-                .headers({ 'Accept': 'application/json' })
-                .end(function(result) {
+                .headers({
+                    'Accept': 'application/json'
+                })
+                .end(function (result) {
                     queue.finished(qitem);
                     if (!result.ok) {
                         // console.log("# HueDriver.pull", "not ok", "url", x);
                         logger.error({
                             method: "pull",
                             url: url,
-                            result: result 
+                            result: result
                         }, "not ok");
                         return;
                     }
@@ -452,7 +454,7 @@ HueDriver.prototype.pull = function() {
                         var driverd = {};
                         var state = result.body.state;
                         if (state.on !== undefined) {
-                            driverd.on = state.on  ? true : false;
+                            driverd.on = state.on ? true : false;
                         }
                         if ((state.xy !== undefined) && (state.bri !== undefined)) {
                             h2c(driverd, state);
@@ -468,13 +470,12 @@ HueDriver.prototype.pull = function() {
                          */
                         logger.info({
                             method: "pull",
-                            light: self.light, 
-                            driverd: driverd, 
+                            light: self.light,
+                            driverd: driverd,
                             state: state
                         }, "pulled");
                     }
-                })
-            ;
+                });
         }
     };
     queue.add(qitem);
@@ -486,7 +487,7 @@ HueDriver.prototype.pull = function() {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-HueDriver.prototype.driver_meta = function() {
+HueDriver.prototype.driver_meta = function () {
     return this.metad;
 };
 
@@ -506,28 +507,22 @@ function rgb2hsb(outd, red, green, blue) {
 
     if (min === max) {
         h = 0;
-    }
-    else if (r === max) {
+    } else if (r === max) {
         h = ((60 * (g - b) / delta) + 360) % 360;
-    }
-    else if (g === max) {
+    } else if (g === max) {
         h = (60 * (b - r) / delta) + 120;
-    }
-    else {
+    } else {
         h = (60 * (r - g) / delta) + 240;
     }
 
     l = 0.5 * add;
     if (l === 0) {
         s = 0;
-    }
-    else if (l === 1) {
+    } else if (l === 1) {
         s = 1;
-    }
-    else if (l <= 0.5) {
+    } else if (l <= 0.5) {
         s = delta / add;
-    }
-    else {
+    } else {
         s = delta / (2 - add);
     }
 
@@ -535,8 +530,8 @@ function rgb2hsb(outd, red, green, blue) {
     s = Math.round(s * 100);
     l = Math.round(l * 100);
 
-    var hue = Math.floor(_getBoundedValue(h, 0, 359) * 182.5487); 
-    var saturation = Math.floor(_getBoundedValue(s, 0, 100) * (255 / 100)); 
+    var hue = Math.floor(_getBoundedValue(h, 0, 359) * 182.5487);
+    var saturation = Math.floor(_getBoundedValue(s, 0, 100) * (255 / 100));
     var luminosity = _convertBrightPercentToHueValue(l);
 
     outd["hue"] = _getBoundedValue(hue, 0, 65535);
@@ -559,7 +554,7 @@ function xybri2rgb(outd, x, y, bri) {
     g = g <= 0.0031308 ? 12.92 * g : (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055;
     b = b <= 0.0031308 ? 12.92 * b : (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055;
 
-    var maxValue = Math.max(r,g,b);
+    var maxValue = Math.max(r, g, b);
     r = r / maxValue;
     g = g / maxValue;
     b = b / maxValue;
@@ -629,7 +624,7 @@ function h2c(outd, state) {
         var xd = state.xy[0] - hued.xy[0];
         var yd = state.xy[1] - hued.xy[1];
         var bd = state.bri1 - hued.bri1;
-        var d = Math.sqrt(xd*xd + yd*yd + bd*bd);
+        var d = Math.sqrt(xd * xd + yd * yd + bd * bd);
 
         if ((best === null) || (d < distance)) {
             best = hued;

@@ -8,13 +8,13 @@
  *  Connect to Arduinos (etc) using Firmata
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'FirmataDriver',
 });
@@ -39,11 +39,11 @@ var logger = bunyan.createLogger({
 var boardd = {};
 var machine_id = undefined;
 
-var START_SYSEX = 0xF0   
-var END_SYSEX = 0xF7   
+var START_SYSEX = 0xF0
+var END_SYSEX = 0xF7
 
-var unpack_bytes = function(board) {
-    var length = ( board.currentBuffer.length - 3 ) / 2;
+var unpack_bytes = function (board) {
+    var length = (board.currentBuffer.length - 3) / 2;
     var outb = new Buffer(length)
     var p = 0
 
@@ -57,12 +57,12 @@ var unpack_bytes = function(board) {
     return outb;
 };
 
-var unpack_char8s = function(board) {
+var unpack_char8s = function (board) {
     var outb = unpack_bytes(board)
     return outb.toString();
 };
 
-var unpack_int8s = function(board) {
+var unpack_int8s = function (board) {
     var outb = unpack_bytes(board)
     var outi = []
     for (var i = 0; i < outb.length; i++) {
@@ -72,7 +72,7 @@ var unpack_int8s = function(board) {
     return outi;
 };
 
-var unpack_int16s = function(board) {
+var unpack_int16s = function (board) {
     var outb = unpack_bytes(board)
     var outi = []
     for (var i = 0; i < outb.length; i += 2) {
@@ -82,7 +82,7 @@ var unpack_int16s = function(board) {
     return outi;
 };
 
-var unpack_int32s = function(board) {
+var unpack_int32s = function (board) {
     var outb = unpack_bytes(board)
     var outi = []
     for (var i = 0; i < outb.length; i += 4) {
@@ -92,7 +92,7 @@ var unpack_int32s = function(board) {
     return outi;
 };
 
-var unpack_floats = function(board) {
+var unpack_floats = function (board) {
     var outb = unpack_bytes(board)
     var outi = []
     for (var i = 0; i < outb.length; i += 4) {
@@ -104,7 +104,7 @@ var unpack_floats = function(board) {
 
 /**
  */
-var FirmataDriver = function(paramd) {
+var FirmataDriver = function (paramd) {
     var self = this;
 
     driver.Driver.prototype.driver_construct.call(self);
@@ -139,7 +139,7 @@ FirmataDriver.prototype = new driver.Driver();
  *
  *  @protected
  */
-FirmataDriver.prototype._init = function(initd) {
+FirmataDriver.prototype._init = function (initd) {
     var self = this;
 
     if (initd.tty) {
@@ -160,7 +160,7 @@ FirmataDriver.prototype._init = function(initd) {
 
 /**
  */
-FirmataDriver.prototype._setup_code = function(code, code_value, initd) {
+FirmataDriver.prototype._setup_code = function (code, code_value, initd) {
     var self = this;
 
     if (!_.isString(code_value)) {
@@ -242,7 +242,7 @@ FirmataDriver.prototype._setup_code = function(code, code_value, initd) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-FirmataDriver.prototype.identity = function(kitchen_sink) {
+FirmataDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -264,7 +264,7 @@ FirmataDriver.prototype.identity = function(kitchen_sink) {
         }
 
         _.thing_id(identityd);
-        
+
         self.__identityd = identityd;
     }
 
@@ -274,7 +274,7 @@ FirmataDriver.prototype.identity = function(kitchen_sink) {
 /**
  *  Setup pins
  */
-FirmataDriver.prototype._setup_pind = function(pind) {
+FirmataDriver.prototype._setup_pind = function (pind) {
     var self = this;
 
     if ((pind.mode === "output") || (pind.mode === "digital-output")) {
@@ -306,10 +306,10 @@ FirmataDriver.prototype._setup_pind = function(pind) {
     }
 };
 
-FirmataDriver.prototype._setup_digital_output = function(pind) {
+FirmataDriver.prototype._setup_digital_output = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= self.board.pins.length)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
@@ -325,10 +325,10 @@ FirmataDriver.prototype._setup_digital_output = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_digital_input = function(pind) {
+FirmataDriver.prototype._setup_digital_input = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= self.board.pins.length)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
@@ -339,7 +339,7 @@ FirmataDriver.prototype._setup_digital_input = function(pind) {
 
             pind.initialized = true;
             self.board.pinMode(pind.pin, self.board.MODES.INPUT);
-            self.board.digitalRead(pind.pin, function(value) {
+            self.board.digitalRead(pind.pin, function (value) {
                 var driverd = {}
                 driverd[pind.code] = value ? true : false;
                 self.pulled(driverd)
@@ -350,10 +350,10 @@ FirmataDriver.prototype._setup_digital_input = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_analog_output = function(pind) {
+FirmataDriver.prototype._setup_analog_output = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= self.board.pins.length)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
@@ -369,10 +369,10 @@ FirmataDriver.prototype._setup_analog_output = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_analog_input = function(pind) {
+FirmataDriver.prototype._setup_analog_input = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= self.board.analogPins.length)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
@@ -384,7 +384,7 @@ FirmataDriver.prototype._setup_analog_input = function(pind) {
 
             pind.initialized = true;
             self.board.pinMode(pind.pin, self.board.MODES.ANALOG);
-            self.board.analogRead(pind.pin, function(value) {
+            self.board.analogRead(pind.pin, function (value) {
                 var driverd = {}
                 driverd[pind.code] = value / 1024.0
                 self.pulled(driverd)
@@ -395,16 +395,16 @@ FirmataDriver.prototype._setup_analog_input = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_sysex_input_float = function(pind) {
+FirmataDriver.prototype._setup_sysex_input_float = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= 64)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
 
             pind.initialized = true;
-            firmata.SYSEX_RESPONSE[pind.sysex] = function(board) {
+            firmata.SYSEX_RESPONSE[pind.sysex] = function (board) {
                 var driverd = {}
                 driverd[pind.code] = unpack_floats(board)
                 self.pulled(driverd)
@@ -420,19 +420,18 @@ FirmataDriver.prototype._setup_sysex_input_float = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_sysex_input_int8 = function(pind) {
-};
+FirmataDriver.prototype._setup_sysex_input_int8 = function (pind) {};
 
-FirmataDriver.prototype._setup_sysex_input_int16 = function(pind) {
+FirmataDriver.prototype._setup_sysex_input_int16 = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= 64)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
 
             pind.initialized = true;
-            firmata.SYSEX_RESPONSE[pind.sysex] = function(board) {
+            firmata.SYSEX_RESPONSE[pind.sysex] = function (board) {
                 var driverd = {}
                 driverd[pind.code] = unpack_int16s(board)
                 self.pulled(driverd)
@@ -448,16 +447,14 @@ FirmataDriver.prototype._setup_sysex_input_int16 = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_sysex_input_int32 = function(pind) {
-};
+FirmataDriver.prototype._setup_sysex_input_int32 = function (pind) {};
 
-FirmataDriver.prototype._setup_sysex_output_float = function(pind) {
-};
+FirmataDriver.prototype._setup_sysex_output_float = function (pind) {};
 
-FirmataDriver.prototype._setup_sysex_output_int8 = function(pind) {
+FirmataDriver.prototype._setup_sysex_output_int8 = function (pind) {
     var self = this;
     self.queue.add({
-        run: function(queue, qitem) {
+        run: function (queue, qitem) {
             if ((pind.pin < 0) || (pind.pin >= 64)) {
                 throw new Error("invalid " + pind.mode + " pin (out of range)")
             }
@@ -474,16 +471,14 @@ FirmataDriver.prototype._setup_sysex_output_int8 = function(pind) {
     })
 };
 
-FirmataDriver.prototype._setup_sysex_output_int16 = function(pind) {
-};
+FirmataDriver.prototype._setup_sysex_output_int16 = function (pind) {};
 
-FirmataDriver.prototype._setup_sysex_output_int32 = function(pind) {
-};
+FirmataDriver.prototype._setup_sysex_output_int32 = function (pind) {};
 
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-FirmataDriver.prototype.setup = function(paramd) {
+FirmataDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -532,7 +527,7 @@ FirmataDriver.prototype.setup = function(paramd) {
             "\n  tty", self.tty
         )
 
-        self.board = new firmata.Board(self.tty, function(error) {
+        self.board = new firmata.Board(self.tty, function (error) {
             if (error) {
                 console.log("# FirmataDriver.setup/board: couldn't connect to board",
                     "\n  tty", self.tty,
@@ -549,7 +544,7 @@ FirmataDriver.prototype.setup = function(paramd) {
             self.board.iotdb_queue.pause()
         }
 
-        self.board.on('ready', function() {
+        self.board.on('ready', function () {
             self.board.iotdb_ready = true
             self.board.iotdb_sysex = 10;
             self.board.iotdb_queue.resume()
@@ -574,7 +569,7 @@ FirmataDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#reachable}
  */
-FirmataDriver.prototype.reachable = function() {
+FirmataDriver.prototype.reachable = function () {
     var self = this
 
     if (!self.board) {
@@ -595,7 +590,7 @@ FirmataDriver.prototype.reachable = function() {
 /*
  *  See {@link Driver#discover Driver.discover}
  */
-FirmataDriver.prototype.discover = function(paramd, discover_callback) {
+FirmataDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
     if (paramd.initd === undefined) {
@@ -618,11 +613,11 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
             console.log("#")
             console.log("############################## ")
 
-			self.report_issue({
-				section: "drivers",
-				name: "twitter",
-				message: "configure with $ iotdb-control machine-id"
-			})
+            self.report_issue({
+                section: "drivers",
+                name: "twitter",
+                message: "configure with $ iotdb-control machine-id"
+            })
 
             return;
         }
@@ -639,7 +634,7 @@ FirmataDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-FirmataDriver.prototype.push = function(paramd) {
+FirmataDriver.prototype.push = function (paramd) {
     var self = this;
 
     if (!self.reachable()) {
@@ -668,7 +663,7 @@ FirmataDriver.prototype.push = function(paramd) {
             continue;
         }
 
-        console.log("- FirmataDriver.push", 
+        console.log("- FirmataDriver.push",
             "\n  key", key,
             "\n  value", value,
             "\n  pind", pind
@@ -677,14 +672,14 @@ FirmataDriver.prototype.push = function(paramd) {
 
         if ((pind.mode === "output") || (pind.mode === "digital-output")) {
             self.queue.add({
-                run: function(queue, qitem) {
+                run: function (queue, qitem) {
                     self.board.digitalWrite(pind.pin, value ? self.board.HIGH : self.board.LOW);
                     queue.finished(qitem);
                 }
             })
         } else if ((pind.mode === "pwm") || (pind.mode === "analog-output")) {
             self.queue.add({
-                run: function(queue, qitem) {
+                run: function (queue, qitem) {
                     value = Math.min(Math.max(0, value), 1)
                     value = value * 255.0
                     value = Math.round(value)
@@ -694,7 +689,7 @@ FirmataDriver.prototype.push = function(paramd) {
             })
         } else if (pind.mode === "sysex-output-int8") {
             self.queue.add({
-                run: function(queue, qitem) {
+                run: function (queue, qitem) {
                     var outb = new Buffer([
                         START_SYSEX,
                         pind.sysex,
@@ -721,7 +716,7 @@ FirmataDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-FirmataDriver.prototype.pull = function() {
+FirmataDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({

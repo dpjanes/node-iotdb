@@ -8,13 +8,13 @@
  *  Connect to JSON / REST-like webservices
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,14 +36,14 @@ var node_url = require('url');
 var queue = new FIFOQueue("RESTDriver");
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'RestDriver',
 });
 
 /**
  */
-var RESTDriver = function(paramd) {
+var RESTDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -72,7 +72,7 @@ RESTDriver.prototype = new driver.Driver();
  *
  *  @protected
  */
-RESTDriver.prototype._init = function(initd) {
+RESTDriver.prototype._init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -92,7 +92,7 @@ RESTDriver.prototype._init = function(initd) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-RESTDriver.prototype.identity = function(kitchen_sink) {
+RESTDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -105,7 +105,7 @@ RESTDriver.prototype.identity = function(kitchen_sink) {
         }
 
         _.thing_id(identityd);
-        
+
         self.__identityd = identityd;
     }
 
@@ -118,7 +118,7 @@ RESTDriver.prototype.identity = function(kitchen_sink) {
  *  Record the actual API of the JSON. This
  *  is used in creating the proper identity
  */
-RESTDriver.prototype.setup = function(paramd) {
+RESTDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -136,7 +136,7 @@ RESTDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#discover Driver.discover}
  */
-RESTDriver.prototype.discover = function(paramd, discover_callback) {
+RESTDriver.prototype.discover = function (paramd, discover_callback) {
     if (paramd.initd === undefined) {
         // console.log("# RESTDriver.discover: no nearby discovery (not a problem)")
         logger.warn({
@@ -154,7 +154,7 @@ RESTDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-RESTDriver.prototype.push = function(paramd) {
+RESTDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -167,13 +167,15 @@ RESTDriver.prototype.push = function(paramd) {
 
     var qitem = {
         id: self.light,
-        run: function() {
+        run: function () {
             unirest
                 .put(self.iri)
-                .headers({'Accept': 'application/json'})
+                .headers({
+                    'Accept': 'application/json'
+                })
                 .type('json')
                 .send(paramd.driverd)
-                .end(function(result) {
+                .end(function (result) {
                     queue.finished(qitem);
                     if (!result.ok) {
                         console.log("# RESTDriver.push/.end", "not ok", "url", self.iri, "result", result.text);
@@ -181,8 +183,7 @@ RESTDriver.prototype.push = function(paramd) {
                     }
 
                     console.log("- RESTDriver.push/.end.body", result.body);
-                })
-            ;
+                });
         }
     }
     queue.add(qitem);
@@ -190,7 +191,7 @@ RESTDriver.prototype.push = function(paramd) {
     return self;
 };
 
-RESTDriver.prototype._parse_headers = function(headers) {
+RESTDriver.prototype._parse_headers = function (headers) {
     var self = this;
 
     if (self.__parsed_headers) {
@@ -252,7 +253,7 @@ RESTDriver.prototype._parse_headers = function(headers) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-RESTDriver.prototype.pull = function() {
+RESTDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -263,15 +264,17 @@ RESTDriver.prototype.pull = function() {
 
     var qitem = {
         id: self.light,
-        run: function() {
+        run: function () {
             unirest
                 .get(self.iri)
-                .headers({'Accept': self.content_type})
-                .end(function(result) {
+                .headers({
+                    'Accept': self.content_type
+                })
+                .end(function (result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# RESTDriver.pull/.end - not ok", 
-                            "\n  url", self.iri, 
+                        console.log("# RESTDriver.pull/.end - not ok",
+                            "\n  url", self.iri,
                             "\n  result", result.text);
                         return;
                     }
@@ -295,8 +298,7 @@ RESTDriver.prototype.pull = function() {
                      *  Schedule the next data pull
                      */
                     self.poll_reschedule()
-                })
-            ;
+                });
         }
     }
     queue.add(qitem);
@@ -307,7 +309,7 @@ RESTDriver.prototype.pull = function() {
 /**
  *  See {@link Driver#handle_mqtt_message Driver.handle_mqtt_message}
  */
-RESTDriver.prototype.handle_mqtt_message = function(in_topic, in_message) {
+RESTDriver.prototype.handle_mqtt_message = function (in_topic, in_message) {
     console.log("- RESTDriver.handle_mqtt_message: received update, pulling")
     this.pull()
 };

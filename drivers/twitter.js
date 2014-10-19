@@ -8,13 +8,13 @@
  *  Connect to RSS / Atom twitters
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ var queue = new FIFOQueue("TwitterDriver");
 var twitter_oauthd = null;
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'TwitterDriver',
 });
@@ -48,41 +48,39 @@ var InternalTwitterMessage = iotdb.make_model('InternalTwitterMessage')
     .driver_identity(":twitter")
     .attribute(
         iotdb.make_string(":message.text")
-            .code("text")
-        )
+        .code("text")
+    )
     .attribute(
         iotdb.make_datetime(":message.created")
-            .code("created")
-        )
+        .code("created")
+    )
     .attribute(
         iotdb.make_iri(":userid")
     )
     .attribute(
         iotdb.make_iri(":id")
     )
-    .driver_setup(function(paramd) {
-    })
-    .driver_in(function(paramd) {
+    .driver_setup(function (paramd) {})
+    .driver_in(function (paramd) {
         if (paramd.driverd !== undefined) {
             paramd.thingd.text = paramd.driverd.text;
             paramd.thingd.created = paramd.driverd.created_at;
-            paramd.thingd.id = "https://twitter.com/" + paramd.driverd.user.screen_name + 
-                "/status/"  + paramd.driverd.id_str;
+            paramd.thingd.id = "https://twitter.com/" + paramd.driverd.user.screen_name +
+                "/status/" + paramd.driverd.id_str;
             paramd.thingd.userid = "https://twitter.com/" + paramd.driverd.user.screen_name;
         }
     })
-    .driver_out(function(paramd) {
+    .driver_out(function (paramd) {
         if (paramd.thingd.text !== undefined) {
-            paramd.driverd.text = paramd.thingd.text ;
+            paramd.driverd.text = paramd.thingd.text;
         }
     })
-    .make()
-    ;
+    .make();
 
 
 /**
  */
-var TwitterDriver = function(paramd) {
+var TwitterDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -111,7 +109,7 @@ TwitterDriver.prototype = new driver.Driver();
 /**
  *  Return helper functions
  */
-TwitterDriver.prototype.register = function(iot) {
+TwitterDriver.prototype.register = function (iot) {
     var self = this;
 
     driver.Driver.prototype.register.call(self, iot);
@@ -127,28 +125,28 @@ TwitterDriver.prototype.register = function(iot) {
         console.log("#");
         console.log("############################## ");
 
-		self.report_issue({
-			section: "drivers",
-			name: "twitter",
-			message: "configure with instuctions: https://iotdb.org/docs/node/twitter"
-		});
+        self.report_issue({
+            section: "drivers",
+            name: "twitter",
+            message: "configure with instuctions: https://iotdb.org/docs/node/twitter"
+        });
         return;
     }
-    
+
     if (iot.initd.twitter) {
         self.iot = iot;
         iot.twitter = {
-            search: function() {
+            search: function () {
                 self._helper_search(iot, arguments[0], arguments[1]);
             },
-            send: function() {
+            send: function () {
                 self._helper_send(iot, arguments[0], arguments[1]);
             }
         };
     }
 };
 
-TwitterDriver.prototype._helper_search = function(iot, search, callback) {
+TwitterDriver.prototype._helper_search = function (iot, search, callback) {
     var self = this;
 
     console.log("+ TwitterDriver._helper_search");
@@ -160,12 +158,12 @@ TwitterDriver.prototype._helper_search = function(iot, search, callback) {
             __internal: true,
             search: search
         })
-        .on_change(function(thing) {
+        .on_change(function (thing) {
             callback(thing);
         });
 };
 
-TwitterDriver.prototype._helper_send = function(iot, text) {
+TwitterDriver.prototype._helper_send = function (iot, text) {
     var self = this;
 
     console.log("+ TwitterDriver._helper_send");
@@ -190,7 +188,7 @@ TwitterDriver.prototype._helper_send = function(iot, text) {
  *
  *  @protected
  */
-TwitterDriver.prototype._init = function(initd) {
+TwitterDriver.prototype._init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -204,7 +202,7 @@ TwitterDriver.prototype._init = function(initd) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-TwitterDriver.prototype.identity = function(kitchen_sink) {
+TwitterDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -216,7 +214,7 @@ TwitterDriver.prototype.identity = function(kitchen_sink) {
         }
 
         _.thing_id(identityd);
-        
+
         self.__identityd = identityd;
     }
 
@@ -226,7 +224,7 @@ TwitterDriver.prototype.identity = function(kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-TwitterDriver.prototype.setup = function(paramd) {
+TwitterDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -241,7 +239,7 @@ TwitterDriver.prototype.setup = function(paramd) {
 /*
  *  See {@link Driver#discover Driver.discover}
  */
-TwitterDriver.prototype.discover = function(paramd, discover_callback) {
+TwitterDriver.prototype.discover = function (paramd, discover_callback) {
     if (paramd.initd === undefined) {
         // console.log("# TwitterDriver.discover: no nearby discovery (not a problem)")
         logger.warn({
@@ -259,7 +257,7 @@ TwitterDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-TwitterDriver.prototype.push = function(paramd) {
+TwitterDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -270,7 +268,7 @@ TwitterDriver.prototype.push = function(paramd) {
     }, "called");
 
     self.twitter
-        .updateStatus(paramd.driverd.text, function() {
+        .updateStatus(paramd.driverd.text, function () {
             console.log("- TwitterDriver.push", "tweet sent");
         });
 
@@ -283,7 +281,7 @@ TwitterDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-TwitterDriver.prototype.pull = function() {
+TwitterDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -295,7 +293,7 @@ TwitterDriver.prototype.pull = function() {
 };
 
 /* --- Internals --- */
-TwitterDriver.prototype._setup_search = function() {
+TwitterDriver.prototype._setup_search = function () {
     var self = this;
 
     if (self.twitter) {
@@ -307,13 +305,15 @@ TwitterDriver.prototype._setup_search = function() {
 
     self.twitter = new node_twitter(twitter_oauthd);
 
-    if (self.search){
+    if (self.search) {
         console.log("- TwitterDriver._setup_search", "\n  search:", self.search);
-        self.twitter.stream('filter', {track: self.search}, function(stream) {
-            stream.on('error', function(e) {
+        self.twitter.stream('filter', {
+            track: self.search
+        }, function (stream) {
+            stream.on('error', function (e) {
                 console.log("- TwitterDriver._setup_search", "\n  error:", e);
             });
-            stream.on('data', function(s) {
+            stream.on('data', function (s) {
                 self.pulled(s);
             });
         });
@@ -324,4 +324,3 @@ TwitterDriver.prototype._setup_search = function() {
 
 /* --- API --- */
 exports.Driver = TwitterDriver;
-

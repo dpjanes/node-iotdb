@@ -6,13 +6,13 @@
  *  2014-07-13
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,16 +29,15 @@ var model_maker = require("./model_maker");
 var libs = require("./libs/libs");
 
 /* -- */
-var FakeAttribute = function(key) {
+var FakeAttribute = function (key) {
     this.key = key
 };
 
-FakeAttribute.prototype.get_code = function() {
+FakeAttribute.prototype.get_code = function () {
     return this.key
 };
 
-FakeAttribute.prototype.validate = function() {
-};
+FakeAttribute.prototype.validate = function () {};
 
 
 /* --- constants --- */
@@ -51,26 +50,25 @@ var VERBOSE = true;
  *  see {@ThinkMaker} constructor
  *
  *  @return
- *  a new ModelMaker instance 
+ *  a new ModelMaker instance
  */
-exports.make_generic = function() {
+exports.make_generic = function () {
     return (new model_maker.ModelMaker()).make_generic()
 };
 
 /**
- *  This is the Model for a special kind of Thing 
+ *  This is the Model for a special kind of Thing
  *  that does not have attributes. Operations 'just
  *  happen' on the underlying data
  *
  *  @constructor
  */
-var Generic = function() {
-};
+var Generic = function () {};
 
 Generic.prototype = new model.Model
 
 /**
- *  Get a value from the state. 
+ *  Get a value from the state.
  *
  *  @param find_key
  *  The key (see {@link Thing#_find Model.find} for possibilites)
@@ -78,7 +76,7 @@ Generic.prototype = new model.Model
  *  @return {*}
  *  The current value in the state
  */
-Generic.prototype.get = function(find_key) {
+Generic.prototype.get = function (find_key) {
     var self = this;
 
     /*
@@ -104,7 +102,7 @@ Generic.prototype.get = function(find_key) {
 };
 
 /**
- *  Set a value. 
+ *  Set a value.
  *
  *  <p>
  *  If this is not in a {@link Thing#start Model.start}/{@link Thing#end Model.end}
@@ -122,7 +120,7 @@ Generic.prototype.get = function(find_key) {
  *  @param {*} new_value
  *  The value to set
  */
-Generic.prototype.set = function(find_key, new_value) {
+Generic.prototype.set = function (find_key, new_value) {
     var self = this;
 
     /*
@@ -138,8 +136,7 @@ Generic.prototype.set = function(find_key, new_value) {
         if (subd === undefined) {
             subd = {}
             d[subkey] = subd
-        } else if (_.isObject(subd)) {
-        } else {
+        } else if (_.isObject(subd)) {} else {
             console.log("# Generic.set: key incompatible with current state", find_key)
             return;
         }
@@ -173,7 +170,7 @@ Generic.prototype.set = function(find_key, new_value) {
  *  AGAIN, this needs a lot of work, especially for
  *  nested things
  */
-Generic.prototype.update = function(updated, paramd) {
+Generic.prototype.update = function (updated, paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
@@ -190,12 +187,12 @@ Generic.prototype.update = function(updated, paramd) {
 
 /**
  */
-Generic.prototype.start = function(paramd) {
+Generic.prototype.start = function (paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
-        notify: false,  
-        validate: true,   
+        notify: false,
+        validate: true,
         push: true
     })
 
@@ -211,7 +208,7 @@ Generic.prototype.start = function(paramd) {
 
 /**
  */
-Generic.prototype.end = function() {
+Generic.prototype.end = function () {
     var self = this;
 
     var topd = self.stacks.pop();
@@ -232,7 +229,7 @@ Generic.prototype.end = function() {
 };
 
 /**
- *  Register for a callback. See {@link Thing#end Model.end} 
+ *  Register for a callback. See {@link Thing#end Model.end}
  *  for when callbacks will occcur. Note that
  *  also that we try to supress callbacks
  *  if the value hasn't changed, though there's
@@ -243,19 +240,19 @@ Generic.prototype.end = function() {
  *  (see {@link Thing#_find Model.find} for possibilites)
  *
  *  @param {function} callback
- *  The callback function, which takes 
+ *  The callback function, which takes
  *  ( thing, attribute, new_value ) as arguments
  *
  *  @return
  *  this
  */
-Generic.prototype.on = function(find_key, callback) {
+Generic.prototype.on = function (find_key, callback) {
     var self = this;
 
     var callbacks = self.callbacksd[find_key];
     if (callbacks === undefined) {
         callbacks = []
-        self.callbacksd[find_key] = callbacks 
+        self.callbacksd[find_key] = callbacks
     }
 
     callbacks.push(callback);
@@ -268,14 +265,14 @@ Generic.prototype.on = function(find_key, callback) {
  *  is triggered at the of a update transaction.
  *
  *  @param {function} callback
- *  The callback function, which takes 
+ *  The callback function, which takes
  *  ( thing, changed_attributes ) as arguments
  *
  */
-Generic.prototype.on_change = function(callback) {
+Generic.prototype.on_change = function (callback) {
     var self = this;
 
-    require('./iotdb').iot().on("thing_changed", function(thing) {
+    require('./iotdb').iot().on("thing_changed", function (thing) {
         if (thing == self) {
             callback(self, [])
         }
@@ -288,24 +285,28 @@ Generic.prototype.on_change = function(callback) {
  *  Validate all the attributes, then this thing as a whole
  *
  *  @param attributed
- *  A dictionary of {@link Attribute}, which are all the changed 
+ *  A dictionary of {@link Attribute}, which are all the changed
  *  attributes.
  *
  *  @protected
  */
-Generic.prototype._do_validates = function(attributed) {
+Generic.prototype._do_validates = function (attributed) {
     var self = this;
 
     if (self.__validator) {
         var paramd = {
-            codes: _.keys(attributed),          // attributes that have changed
-            thingd: _.deepCopy(self.stated),    // the current state of the model
-            changed: {},                        // update these values (passed back)
-            libs : libs.libs
+            codes: _.keys(attributed), // attributes that have changed
+            thingd: _.deepCopy(self.stated), // the current state of the model
+            changed: {}, // update these values (passed back)
+            libs: libs.libs
         }
         self.__validator(paramd);
 
-        self.start({ notify: false, validate: false, push: true });
+        self.start({
+            notify: false,
+            validate: false,
+            push: true
+        });
         for (var code in paramd.changed) {
             self.set(code, paramd.changed[code]);
         }
@@ -313,7 +314,7 @@ Generic.prototype._do_validates = function(attributed) {
     }
 };
 
-Generic.prototype._do_notifies = function(attributed) {
+Generic.prototype._do_notifies = function (attributed) {
     var self = this;
     var any = false
 
@@ -330,7 +331,7 @@ Generic.prototype._do_notifies = function(attributed) {
                 callbacks = thing.callbacksd[null];
             }
             if (callbacks) {
-                callbacks.map(function(callback) {
+                callbacks.map(function (callback) {
                     callback(self, attribute, attribute_value);
                 });
             }

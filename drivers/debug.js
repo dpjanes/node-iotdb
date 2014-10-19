@@ -8,13 +8,13 @@
  *  Just log / echo things
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ var _ = require("../helpers");
 var driver = require('../driver');
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'DebugDriver',
 });
@@ -37,7 +37,7 @@ var logger = bunyan.createLogger({
  *  Typically this will be created by one of
  *  the discover_* functions
  */
-var DebugDriver = function(identityd) {
+var DebugDriver = function (identityd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -53,7 +53,7 @@ DebugDriver.prototype = new driver.Driver();
 /**
  *  See {@link Driver#discover Driver.discover}
  */
-DebugDriver.prototype.discover = function(paramd, discover_callback) {
+DebugDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
     if (paramd.initd === undefined) {
@@ -68,14 +68,14 @@ DebugDriver.prototype.discover = function(paramd, discover_callback) {
     discover_callback(new DebugDriver(self.identityd));
 };
 
-DebugDriver.prototype.identity = function(kitchen_sink) {
+DebugDriver.prototype.identity = function (kitchen_sink) {
     return {};
 };
 
 /**
  *  Push
  */
-DebugDriver.prototype.push = function(paramd) {
+DebugDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -94,7 +94,7 @@ DebugDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-DebugDriver.prototype.pull = function() {
+DebugDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({

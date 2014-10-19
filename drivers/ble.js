@@ -8,13 +8,13 @@
  *  Connect to Bluetooth Low Energy (AKA Bluetooth Smart) devices.
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ var fs = require('fs');
 var events = require('events');
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'BLEDriver',
 });
@@ -42,7 +42,7 @@ var n = null;
 
 /**
  */
-var BLEDriver = function(paramd) {
+var BLEDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -68,7 +68,7 @@ var BLEDriver = function(paramd) {
 
     /* */
     if (self.p) {
-        self.p.on('disconnect', function() {
+        self.p.on('disconnect', function () {
             if (!self.p) {
                 return;
             }
@@ -82,7 +82,7 @@ var BLEDriver = function(paramd) {
 
     /* */
     if (self.s) {
-        self.s.discoverCharacteristics(null, function(err, cs) {
+        self.s.discoverCharacteristics(null, function (err, cs) {
             if (!self.p || !self.s) {
                 return;
             }
@@ -111,14 +111,14 @@ var BLEDriver = function(paramd) {
                             method: "/discoverCharacteristics",
                             subscribe_uuid: subscribe_uuid
                         }, "subscribe");
-                        c.on('notify', function(data, isNotification) {
+                        c.on('notify', function (data, isNotification) {
                             // console.log("- BLEDriver/on(notify)", "notified", data);
                             logger.info({
                                 method: "/on(notify)",
                                 data: data
                             }, "called");
                         });
-                        c.on('read', function(data, isNotification) {
+                        c.on('read', function (data, isNotification) {
                             var driverd = {};
                             driverd[subscribe_uuid] = Array.prototype.slice.call(data, 0);
 
@@ -130,7 +130,7 @@ var BLEDriver = function(paramd) {
                                 driverd: driverd
                             }, "called");
                         });
-                        c.notify(true, function(err) {
+                        c.notify(true, function (err) {
                             /*
                             if (err) {
                                 console.log("- BLEDriver/notify", "err", err)
@@ -162,7 +162,7 @@ BLEDriver.prototype = new driver.Driver();
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-BLEDriver.prototype.identity = function(kitchen_sink) {
+BLEDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -192,7 +192,7 @@ BLEDriver.prototype.identity = function(kitchen_sink) {
                 identityd["uuid"] = self.p.uuid;
             }
         }
-        
+
         self.__identityd = identityd;
     }
 
@@ -201,7 +201,7 @@ BLEDriver.prototype.identity = function(kitchen_sink) {
 
 /**
  */
-BLEDriver.prototype.configure = function(ad, callback) {
+BLEDriver.prototype.configure = function (ad, callback) {
     var self = this;
 
     if (ad['make-models']) {
@@ -215,7 +215,7 @@ BLEDriver.prototype.configure = function(ad, callback) {
 /**
  *  Handle disconnects
  */
-BLEDriver.prototype.disconnect = function() {
+BLEDriver.prototype.disconnect = function () {
     var self = this;
 
     // console.log("- BLEDriver.disconnect", "uuid", self.s ? self.s.uuid : null)
@@ -232,7 +232,7 @@ BLEDriver.prototype.disconnect = function() {
 /**
  *  Handle shutdown
  */
-BLEDriver.prototype.shutdown = function() {
+BLEDriver.prototype.shutdown = function () {
     var self = this;
 
     if (self.p) {
@@ -249,17 +249,16 @@ BLEDriver.prototype.shutdown = function() {
 
 /**
  */
-BLEDriver.prototype._discover_drivers = function(driver) {
+BLEDriver.prototype._discover_drivers = function (driver) {
     var self = this;
 
     // Folder for discovered devices
     var discover_folder = ".ble";
     try {
         fs.mkdirSync(discover_folder);
-    } catch (err) {
-    }
+    } catch (err) {}
 
-    self.discover({}, function(driver) {
+    self.discover({}, function (driver) {
         self._discover_driver(driver, {
             discover_folder: discover_folder
         });
@@ -268,23 +267,22 @@ BLEDriver.prototype._discover_drivers = function(driver) {
 
 /**
  */
-BLEDriver.prototype._discover_driver = function(driver, paramd) {
+BLEDriver.prototype._discover_driver = function (driver, paramd) {
     var self = this;
 
     paramd.dirname = paramd.discover_folder + "/" + driver.p.uuid;
     try {
         fs.mkdirSync(paramd.dirname);
-    } catch (err) {
-    }
+    } catch (err) {}
 
     paramd.filename = paramd.discover_folder + "/" + driver.p.uuid + "/" + driver.s.uuid;
 
-    driver.on("found-characteristics", function() {
+    driver.on("found-characteristics", function () {
         self._write_driver(driver, paramd);
     });
 };
 
-BLEDriver.prototype._write_driver = function(driver, paramd) {
+BLEDriver.prototype._write_driver = function (driver, paramd) {
     var iotdb = require('../iotdb');
     var attr;
     var uuid;
@@ -341,13 +339,13 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
         lines.push(util.format("    .attribute("));
         lines.push(util.format("        iotdb.make_integer(':value')"));
         lines.push(util.format("            .code('a%d')", count));
-        code_mapping.push([ 'a' + count, c.uuid ]);
-        if (c.name) { 
+        code_mapping.push(['a' + count, c.uuid]);
+        if (c.name) {
             lines.push(util.format("            .name('%s')", c.name));
         } else {
             lines.push(util.format("            .name('%s')", c.uuid));
         }
-        if (c.type) { 
+        if (c.type) {
             lines.push(util.format("            .description('BLE type %s')", c.type));
         }
 
@@ -395,7 +393,7 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
     for (var ni in notifys) {
         lines.push(util.format("           '%s'%s", notifys[ni], ni < (notifys.length - 1) ? "," : ""));
     }
-    lines.push(            "        ]");
+    lines.push("        ]");
     lines.push(util.format("    })"));
 
     // values going to the BLE thing
@@ -428,7 +426,7 @@ BLEDriver.prototype._write_driver = function(driver, paramd) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-BLEDriver.prototype.setup = function(paramd) {
+BLEDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -450,7 +448,7 @@ BLEDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#reachable}
  */
-BLEDriver.prototype.reachable = function() {
+BLEDriver.prototype.reachable = function () {
     var self = this;
 
     if (!self.p) {
@@ -465,7 +463,7 @@ BLEDriver.prototype.reachable = function() {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-BLEDriver.prototype.driver_meta = function() {
+BLEDriver.prototype.driver_meta = function () {
     var self = this;
 
     if (!self.p) {
@@ -487,16 +485,16 @@ var p_active = {};
 /**
  *  See {@link Driver#discover Driver.discover}
  */
-BLEDriver.prototype.discover = function(paramd, discover_callback) {
+BLEDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
     // Only do scanning once
     if (n !== null) {
         return;
     }
-    
+
     n = noble;
-    n.on('discover', function(p) {
+    n.on('discover', function (p) {
         if (p.__driver_connected) {
             return;
         }
@@ -512,8 +510,8 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
         */
         logger.info({
             method: "discover/on(discover)",
-            "p-uuid": p.uuid, 
-            "localName": p.advertisement.localName, 
+            "p-uuid": p.uuid,
+            "localName": p.advertisement.localName,
             "advertisement": p.advertisement.manufacturerData ? p.advertisement.manufacturerData.toString('hex') : null,
             "connected": p.__driver_connected ? true : false,
             "discovered": p.__driver_discovered ? true : false
@@ -523,21 +521,21 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             p.__driver_discovered = true;
         }
 
-        p.on('connect', function() {
+        p.on('connect', function () {
             if (p.__driver_connected) {
                 return;
             }
             // console.log("- BLEDriver.discover", "p-connect", "uuid", p.uuid);
             logger.info({
                 method: "discover/on(connect)",
-                "p-uuid": p.uuid, 
+                "p-uuid": p.uuid,
             }, "p.connect");
 
             p.__driver_connected = true;
             p.__driver_services = false;
             p.discoverServices();
         });
-        p.on('disconnect', function() {
+        p.on('disconnect', function () {
             if (!p.__driver_connected) {
                 return;
             }
@@ -545,11 +543,11 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             // console.log("- BLEDriver.discover", "p-disconnect", "uuid", p.uuid);
             logger.info({
                 method: "discover/on(disconnect)",
-                "p-uuid": p.uuid, 
+                "p-uuid": p.uuid,
             }, "p.disconnect");
             p.__driver_connected = false;
         });
-        p.on('servicesDiscover', function(ss) {
+        p.on('servicesDiscover', function (ss) {
             if (!p.__driver_connected) {
                 return;
             }
@@ -561,7 +559,7 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
             // console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "#ss", ss.length);
             logger.info({
                 method: "discover/on(servicesDiscover)",
-                "p-uuid": p.uuid, 
+                "p-uuid": p.uuid,
                 "#ss": ss.length
             }, "p.serviceDiscover");
             if (ss.length === 0) {
@@ -569,11 +567,11 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
                 return;
             }
 
-            ss.map(function(s) {
+            ss.map(function (s) {
                 // console.log("- BLEDriver.discover", "p-serviceDiscover", "p-uuid", p.uuid, "s-uuid", s.uuid);
                 logger.info({
                     method: "discover/on(servicesDiscover)",
-                    "p-uuid": p.uuid, 
+                    "p-uuid": p.uuid,
                     "s-uuid": s.uuid
                 }, "p.serviceDiscover");
 
@@ -600,14 +598,14 @@ BLEDriver.prototype.discover = function(paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-BLEDriver.prototype.push = function(paramd) {
+BLEDriver.prototype.push = function (paramd) {
     var self = this;
     if (!self.p) {
         return;
     }
 
     var qitem = {
-        run: function() {
+        run: function () {
             logger.info({
                 method: "push/qitem(run)",
                 unique_id: self.unique_id,
@@ -649,7 +647,7 @@ BLEDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-BLEDriver.prototype.pull = function() {
+BLEDriver.prototype.pull = function () {
     var self = this;
 
     if (!self.p) {

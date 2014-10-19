@@ -8,13 +8,13 @@
  *  Do nothing
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ var _ = require("../helpers");
 var driver = require('../driver');
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'NullDriver',
 });
@@ -37,7 +37,7 @@ var logger = bunyan.createLogger({
  *  Typically this will be created by one of
  *  the discover_* functions
  */
-var NullDriver = function(verbose) {
+var NullDriver = function (verbose) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -53,7 +53,7 @@ NullDriver.prototype = new driver.Driver();
 /**
  *  See {@link driver#push}
  */
-NullDriver.prototype.push = function(paramd) {
+NullDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -72,7 +72,7 @@ NullDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-NullDriver.prototype.pull = function() {
+NullDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({

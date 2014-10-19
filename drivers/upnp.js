@@ -8,13 +8,13 @@
  *  Talk to all UPnP devices
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ var _ = require("../helpers");
 var driver = require('../driver');
 
 var bunyan = require('bunyan');
-var logger = bunyan.createLogger({ 
+var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'UPnPDriver',
 });
@@ -43,7 +43,7 @@ var DELTA_SEARCH = 20 * 1000;
  *  Typically this will be created by one of
  *  the discover_* functions
  */
-var UPnPDriver = function(upnp_device) {
+var UPnPDriver = function (upnp_device) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -51,7 +51,7 @@ var UPnPDriver = function(upnp_device) {
 
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
-        self.upnp_device.on("device-lost", function() {
+        self.upnp_device.on("device-lost", function () {
             console.log("- UPnPDriver", "device-lost message received: will forget and try to rediscover");
             self._forget_device();
         });
@@ -65,13 +65,13 @@ UPnPDriver.prototype = new driver.Driver();
 /* --- class methods --- */
 var _cp;
 
-UPnPDriver.cp = function() {
+UPnPDriver.cp = function () {
     if (_cp === undefined) {
         console.log("- UPnpDriver.cp", "made UpnpControlPoint");
         _cp = new UpnpControlPoint();
 
         // we periodically kick off a new search to find devices that have come online
-        setInterval(function() {
+        setInterval(function () {
             _cp.search();
             _cp.scrub(DELTA_SCRUB);
         }, DELTA_SEARCH);
@@ -84,14 +84,14 @@ UPnPDriver.cp = function() {
  *  See {@link Driver#discover Driver.discover}
  *  - Scan the local network for UPnPs
  */
-UPnPDriver.prototype.discover = function(paramd, discover_callback) {
+UPnPDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
     var cp = UPnPDriver.cp();
 
     if (!self.__subscribe_device) {
         self.__subscribe_device = true;
-        cp.on("device", function(upnp_device) {
+        cp.on("device", function (upnp_device) {
             self._found_device(discover_callback, upnp_device);
         });
     }
@@ -103,7 +103,7 @@ UPnPDriver.prototype.discover = function(paramd, discover_callback) {
 /**
  *  See {@link Driver#reachable}
  */
-UPnPDriver.prototype.reachable = function() {
+UPnPDriver.prototype.reachable = function () {
     var self = this;
 
     if (!self.upnp_device) {
@@ -117,13 +117,13 @@ UPnPDriver.prototype.reachable = function() {
  *  Forget about this connect. This will render
  *  this Thing/Driver unreachable
  */
-UPnPDriver.prototype._forget_device = function() {
+UPnPDriver.prototype._forget_device = function () {
     var self = this;
 
     if (!self.upnp_device) {
         return;
     }
-    
+
     if (_cp) {
         _cp.forget(self.upnp_device);
     }
@@ -135,7 +135,7 @@ UPnPDriver.prototype._forget_device = function() {
 /**
  *  A new Driver can be made (maybe) with the upnp_device
  */
-UPnPDriver.prototype._found_device = function(discover_callback, upnp_device) {
+UPnPDriver.prototype._found_device = function (discover_callback, upnp_device) {
     var self = this;
 
     console.log("- UPnPDriver._found_device", "deviceType", upnp_device.deviceType);
@@ -144,7 +144,7 @@ UPnPDriver.prototype._found_device = function(discover_callback, upnp_device) {
 
 /**
  */
-UPnPDriver.prototype._service_by_urn = function(service_urn) {
+UPnPDriver.prototype._service_by_urn = function (service_urn) {
     var self = this;
 
     if (!self.upnp_device) {
@@ -169,7 +169,7 @@ UPnPDriver.prototype._service_by_urn = function(service_urn) {
 /**
  *  See {@link Driver#identity}
  */
-UPnPDriver.prototype.identity = function(kitchen_sink) {
+UPnPDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if ((self.__identityd === undefined) || kitchen_sink) {
@@ -200,7 +200,7 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
             }
         }
 
-        
+
         if (kitchen_sink) {
             return identityd;
         }
@@ -215,7 +215,7 @@ UPnPDriver.prototype.identity = function(kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-UPnPDriver.prototype.setup = function(paramd) {
+UPnPDriver.prototype.setup = function (paramd) {
     var self = this;
 
     if (!self.upnp_device) {
@@ -235,13 +235,13 @@ UPnPDriver.prototype.setup = function(paramd) {
             if (!service) {
                 console.log("- UPnPDriver.setup: service not found", service_urn);
             } else {
-                var _on_failed = function(code, error) {
+                var _on_failed = function (code, error) {
                     console.log("- UPnPDriver.setup/_on_failed", code, error);
                     self._forget_device();
                     _remove_listeners();
                 };
 
-                var _on_stateChange = function(valued) {
+                var _on_stateChange = function (valued) {
                     var driverd = {};
                     driverd[service_urn] = valued;
 
@@ -250,7 +250,7 @@ UPnPDriver.prototype.setup = function(paramd) {
                     console.log("- UPnPDriver.setup/_on_stateChange", driverd);
                 };
 
-                var _on_subscribe = function(error, data) {
+                var _on_subscribe = function (error, data) {
                     if (error) {
                         console.log("- UPnPDriver.setup/subscribe", service_urn, error);
                         self._forget_device();
@@ -258,7 +258,7 @@ UPnPDriver.prototype.setup = function(paramd) {
                     }
                 };
 
-                var _remove_listeners = function() {
+                var _remove_listeners = function () {
                     service.removeListener('failed', _on_failed);
                     service.removeListener('stateChange', _on_stateChange);
                 };
@@ -278,7 +278,7 @@ UPnPDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#push}
  */
-UPnPDriver.prototype.push = function(paramd) {
+UPnPDriver.prototype.push = function (paramd) {
     var self = this;
 
     if (!self.upnp_device) {
@@ -304,7 +304,7 @@ UPnPDriver.prototype.push = function(paramd) {
         for (var action_id in serviced) {
             var actiond = serviced[action_id];
             console.log("- UPnPDriver.push", service_urn, action_id, actiond);
-            service.callAction(action_id, actiond, function(err, buf) {
+            service.callAction(action_id, actiond, function (err, buf) {
                 if (err) {
                     console.log("- UPnPDriver.push", err, buf);
                 }
@@ -321,7 +321,7 @@ UPnPDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-UPnPDriver.prototype.pull = function() {
+UPnPDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -337,7 +337,7 @@ UPnPDriver.prototype.pull = function() {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-UPnPDriver.prototype.driver_meta = function() {
+UPnPDriver.prototype.driver_meta = function () {
     var self = this;
 
     if (!self.upnp_device) {

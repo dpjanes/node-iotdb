@@ -8,13 +8,13 @@
  *  Connect to SmartThings
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ var st = null;
 
 /**
  */
-var SmartThingsDriver = function(paramd) {
+var SmartThingsDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
@@ -78,7 +78,7 @@ SmartThingsDriver.prototype = new driver.Driver();
  *
  *  @protected
  */
-SmartThingsDriver.prototype._init = function(initd) {
+SmartThingsDriver.prototype._init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -97,7 +97,7 @@ SmartThingsDriver.prototype._init = function(initd) {
 /**
  *  See {@link Driver#register Driver.register}
  */
-SmartThingsDriver.prototype.register = function(iot) {
+SmartThingsDriver.prototype.register = function (iot) {
     var self = this;
 
     driver.Driver.prototype.register.call(self, iot);
@@ -112,11 +112,11 @@ SmartThingsDriver.prototype.register = function(iot) {
             console.log("# (instructions coming)")
             console.log("############################## ")
 
-			self.report_issue({
-				section: "drivers",
-				name: "smartthings",
-				message: "not configured (instructions coming)"
-			})
+            self.report_issue({
+                section: "drivers",
+                name: "smartthings",
+                message: "not configured (instructions coming)"
+            })
             return;
         }
 
@@ -128,7 +128,7 @@ SmartThingsDriver.prototype.register = function(iot) {
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-SmartThingsDriver.prototype.identity = function(kitchen_sink) {
+SmartThingsDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -142,7 +142,7 @@ SmartThingsDriver.prototype.identity = function(kitchen_sink) {
         }
 
         _.thing_id(identityd);
-        
+
         self.__identityd = identityd;
     }
 
@@ -154,7 +154,7 @@ var __message_no_username = false
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-SmartThingsDriver.prototype.setup = function(paramd) {
+SmartThingsDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -195,7 +195,7 @@ SmartThingsDriver.prototype.setup = function(paramd) {
 /**
  *  See {@link Driver#handle_mqtt_message Driver.handle_mqtt_message}
  */
-SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message) {
+SmartThingsDriver.prototype.handle_mqtt_message = function (in_topic, in_message) {
     var self = this;
 
     if (in_topic.substring(0, self.mqtt_topic.length) !== self.mqtt_topic) {
@@ -203,7 +203,7 @@ SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message)
     }
 
     try {
-        var in_messaged = JSON.parse(in_message) 
+        var in_messaged = JSON.parse(in_message)
         delete in_messaged['timestamp']
         self.pulled(in_messaged)
     } catch (x) {
@@ -226,10 +226,10 @@ SmartThingsDriver.prototype.handle_mqtt_message = function(in_topic, in_message)
 /**
  *  See {@link Driver#discover Driver.discover}
  */
-SmartThingsDriver.prototype.discover = function(paramd, discover_callback) {
+SmartThingsDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
-    st.on("devices", function(device_type, devices) {
+    st.on("devices", function (device_type, devices) {
         for (var di in devices) {
             var device = devices[di];
             var driver = new SmartThingsDriver({
@@ -248,7 +248,7 @@ SmartThingsDriver.prototype.discover = function(paramd, discover_callback) {
     })
 
     if (!st.endpointd.url) {
-        st.on("endpoint", function() {
+        st.on("endpoint", function () {
             self._request_all_devices()
         })
     } else {
@@ -256,7 +256,7 @@ SmartThingsDriver.prototype.discover = function(paramd, discover_callback) {
     }
 };
 
-SmartThingsDriver.prototype._request_all_devices = function() {
+SmartThingsDriver.prototype._request_all_devices = function () {
     var dtypes = [
         "switch",
         "contact",
@@ -277,13 +277,13 @@ SmartThingsDriver.prototype._request_all_devices = function() {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-SmartThingsDriver.prototype.push = function(paramd) {
+SmartThingsDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
         method: "push",
         unique_id: self.unique_id,
-        driverd: paramd.driverd, 
+        driverd: paramd.driverd,
         initd: paramd.initd,
         smarthings_id: self.id,
         smarthings_type: self.type
@@ -303,7 +303,7 @@ SmartThingsDriver.prototype.push = function(paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-SmartThingsDriver.prototype.pull = function() {
+SmartThingsDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -319,7 +319,7 @@ SmartThingsDriver.prototype.pull = function() {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-SmartThingsDriver.prototype.driver_meta = function() {
+SmartThingsDriver.prototype.driver_meta = function () {
     return this.metad;
 };
 
