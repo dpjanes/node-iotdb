@@ -50,17 +50,17 @@ var FeedDriver = function (paramd) {
     paramd = _.defaults(paramd, {
         verbose: false,
         driver: "iot-driver:feed"
-    })
+    });
 
-    self.verbose = paramd.verbose
-    self.driver = _.expand(paramd.driver)
-    self.iri = null
-    self.seend = {}
-    self.fresh = true
-    self.track_links = true
-    self.started = new Date()
+    self.verbose = paramd.verbose;
+    self.driver = _.expand(paramd.driver);
+    self.iri = null;
+    self.seend = {};
+    self.fresh = true;
+    self.track_links = true;
+    self.started = new Date();
 
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
     return self;
 };
@@ -79,22 +79,22 @@ FeedDriver.prototype._init = function (initd) {
 
     initd = _.defaults(initd, {
         poll: 120
-    })
+    });
 
     if (!initd) {
         return;
     }
     if (initd.iri !== undefined) {
-        self.iri = initd.iri
+        self.iri = initd.iri;
     }
     if (initd.fresh !== undefined) {
-        self.fresh = initd.fresh
+        self.fresh = initd.fresh;
     }
     if (initd.track_links !== undefined) {
-        self.track_links = initd.track_links
+        self.track_links = initd.track_links;
     }
 
-    self.poll_init(initd)
+    self.poll_init(initd);
 };
 
 /**
@@ -104,11 +104,11 @@ FeedDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
-        var identityd = {}
-        identityd["driver"] = self.driver
+        var identityd = {};
+        identityd["driver"] = self.driver;
 
         if (self.iri) {
-            identityd["iri"] = self.iri
+            identityd["iri"] = self.iri;
         }
         _.thing_id(identityd);
 
@@ -127,8 +127,8 @@ FeedDriver.prototype.setup = function (paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    self._init(paramd.initd)
-    self.pull()
+    self._init(paramd.initd);
+    self.pull();
 
     return self;
 };
@@ -181,7 +181,7 @@ FeedDriver.prototype.pull = function () {
         unique_id: self.unique_id
     }, "called");
 
-    self._fetch()
+    self._fetch();
 
     return self;
 };
@@ -190,18 +190,18 @@ FeedDriver.prototype.pull = function () {
 FeedDriver.prototype._fetch = function () {
     var self = this;
 
-    console.log("- FeedDriver._fetch", "iri", self.iri)
+    console.log("- FeedDriver._fetch", "iri", self.iri);
     unirest
         .get(self.iri)
         .end(function (result) {
             if (result.error) {
-                console.log("# FeedDriver._fetch: can't get feed", result.error)
+                console.log("# FeedDriver._fetch: can't get feed", result.error);
             } else {
-                self._process(result.body)
+                self._process(result.body);
             }
 
-            self.poll_reschedule()
-        })
+            self.poll_reschedule();
+        });
 };
 
 FeedDriver.prototype._process = function (body) {
@@ -209,15 +209,15 @@ FeedDriver.prototype._process = function (body) {
 
     var s = new stream.Readable();
     s._read = function noop() {}; // redundant? see update below
-    s.push(body)
+    s.push(body);
     s.push(null);
 
     var fp = new FeedParser({
         feedurl: self.iri
-    })
-    fp.on('error', function () {})
+    });
+    fp.on('error', function () {});
     fp.on('readable', function () {
-        var stream = this
+        var stream = this;
         var item = null;
         while (item = stream.read()) {
             if (item.guid === undefined) {
@@ -227,70 +227,68 @@ FeedDriver.prototype._process = function (body) {
             if (self.seend[item.guid] && self.track_links) {
                 continue;
             }
-            self.seend[item.guid] = 1
+            self.seend[item.guid] = 1;
 
-            var date = item.date
+            var date = item.date;
             if (!date) {
                 if (self.fresh) {
                     continue;
                 }
             } else {
-                var is_fresh = date.getTime() >= self.started.getTime()
-                if (self.fresh && !is_fresh) {
+                item.is_fresh = date.getTime() >= self.started.getTime();
+                if (self.fresh && !item.is_fresh) {
                     continue;
                 }
             }
 
-            item.fresh = is_fresh
-
-            self.pulled(self._flatten(item))
+            self.pulled(self._flatten(item));
         }
-    })
+    });
 
-    s.pipe(fp)
+    s.pipe(fp);
 };
 
 FeedDriver.prototype._flatten = function (od) {
     var self = this;
 
-    var nd = {}
+    var nd = {};
 
     for (var okey in od) {
-        var ovalue = od[okey]
-        var nkey = okey.toLowerCase().replace(/[^a-z0-9]/g, '_')
+        var ovalue = od[okey];
+        var nkey = okey.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
         if (_.isString(ovalue)) {
             if (ovalue.length !== 0) {
-                nd[nkey] = ovalue
+                nd[nkey] = ovalue;
             }
         } else if (_.isArray(ovalue)) {
             if (ovalue.length !== 0) {
-                nd[nkey] = ovalue
+                nd[nkey] = ovalue;
             }
         } else if (_.isDate(ovalue)) {
-            nd[nkey] = ovalue
+            nd[nkey] = ovalue;
         } else if (_.isObject(ovalue)) {
             if (_.isEmpty(ovalue)) {
                 continue;
             }
 
-            var ohash = ovalue['#']
+            var ohash = ovalue['#'];
             if (ohash === undefined) {
                 continue;
             } else {
-                nd[nkey] = ovalue['#']
+                nd[nkey] = ovalue['#'];
             }
 
-            var oat = ovalue['@']
+            var oat = ovalue['@'];
             if (oat !== undefined) {
                 for (var skey in oat) {
-                    var svalue = oat[skey]
-                    skey = skey.toLowerCase().replace(/[^a-z0-9]/g, '_')
-                    nd[nkey + "_" + skey] = svalue
+                    var svalue = oat[skey];
+                    skey = skey.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    nd[nkey + "_" + skey] = svalue;
                 }
             }
         } else {
-            nd[nkey] = ovalue
+            nd[nkey] = ovalue;
         }
     }
 
@@ -298,4 +296,4 @@ FeedDriver.prototype._flatten = function (od) {
 };
 
 /* --- API --- */
-exports.Driver = FeedDriver
+exports.Driver = FeedDriver;

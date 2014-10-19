@@ -36,6 +36,7 @@ module.exports = function (grunt) {
                     'drivers/hue.js',
                     'drivers/upnp.js',
                     'drivers/twitter.js',
+                    'drivers/feed.js',
                 ]
             },
             test: {
