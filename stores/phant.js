@@ -8,13 +8,13 @@
  *  Connect to Phant / data.sparkfun.com
  *
  *  Copyright [2013-2014] [David P. Janes]
- *  
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,75 +26,73 @@
 
 var iotdb = require('iotdb');
 var _ = require("../helpers");
-var store = require('../store')
-var Phant = require('phant-client').Phant
+var store = require('../store');
+var Phant = require('phant-client').Phant;
 
 /**
  */
-var PhantStore = function(paramd) {
+var PhantStore = function (paramd) {
     var self = this;
 
-    self.iri = "http://localhost:8080"
+    self.iri = "http://localhost:8080";
 
     return self;
-}
+};
 
-PhantStore.prototype = new store.Store;
-PhantStore.prototype.store_id = "iot-store:phant"
+PhantStore.prototype = new store.Store();
+PhantStore.prototype.store_id = "iot-store:phant";
 
-var phant_server = "iot-store:phant/server"
-var phant_stream_public_key = "iot-store:phant/stream/public_key"
-var phant_stream_private_key = "iot-store:phant/stream/private_key"
+var phant_server = "iot-store:phant/server";
+var phant_stream_public_key = "iot-store:phant/stream/public_key";
+var phant_stream_private_key = "iot-store:phant/stream/private_key";
 
 /*
  *  See {@link Store#on_change Store.on_change}
  */
-PhantStore.prototype.on_change = function(thing) {
-    var self = this
+PhantStore.prototype.on_change = function (thing) {
+    var self = this;
 
-    var meta = thing.meta()
+    var meta = thing.meta();
 
-    var server = meta.get(phant_server, null)
+    var server = meta.get(phant_server, null);
     if (server === null) {
-        self._warn(thing, "Thing not configured - no 'server'")
-        return
+        self._warn(thing, "Thing not configured - no 'server'");
+        return;
     }
 
-    var public_key = meta.get(phant_stream_public_key, null)
+    var public_key = meta.get(phant_stream_public_key, null);
     if (public_key === null) {
-        self._warn(thing, "Thing not configured - no 'public_key'")
-        return
+        self._warn(thing, "Thing not configured - no 'public_key'");
+        return;
     }
 
-    var private_key = meta.get(phant_stream_private_key, null)
+    var private_key = meta.get(phant_stream_private_key, null);
     if (private_key === null) {
-        self._warn(thing, "Thing not configured - no 'private_key'")
-        return
+        self._warn(thing, "Thing not configured - no 'private_key'");
+        return;
     }
 
-    var any = false
-    var sendd = {}
-    var stated = thing.state()
+    var any = false;
+    var sendd = {};
+    var stated = thing.state();
     for (var key in stated) {
-        var value = stated[key]
-        if (value === undefined) {
-        } else if (value === null) {
-        } else if (_.isBoolean(value)) {
-            sendd[key] = value ? 1: 0
-            any = true
+        var value = stated[key];
+        if (value === undefined) {} else if (value === null) {} else if (_.isBoolean(value)) {
+            sendd[key] = value ? 1 : 0;
+            any = true;
         } else if (_.isNumber(value)) {
-            sendd[key] = value
-            any = true
+            sendd[key] = value;
+            any = true;
         } else if (_.isString(value)) {
-            sendd[key] = value
-            any = true
+            sendd[key] = value;
+            any = true;
         } else {
-            console.log("# PhantStore.on_change", "Don't understand code/value", code, value)
+            console.log("# PhantStore.on_change", "Don't understand code/value", key, value);
         }
     }
 
     if (!any) {
-        return
+        return;
     }
 
     var streamd = {
@@ -103,23 +101,23 @@ PhantStore.prototype.on_change = function(thing) {
         manageUrl: server + "/streams/" + public_key,
         publicKey: public_key,
         privateKey: private_key
-    }
-    var phant = new Phant()
-    phant.connect(streamd, function(error, streamd) {
+    };
+    var phant = new Phant();
+    phant.connect(streamd, function (error, streamd) {
         if (error) {
-            console.error("# PhantStore.on_change/connect", error)
-            return
+            console.error("# PhantStore.on_change/connect", error);
+            return;
         }
 
-        phant.add(streamd, sendd, function(error) {
+        phant.add(streamd, sendd, function (error) {
             if (error) {
-                console.error("# PhantStore.on_change/add", error)
+                console.error("# PhantStore.on_change/add", error);
             } else {
-                console.warn("- PhantStore.on_change/add", "record sent")
+                console.warn("- PhantStore.on_change/add", "record sent");
             }
-        })
-    })
-}
+        });
+    });
+};
 
 /**
  *  This prompts for information needed to connect this device to Phant
@@ -132,74 +130,74 @@ PhantStore.prototype.on_change = function(thing) {
  *  <li>Fields you want to save to Phant
  *  </ul>
  */
-PhantStore.prototype.configure_thing = function(thing, ad, callback) {
-    var prompt = require('prompt')
-    var promptdd = {}
+PhantStore.prototype.configure_thing = function (thing, ad, callback) {
+    var prompt = require('prompt');
+    var promptdd = {};
+    var promptd;
+    var v;
 
-    var meta = thing.meta()
+    var meta = thing.meta();
 
     // figure out all available codes
-    var codes = []
-    var ads = thing.attributes()
+    var codes = [];
+    var ads = thing.attributes();
     for (var adi in ads) {
-        var attribute = ads[adi]
-        var code = attribute.get_code()
-        codes.push(code)
+        var attribute = ads[adi];
+        var code = attribute.get_code();
+        codes.push(code);
     }
 
     {
-        var promptd = {
+        promptd = {
             description: "Phant Server",
             required: true
-        }
-        var v = meta.get(phant_server, null)
+        };
+        v = meta.get(phant_server, null);
         if (v !== null) {
-            promptd['default'] = v
+            promptd['default'] = v;
         } else {
-            promptd['default'] = 'https://data.sparkfun.com'
+            promptd['default'] = 'https://data.sparkfun.com';
         }
-        promptdd['server'] = promptd
-    }
-    {
-        var promptd = {
+        promptdd['server'] = promptd;
+    } {
+        promptd = {
             description: "Public Key",
             pattern: /^[a-zA-Z0-9]*$/,
             required: true
-        }
-        var v = meta.get(phant_stream_public_key, null)
+        };
+        v = meta.get(phant_stream_public_key, null);
         if (v !== null) {
-            promptd['default'] = v
+            promptd['default'] = v;
 
         }
-        promptdd['public_key'] = promptd
-    }
-    {
-        var promptd = {
+        promptdd['public_key'] = promptd;
+    } {
+        promptd = {
             description: "Private Key",
             pattern: /^[a-zA-Z0-9]*$/,
             required: true
-        }
-        var v = meta.get(phant_stream_private_key, null)
+        };
+        v = meta.get(phant_stream_private_key, null);
         if (v !== null) {
-            promptd['default'] = v
+            promptd['default'] = v;
 
         }
-        promptdd['private_key'] = promptd
+        promptdd['private_key'] = promptd;
     }
 
-    prompt.message = "Phant"
+    prompt.message = "Phant";
     prompt.start();
     prompt.get({
         properties: promptdd
     }, function (error, resultd) {
         if (error) {
-            callback(error)
-            return
+            callback(error);
+            return;
         }
 
-        meta.set(phant_server, resultd.server.replace(/\/*$/, ''))
-        meta.set(phant_stream_private_key, resultd.private_key)
-        meta.set(phant_stream_public_key, resultd.public_key)
+        meta.set(phant_server, resultd.server.replace(/\/*$/, ''));
+        meta.set(phant_stream_private_key, resultd.private_key);
+        meta.set(phant_stream_public_key, resultd.public_key);
 
         var streamd = {
             inputUrl: resultd.server + "/input/" + resultd.public_key,
@@ -207,62 +205,62 @@ PhantStore.prototype.configure_thing = function(thing, ad, callback) {
             manageUrl: resultd.server + "/streams/" + resultd.public_key,
             publicKey: resultd.public_key,
             privateKey: resultd.private_key
-        }
-        var phant = new Phant()
-        phant.connect(streamd, function(error, streamd) {
+        };
+        var phant = new Phant();
+        phant.connect(streamd, function (error, streamd) {
             if (error) {
-                console.error("# PhantStore.configure_thing", error)
-                return
+                console.error("# PhantStore.configure_thing", error);
+                return;
             }
 
-            var metad = {}
-            metad.fields = codes.join(",")
-            metad.title = "IOTDB " + thing.meta().get("iot:name")
-            metad.alias = thing.thing_id().replace(/:/g, '_')
+            var metad = {};
+            metad.fields = codes.join(",");
+            metad.title = "IOTDB " + thing.meta().get("iot:name");
+            metad.alias = thing.thing_id().replace(/:/g, '_');
 
-            phant.update(streamd, metad, function(error) {
-                callback(null)
+            phant.update(streamd, metad, function (error) {
+                callback(null);
 
-                console.log("##############################")
-                console.log("# Please make sure the Phant Store stream")
-                console.log("# is configured correctly.")
-                console.log("#")
-                console.log("# URL: %s/edit/%s", streamd.manageUrl, resultd.private_key)
-                console.log("# Fields: %s", metad.fields)
-                console.log("# Title (recommended): %s", metad.title)
-                console.log("# Stream Alias (recommended): %s", metad.alias)
-                console.log("#")
-                console.log("##############################")
+                console.log("##############################");
+                console.log("# Please make sure the Phant Store stream");
+                console.log("# is configured correctly.");
+                console.log("#");
+                console.log("# URL: %s/edit/%s", streamd.manageUrl, resultd.private_key);
+                console.log("# Fields: %s", metad.fields);
+                console.log("# Title (recommended): %s", metad.title);
+                console.log("# Stream Alias (recommended): %s", metad.alias);
+                console.log("#");
+                console.log("##############################");
 
-            })
-        })
-    })
-}
+            });
+        });
+    });
+};
 
-var warned = {}
+var warned = {};
 
-PhantStore.prototype._warn = function(thing, message) {
-    var thing_id = thing.thing_id()
+PhantStore.prototype._warn = function (thing, message) {
+    var thing_id = thing.thing_id();
     if (warned[thing_id]) {
-        return
+        return;
     } else {
-        warned[thing_id] = true
+        warned[thing_id] = true;
     }
 
-    console.log("##############################")
-    console.log("# PhantStore.on_change", message ? message : "")
-    console.log("# configure using:")
-    console.log("#")
-    console.log("#   iotdb-control configure-store-thing", 
-        "--store", ":phant", 
+    console.log("##############################");
+    console.log("# PhantStore.on_change", message ? message : "");
+    console.log("# configure using:");
+    console.log("#");
+    console.log("#   iotdb-control configure-store-thing",
+        "--store", ":phant",
         "--thing", thing.thing_id(),
         "--model", thing.get_code()
-    )
-    console.log("#")
-    console.log("##############################")
-}
+    );
+    console.log("#");
+    console.log("##############################");
+};
 
 /*
  *  API
  */
-exports.Store = PhantStore
+exports.Store = PhantStore;
