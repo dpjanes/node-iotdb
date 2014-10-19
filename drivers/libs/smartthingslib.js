@@ -16,6 +16,12 @@ var fs = require('fs')
 var util = require('util')
 var events = require('events')
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/smartthingslib',
+});
+
 var SmartThings = function () {
     var self = this;
 

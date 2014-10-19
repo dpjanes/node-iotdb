@@ -7,6 +7,12 @@ var util = require('util'),
     xml2js = require('xml2js'),
     UpnpService = require("./upnp-service").UpnpService;
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/upnp-device',
+});
+
 var TRACE = true;
 
 /**
@@ -16,7 +22,10 @@ var UpnpDevice = function (controlPoint, uuid, location, desc, localAddress) {
     EventEmitter.call(this);
 
     if (TRACE) {
-        console.log("- UpnpDevice: new device object for " + uuid);
+        logger.info({
+            method: "UpnpDevice",
+            uuid: uuid
+        }, "new device object");
     }
     this.controlPoint = controlPoint;
 
@@ -124,6 +133,9 @@ UpnpDevice.prototype._getDeviceDetails = function (callback) {
     });
     req.on('error', function (e) {
         console.log('problem with request: ' + e.message);
+        logger.info({
+            method: "UpnpDevice/on(error)"
+        }, "");
     });
     req.on("socket", function (socket) {
         self.localAddress = socket.address().address;

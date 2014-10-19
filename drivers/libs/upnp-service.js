@@ -6,6 +6,12 @@ var util = require('util'),
     url = require("url"),
     xml2js = require('xml2js');
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/upnp-service',
+});
+
 var TRACE = true;
 var DETAIL = false;
 
@@ -22,6 +28,9 @@ var UpnpService = function (device, desc) {
 
     if (TRACE && DETAIL) {
         console.log("- UPnP:UpnpService", "creating service object", JSON.stringify(desc));
+        logger.info({
+            method: "UpnpService"
+        }, "");
     }
 
     this.device = device;
@@ -55,6 +64,9 @@ UpnpService.prototype.forget = function () {
     var self = this
 
     console.log("- UPnP:UpnpService.forget", this.serviceType, this.serviceId)
+    logger.info({
+        method: "UpnpService.forget",
+    }, "");
     self.forgotten = true
         // self.removeAllListeners()
 }
@@ -69,7 +81,11 @@ UpnpService.prototype.callAction = function (actionName, args, callback) {
     }
 
     if (TRACE) {
-        console.log("- UPnP:UpnpService.callAction", "calling action", actionName, JSON.stringify(args));
+        logger.info({
+            method: "UpnpService.callAction",
+            actionName: actionName,
+            args: args,
+        }, "calling action");
     }
     var argXml = "";
     for (var name in args) {
@@ -88,6 +104,9 @@ UpnpService.prototype.callAction = function (actionName, args, callback) {
 
     if (TRACE && DETAIL) {
         console.log("- UPnP:UpnpService.callAction", "- sending SOAP request " + JSON.stringify(options) + "\n" + s);
+        logger.info({
+            method: "UpnpService.callAction",
+        }, "");
     }
 
     options.headers = {
@@ -104,6 +123,9 @@ UpnpService.prototype.callAction = function (actionName, args, callback) {
         });
         res.on('error', function (error) {
             console.log("# UPnP:UpnpService.callAction", "error receiving HTTP request", error)
+            logger.info({
+                method: "UpnpService.callAction/on(error)",
+            }, "");
             callback(error, buf);
         })
         res.on('end', function () {
@@ -116,6 +138,9 @@ UpnpService.prototype.callAction = function (actionName, args, callback) {
     });
     req.on('error', function (error) {
         console.log("# UpnpService.callAction", "error sending HTTP request", error)
+        logger.info({
+            method: "UpnpService.callAction/on(error)",
+        }, "");
         callback(error, "");
     })
 
@@ -145,7 +170,10 @@ UpnpService.prototype.subscribe = function (callback) {
     };
 
     if (TRACE) {
-        console.log("- UPnP:UpnpService.subscribe", "subscribing", JSON.stringify(options));
+        logger.info({
+            method: "UpnpService.subscribe",
+            options: options
+        }, "subscribing");
     }
 
     var req = http.request(options, function (res) {
@@ -157,7 +185,10 @@ UpnpService.prototype.subscribe = function (callback) {
             if (res.statusCode !== 200) {
                 callback(new Error("Problem with subscription on " + service.serviceId), buf);
             } else {
-                console.log("# UPnP:UpnpService.subscribe", "response", JSON.stringify(res.headers.sid));
+                logger.error({
+                    method: "UpnpService.subscribe/on(end)",
+                    headers: res.headers
+                }, "error subscribing");
                 var sid = res.headers.sid;
                 var subscription = new Subscription(self, sid, self.subscriptionTimeout);
                 self.device.controlPoint.eventHandler.addSubscription(subscription);
@@ -167,7 +198,10 @@ UpnpService.prototype.subscribe = function (callback) {
         });
     });
     req.on('error', function (error) {
-        console.log("# UPnP:UpnpService.subscribe", "error sending HTTP request", error)
+        logger.info({
+            method: "UpnpService.subscribe/on(error)",
+            error: error
+        }, "error sending HTTP request");
         callback(error, "");
     })
 
@@ -197,6 +231,9 @@ UpnpService.prototype._resubscribe = function (sid, callback) {
 
     if (TRACE && DETAIL) {
         console.log("- UPnP:UpnpService.resubscribe", "resubscribing", JSON.stringify(options));
+        logger.info({
+            method: "UpnpService._resubscribe",
+        }, "");
     }
 
     var req = http.request(options, function (res) {

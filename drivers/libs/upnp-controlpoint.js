@@ -11,6 +11,12 @@ var upnp = require("./upnp"),
 
 var _ = require('../../helpers')
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/upnp-controlpoint',
+});
+
 var TRACE = false;
 var DETAIL = false;
 
@@ -51,7 +57,10 @@ var UpnpControlPoint = function () {
         var udn = getUUID(device.usn);
 
         if (TRACE) {
-            console.log("- DeviceFound: " + udn);
+        logger.debug({
+            method: "UpnpControlPoint/on(DeviceFound)",
+            udn: udn
+        }, "device found");
         }
 
         // DPJ 
@@ -64,10 +73,10 @@ var UpnpControlPoint = function () {
         }
 
         if (TRACE) {
-            console.log('\t' + JSON.stringify(device));
-            //console.log('\t' + device.usn); 		// unique ID for the device
-            //console.log('\t' + device.st); 		//-> "urn:schemas-upnp-org:device:InternetGatewayDevice:1"
-            //console.log('\t' + device.location); 		//-> "http://192.168.0.1/root.sxml"
+        logger.debug({
+            method: "UpnpControlPoint/on(DeviceFound)",
+            device: device
+        }, "");
         }
 
         self.devices[udn] = "holding";
@@ -94,7 +103,11 @@ var UpnpControlPoint = function () {
         }
 
         if (TRACE) {
-            console.log("- UPnP:UPnPControlPoint/on.DeviceAvailable", udn, device.nt)
+            logger.debug({
+                method: "UpnpControlPoint/on(DeviceAvailable)",
+                udn: udn,
+                nt: device.nt,
+            }, "");
         }
 
         self.devices[udn] = "holding";
@@ -112,7 +125,10 @@ var UpnpControlPoint = function () {
         var udn = getUUID(device.usn);
 
         if (TRACE) {
-            console.log("- UPnP:UPnPControlPoint/on.DeviceUnavailable", JSON.stringify(device));
+            logger.info({
+                method: "UpnpControlPoint/on(DeviceUnavailable)",
+                device: device
+            }, "");
         }
 
         self.emit("device-lost", udn);
@@ -130,7 +146,10 @@ var UpnpControlPoint = function () {
         var udn = getUUID(device.usn);
 
         if (TRACE) {
-            console.log("- UPnP:UPnPControlPoint/on.DeviceUpdate", JSON.stringify(device));
+            logger.info({
+                method: "UpnpControlPoint/on(DeviceUpdate)",
+                device: device
+            }, "");
         }
 
         // DPJ 
@@ -166,10 +185,16 @@ UpnpControlPoint.prototype.forget = function (device) {
     var udn = device.udn.replace(/^uuid:/, '')
     if (!self.devices[udn]) {
         console.log("# UPnP:UpnpControlPoint.forget", "device not known!", device.udn, _.keys(self.devices))
+        logger.info({
+            method: "UpnpControlPoint.forget",
+        }, "");
         return
     }
 
     console.log("- UPnP:UpnpControlPoint.forget", "forgetting device", device.udn)
+    logger.info({
+        method: "UpnpControlPoint.forget",
+    }, "");
 
     delete self.devices[udn];
 
@@ -193,6 +218,9 @@ UpnpControlPoint.prototype.scrub = function (ms) {
         if (delta > ms) {
             console.log("- UPnP:UpnpControlPoint.scrub",
                 "will forget device", "\n  age", delta, "\n  device", device.udn)
+            logger.info({
+                method: "UpnpControlPoint.scrub",
+            }, "");
             forgets.push(device)
         }
     }
@@ -224,6 +252,9 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
     var localAddress = "127.0.0.1"; // will determine which local address is used to talk with the device.
     if (TRACE) {
         console.log("- Upnp:UpnpControlPoint._getDeviceDetails", "getting device details", location);
+        logger.info({
+            method: "UpnpControlPoint._getDeviceDetails",
+        }, "");
     }
     var options = Url.parse(location);
     var req = http.request(options, function (res) {
@@ -236,21 +267,35 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
             if (res.statusCode != 200) {
                 console.log("- Upnp:UpnpControlPoint._getDeviceDetails",
                     "problem getting device details", res.statusCode, resData);
+                logger.info({
+                    method: "UpnpControlPoint._getDeviceDetails/on(end)",
+                }, "");
                 return;
             }
             xml2js.parseString(resData, function (err, result) {
                 if (!result) {
-                    console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "!result (not a big issue)");
+                    logger.info({
+                        method: "UpnpControlPoint._getDeviceDetails/on(end)",
+                        cause: "usually UPnP error",
+                    }, "!result - not a big issue");
                     return;
                 }
                 if (!result.root) {
-                    console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "!result.root (not a big issue)");
+                    logger.info({
+                        method: "UpnpControlPoint._getDeviceDetails/on(end)",
+                        cause: "usually UPnP error",
+                    }, "!result.root - not a big issue");
                     return;
                 }
 
                 var desc = result.root.device[0];
                 if (TRACE) {
-                    console.log(desc.deviceType + " : " + desc.friendlyName + " : " + location);
+                    logger.debug({
+                        method: "UpnpControlPoint._getDeviceDetails/on(end)",
+                        deviceType: desc.deviceType,
+                        friendlyName: desc.friendlyName,
+                        location: location,
+                    }, "");
                 }
                 var device = new UpnpDevice(self, udn, location, desc, localAddress);
                 callback(device);
@@ -263,10 +308,16 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
             localAddress = socket.address().address;
         } catch (x) {
             console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "no socket?", x)
+            logger.info({
+                method: "UpnpControlPoint._getDeviceDetails/on(socket)",
+            }, "");
         }
     });
     req.on('error', function (e) {
         console.log("# Upnp:UpnpControlPoint._getDeviceDetails", 'problem with request', e.message);
+        logger.info({
+            method: "UpnpControlPoint._getDeviceDetails/on(error)",
+        }, "");
     });
     req.end();
 }
@@ -338,6 +389,9 @@ EventHandler.prototype._serviceCallbackHandler = function (req, res) {
             parser.parseString(reqContent, function (err, result) {
                 if (err) {
                     console.log("# got XML parsing err: " + err);
+                    logger.info({
+                        method: "EventHandler._serviceCallbackHandler/on(end)",
+                    }, "");
                     return;
                 }
                 var sid = req.headers.sid;
@@ -345,6 +399,9 @@ EventHandler.prototype._serviceCallbackHandler = function (req, res) {
                 if (subscription) {
                     if (TRACE && DETAIL) {
                         console.log("event for sid " + subscription.sid + ": " + JSON.stringify(result));
+                        logger.info({
+                            method: "EventHandler._serviceCallbackHandler/on(end)",
+                        }, "");
                     }
                     var values = {};
                     var properties = result["e:propertyset"]["e:property"];
@@ -370,6 +427,9 @@ EventHandler.prototype._serviceCallbackHandler = function (req, res) {
                 // ignore
             } else {
                 console.log("# UPnP:EventHandler._serviceCallbackHandler", "exception", ex);
+                logger.info({
+                    method: "EventHandler._serviceCallbackHandler",
+                }, "");
             }
         }
     });

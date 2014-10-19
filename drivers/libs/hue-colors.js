@@ -10,6 +10,12 @@
 
 'use strict';
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/hue-colors',
+});
+
 var cssColors = {}
 
 var colors = function () {

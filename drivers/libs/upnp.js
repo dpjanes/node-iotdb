@@ -6,6 +6,12 @@ var dgram = require("dgram");
 var util = require("util");
 var events = require("events");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/upnp',
+});
+
 // HTTP parser
 var HTTP_PARSER_REQUEST = process.binding('http_parser').HTTPParser.REQUEST;
 var HTTP_PARSER_RESPONSE = process.binding('http_parser').HTTPParser.RESPONSE;
@@ -142,6 +148,9 @@ ControlPoint.prototype.search = function (st) {
     client.send(message, 0, message.length, SSDP_PORT, BROADCAST_ADDR, function (err, bytes) {
         if (err) {
             console.log("# UPnP:ControlPoint.search/client.send", "err", err)
+            logger.info({
+                method: "UPnP:ControlPoint.search/client.send",
+            }, "");
         } else {
             // console.log("- UPnP:ControlPoint.search/client.send", "bytes sent", bytes)
         }
@@ -210,6 +219,9 @@ function searchGateway(timeout, callback) {
                 var controlUrl = url.parse(ipurl);
                 controlUrl.__proto__ = l;
                 console.log(controlUrl);
+                logger.info({
+                    method: "searchGateway/on(end)"
+                }, "");
                 callback(null, new Gateway(controlUrl.port, controlUrl.hostname, controlUrl.pathname));
             });
         });

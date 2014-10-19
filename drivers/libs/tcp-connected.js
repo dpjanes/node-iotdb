@@ -30,6 +30,12 @@ var util = require('util');
 var unirest = require('unirest');
 var xml2js = require('xml2js')
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'drivers/libs/tcp-connected',
+});
+
 module.exports = TCPConnected;
 
 var RequestString = 'cmd=%s&data=%s&fmt=xml';
