@@ -52,7 +52,10 @@ var UPnPDriver = function (upnp_device) {
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
         self.upnp_device.on("device-lost", function () {
-            console.log("- UPnPDriver", "device-lost message received: will forget and try to rediscover");
+            logger.info({
+                method: "UPnPDriver"
+            }, "device-lost message received: will forget and try to rediscover");
+
             self._forget_device();
         });
     }
@@ -67,7 +70,10 @@ var _cp;
 
 UPnPDriver.cp = function () {
     if (_cp === undefined) {
-        console.log("- UPnpDriver.cp", "made UpnpControlPoint");
+        logger.info({
+            method: "cp"
+        }, "made UpnpControlPoint");
+
         _cp = new UpnpControlPoint();
 
         // we periodically kick off a new search to find devices that have come online
@@ -138,7 +144,11 @@ UPnPDriver.prototype._forget_device = function () {
 UPnPDriver.prototype._found_device = function (discover_callback, upnp_device) {
     var self = this;
 
-    console.log("- UPnPDriver._found_device", "deviceType", upnp_device.deviceType);
+    logger.debug({
+        method: "_found_device",
+        deviceType: upnp_device.deviceType
+    }, "found device");
+
     discover_callback(new UPnPDriver(upnp_device));
 };
 
@@ -222,7 +232,10 @@ UPnPDriver.prototype.setup = function (paramd) {
         return;
     }
 
-    console.log("- UPnDriver.setup", paramd.initd);
+    logger.info({
+        method: "setup",
+        init: paramd.initd
+    }, "called");
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
@@ -233,10 +246,23 @@ UPnPDriver.prototype.setup = function (paramd) {
             var service_urn = service_urns[sui];
             var service = self._service_by_urn(service_urn);
             if (!service) {
-                console.log("- UPnPDriver.setup: service not found", service_urn);
+                // console.log("- UPnPDriver.setup: service not found", service_urn);
+                logger.error({
+                    method: "setup",
+                    service_urn: service_urn,
+                    cause: "this is OK - UPnP doesn't support this particular Thing"
+                }, "service not found");
             } else {
                 var _on_failed = function (code, error) {
-                    console.log("- UPnPDriver.setup/_on_failed", code, error);
+                    // console.log("- UPnPDriver.setup/_on_failed", code, error);
+                    logger.error({
+                        method: "setup/_on_failed",
+                        code: code,
+                        error: error,
+                        service_urn: service_urn,
+                        cause: "probably UPnP related"
+                    }, "called");
+
                     self._forget_device();
                     _remove_listeners();
                 };
@@ -247,12 +273,23 @@ UPnPDriver.prototype.setup = function (paramd) {
 
                     self.pulled(driverd);
 
-                    console.log("- UPnPDriver.setup/_on_stateChange", driverd);
+                    // console.log("- UPnPDriver.setup/_on_stateChange", driverd);
+                    logger.debug({
+                        method: "setup/_on_stateChange",
+                        driverd: driverd
+                    }, "called pulled");
                 };
 
                 var _on_subscribe = function (error, data) {
                     if (error) {
-                        console.log("- UPnPDriver.setup/subscribe", service_urn, error);
+                        // console.log("- UPnPDriver.setup/subscribe", service_urn, error);
+                        logger.error({
+                            method: "setup/_on_subscribe",
+                            error: error,
+                            service_urn: service_urn,
+                            cause: "probably UPnP related"
+                        }, "called pulled");
+
                         self._forget_device();
                         _remove_listeners();
                     }
@@ -263,7 +300,12 @@ UPnPDriver.prototype.setup = function (paramd) {
                     service.removeListener('stateChange', _on_stateChange);
                 };
 
-                console.log("- UPnPDriver.setup: subscribe", service_urn);
+                // console.log("- UPnPDriver.setup: subscribe", service_urn);
+                logger.info({
+                    method: "setup/_on_stateChange",
+                    service_urn: service_urn
+                }, "subscribe");
+
                 service.on("failed", _on_failed);
                 service.on("stateChange", _on_stateChange);
                 service.subscribe(_on_subscribe);
@@ -295,7 +337,12 @@ UPnPDriver.prototype.push = function (paramd) {
     for (var service_urn in paramd.driverd) {
         var service = self._service_by_urn(service_urn);
         if (!service) {
-            console.log("- UPnPDriver.push", "service not found", service_urn);
+            // console.log("- UPnPDriver.push", "service not found", service_urn);
+            logger.info({
+                method: "push",
+                service_urn: service_urn,
+                cause: "maybe an issue in the Driver"
+            }, "service nto found");
             continue;
         }
 
@@ -303,10 +350,23 @@ UPnPDriver.prototype.push = function (paramd) {
 
         for (var action_id in serviced) {
             var actiond = serviced[action_id];
-            console.log("- UPnPDriver.push", service_urn, action_id, actiond);
+            // console.log("- UPnPDriver.push", service_urn, action_id, actiond);
+            logger.info({
+                method: "push",
+                service_urn: service_urn,
+                action_id: action_id,
+                actiond: actiond,
+            }, "pushing to UPnP");
             service.callAction(action_id, actiond, function (err, buf) {
                 if (err) {
-                    console.log("- UPnPDriver.push", err, buf);
+                    // console.log("- UPnPDriver.push", err, buf);
+                    logger.error({
+                        method: "push/callAction",
+                        service_urn: service_urn,
+                        action_id: action_id,
+                        actiond: actiond,
+                        cause: "maybe the UPnP Thing has gone away?"
+                    }, "error during callAction");
                 }
             });
         }
