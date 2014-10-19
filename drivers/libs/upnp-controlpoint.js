@@ -57,10 +57,10 @@ var UpnpControlPoint = function () {
         var udn = getUUID(device.usn);
 
         if (TRACE) {
-        logger.debug({
-            method: "UpnpControlPoint/on(DeviceFound)",
-            udn: udn
-        }, "device found");
+            logger.debug({
+                method: "UpnpControlPoint/on(DeviceFound)",
+                udn: udn
+            }, "device found");
         }
 
         // DPJ 
@@ -73,10 +73,10 @@ var UpnpControlPoint = function () {
         }
 
         if (TRACE) {
-        logger.debug({
-            method: "UpnpControlPoint/on(DeviceFound)",
-            device: device
-        }, "");
+            logger.debug({
+                method: "UpnpControlPoint/on(DeviceFound)",
+                device: device
+            }, "");
         }
 
         self.devices[udn] = "holding";
@@ -186,7 +186,7 @@ UpnpControlPoint.prototype.forget = function (device) {
     if (!self.devices[udn]) {
         logger.error({
             method: "UpnpControlPoint.forget",
-            udn: device.udn, 
+            udn: device.udn,
             devices: _.keys(self.devices),
             cause: "UPnP protocol - not a big deal",
         }, "device not known!");
@@ -269,7 +269,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
             if (res.statusCode != 200) {
                 logger.error({
                     method: "UpnpControlPoint._getDeviceDetails/on(end)",
-                    status: res.statusCode, 
+                    status: res.statusCode,
                     data: resData,
                 }, "problem getting device details");
                 return;

@@ -39,6 +39,18 @@ var Interaction = function () {
     self.lines = ["", ];
 };
 
+Interaction.prototype.header = function () {
+    var self = this;
+
+    self.lines.push(util.format.apply(util.format, arguments));
+};
+
+Interaction.prototype.code = function () {
+    var self = this;
+
+    self.lines.push(util.format.apply(util.format, arguments));
+};
+
 Interaction.prototype.log = function () {
     var self = this;
 

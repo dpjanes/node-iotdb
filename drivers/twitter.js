@@ -33,6 +33,7 @@ var stream = require('stream');
 var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
+var Interaction = require('../interaction').Interaction;
 
 var queue = new FIFOQueue("TwitterDriver");
 var twitter_oauthd = null;
@@ -116,14 +117,14 @@ TwitterDriver.prototype.register = function (iot) {
 
     twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com", null);
     if (twitter_oauthd === null) {
-        console.log("############################## ");
-        console.log("# TwitterDriver.register: no OAuth information found for Twitter");
-        console.log("# - This means we cannot access twitter until this is set up");
-        console.log("#");
-        console.log("# - Please follow the instructions at:");
-        console.log("#   https://iotdb.org/docs/node/twitter");
-        console.log("#");
-        console.log("############################## ");
+        var interaction = new Interaction();
+
+        interaction.header("TwitterDriver: no OAuth information found for Twitter");
+        interaction.log("We cannot access twitter until this is set up");
+        interaction.log();
+        interaction.log("Please follow the instructions at:");
+        interaction.code("https://iotdb.org/docs/node/twitter");
+        interaction.end();
 
         self.report_issue({
             section: "drivers",

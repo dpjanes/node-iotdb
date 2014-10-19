@@ -65,7 +65,7 @@ UpnpService.prototype.forget = function () {
 
     logger.info({
         method: "UpnpService.forget",
-        serviceType: this.serviceType, 
+        serviceType: this.serviceType,
         serviceId: this.serviceId,
     }, "forgetting this device");
     self.forgotten = true

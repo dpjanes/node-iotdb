@@ -498,6 +498,7 @@ IOT.prototype.cfg_get_oauthd = function (iri, otherwise) {
  */
 IOT.prototype._check_requirements = function () {
     var self = this;
+    var interaction;
 
     if ((self.username === null) ||
         (self.username === "") ||
@@ -506,14 +507,14 @@ IOT.prototype._check_requirements = function () {
         if (self.initd.require_username) {
             throw new Error("IOT._check_requirements: FAIL: require_username");
         } else {
-            console.log("############################## ");
-            console.log("# IOT._check_requirements: no iot.username");
-            console.log("# - this is highly recommended (but not required");
-            console.log("# - run this command");
-            console.log("#");
-            console.log("#   iotdb-control iotdb-oauth --global");
-            console.log("#");
-            console.log("############################## ");
+            interaction = new Interaction();
+
+            interaction.header("IOT._check_requirements: no iot.username");
+            interaction.log("- this is highly recommended (but not required");
+            interaction.log("- run this command");
+            interaction.log();
+            interaction.code("iotdb-control iotdb-oauth --global");
+            interaction.end();
 
             self.report_issue({
                 section: "iotdb",
@@ -524,14 +525,14 @@ IOT.prototype._check_requirements = function () {
     }
 
     if (!self.keystored.machine_id) {
-        console.log("############################## ");
-        console.log("# IOT._check_requirements: no 'machine_id'");
-        console.log("# - this is highly recommended, but only required for some drivers");
-        console.log("# - run this command");
-        console.log("#");
-        console.log("#   iotdb-control machine-id");
-        console.log("#");
-        console.log("############################## ");
+        interaction = new Interaction();
+
+        interaction.header("IOT._check_requirements: no 'machine_id'");
+        interaction.log("- this is highly recommended, but only required for some drivers");
+        interaction.log("- run this command");
+        interaction.log();
+        interaction.code("iotdb-control machine-id");
+        interaction.end();
 
         self.report_issue({
             section: "iotdb",
@@ -2625,7 +2626,7 @@ IOT.prototype.health = function () {
     var interaction = new Interaction();
 
     // drivers
-    interaction.log("Available drivers:");
+    interaction.header("Available drivers:");
     interaction.log();
 
     for (var di in self.driver_exemplars) {
@@ -2636,7 +2637,7 @@ IOT.prototype.health = function () {
     interaction.log();
 
     // stores
-    interaction.log("Available stores:");
+    interaction.header("Available stores:");
     interaction.log();
 
     for (var sname in self.store_instanced) {
@@ -2645,7 +2646,7 @@ IOT.prototype.health = function () {
     interaction.log();
 
     // models
-    interaction.log("Available models:");
+    interaction.header("Available models:");
     interaction.log();
 
     var mnames = [];
@@ -2669,7 +2670,7 @@ IOT.prototype.health = function () {
 
         for (var si in sections) {
             var section = sections[si];
-            interaction.log("Issue with %s:", section);
+            interaction.header("Issue with %s:", section);
             interaction.log();
 
             for (var sii in self.issueds) {

@@ -29,6 +29,7 @@ var firmata = require('firmata');
 var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
+var Interaction = require('../interaction').Interaction;
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
@@ -611,13 +612,13 @@ FirmataDriver.prototype.discover = function (paramd, discover_callback) {
     if (machine_id === undefined) {
         machine_id = self.cfg_get("machine_id", null);
         if (!machine_id) {
-            console.log("############################## ");
-            console.log("# FirmataDriver.discover: setup is not complete - cannot run");
-            console.log("# Please enter the following command first");
-            console.log("#");
-            console.log("#   iotdb-control machine-id");
-            console.log("#");
-            console.log("############################## ");
+            var interaction = new Interaction();
+
+            interaction.header("FirmataDriver.discover: setup is not complete");
+            interaction.log("Please enter the following command first");
+            interaction.log("");
+            interaction.code("iotdb-control machine-id");
+            interaction.end();
 
             self.report_issue({
                 section: "drivers",

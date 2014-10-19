@@ -27,6 +27,7 @@
 var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
+var Interaction = require('../interaction').Interaction;
 var SmartThings = require('./libs/smartthingslib').SmartThings;
 var mqtt = require('mqtt');
 
@@ -107,10 +108,11 @@ SmartThingsDriver.prototype.register = function (iot) {
 
         var oauthd = iot.cfg_get_oauthd("https://graph.api.smartthings.com/", null);
         if (oauthd === null) {
-            console.log("############################## ");
-            console.log("# SmartThingsDriver.register: SmartThings not configured");
-            console.log("# (instructions coming)");
-            console.log("############################## ");
+            var interaction = new Interaction();
+
+            interaction.header("SmartThingsDriver: SmartThings not configured");
+            interaction.log("(instructions coming)");
+            interaction.end();
 
             self.report_issue({
                 section: "drivers",
@@ -165,15 +167,15 @@ SmartThingsDriver.prototype.setup = function (paramd) {
         if (!__message_no_username) {
             __message_no_username = true;
 
-            console.log("############################## ");
-            console.log("# SmartThings.setup: iot.username is not assigned");
-            console.log("# - cannot use SmartThings with MQTT until this is done");
-            console.log("# - updates will not be received!");
-            console.log("# - run this command");
-            console.log("#");
-            console.log("#   iotdb-control iotdb-oauth");
-            console.log("#");
-            console.log("############################## ");
+            var interaction = new Interaction();
+
+            interaction.header("SmartThings: iot.username is not assigned");
+            interaction.log("- cannot use SmartThings with MQTT until this is done");
+            interaction.log("- updates will not be received!");
+            interaction.log("- run this command");
+            interaction.log();
+            interaction.code("iotdb-control iotdb-oauth");
+            interaction.end();
         }
 
         return;
