@@ -239,65 +239,65 @@ ThingArray.prototype.end = function () {
     return self;
 };
 
+var _merger = function (srcs, out_items) {
+    var o;
+    var oi;
+
+    /**
+     *  Existing things
+     */
+    var oidd = {};
+
+    for (oi = 0; oi < out_items.length; oi++) {
+        o = out_items[oi];
+        oidd[o.thing_id()] = 1;
+    }
+
+    /**
+     *  New things, from any of the srcs
+     */
+    for (var si in srcs) {
+        var src = srcs[si];
+
+        for (var ii = 0; ii < src.length; ii++) {
+            var thing = src[ii];
+            var thing_id = thing.thing_id();
+
+            if (oidd[thing_id]) {
+                delete oidd[thing_id];
+            } else {
+                out_items.push(thing, {
+                    emit_pushed: false
+                });
+            }
+        }
+    }
+
+    /**
+     *  remove things that no longer match
+     */
+    for (oi = 0; oi < out_items.length; oi++) {
+        o = out_items[oi];
+        if (!oidd[o.thing_id()]) {
+            continue;
+        }
+
+        out_items.splice(oi--, 1);
+    }
+
+    /*
+     *  notify downstream - note that we always do this because
+     *  even though this list may not have changed, filters
+     *  downstream may have changed
+     */
+    out_items.things_changed();
+};
+
 /**
  *  Merge another array into this one
  */
 ThingArray.prototype.merge = function (new_items) {
     var self = this;
-
-    var _merger = function (srcs, out_items) {
-        var o;
-        var oi;
-
-        /**
-         *  Existing things
-         */
-        var oidd = {};
-
-        for (oi = 0; oi < out_items.length; oi++) {
-            o = out_items[oi];
-            oidd[o.thing_id()] = 1;
-        }
-
-        /**
-         *  New things, from any of the srcs
-         */
-        for (var si in srcs) {
-            var src = srcs[si];
-
-            for (var ii = 0; ii < src.length; ii++) {
-                var thing = src[ii];
-                var thing_id = thing.thing_id();
-
-                if (oidd[thing_id]) {
-                    delete oidd[thing_id];
-                } else {
-                    out_items.push(thing, {
-                        emit_pushed: false
-                    });
-                }
-            }
-        }
-
-        /**
-         *  remove things that no longer match
-         */
-        for (oi = 0; oi < out_items.length; oi++) {
-            o = out_items[oi];
-            if (!oidd[o.thing_id()]) {
-                continue;
-            }
-
-            out_items.splice(oi--, 1);
-        }
-
-        /*
-         *  notify downstream - note that we always do this because
-         *  even though this list may not have changed, filters
-         *  downstream may have changed
-         */
-        out_items.things_changed();
-    };
 
     /*
      *  Merge (XXX: not sure if should always be persist)
@@ -315,15 +315,17 @@ ThingArray.prototype.merge = function (new_items) {
     /*
      *  Persist the merging
      */
+    var _on_things_changed = function () {
+        _merger(srcs, out_items);
+    };
+
     for (var si in srcs) {
         var src = srcs[si];
         if (src._persistds === null) {
             continue;
         }
 
-        events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, function () {
-            _merger(srcs, out_items);
-        });
+        events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, _on_things_changed);
     }
 
     return out_items;
