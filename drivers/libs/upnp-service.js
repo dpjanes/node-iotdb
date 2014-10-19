@@ -63,10 +63,11 @@ util.inherits(UpnpService, EventEmitter);
 UpnpService.prototype.forget = function () {
     var self = this
 
-    console.log("- UPnP:UpnpService.forget", this.serviceType, this.serviceId)
     logger.info({
         method: "UpnpService.forget",
-    }, "");
+        serviceType: this.serviceType, 
+        serviceId: this.serviceId,
+    }, "forgetting this device");
     self.forgotten = true
         // self.removeAllListeners()
 }

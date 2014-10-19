@@ -184,17 +184,19 @@ UpnpControlPoint.prototype.forget = function (device) {
 
     var udn = device.udn.replace(/^uuid:/, '')
     if (!self.devices[udn]) {
-        console.log("# UPnP:UpnpControlPoint.forget", "device not known!", device.udn, _.keys(self.devices))
-        logger.info({
+        logger.error({
             method: "UpnpControlPoint.forget",
-        }, "");
+            udn: device.udn, 
+            devices: _.keys(self.devices),
+            cause: "UPnP protocol - not a big deal",
+        }, "device not known!");
         return
     }
 
-    console.log("- UPnP:UpnpControlPoint.forget", "forgetting device", device.udn)
     logger.info({
         method: "UpnpControlPoint.forget",
-    }, "");
+        udn: device.udn,
+    }, "forgetting device");
 
     delete self.devices[udn];
 
@@ -216,11 +218,11 @@ UpnpControlPoint.prototype.scrub = function (ms) {
         var device = self.devices[di]
         var delta = now - device.last_seen
         if (delta > ms) {
-            console.log("- UPnP:UpnpControlPoint.scrub",
-                "will forget device", "\n  age", delta, "\n  device", device.udn)
             logger.info({
                 method: "UpnpControlPoint.scrub",
-            }, "");
+                age: delta,
+                udn: device.udn,
+            }, "will forget device");
             forgets.push(device)
         }
     }
@@ -251,10 +253,10 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
     var self = this;
     var localAddress = "127.0.0.1"; // will determine which local address is used to talk with the device.
     if (TRACE) {
-        console.log("- Upnp:UpnpControlPoint._getDeviceDetails", "getting device details", location);
         logger.info({
             method: "UpnpControlPoint._getDeviceDetails",
-        }, "");
+            location: location
+        }, "getting device details");
     }
     var options = Url.parse(location);
     var req = http.request(options, function (res) {
@@ -265,11 +267,11 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
         });
         res.on('end', function () {
             if (res.statusCode != 200) {
-                console.log("- Upnp:UpnpControlPoint._getDeviceDetails",
-                    "problem getting device details", res.statusCode, resData);
-                logger.info({
+                logger.error({
                     method: "UpnpControlPoint._getDeviceDetails/on(end)",
-                }, "");
+                    status: res.statusCode, 
+                    data: resData,
+                }, "problem getting device details");
                 return;
             }
             xml2js.parseString(resData, function (err, result) {
@@ -307,17 +309,16 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
         try {
             localAddress = socket.address().address;
         } catch (x) {
-            console.log("# Upnp:UpnpControlPoint._getDeviceDetails", "no socket?", x)
-            logger.info({
+            logger.error(x, {
                 method: "UpnpControlPoint._getDeviceDetails/on(socket)",
-            }, "");
+            }, "no socket?");
         }
     });
     req.on('error', function (e) {
-        console.log("# Upnp:UpnpControlPoint._getDeviceDetails", 'problem with request', e.message);
-        logger.info({
+        logger.error({
             method: "UpnpControlPoint._getDeviceDetails/on(error)",
-        }, "");
+            message: e.message,
+        }, "problem with request");
     });
     req.end();
 }
@@ -375,33 +376,31 @@ EventHandler.prototype.removeSubscription = function (sid) {
  * @param {Object} res
  */
 EventHandler.prototype._serviceCallbackHandler = function (req, res) {
-    // console.log("got request: " + JSON.stringify(req.headers));
-
     var self = this;
     var reqContent = "";
     req.on("data", function (buf) {
         reqContent += buf;
     });
     req.on("end", function () {
-        //console.log("callback content: " + reqContent);
         var parser = new xml2js.Parser();
         try {
             parser.parseString(reqContent, function (err, result) {
                 if (err) {
-                    console.log("# got XML parsing err: " + err);
                     logger.info({
                         method: "EventHandler._serviceCallbackHandler/on(end)",
-                    }, "");
+                        error: err,
+                    }, "XML parsing error");
                     return;
                 }
                 var sid = req.headers.sid;
                 var subscription = self.subscriptions[sid];
                 if (subscription) {
                     if (TRACE && DETAIL) {
-                        console.log("event for sid " + subscription.sid + ": " + JSON.stringify(result));
                         logger.info({
                             method: "EventHandler._serviceCallbackHandler/on(end)",
-                        }, "");
+                            sid: subscription.sid,
+                            result: result,
+                        }, "event for sid");
                     }
                     var values = {};
                     var properties = result["e:propertyset"]["e:property"];
@@ -422,14 +421,13 @@ EventHandler.prototype._serviceCallbackHandler = function (req, res) {
                     subscription.handleEvent(values);
                 }
             });
-        } catch (ex) {
-            if (ex.toString().startsWith("Error: Text data outside of root node.")) {
+        } catch (x) {
+            if (x.toString().startsWith("Error: Text data outside of root node.")) {
                 // ignore
             } else {
-                console.log("# UPnP:EventHandler._serviceCallbackHandler", "exception", ex);
-                logger.info({
+                logger.info(x, {
                     method: "EventHandler._serviceCallbackHandler",
-                }, "");
+                });
             }
         }
     });
