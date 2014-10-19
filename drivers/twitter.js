@@ -35,7 +35,7 @@ var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 
 var queue = new FIFOQueue("TwitterDriver");
-var twitter_oauthd = null
+var twitter_oauthd = null;
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({ 
@@ -64,16 +64,16 @@ var InternalTwitterMessage = iotdb.make_model('InternalTwitterMessage')
     })
     .driver_in(function(paramd) {
         if (paramd.driverd !== undefined) {
-            paramd.thingd.text = paramd.driverd.text
-            paramd.thingd.created = paramd.driverd.created_at
+            paramd.thingd.text = paramd.driverd.text;
+            paramd.thingd.created = paramd.driverd.created_at;
             paramd.thingd.id = "https://twitter.com/" + paramd.driverd.user.screen_name + 
-                "/status/"  + paramd.driverd.id_str
-            paramd.thingd.userid = "https://twitter.com/" + paramd.driverd.user.screen_name
+                "/status/"  + paramd.driverd.id_str;
+            paramd.thingd.userid = "https://twitter.com/" + paramd.driverd.user.screen_name;
         }
     })
     .driver_out(function(paramd) {
         if (paramd.thingd.text !== undefined) {
-            paramd.driverd.text = paramd.thingd.text 
+            paramd.driverd.text = paramd.thingd.text ;
         }
     })
     .make()
@@ -89,17 +89,17 @@ var TwitterDriver = function(paramd) {
     paramd = _.defaults(paramd, {
         verbose: false,
         driver: "iot-driver:twitter"
-    })
+    });
 
-    self.verbose = paramd.verbose
-    self.driver = _.expand(paramd.driver)
+    self.verbose = paramd.verbose;
+    self.driver = _.expand(paramd.driver);
 
-    self.search = null
+    self.search = null;
 
-    self.twitter = null
-    self.seend = {}
+    self.twitter = null;
+    self.seend = {};
 
-    self._init(paramd.initd)
+    self._init(paramd.initd);
 
     return self;
 };
@@ -116,42 +116,42 @@ TwitterDriver.prototype.register = function(iot) {
 
     driver.Driver.prototype.register.call(self, iot);
 
-    twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com", null)
+    twitter_oauthd = iot.cfg_get_oauthd("https://api.twitter.com", null);
     if (twitter_oauthd === null) {
-        console.log("############################## ")
-        console.log("# TwitterDriver.register: no OAuth information found for Twitter")
-        console.log("# - This means we cannot access twitter until this is set up")
-        console.log("#")
-        console.log("# - Please follow the instructions at:")
-        console.log("#   https://iotdb.org/docs/node/twitter")
-        console.log("#")
-        console.log("############################## ")
+        console.log("############################## ");
+        console.log("# TwitterDriver.register: no OAuth information found for Twitter");
+        console.log("# - This means we cannot access twitter until this is set up");
+        console.log("#");
+        console.log("# - Please follow the instructions at:");
+        console.log("#   https://iotdb.org/docs/node/twitter");
+        console.log("#");
+        console.log("############################## ");
 
 		self.report_issue({
 			section: "drivers",
 			name: "twitter",
 			message: "configure with instuctions: https://iotdb.org/docs/node/twitter"
-		})
+		});
         return;
     }
     
     if (iot.initd.twitter) {
-        self.iot = iot
+        self.iot = iot;
         iot.twitter = {
             search: function() {
-                self._helper_search(iot, arguments[0], arguments[1])
+                self._helper_search(iot, arguments[0], arguments[1]);
             },
             send: function() {
-                self._helper_send(iot, arguments[0], arguments[1])
+                self._helper_send(iot, arguments[0], arguments[1]);
             }
-        }
+        };
     }
 };
 
 TwitterDriver.prototype._helper_search = function(iot, search, callback) {
     var self = this;
 
-    console.log("+ TwitterDriver._helper_search")
+    console.log("+ TwitterDriver._helper_search");
 
     iot
         .connect({
@@ -160,15 +160,15 @@ TwitterDriver.prototype._helper_search = function(iot, search, callback) {
             __internal: true,
             search: search
         })
-        .on_change(function(attributes) {
-            callback(thing)
-        })
+        .on_change(function(thing) {
+            callback(thing);
+        });
 };
 
 TwitterDriver.prototype._helper_send = function(iot, text) {
     var self = this;
 
-    console.log("+ TwitterDriver._helper_send")
+    console.log("+ TwitterDriver._helper_send");
 
     if (!self.send_twitter) {
         self.send_twitter = iot
@@ -176,12 +176,12 @@ TwitterDriver.prototype._helper_send = function(iot, text) {
                 model: InternalTwitterMessage,
                 driver: ":twitter",
                 __internal: true
-            })
+            });
     }
 
     self.send_twitter.update({
         text: text
-    })
+    });
 };
 
 
@@ -197,7 +197,7 @@ TwitterDriver.prototype._init = function(initd) {
         return;
     }
     if (initd.search) {
-        self.search = initd.search
+        self.search = initd.search;
     }
 };
 
@@ -208,11 +208,11 @@ TwitterDriver.prototype.identity = function(kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
-        var identityd = {}
-        identityd["driver"] = self.driver
+        var identityd = {};
+        identityd["driver"] = self.driver;
 
         if (self.search) {
-            identityd["search"] = self.search
+            identityd["search"] = self.search;
         }
 
         _.thing_id(identityd);
@@ -232,8 +232,8 @@ TwitterDriver.prototype.setup = function(paramd) {
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    self._init(paramd.initd)
-    self._setup_search()
+    self._init(paramd.initd);
+    self._setup_search();
 
     return self;
 };
@@ -271,7 +271,7 @@ TwitterDriver.prototype.push = function(paramd) {
 
     self.twitter
         .updateStatus(paramd.driverd.text, function() {
-            console.log("- TwitterDriver.push", "tweet sent")
+            console.log("- TwitterDriver.push", "tweet sent");
         });
 
     return self;
@@ -305,23 +305,23 @@ TwitterDriver.prototype._setup_search = function() {
         return;
     }
 
-    self.twitter = new node_twitter(twitter_oauthd)
+    self.twitter = new node_twitter(twitter_oauthd);
 
     if (self.search){
-        console.log("- TwitterDriver._setup_search", "\n  search:", self.search)
+        console.log("- TwitterDriver._setup_search", "\n  search:", self.search);
         self.twitter.stream('filter', {track: self.search}, function(stream) {
             stream.on('error', function(e) {
-                console.log("- TwitterDriver._setup_search", "\n  error:", e)
-            })
-            stream.on('data', function(s) {
-                self.pulled(s)
+                console.log("- TwitterDriver._setup_search", "\n  error:", e);
             });
-        })
+            stream.on('data', function(s) {
+                self.pulled(s);
+            });
+        });
     }
 
 };
 
 
 /* --- API --- */
-exports.Driver = TwitterDriver
+exports.Driver = TwitterDriver;
 
