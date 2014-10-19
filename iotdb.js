@@ -48,6 +48,7 @@ var thing_array = require('./thing_array');
 var libs = require('./libs/libs');
 var cfg = require('./cfg');
 var _ = require('./helpers');
+var Interaction = require('./interaction').Interaction;
 
 
 var EVENT_NEW_THING = "iot_new_thing";
@@ -2621,31 +2622,31 @@ IOT.prototype.dump = function (things) {
 IOT.prototype.health = function () {
     var self = this;
 
-    console.log("#####################");
+    var interaction = new Interaction();
 
     // drivers
-    console.log("# available drivers:");
-    console.log("#");
+    interaction.log("Available drivers:");
+    interaction.log();
 
     for (var di in self.driver_exemplars) {
         var d = self.driver_exemplars[di];
-        console.log("#  ", _.compact(d.driver));
+        interaction.log(_.compact(d.driver));
     }
 
-    console.log("#");
+    interaction.log();
 
     // stores
-    console.log("# available stores:");
-    console.log("#");
+    interaction.log("Available stores:");
+    interaction.log();
 
     for (var sname in self.store_instanced) {
-        console.log("#  ", _.compact(sname));
+        interaction.log(_.compact(sname));
     }
-    console.log("#");
+    interaction.log();
 
     // models
-    console.log("# available models:");
-    console.log("#");
+    interaction.log("Available models:");
+    interaction.log();
 
     var mnames = [];
     for (var mname in self.model_exemplard) {
@@ -2653,9 +2654,9 @@ IOT.prototype.health = function () {
     }
     mnames.sort();
     for (var mi in mnames) {
-        console.log("#  ", mnames[mi]);
+        interaction.log(mnames[mi]);
     }
-    console.log("#");
+    interaction.log();
 
     // issues
     if (self.issueds) {
@@ -2668,8 +2669,8 @@ IOT.prototype.health = function () {
 
         for (var si in sections) {
             var section = sections[si];
-            console.log("# issue with %s:", section);
-            console.log("#");
+            interaction.log("Issue with %s:", section);
+            interaction.log();
 
             for (var sii in self.issueds) {
                 var issued = self.issueds[sii];
@@ -2677,14 +2678,14 @@ IOT.prototype.health = function () {
                     continue;
                 }
 
-                console.log("#   %s: %s", issued.name, issued.message);
+                interaction.log("%s: %s", issued.name, issued.message);
             }
 
-            console.log("#");
+            interaction.log();
         }
     }
 
-    console.log("#####################");
+    interaction.end();
 };
 
 IOT.prototype.report_issue = function (issued) {
@@ -2732,6 +2733,3 @@ exports.EVENT_LOADED_IRI = exports.GraphManager.EVENT_LOADED_IRI;
 exports.EVENT_UPDATED_DEVICE = exports.GraphManager.EVENT_UPDATED_DEVICE;
 exports.EVENT_UPDATED_PLACE = exports.GraphManager.EVENT_UPDATED_PLACE;
 exports.EVENT_UPDATED_MODEL = exports.GraphManager.EVENT_UPDATED_MODEL;
-
-
-/* XXXXXXXXXXXX */

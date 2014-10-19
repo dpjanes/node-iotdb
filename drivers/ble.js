@@ -222,7 +222,7 @@ BLEDriver.prototype.disconnect = function () {
     logger.info({
         method: "disconnect",
         uuid: self.s ? self.s.uuid : null
-    }, "start");
+    }, "called");
     driver.Driver.prototype.disconnect.call(self);
 
     self.p = null;

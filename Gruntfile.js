@@ -26,6 +26,7 @@ module.exports = function (grunt) {
                     'driver.js',
                     'generic.js',
                     'graph.js',
+                    'interaction.js',
                     'iotdb.js',
                     'meta.js',
                     'model.js',

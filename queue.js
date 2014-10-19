@@ -2,7 +2,7 @@
  *  queue.js
  *
  *  David Janes
- *  IOT.org
+ *  IOTDB.org
  *  2013-12-30
  *
  *  Copyright [2013-2014] [David P. Janes]
