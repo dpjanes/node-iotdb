@@ -184,7 +184,7 @@ UpnpControlPoint.prototype.forget = function (device) {
 
     var udn = device.udn.replace(/^uuid:/, '')
     if (!self.devices[udn]) {
-        logger.error({
+        logger.debug({
             method: "UpnpControlPoint.forget",
             udn: device.udn,
             devices: _.keys(self.devices),

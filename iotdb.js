@@ -1335,7 +1335,7 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             }
 
             // console.log("- IOT._discover_thing", "found Driver (bound)");
-            logger.info({
+            logger.debug({
                 method: "_discover_thing",
                 thing_initd: thing_exemplar.initd,
                 driver_identityd: driver.identity()
@@ -2264,7 +2264,7 @@ IOT.prototype._load_stores = function () {
         var module = paramd.doc;
         if (module.Store) {
             // console.log("- IOT._load_stores:", "found Store", "\n ", paramd.filename);
-            logger.info({
+            logger.debug({
                 method: "_load_stores",
                 filename: paramd.filename
             }, "found Store");
@@ -2336,7 +2336,7 @@ IOT.prototype._load_models = function () {
         var module = paramd.doc;
         if (module.Model) {
             // console.log("- IOT._load_models:", "found Model", "\n ", paramd.filename);
-            logger.info({
+            logger.debug({
                 method: "_load_models",
                 filename: paramd.filename
             }, "found Model");
@@ -2382,7 +2382,11 @@ IOT.prototype._load_things = function () {
         }
 
         var jd = self.format(paramd.doc);
-        console.log("- IOT._load_things", JSON.stringify(jd, null, 2));
+        // console.log("- IOT._load_things", JSON.stringify(jd, null, 2));
+        logger.info({
+            method: "_load_things",
+            jd: jd
+        }, "loading this thing");
         self.discover(jd);
     });
 };

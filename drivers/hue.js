@@ -188,7 +188,10 @@ var __message_configure = false;
 HueDriver.prototype._foundDevice = function (discover_callback, upnp_device) {
     var self = this;
 
-    console.log("- HueDriver._foundDevice", "device", upnp_device.deviceType);
+    logger.debug({
+        method: "_foundDevice",
+        device: upnp_device.deviceType
+    }, "found UPnP device");
 
     var matchd = {
         deviceType: 'urn:schemas-upnp-org:device:Basic:1',
@@ -198,6 +201,11 @@ HueDriver.prototype._foundDevice = function (discover_callback, upnp_device) {
     if (!(_.d_contains_d(upnp_device, matchd))) {
         return;
     }
+
+    logger.info({
+        method: "_foundDevice",
+        device: upnp_device.deviceType
+    }, "found Hue");
 
     // has this hub been set up?
     var account_key = "HueDriver:" + upnp_device.uuid;
@@ -398,11 +406,20 @@ HueDriver.prototype.push = function (paramd) {
                 .end(function (result) {
                     queue.finished(qitem);
                     if (!result.ok) {
-                        console.log("# HueDriver.push", "not ok", "url", url, "result", result.text);
+                        // console.log("# HueDriver.push", "not ok", "url", url, "result", result.text);
+                        logger.error({
+                            method: "push",
+                            url: url,
+                            result: result.text
+                        }, "push failed");
                         return;
                     }
 
-                    console.log("- HueDriver.push", result.body);
+                    // console.log("- HueDriver.push", result.body);
+                    logger.info({
+                        method: "push",
+                        result: result.body
+                    }, "pushed");
                 });
         }
     };
