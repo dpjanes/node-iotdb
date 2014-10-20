@@ -642,19 +642,38 @@ ModelMaker.prototype.make = function () {
                 }
 
                 if (!iot) {
-                    console.log("# ModelMaker.make: warning: no 'iot' so can't properly instantiate (yet maybe)");
+                    logger.error({
+                        method: "make",
+                        cause: "Node-IOTDB error: this really shouldn't happen any more"
+                    }, "no 'iot' so can't properly instantiate");
                     // self.subthingd[code] = "http://xxx"
                 } else {
                     var outer_this = this;
                     iot.ask_model(d, function (callbackd) {
                         if (callbackd.error) {
-                            console.log("# ModelMaker.make: Model not found", "\n ", model, callbackd.error);
+                            // console.log("# ModelMaker.make: Model not found", "\n ", model, callbackd.error);
+                            logger.error({
+                                method: "make/subthing",
+                                error: callbackd.error,
+                                code: code,
+                                cause: "Model may not be defined or network error"
+                            }, "Model not found");
                         } else if (callbackd.model_exemplar) {
-                            console.log("- ModelMaker.make: model found", model);
+                            // console.log("- ModelMaker.make: model found", model);
+                            logger.debug({
+                                method: "make/subthing",
+                                code: code
+                            }, "model found");
                             outer_this.subthingd[code] = new callbackd.model_exemplar.Model();
                             self.subthingd[code] = new callbackd.model_exemplar.Model();
                         } else {
-                            console.log("# ModelMaker.make: Model not found", model);
+                            // console.log("# ModelMaker.make: Model not found", model);
+                            logger.error({
+                                method: "make/subthing",
+                                error: callbackd.error,
+                                code: code,
+                                cause: "likely Model has not been defined anywhere"
+                            }, "Model not found");
                         }
                     });
                 }

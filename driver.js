@@ -453,15 +453,6 @@ Driver.prototype.mqtt_subscribe = function () {
     var mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host);
     mqtt_client.setMaxListeners(25);
 
-    /*
-    console.log("- Driver.mqtt_subscribe:",
-        "\n  mqtt_host", self.mqtt_host,
-        "\n  mqtt_port", self.mqtt_port,
-        "\n  mqtt_topic", self.mqtt_topic,
-        "\n  mqtt_device", self.mqtt_device,
-        "\n  thing_id", self.thing_id()
-    )
-     */
     logger.info({
         method: "mqtt_subscribe",
         id: self.unique_id,

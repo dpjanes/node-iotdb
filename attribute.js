@@ -555,12 +555,6 @@ Attribute.prototype.validate = function (paramd) {
         if (iot_formats.length > 0) {
             var formatted_value = self._format(paramd.value, iot_formats, paramd);
             if (formatted_value === undefined) {
-                /*
-                console.log("- Attribute.validate: iot-js:format failed",
-                    "original:", paramd.value,
-                    "formats:", iot_formats
-                );
-                 */
                 logger.error({
                     method: "validate",
                     original: paramd.value,

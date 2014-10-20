@@ -70,7 +70,7 @@ var ThingArray = function (paramd) {
     events.EventEmitter.call(self);
 };
 
-ThingArray.prototype = new Array();
+ThingArray.prototype = new Array(); // jshint ignore:line
 util.inherits(ThingArray, events.EventEmitter);
 ThingArray.prototype._instanceof_ThingArray = true;
 

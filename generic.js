@@ -136,8 +136,13 @@ Generic.prototype.set = function (find_key, new_value) {
         if (subd === undefined) {
             subd = {};
             d[subkey] = subd;
-        } else if (_.isObject(subd)) {} else {
-            console.log("# Generic.set: key incompatible with current state", find_key);
+        } else if (_.isObject(subd)) {
+        } else {
+            logger.error({
+                method: "set",
+                find_key: find_key,
+                cause: "likely an error by the caller specifying find_key"
+            }, "key incompatible with current state", find_key);
             return;
         }
 

@@ -795,11 +795,9 @@ Model.prototype.is_driver_supported = function (driver, otherwise) {
         return self.__driver_supported(driver);
     } else if (self.driver_identityd !== null) {
         var match_identityd = driver.identity(true);
-        /*
-        console.log("---")
-        console.log("HERE:THING (superd)", match_identityd)
-        console.log("HERE:DRIVER (subd)", self.driver_identityd);
-         */
+        // console.log("---")
+        // console.log("HERE:THING (superd)", match_identityd)
+        // console.log("HERE:DRIVER (subd)", self.driver_identityd);
         if (_.identity_overlap(match_identityd, self.driver_identityd)) {
             return true;
         }
