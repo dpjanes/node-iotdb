@@ -231,10 +231,11 @@ UpnpService.prototype._resubscribe = function (sid, callback) {
     };
 
     if (TRACE && DETAIL) {
-        console.log("- UPnP:UpnpService.resubscribe", "resubscribing", JSON.stringify(options));
+        // console.log("- UPnP:UpnpService.resubscribe", "resubscribing", JSON.stringify(options));
         logger.info({
             method: "UpnpService._resubscribe",
-        }, "");
+            options: options
+        }, "resubscribe");
     }
 
     var req = http.request(options, function (res) {
@@ -244,19 +245,30 @@ UpnpService.prototype._resubscribe = function (sid, callback) {
         });
         res.on('end', function () {
             if (res.statusCode !== 200) {
-                console.log("# UPnP:UpnpService._resubscribe", "Problem with re-subscription", sid, buf);
+                // console.log("# UPnP:UpnpService._resubscribe", "Problem with re-subscription", sid, buf);
+                logger.error({
+                    method: "UpnpService._resubscribe",
+                    sid: sid,
+                    buf: buf,
+                    statusCode: res.statusCode
+                }, "problem with re-subscription");
                 callback(new Error("Problem with re-subscription on " + sid), buf);
             } else {
-                if (TRACE && DETAIL) {
-                    console.log("- UPnP:UpnpService._resubscribe",
-                        "re-subscription success", self.device.udn, self.serviceId);
-                }
+                logger.debug({
+                    method: "UpnpService._resubscribe",
+                    udn: self.device.udn,
+                    serviceId: self.serviceId
+                }, "re-subscription success");
                 callback(null, buf);
             }
         });
     });
     req.on('error', function (error) {
-        console.log("# UPnP:UpnpService._resubscribe", "error sending HTTP request", error)
+        // console.log("# UPnP:UpnpService._resubscribe", "error sending HTTP request", error)
+        logger.error({
+            method: "UpnpService._resubscribe",
+            error: error
+        }, "error sending HTTP request");
         callback(error, "");
     })
     req.end("");
@@ -372,13 +384,26 @@ Subscription.prototype._resubscribe = function () {
         }
 
         if (err) {
-            console.log("# UPnP:Subscription._resubscribe", "ERROR: problem re-subscribing", err, "\n  ", buf);
+            // console.log("# UPnP:Subscription._resubscribe", "ERROR: problem re-subscribing", err, "\n  ", buf);
+            logger.error({
+                method: "Subscription._resubscribe",
+                sid: self.sid,
+                err: err,
+                buf: buf,
+                cause: "UPnP protocol error or network problems"
+            }, "error resubscribing");
+
             try {
                 self.service.device.controlPoint.eventHandler.removeSubscription(self);
             } catch (x) {}
             clearTimeout(self.timer);
 
-            console.log("# UPnP:Subscription._resubscribe", "attempting to subscribe from scratch")
+            // console.log("# UPnP:Subscription._resubscribe", "attempting to subscribe from scratch")
+            logger.info({
+                method: "Subscription._resubscribe",
+                sid: self.sid
+            }, "attempting to subscribe from scratch");
+
             self.service.subscribe(function (err, buf) {})
 
             // self.service.emit("failed", "resubscribe", err);

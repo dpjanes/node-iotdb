@@ -218,11 +218,11 @@ UpnpControlPoint.prototype.scrub = function (ms) {
         var device = self.devices[di]
         var delta = now - device.last_seen
         if (delta > ms) {
-            logger.info({
+            logger.debug({
                 method: "UpnpControlPoint.scrub",
                 age: delta,
                 udn: device.udn,
-            }, "will forget device");
+            }, "will forget device - haven't seen it in a while");
             forgets.push(device)
         }
     }
