@@ -1095,7 +1095,7 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
     var self = this;
     var any = false;
 
-    // console.log("- IOT._discover_nearby");
+    // console.log("- IOT._discover_nearby ---------");
     logger.info({
         method: "_discover_nearby",
         find_driver_identityd: find_driver_identityd,

@@ -109,10 +109,14 @@ ThingArray.prototype.push = function (thing, paramd) {
     /*
      *  event dispatch
      */
+    // console.log("HERE:push.1", self.array_id, self.length)
     if (paramd.emit_pushed) {
+        // console.log("HERE:push.1.1", self.array_id, self.length)
         self.emit(EVENT_THING_PUSHED, thing);
     }
+    // console.log("HERE:push.2", self.array_id, self.length)
     if (paramd.emit_new) {
+        // console.log("HERE:push.2.1", self.array_id, self.length)
         self.emit(EVENT_THING_NEW, thing);
     }
 
@@ -587,6 +591,7 @@ ThingArray.prototype.metas = function (paramd) {
 ThingArray.prototype.things_changed = function () {
     var self = this;
 
+    // console.log("HERE:things_changed", self.array_id, self.length)
     self.emit(EVENT_THINGS_CHANGED);
 };
 
@@ -659,7 +664,7 @@ ThingArray.prototype._filter_test = function (d, iot, thing) {
  */
 ThingArray.prototype.filter = function (d) {
     var self = this;
-    var persist = this._persistds !== null;
+    var persist = self.is_persist()
     var o;
     var oi;
 
@@ -682,9 +687,17 @@ ThingArray.prototype.filter = function (d) {
 
     /*
      *  When 'Things Changed' && persist: update the list.
+     *
+     *  NOTE:
+     *  we use 'events.EventEmitter.prototype.on' because we are doing our own
+     *  thing with 'self.on'
      */
+    // console.log("HERE:filter.EVENT_THINGS_CHANGED.XXX", self.array_id, self.length, "persist=", persist)
     if (persist) {
+        // console.log("HERE:filter.EVENT_THINGS_CHANGED.0", self.array_id, self.length)
+        // events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
         events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
+            // console.log("HERE:filter.EVENT_THINGS_CHANGED.1", self);
             // existing things by ID
             var oidd = {};
 
@@ -695,6 +708,7 @@ ThingArray.prototype.filter = function (d) {
 
             // find new things matching
             var is_updated = false;
+            // console.log("HERE:filter.EVENT_THINGS_CHANGED.2", self.array_id, self.length)
 
             // console.log("! ThingArray.filter/things_changed: oidd (A)", oidd)
             // console.log("! ThingArray.filter/things_changed: filter", d)
@@ -733,6 +747,8 @@ ThingArray.prototype.filter = function (d) {
                 is_updated = true;
             }
 
+            // console.log("HERE:filter.1.3", self.array_id, self.length)
+
             /*
              *  notify downstream - note that we always do this because
              *  even though this list may not have changed, filters
@@ -746,8 +762,10 @@ ThingArray.prototype.filter = function (d) {
          *  above with { emit_pushed: false } we stop this from being
          *  unnecessarily being called
          */
+        // console.log("HERE:filter.EVENT_THING_PUSHED.0", self.array_id, self.length)
         events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
-            out_items.things_changed();
+            // console.log("HERE:filter.EVENT_THING_PUSHED.1", self.array_id, self.length)
+            self.things_changed();
         });
     }
 
@@ -846,3 +864,13 @@ ThingArray.prototype.after = function (delay, f) {
 };
 
 exports.ThingArray = ThingArray;
+
+/*
+HERE:push.1 __thing_array_0 1
+HERE:push.1.1 __thing_array_0 1
+HERE:filter.EVENT_THING_PUSHED.1 __thing_array_0 1
+HERE:things_changed __thing_array_1 0
+HERE:push.2 __thing_array_0 1
+HERE:push.2.1 __thing_array_0 1
+
+ */
