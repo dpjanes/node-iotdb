@@ -1075,7 +1075,13 @@ IOT.prototype._discover = function () {
     } else if (thing_bindd) {
         return self._discover_bind(thing_bindd, things);
     } else {
-        return self._discover_nearby(driver_identityd, things);
+        logger.fatal({
+            method: "fatal",
+            cause: "Node-IOTDB error - this code path should be discontinued",
+        }, "we shouldn't be here");
+        throw new Error("this code path should be discontinued");
+        
+        // return self._discover_nearby(driver_identityd, things);
     }
 };
 
@@ -1091,16 +1097,23 @@ IOT.prototype._discover = function () {
  *
  *  @protected
  */
-IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
+IOT.prototype._discover_nearby = function (paramd, things) {
     var self = this;
     var any = false;
 
-    // console.log("- IOT._discover_nearby ---------");
+    paramd = _.defaults(paramd, {
+        initd: {},
+    });
+    if (paramd.driver) {
+        paramd.driver = _.expand(paramd.driver, "iot-driver:");
+    }
+
     logger.info({
         method: "_discover_nearby",
-        find_driver_identityd: find_driver_identityd,
+        paramd: paramd,
     }, "start");
-    find_driver_identityd = _.identity_expand(find_driver_identityd);
+
+    var find_driver_identityd = _.identity_expand(paramd.driver);
 
     for (var bi = 0; bi < self.driver_exemplars.length; bi++) {
         var driver_exemplar = self.driver_exemplars[bi];
@@ -1111,7 +1124,8 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
         // note no paramd.initd. Drivers know this is "nearby" because of that
         any = true;
         var discover_paramd = {
-            nearby: true
+            nearby: true,
+            initd: paramd.initd,
         };
         driver_exemplar.discover(discover_paramd, function (driver) {
             if (self.shutting_down) {
@@ -1175,6 +1189,14 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
                 }, "matching Thing for Driver not found");
             }
         });
+    }
+
+    if (!any) {
+        logger.error({
+            method: "_discover_nearby",
+            paramd: paramd,
+            cause: "Driver may not be loaded, be available, or exist"
+        }, "no matching Driver found");
     }
 };
 
@@ -1479,8 +1501,7 @@ IOT.prototype._discover_bind = function (paramd, things) {
             }
         });
     } else if (paramd.initd.driver) {
-        // console.log("# IOT._discover_bind: ERROR: initd.driver not supported yet", paramd.initd.driver);
-        return self._discover_nearby(_.identity_expand(paramd.initd.driver), things);
+        return self._discover_nearby(paramd.initd, things);
     } else {
         // console.log("# IOT._discover_bind: ERROR: no model_code, model_iri or initd.iri");
         logger.error({

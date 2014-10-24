@@ -2170,8 +2170,8 @@ exports.slugify = function (identifier) {
  *  The paramd to use, not necessarily the one passed in
  */
 exports.defaults = function (paramd, defaultd) {
-    if (paramd === undefined) {
-        return defaultd
+    if (!paramd) {
+        paramd = {}
     }
 
     for (var key in defaultd) {
