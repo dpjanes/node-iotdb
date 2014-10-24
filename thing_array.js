@@ -88,7 +88,10 @@ ThingArray.prototype.push = function (thing, paramd) {
     for (var ti = 0; ti < self.length; ti++) {
         var t = self[ti];
         if (t === thing) {
-            console.log("# ThingArray.push", "preventing same Thing from being pushed", thing.thing_id());
+            logger.error({
+                method: "push",
+                thing_id: thing.thing_id(),
+            }, "preventing same Thing from being pushed");
             return;
         }
     }
@@ -129,6 +132,13 @@ ThingArray.prototype.push = function (thing, paramd) {
 
     return self;
 };
+
+/**
+ *  Return true iff this is a persisting array
+ */
+ThingArray.prototype.is_persist = function () {
+    return this._persistds != null;
+}
 
 /**
  *  @param {string} key - if used, only the latest command

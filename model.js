@@ -44,6 +44,11 @@ var logger = bunyan.createLogger({
     module: 'model',
 });
 
+
+var shutting_down = function () {
+    return require('./iotdb').iot().shutting_down;
+}
+
 /**
  *  Convenience function to make a ModelMaker instance
  *
@@ -745,6 +750,10 @@ Model.prototype.on_meta = function (callback) {
     assert.ok(_.isFunction(callback));
 
     self.__emitter.on(EVENT_META_CHANGED, function (thing) {
+        if (shutting_down()) {
+            return;
+        }
+
         callback(self, []);
     });
 
@@ -755,6 +764,10 @@ Model.prototype.on_meta = function (callback) {
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function () {
+    if (shutting_down()) {
+        return;
+    }
+
     this.__emitter.emit(EVENT_META_CHANGED, true);
 };
 
@@ -828,9 +841,11 @@ Model.prototype.identity = function (kitchen_sink) {
         return this.driver_instance.identity(kitchen_sink);
     } else {
         // console.log("# Model.identity: returning null because this.driver_instance=null");
-        logger.error({
-            method: "identity",
-        }, "returning null self.driver_instance=null");
+        if (!shutting_down()) { 
+            logger.error({
+                method: "identity",
+            }, "returning null self.driver_instance=null");
+        }
 
         return null;
     }
@@ -842,9 +857,11 @@ Model.prototype.thing_id = function () {
         return id.thing_id;
     } else {
         // console.log("# Model.thing_id: returning null because this.identity=null");
-        logger.error({
-            method: "thing_id",
-        }, "returning null self.identity=null");
+        if (!shutting_down()) { 
+            logger.error({
+                method: "thing_id",
+            }, "returning null self.identity=null");
+        }
 
         return null;
     }

@@ -116,6 +116,12 @@ Store.prototype.track = function (paramd) {
         self.things_changed();
     };
 
+    if (!self.things.is_persist()) {
+        noble.warn({
+            method: "track",
+        }, "'things' are not persistent - new Things discovered will not be tracked");
+    }
+
     self.things.on_change(function (thing) {
         self.on_change(thing);
     });
@@ -149,6 +155,13 @@ Store.prototype.configure_thing = function (thing, ad, callback) {
     logger.info({
         method: "configure_thing"
     }, "this thing does not need to be configured");
+};
+
+/**
+ *  Helper function to get a value from the IOT.Keystore
+ */
+Store.prototype.cfg_get = function (key, otherwise) {
+    return require('./iotdb').iot().cfg_get(key, otherwise);
 };
 
 /*

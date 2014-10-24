@@ -1093,10 +1093,12 @@ IOT.prototype._discover = function () {
  */
 IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
     var self = this;
+    var any = false;
 
     // console.log("- IOT._discover_nearby");
     logger.info({
-        method: "_discover_nearby"
+        method: "_discover_nearby",
+        find_driver_identityd: find_driver_identityd,
     }, "start");
     find_driver_identityd = _.identity_expand(find_driver_identityd);
 
@@ -1107,7 +1109,10 @@ IOT.prototype._discover_nearby = function (find_driver_identityd, things) {
         }
 
         // note no paramd.initd. Drivers know this is "nearby" because of that
-        var discover_paramd = {};
+        any = true;
+        var discover_paramd = {
+            nearby: true
+        };
         driver_exemplar.discover(discover_paramd, function (driver) {
             if (self.shutting_down) {
                 // console.log("# IOT._discover_nearby", "ignoring this Driver because shutting down");
@@ -1876,10 +1881,11 @@ IOT.prototype.thing_iri = function (thing) {
     } else {
         thing_id = thing.thing_id();
         if (thing_id == null) {
-            // console.log("# IOT.thing_iri: thing_id is null:perhaps not bound to a driver yet?");
-            logger.error({
-                method: "thing_iri"
-            }, "thing_id is null:perhaps not bound to a driver yet?");
+            if (!self.shutting_down) {
+                logger.error({
+                    method: "thing_iri"
+                }, "thing_id is null:perhaps not bound to a driver yet?");
+            }
             return null;
         }
     }
@@ -2560,6 +2566,23 @@ IOT.prototype.connect = function (value) {
 };
 
 /**
+ *  @protected
+ */
+IOT.prototype._connect = function (connectd, things) {
+    var self = this;
+
+    if (connectd.iri && !(connectd.model || connectd.driver)) {
+        connectd.model = exports.make_generic();
+    }
+
+    self.on_ready(function () {
+        self._discover_bind(connectd, things);
+    });
+
+    return things;
+};
+
+/**
  *  Persist all changes to metadata.
  *  <p>
  *  Tons of work needed here
@@ -2595,23 +2618,6 @@ IOT.prototype.meta_save = function () {
 
         console.log("- IOT.meta_save", "wrote", file_meta);
     }
-};
-
-/**
- *  @protected
- */
-IOT.prototype._connect = function (connectd, things) {
-    var self = this;
-
-    if (connectd.iri && !(connectd.model || connectd.driver)) {
-        connectd.model = exports.make_generic();
-    }
-
-    self.on_ready(function () {
-        self._discover_bind(connectd, things);
-    });
-
-    return things;
 };
 
 /**

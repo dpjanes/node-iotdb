@@ -605,22 +605,10 @@ Driver.prototype.report_issue = function () {
 };
 
 /**
- *  Helper function to gGet a value from the IOT.Keystore
+ *  Helper function to get a value from the IOT.Keystore
  */
 Driver.prototype.cfg_get = function (key, otherwise) {
-    var self = this;
-
-    var iot = require('./iotdb').iot();
-    if (!iot) {
-        logger.fatal({
-            method: "cfg_get",
-            cause: "this is almost impossible"
-        }, "no iot() object");
-
-        return otherwise;
-    }
-
-    return iot.cfg_get(key, otherwise);
+    return require('./iotdb').iot().cfg_get(key, otherwise);
 };
 
 /*

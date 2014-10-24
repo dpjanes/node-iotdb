@@ -241,8 +241,7 @@ TwitterDriver.prototype.setup = function (paramd) {
  *  See {@link Driver#discover Driver.discover}
  */
 TwitterDriver.prototype.discover = function (paramd, discover_callback) {
-    if (paramd.initd === undefined) {
-        // console.log("# TwitterDriver.discover: no nearby discovery (not a problem)")
+    if (paramd.nearby) {
         logger.warn({
             method: "discover",
             cause: "not a problem"

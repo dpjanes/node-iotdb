@@ -600,8 +600,7 @@ FirmataDriver.prototype.reachable = function () {
 FirmataDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
-    if (paramd.initd === undefined) {
-        // console.log("# FirmataDriver.discover: no nearby discovery (not a problem)")
+    if (paramd.nearby) {
         logger.warn({
             method: "discover",
             cause: "not a problem"
