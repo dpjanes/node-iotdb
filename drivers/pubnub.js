@@ -124,7 +124,7 @@ PubNubDriver.prototype.identity = function (kitchen_sink) {
             identityd["channel"] = self.channel;
         }
         if (self.selector) {
-            identityd["selector"] = self.selector;
+            identityd["selector"] = "" + self.selector;
         }
 
         _.thing_id(identityd);
@@ -184,7 +184,9 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
      *  different devices within the same stream
      */
     if (_.isEmpty(paramd.initd.selector)) {
-        var driver = new PubNubDriver(paramd);
+        var driver = new PubNubDriver({
+            channel: paramd.channel,
+        });
 
         discover_callback(driver);
 
@@ -193,7 +195,7 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
             callback: function (msgd) {
                 if (driver.disconnected || iotdb.shutting_down()) {
                     pubnub.unsubscribe({
-                        channel: paramd.initd.channel
+                        channel: paramd.initd.channel,
                     });
                     return;
                 }
@@ -201,10 +203,51 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
                 driver._pubnub_message(msgd);
             }
         });
-    } else {}
+    } else {
+        /*
+         *  Create a new Driver for each message
+         *  with a new value for paramd.initd.selector
+         */
+        var selectord = {}
+        pubnub.subscribe({
+            channel: paramd.initd.channel,
+            callback: function (msgd) {
+                if (iotdb.shutting_down()) {
+                    pubnub.unsubscribe({
+                        initd: {
+                            channel: paramd.initd.channel,
+                        },
+                    });
+                    return;
+                }
 
-    /*
-     */
+                var selector_value = msgd[paramd.initd.selector];
+                if (selector_value === undefined) {
+                    return
+                }
+
+                var driver = selectord[selector_value];
+                if (driver === undefined) {
+                    var driver = new PubNubDriver({
+                        initd: {
+                            channel: paramd.channel,
+                            selector: selector_value,
+                        }
+                    });
+                    logger.info({
+                        method: "discover/subscribe/callback",
+                        selector: paramd.initd.selector,
+                        selector_value: selector_value,
+                        identity: driver.identity().thing_id,
+                    }, "found new selector value");
+                    selectord[selector_value] = driver;
+                    discover_callback(driver);
+                }
+
+                driver._pubnub_message(msgd);
+            }
+        });
+    }
 };
 
 var pubnub;
@@ -217,6 +260,9 @@ PubNubDriver.prototype._pubnub_message = function (msgd) {
     logger.info({
         method: "_pubnub_message",
         msgd: msgd,
+        identity: self.identity().thing_id,
+        channel: self.channel,
+        selector: self.selector,
     }, "received");
 
     self.pulled(msgd);
@@ -287,7 +333,7 @@ PubNubDriver.prototype.pull = function () {
     logger.info({
         method: "pull",
         unique_id: self.unique_id
-    }, "called");
+    }, "called - inherently does nothing");
 
     return self;
 };

@@ -470,7 +470,7 @@ Model.prototype.set = function (find_key, new_value) {
     var rd = self._find(find_key);
     if (rd === undefined) {
         // console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code);
-        logger.error({
+        logger.warn({
             method: "set",
             find_key: find_key,
             model_code: self.code,
