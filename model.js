@@ -30,6 +30,12 @@ var meta_thing = require("./meta");
 var model_maker = require("./model_maker");
 var libs = require("./libs/libs");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'model',
+});
+
 /* --- constants --- */
 var VERBOSE = true;
 var iot_name = _.expand("iot:name");
@@ -37,12 +43,6 @@ var iot_name = _.expand("iot:name");
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "thing_changed";
 var EVENT_META_CHANGED = "meta_changed";
-
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
-    name: 'iotdb',
-    module: 'model',
-});
 
 
 var shutting_down = function () {
@@ -841,7 +841,7 @@ Model.prototype.identity = function (kitchen_sink) {
         return this.driver_instance.identity(kitchen_sink);
     } else {
         // console.log("# Model.identity: returning null because this.driver_instance=null");
-        if (!shutting_down()) { 
+        if (!shutting_down()) {
             logger.error({
                 method: "identity",
             }, "returning null self.driver_instance=null");
@@ -857,7 +857,7 @@ Model.prototype.thing_id = function () {
         return id.thing_id;
     } else {
         // console.log("# Model.thing_id: returning null because this.identity=null");
-        if (!shutting_down()) { 
+        if (!shutting_down()) {
             logger.error({
                 method: "thing_id",
             }, "returning null self.identity=null");

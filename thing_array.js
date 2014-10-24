@@ -29,6 +29,12 @@ var events = require('events');
 var util = require('util');
 var assert = require('assert');
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'thing_array',
+});
+
 /* --- constants --- */
 var VERBOSE = true;
 var EVENT_THING_NEW = 'EVENT_THING_NEW';
@@ -142,7 +148,7 @@ ThingArray.prototype.push = function (thing, paramd) {
  */
 ThingArray.prototype.is_persist = function () {
     return this._persistds != null;
-}
+};
 
 /**
  *  @param {string} key - if used, only the latest command
@@ -664,7 +670,7 @@ ThingArray.prototype._filter_test = function (d, iot, thing) {
  */
 ThingArray.prototype.filter = function (d) {
     var self = this;
-    var persist = self.is_persist()
+    var persist = self.is_persist();
     var o;
     var oi;
 
@@ -864,13 +870,3 @@ ThingArray.prototype.after = function (delay, f) {
 };
 
 exports.ThingArray = ThingArray;
-
-/*
-HERE:push.1 __thing_array_0 1
-HERE:push.1.1 __thing_array_0 1
-HERE:filter.EVENT_THING_PUSHED.1 __thing_array_0 1
-HERE:things_changed __thing_array_1 0
-HERE:push.2 __thing_array_0 1
-HERE:push.2.1 __thing_array_0 1
-
- */

@@ -117,7 +117,7 @@ Store.prototype.track = function (paramd) {
     };
 
     if (!self.things.is_persist()) {
-        noble.warn({
+        logger.warn({
             method: "track",
         }, "'things' are not persistent - new Things discovered will not be tracked");
     }

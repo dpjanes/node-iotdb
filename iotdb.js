@@ -1080,7 +1080,7 @@ IOT.prototype._discover = function () {
             cause: "Node-IOTDB error - this code path should be discontinued",
         }, "we shouldn't be here");
         throw new Error("this code path should be discontinued");
-        
+
         // return self._discover_nearby(driver_identityd, things);
     }
 };
@@ -1101,9 +1101,7 @@ IOT.prototype._discover_nearby = function (paramd, things) {
     var self = this;
     var any = false;
 
-    paramd = _.defaults(paramd, {
-        initd: {},
-    });
+    paramd = _.defaults(paramd, {})
     if (paramd.driver) {
         paramd.driver = _.expand(paramd.driver, "iot-driver:");
     }
@@ -1121,11 +1119,14 @@ IOT.prototype._discover_nearby = function (paramd, things) {
             continue;
         }
 
-        // note no paramd.initd. Drivers know this is "nearby" because of that
+        var initd = _.deepCopy(paramd)
+        delete initd["driver"]
+        delete initd["model"]
+
         any = true;
         var discover_paramd = {
             nearby: true,
-            initd: paramd.initd,
+            initd: initd,
         };
         driver_exemplar.discover(discover_paramd, function (driver) {
             if (self.shutting_down) {
@@ -1343,22 +1344,36 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             var thing = thing_exemplar.make({
                 initd: thing_exemplar.initd
             });
-            self._bind_driver(thing, driver);
 
-            // has to happen after _bind_driver unfortunately to get the right identity
-            var driver_supported = thing.is_driver_supported(driver, true);
-            if (!driver_supported) {
-                // console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)");
-                logger.info({
-                    method: "_discover_thing"
-                        /*,
-                                            thing_initd: thing_exemplar.initd,
-                                            driver_identityd: driver.identity()*/
-                }, "ignoring this Driver instance - not a real issue");
+            if (!_.isEmpty(thing_exemplar.initd.driver)) {
+                /*
+                 *  If a 'driver' is specified, we're _forcing_
+                 *  the Thing to go with a particular driver. 
+                 *  This lets us connect to Things through stores,
+                 *  pubnub, etc.. 
+                 */
+                self._bind_transport(thing, driver);
+            } else {
+                self._bind_driver(thing, driver);
 
-                thing.driver_instance = null;
-                driver.disconnect();
-                return;
+                /*
+                 *  Has to happen after _bind_driver unfortunately to get the 
+                 *  right identity. This could definitely be improved.
+                 */
+                var driver_supported = thing.is_driver_supported(driver, true);
+                if (!driver_supported) {
+                    // console.log("- IOT._discover_thing", "ignoring this Driver (not a real issue!)");
+                    logger.info({
+                        method: "_discover_thing",
+                        model_code: thing_exemplar.get_code(),
+                        thing_initd: thing_exemplar.initd,
+                        driver_identityd: driver.identity(),
+                    }, "ignoring this Driver instance - not a real issue");
+
+                    thing.driver_instance = null;
+                    driver.disconnect();
+                    return;
+                }
             }
 
             // console.log("- IOT._discover_thing", "found Driver (bound)");
@@ -1432,8 +1447,12 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
 IOT.prototype._discover_bind = function (paramd, things) {
     var self = this;
 
+    // !!!! - ie we use the paramd as the initd
+    var initd = _.deepCopy(paramd)
+    delete initd["model"]
+
     paramd = _.defaults(paramd, {
-        initd: _.deepCopy(paramd) // !!!! - ie we use the paramd as the initd
+        initd: initd
     });
 
     if (paramd.model) {
@@ -1595,6 +1614,46 @@ IOT.prototype._bind_driver = function (thing, driver_instance) {
      */
     paramd.initd = thing.initd;
     driver_instance.setup(paramd);
+
+    return self;
+};
+
+/**
+ *  Because we're not really talking to the correct
+ *  Driver, we swap out all the functions that
+ *  talk to the Driver with the original Model
+ *  null functions.
+ */
+IOT.prototype._bind_transport = function (thing, driver_instance) {
+    var self = this;
+
+    logger.info({
+        method: "_bind_transport",
+        thing_code: thing.get_code(),
+        initd: thing.initd,
+    }, "binding Thing using Driver as transport");
+
+    thing.driver_instance = driver_instance;
+    thing.initd = _.deepCopy(thing.initd);
+
+    driver_instance.setup({
+        thing: thing,
+        initd: thing.initd,
+    });
+
+    thing.driver_in = function(paramd) {
+        for (var key in paramd.driverd) {
+            paramd.thingd[key] = paramd.driverd[key];
+        }
+    };
+    thing.driver_out = function(paramd) {
+        for (var key in paramd.thingd) {
+            var value = paramd.thingd[key];
+            if ((value !== null) && (value !== undefined)) {
+                paramd.driverd[key] = value;
+            }
+        }
+    };
 
     return self;
 };
@@ -2533,6 +2592,7 @@ IOT.prototype.places = function () {
  */
 IOT.prototype.connect = function (value) {
     var self = this;
+    var connectd;
     var things = new thing_array.ThingArray({
         persist: true
     });
@@ -2544,7 +2604,7 @@ IOT.prototype.connect = function (value) {
             persist: true
         });
     } else if (_.isString(value)) {
-        var connectd = {};
+        connectd = {};
 
         if (value.match(/^:/) || value.match(/^iot-driver:/)) {
             value = _.expand(value, "iot-driver:");
@@ -2567,14 +2627,20 @@ IOT.prototype.connect = function (value) {
             }).with_model(value);
         }
     } else if (_.isObject(value)) {
-        for (var key in value) {
-            var v = value[key];
+        connectd = value;
+
+        for (var key in connectd) {
+            var v = connectd[key];
             if (_.isString(v) && v.indexOf('{{') > -1) {
-                value[key] = self.format(v);
+                connectd[key] = self.format(v);
             }
         }
-        self._connect(value, things);
 
+        if (connectd.driver) {
+            connectd.driver = _.expand(connectd.driver, "iot-driver:");
+        }
+
+        self._connect(connectd, things);
     } else {
         // console.log("# IOT.connect: unexpected argument type", value);
         logger.error({
@@ -2741,6 +2807,13 @@ IOT.prototype.report_issue = function (issued) {
  *  API
  */
 exports.IOT = IOT;
+exports.shutting_down = function () {
+    if (exports.instance == null) {
+        return exports.instance.shutting_down;
+    } else {
+        return false;
+    }
+}
 
 exports.EVENT_REGISTER_MODEL = EVENT_REGISTER_MODEL;
 exports.EVENT_REGISTER_BRIDGE = EVENT_REGISTER_BRIDGE;

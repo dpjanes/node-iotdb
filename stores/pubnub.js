@@ -40,8 +40,7 @@ var logger = bunyan.createLogger({
 
 /**
  */
-var PubNubStore = function (paramd) {
-};
+var PubNubStore = function (paramd) {};
 
 PubNubStore.prototype = new store.Store();
 PubNubStore.prototype.store_id = "iot-store:pubnub";
@@ -56,7 +55,7 @@ PubNubStore.prototype.on_change = function (thing) {
     if (!pubnub) {
         logger.error({
             method: "on_change",
-            cause: "configuration required (TBA)",
+            cause: "configuration required",
         }, "PubNub not setup");
         return;
     }
@@ -78,17 +77,17 @@ PubNubStore.prototype.on_change = function (thing) {
      */
     var stated = thing.state();
 
-    pubnub.publish({ 
+    pubnub.publish({
         channel: pubnub_channel,
         message: stated,
-        callback: function() {
+        callback: function () {
             logger.info({
                 method: "on_change",
                 channel: pubnub_channel,
                 stated: stated,
             }, "update success");
         },
-        error: function(error) {
+        error: function (error) {
             logger.error({
                 method: "on_change",
                 channel: pubnub_channel,
@@ -113,17 +112,17 @@ PubNubStore.prototype.on_change = function (thing) {
     }
 
     var common_channel = "iotdb";
-    pubnub.publish({ 
+    pubnub.publish({
         channel: common_channel,
         message: stated,
-        callback: function() {
+        callback: function () {
             logger.info({
                 method: "on_change",
                 channel: common_channel,
                 stated: stated,
             }, "update success");
         },
-        error: function(error) {
+        error: function (error) {
             logger.error({
                 method: "on_change",
                 channel: common_channel,
@@ -158,7 +157,7 @@ PubNubStore.prototype.pubnub = function () {
                 method: "pubnub",
                 cause: "publish_key not in keystore",
             }, "no PubNub publish key");
-            
+
             return null;
         }
 
