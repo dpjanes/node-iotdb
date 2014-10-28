@@ -673,7 +673,7 @@ IOT.prototype.ready_delta = function (key, delta) {
                     return;
                 }
 
-                self._discover();
+                self.connect();
             }
         }
     }
@@ -1078,6 +1078,7 @@ IOT.prototype._discover = function () {
         logger.fatal({
             method: "fatal",
             cause: "Node-IOTDB error - this code path should be discontinued",
+            arguments: arguments,
         }, "we shouldn't be here");
         throw new Error("this code path should be discontinued");
 
