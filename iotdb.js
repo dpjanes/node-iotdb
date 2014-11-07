@@ -1102,7 +1102,7 @@ IOT.prototype._discover_nearby = function (paramd, things) {
     var self = this;
     var any = false;
 
-    paramd = _.defaults(paramd, {})
+    paramd = _.defaults(paramd, {});
     if (paramd.driver) {
         paramd.driver = _.expand(paramd.driver, "iot-driver:");
     }
@@ -1120,9 +1120,9 @@ IOT.prototype._discover_nearby = function (paramd, things) {
             continue;
         }
 
-        var initd = _.deepCopy(paramd)
-        delete initd["driver"]
-        delete initd["model"]
+        var initd = _.deepCopy(paramd);
+        delete initd["driver"];
+        delete initd["model"];
 
         any = true;
         var discover_paramd = {
@@ -1349,16 +1349,16 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             if (!_.isEmpty(thing_exemplar.initd.driver)) {
                 /*
                  *  If a 'driver' is specified, we're _forcing_
-                 *  the Thing to go with a particular driver. 
+                 *  the Thing to go with a particular driver.
                  *  This lets us connect to Things through stores,
-                 *  pubnub, etc.. 
+                 *  pubnub, etc..
                  */
                 self._bind_transport(thing, driver);
             } else {
                 self._bind_driver(thing, driver);
 
                 /*
-                 *  Has to happen after _bind_driver unfortunately to get the 
+                 *  Has to happen after _bind_driver unfortunately to get the
                  *  right identity. This could definitely be improved.
                  */
                 var driver_supported = thing.is_driver_supported(driver, true);
@@ -1449,8 +1449,8 @@ IOT.prototype._discover_bind = function (paramd, things) {
     var self = this;
 
     // !!!! - ie we use the paramd as the initd
-    var initd = _.deepCopy(paramd)
-    delete initd["model"]
+    var initd = _.deepCopy(paramd);
+    delete initd["model"];
 
     paramd = _.defaults(paramd, {
         initd: initd
@@ -1642,12 +1642,12 @@ IOT.prototype._bind_transport = function (thing, driver_instance) {
         initd: thing.initd,
     });
 
-    thing.driver_in = function(paramd) {
+    thing.driver_in = function (paramd) {
         for (var key in paramd.driverd) {
             paramd.thingd[key] = paramd.driverd[key];
         }
     };
-    thing.driver_out = function(paramd) {
+    thing.driver_out = function (paramd) {
         for (var key in paramd.thingd) {
             var value = paramd.thingd[key];
             if ((value !== null) && (value !== undefined)) {
@@ -2078,15 +2078,14 @@ IOT.prototype._build_model = function (model_iri) {
     var tm = exports.make_model();
     var at_types = [];
 
-    // console.log(iri_to_code(model_iri));
     tm.code(_.iri_to_code(model_iri));
 
     var ts = self.gm.get_triples(model_iri);
     if (ts.length === 0) {
-        // console.log("# IOT._build_build: no triples", "\n  model_iri", model_iri);
         logger.error({
             method: "_build_model",
-            model_iri: model_iri
+            model_iri: model_iri,
+            cause: "this model has not been downloaded - Node-IOTDB error?",
         }, "no triples");
         return null;
     }
@@ -2116,21 +2115,33 @@ IOT.prototype._build_model = function (model_iri) {
              *  XXX - Sandbox Goes Here
              */
             tm.validator(function (paramd) {
+                logger.fatal({
+                    method: "_build_model",
+                    cause: "Node-IOTDB issue - get in touch please",
+                }, "cannot run validator because IOTDB has not implemented a sandbox (yet)");
+                throw new Error("SANDBOX NEEDS TO BE IMPLEMENTED");
+                /*
                 var f = eval("var x = " + t.object.value + "; x");
-                // console.log("F=", f);
                 f(paramd);
-                // console.log("paramd=", paramd);
-                //  f.apply(tm, Array.prototype.slice.call(arguments));
-
-                // item.end.apply(item, Array.prototype.slice.call(arguments));
+                 */
             });
         } else {
-            console.log("unrecognized predicate", t.predicate);
+            logger.error({
+                method: "_build_model",
+                predicate: t.predicate,
+                model_iri: model_iri,
+                cause: "Node-IOTDB issue - get in touch please",
+            }, "unrecognized predicate");
         }
     }
 
     if (at_types.indexOf("iot:Model") === -1) {
-        console.log("thing_from_jsonld:build_model: iot:Model not in @types");
+        logger.error({
+            method: "_build_model",
+            at_types: at_types,
+            model_iri: model_iri,
+            cause: "bad Model - maybe the IRI doesn't lead to a Model?",
+        }, "iot:Model not in @types");
         return null;
     }
 
@@ -2814,7 +2825,7 @@ exports.shutting_down = function () {
     } else {
         return false;
     }
-}
+};
 
 exports.EVENT_REGISTER_MODEL = EVENT_REGISTER_MODEL;
 exports.EVENT_REGISTER_BRIDGE = EVENT_REGISTER_BRIDGE;

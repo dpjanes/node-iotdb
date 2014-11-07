@@ -7,7 +7,7 @@
         "url": "https://github.com/dpjanes/node-iotdb/issues"
     }, 
     "dependencies": {
-        "iotdb-models": ">=0.0.16", 
+        "iotdb-models": ">=0.0.17", 
         "jsonld": "~0.1.25", 
         "minimist": "~0.0.5", 
         "mqtt": "~0.3.7", 
@@ -51,5 +51,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.3.1"
+    "version": "0.3.2"
 }

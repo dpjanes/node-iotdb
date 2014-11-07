@@ -29,6 +29,7 @@ var driver = require('../driver');
 var iotdb = require('../iotdb');
 var FIFOQueue = require('../queue').FIFOQueue;
 var node_pubnub = require("pubnub");
+var Interaction = require('../interaction').Interaction;
 
 var queue = new FIFOQueue("PubNubDriver");
 
@@ -103,7 +104,7 @@ PubNubDriver.prototype.disconnect = function () {
      *  and thus we can't just unsubscribe
      */
     if (_.isEmpty(self.selector) || iotdb.shutting_down()) {
-        pubnub.unsubscribe({
+        self._pubnub().unsubscribe({
             channel: self.channel
         });
     }
@@ -154,6 +155,7 @@ PubNubDriver.prototype.setup = function (paramd) {
  */
 PubNubDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
+    var driver;
 
     if (_.isEmpty(paramd.initd.channel)) {
         logger.error({
@@ -184,7 +186,7 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
      *  different devices within the same stream
      */
     if (_.isEmpty(paramd.initd.selector)) {
-        var driver = new PubNubDriver({
+        driver = new PubNubDriver({
             channel: paramd.channel,
         });
 
@@ -208,7 +210,7 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
          *  Create a new Driver for each message
          *  with a new value for paramd.initd.selector
          */
-        var selectord = {}
+        var selectord = {};
         pubnub.subscribe({
             channel: paramd.initd.channel,
             callback: function (msgd) {
@@ -223,12 +225,12 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
 
                 var selector_value = msgd[paramd.initd.selector];
                 if (selector_value === undefined) {
-                    return
+                    return;
                 }
 
-                var driver = selectord[selector_value];
+                driver = selectord[selector_value];
                 if (driver === undefined) {
-                    var driver = new PubNubDriver({
+                    driver = new PubNubDriver({
                         initd: {
                             channel: paramd.channel,
                             selector: selector_value,
@@ -250,8 +252,6 @@ PubNubDriver.prototype.discover = function (paramd, discover_callback) {
     }
 };
 
-var pubnub;
-
 /**
  */
 PubNubDriver.prototype._pubnub_message = function (msgd) {
@@ -266,14 +266,16 @@ PubNubDriver.prototype._pubnub_message = function (msgd) {
     }, "received");
 
     self.pulled(msgd);
-}
+};
+
+var __pubnub;
 
 /**
  */
 PubNubDriver.prototype._pubnub = function () {
     var self = this;
 
-    if (!pubnub) {
+    if (!__pubnub) {
         var publish_key = self.cfg_get('pubnub/publish_key');
         var subscribe_key = self.cfg_get('pubnub/subscribe_key');
         if (!publish_key || !subscribe_key) {
@@ -294,13 +296,13 @@ PubNubDriver.prototype._pubnub = function () {
             return null;
         }
 
-        pubnub = node_pubnub.init({
+        __pubnub = node_pubnub.init({
             publish_key: publish_key,
             subscribe_key: subscribe_key,
         });
     }
 
-    return pubnub;
+    return __pubnub;
 };
 
 /**

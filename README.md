@@ -1,9 +1,9 @@
 Node-IOTDB
 =
-The Internet of Things Database - Node
+The Internet of Things Database
 
-IOTDB (in general) is an open way of describing Things, Sensors ... 
-Internet of Things devices ... semantically. 
+IOTDB provides an open way of describing Things, Sensors ... 
+Internet of Things devices ... semantically.
 
 What do we mean by "semantically"? 
 Your TV can be turned on and off. 

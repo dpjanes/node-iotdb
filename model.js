@@ -47,7 +47,7 @@ var EVENT_META_CHANGED = "meta_changed";
 
 var shutting_down = function () {
     return require('./iotdb').iot().shutting_down;
-}
+};
 
 /**
  *  Convenience function to make a ModelMaker instance
@@ -1444,6 +1444,8 @@ Model.prototype.place_iri = function () {
  *  If the Thing is not loaded, null is returned
  */
 Model.prototype.model_iri = function () {
+    return this.model_code_iri();
+    /*
     var self = this;
 
     var iot = require('./iotdb').iot();
@@ -1462,6 +1464,7 @@ Model.prototype.model_iri = function () {
     }
 
     return iot.gm.get_object(thing_iri, 'iot:Model');
+    */
 };
 
 /**

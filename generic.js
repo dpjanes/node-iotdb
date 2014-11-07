@@ -28,6 +28,12 @@ var model = require("./model");
 var model_maker = require("./model_maker");
 var libs = require("./libs/libs");
 
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'generic',
+});
+
 /* -- */
 var FakeAttribute = function (key) {
     this.key = key;

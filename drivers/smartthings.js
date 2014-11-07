@@ -29,7 +29,6 @@ var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 var Interaction = require('../interaction').Interaction;
 var SmartThings = require('./libs/smartthingslib').SmartThings;
-var mqtt = require('mqtt');
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
@@ -158,11 +157,11 @@ var __message_no_username = false;
  */
 SmartThingsDriver.prototype.setup = function (paramd) {
     var self = this;
+    var iot = require('../iotdb').iot();
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
 
-    var iot = require('../iotdb').iot();
     if (!iot.username || (iot.username === "nobody")) {
         if (!__message_no_username) {
             __message_no_username = true;
@@ -245,6 +244,13 @@ SmartThingsDriver.prototype.discover = function (paramd, discover_callback) {
             });
 
             discover_callback(driver);
+
+            // initial data - everything after will be MQTT driven
+            process.nextTick(function () {
+                if (driver.thing) {
+                    driver.pulled(device.value);
+                }
+            });
         }
     });
 
@@ -301,6 +307,11 @@ SmartThingsDriver.prototype.push = function (paramd) {
 /**
  *  Request the Driver's current state. It should
  *  be called back with <code>callback</code>
+ *  <p>
+ *  Right now we don't do anything because MQTT
+ *  does all the heavy lifting. However, the API
+ *  allows for pulling so there's no reason
+ *  we couldn't implement this in the future
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
