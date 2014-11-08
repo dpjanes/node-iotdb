@@ -174,7 +174,7 @@ var help = function(subcommand) {
 };
 
 var ad = require('minimist')(process.argv.slice(2), {
-    boolean: "global"
+    boolean: [ "global", "list", ],
 });
 
 if (ad._.length && (ad._[0] === "machine-id")) {
@@ -251,15 +251,25 @@ if (ad._.length === 0) {
 
     console.log(keystored.machine_id);
 } else if (ad._[0] === "set") {
-    if (ad._.length !== 3) {
+    if (ad._.length < 3) {
         console.log("missing arguments");
+        console.log("");
+        help("set");
+        process.exit(1);
+    } else if (!ad.list && ad._.length > 3) {
+        console.log("too many arguments -- make sure to use '--list' if you want to set multiple items");
         console.log("");
         help("set");
         process.exit(1);
     }
 
     var key = ad._[1];
-    var value = ad._[2];
+    var value;
+    if (ad.list) {
+        value = ad._.slice(2);
+    } else {
+        value = ad._[2];
+    }
 
     var keystored = {};
     var filename = ".iotdb/keystore.json";

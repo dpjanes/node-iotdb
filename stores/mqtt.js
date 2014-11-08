@@ -170,8 +170,8 @@ MQTTStore.prototype.stored = function () {
         if (!topics) {
             topics = [
                 "/u/{{ username }}/things/{{ model_code }}/{{ thing_id }}",
-                "/u/{{ username }}/things/{{ facet }}/{{ thing_id }}",
-                "/u/{{ username }}/things/{{ model_code }}/{{ thing_id }}/{{ attribute_code }}",
+                // "/u/{{ username }}/things/{{ facet }}/{{ thing_id }}",
+                // "/u/{{ username }}/things/{{ model_code }}/{{ thing_id }}/{{ attribute_code }}",
             ];
         } else if (_.isArray(topics)) {} else {
             topics = [topics, ];
