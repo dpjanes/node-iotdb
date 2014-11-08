@@ -276,16 +276,16 @@ PubNubDriver.prototype._pubnub = function () {
     var self = this;
 
     if (!__pubnub) {
-        var publish_key = self.cfg_get('pubnub/publish_key');
-        var subscribe_key = self.cfg_get('pubnub/subscribe_key');
+        var publish_key = self.cfg_get('stores/pubnub/publish_key');
+        var subscribe_key = self.cfg_get('stores/pubnub/subscribe_key');
         if (!publish_key || !subscribe_key) {
             var interaction = new Interaction();
 
             interaction.header("PubNubDriver: This store is not set up yet");
             interaction.log("Please set up your PubNub account and then enter the following command");
             interaction.log();
-            interaction.code("iotdb-control --global set pubnub/publish_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
-            interaction.code("iotdb-control --global set pubnub/subscribe_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
+            interaction.code("iotdb-control --global set stores/pubnub/publish_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
+            interaction.code("iotdb-control --global set stores/pubnub/subscribe_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
             interaction.end();
 
             logger.error({
