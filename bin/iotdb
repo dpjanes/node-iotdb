@@ -25,173 +25,174 @@
  *  limitations under the License.
  */
 
-"use strict"
+"use strict";
 
-var fs = require('fs')
-var util = require('util')
-var events = require('events')
-var path = require('path')
-var prompt = require('prompt')
-var uuid = require('node-uuid')
-var node_jsonld = require('jsonld')
+var fs = require('fs');
+var util = require('util');
+var events = require('events');
+var path = require('path');
+var prompt = require('prompt');
+var uuid = require('node-uuid');
+var node_jsonld = require('jsonld');
+var assert = require('assert');
 
-var minimist = require('minimist')
-var unirest = require('unirest')
+var minimist = require('minimist');
+var unirest = require('unirest');
 
-var iotdb = require('../iotdb')
-var _ = require('../helpers')
-var cfg = require('../cfg')
+var iotdb = require('../iotdb');
+var _ = require('../helpers');
+var cfg = require('../cfg');
 
-var name = path.basename(process.argv[1])
-var is_development = process.env.IOTDB_DEVELOPMENT === "1"
+var name = path.basename(process.argv[1]);
+var is_development = process.env.IOTDB_DEVELOPMENT === "1";
 
 var help = function(subcommand) {
-    if (subcommand == "oauth-json") {
-        console.log("oauth-json: store oauth information that is in a JSON format")
-        console.log("")
-        console.log("usage:", name, "oauth-json")
-        console.log("")
-        console.log("OAuth information is needed for IOTDB to reach web services")
-        console.log("OAuth JSON will be read from standard input and stored in the ./.iotdb directory")
-        console.log("")
-        console.log("This page will help you get tokens:")
-        console.log("https://iotdb.org/playground/oauthorize/iotdb")
-    } else if (subcommand == "oauth-token") {
-        console.log("oauth: store oauth information where you have the host and token")
-        console.log("")
-        console.log("usage:", name, "oauth-token <host> <token>")
-        console.log("")
-    } else if (subcommand == "oauth-iotdb") {
-        console.log("oauth: get oauth tokens from IOTDB")
-        console.log("")
-        console.log("usage:", name, "oauth-iotdb <host> <token>")
-        console.log("")
-        console.log("This is the best way to get OAuth tokens for your app")
-    } else if (subcommand == "new-project") {
-        console.log("new-project: create a new project")
-        console.log("")
-        console.log("usage:", name, "new-project [options]")
-        console.log("")
-        console.log("Create a new IOTDB project")
-        console.log("")
-        console.log("Valid options:")
-        console.log(" --name <name>         : use this name for the main.js file, rather than 'project.js'")
-    } else if (subcommand == "update-project") {
-        console.log("new-project: update the project")
-        console.log("")
-        console.log("usage:", name, "update-project [options]")
-        console.log("")
-        console.log("Update an IOTDB project. Safe to run")
-    } else if (subcommand == "upload-model") {
-        console.log("upload-model: upload a model to your IOTDB account")
-        console.log("")
-        console.log("usage:", name, "upload-model <name>")
-        console.log("")
-        console.log("Upload a model you've created (or modified) to your IOTDB account.")
-        console.log("The Model should be part of your current Project.")
-    } else if (subcommand == "jsonld-model") {
-        console.log("jsonld-model: print out the JSON-LD for a model")
-        console.log("")
-        console.log("usage:", name, "jsonld-model <name>")
-        console.log("")
-        console.log("Print out the JSON-LD representation of a Model")
-    } else if (subcommand == "download-model") {
-        console.log("download-model: download a model from IOTDB")
-        console.log("")
-        console.log("usage:", name, "download-model <name>")
-        console.log("")
-        console.log("Download a Model from IOTDB. The Model will be stored in 'models/' directory.")
-        console.log("")
-        console.log("Valid options:")
-        console.log(" --user <user>         : download from a different user account")
-    } else if (subcommand == "configure-driver") {
-        console.log("configure-driver: does initial setup for some drivers")
-        console.log("")
-        console.log("usage:", name, "configure-driver <driver-name>")
-        console.log("")
-        console.log("Configure a driver. What this does depends on the driver.")
-        console.log("Common drivers to configure are: 'hue'")
-    } else if (subcommand == "set") {
-        console.log("set: set a value in the keystore")
-        console.log("")
-        console.log("usage:", name, "set [--list] <key> <value> [<value>...]")
-        console.log("")
-        console.log("Set a key/value in the keystore (see .iotdb/keystore.json)")
+    if (subcommand === "oauth-json") {
+        console.log("oauth-json: store oauth information that is in a JSON format");
+        console.log("");
+        console.log("usage:", name, "oauth-json");
+        console.log("");
+        console.log("OAuth information is needed for IOTDB to reach web services");
+        console.log("OAuth JSON will be read from standard input and stored in the ./.iotdb directory");
+        console.log("");
+        console.log("This page will help you get tokens:");
+        console.log("https://iotdb.org/playground/oauthorize/iotdb");
+    } else if (subcommand === "oauth-token") {
+        console.log("oauth: store oauth information where you have the host and token");
+        console.log("");
+        console.log("usage:", name, "oauth-token <host> <token>");
+        console.log("");
+    } else if (subcommand === "oauth-iotdb") {
+        console.log("oauth: get oauth tokens from IOTDB");
+        console.log("");
+        console.log("usage:", name, "oauth-iotdb <host> <token>");
+        console.log("");
+        console.log("This is the best way to get OAuth tokens for your app");
+    } else if (subcommand === "new-project") {
+        console.log("new-project: create a new project");
+        console.log("");
+        console.log("usage:", name, "new-project [options]");
+        console.log("");
+        console.log("Create a new IOTDB project");
+        console.log("");
+        console.log("Valid options:");
+        console.log(" --name <name>         : use this name for the main.js file, rather than 'project.js'");
+    } else if (subcommand === "update-project") {
+        console.log("new-project: update the project");
+        console.log("");
+        console.log("usage:", name, "update-project [options]");
+        console.log("");
+        console.log("Update an IOTDB project. Safe to run");
+    } else if (subcommand === "upload-model") {
+        console.log("upload-model: upload a model to your IOTDB account");
+        console.log("");
+        console.log("usage:", name, "upload-model <name>");
+        console.log("");
+        console.log("Upload a model you've created (or modified) to your IOTDB account.");
+        console.log("The Model should be part of your current Project.");
+    } else if (subcommand === "jsonld-model") {
+        console.log("jsonld-model: print out the JSON-LD for a model");
+        console.log("");
+        console.log("usage:", name, "jsonld-model <name>");
+        console.log("");
+        console.log("Print out the JSON-LD representation of a Model");
+    } else if (subcommand === "download-model") {
+        console.log("download-model: download a model from IOTDB");
+        console.log("");
+        console.log("usage:", name, "download-model <name>");
+        console.log("");
+        console.log("Download a Model from IOTDB. The Model will be stored in 'models/' directory.");
+        console.log("");
+        console.log("Valid options:");
+        console.log(" --user <user>         : download from a different user account");
+    } else if (subcommand === "configure-driver") {
+        console.log("configure-driver: does initial setup for some drivers");
+        console.log("");
+        console.log("usage:", name, "configure-driver <driver-name>");
+        console.log("");
+        console.log("Configure a driver. What this does depends on the driver.");
+        console.log("Common drivers to configure are: 'hue'");
+    } else if (subcommand === "set") {
+        console.log("set: set a value in the keystore");
+        console.log("");
+        console.log("usage:", name, "set [--list] <key> <value> [<value>...]");
+        console.log("");
+        console.log("Set a key/value in the keystore (see .iotdb/keystore.json)");
         console.log("If you need to set multiple values, use --list");
-    } else if (subcommand == "machine-id") {
-        console.log("assign-machine-id: make up a random ID representing this computer")
-        console.log("")
-        console.log("usage:", name, "machine-id")
-        console.log("")
-        console.log("Creates a random UUID and stores it in your _global_ keystore")
-        console.log("under the name 'machine_id'. If a machine_id already exists")
-        console.log("it is simply printed out.")
-        console.log("")
-        console.log("The 'machine_id' allows you to move all your devices to another")
-        console.log("computer in the future without losing IOTDB data.")
-        console.log("")
-        console.log("This is required for some drivers, like 'firmata'. It typically")
-        console.log("needs to be run only once")
+    } else if (subcommand === "machine-id") {
+        console.log("assign-machine-id: make up a random ID representing this computer");
+        console.log("");
+        console.log("usage:", name, "machine-id");
+        console.log("");
+        console.log("Creates a random UUID and stores it in your _global_ keystore");
+        console.log("under the name 'machine_id'. If a machine_id already exists");
+        console.log("it is simply printed out.");
+        console.log("");
+        console.log("The 'machine_id' allows you to move all your devices to another");
+        console.log("computer in the future without losing IOTDB data.");
+        console.log("");
+        console.log("This is required for some drivers, like 'firmata'. It typically");
+        console.log("needs to be run only once");
     } else {
-        console.log("usage:", name, "<subcommand> [options]")
-        console.log("")
-        console.log("Type '" + name + " help <subcommand>' for help on a specific subcommand.")
-        console.log("")
-        console.log("Most important subcommands")
-        console.log("  oauth-iotdb      - add IOTDB OAuth info")
-        console.log("                     run once per folder or set globally for all") 
-        console.log("                     projects with '--global'")
-        console.log("  machine-id       - assign a machine id")
-        console.log("                     run once per computer and you're done")
-        console.log("")
-        console.log("Other subcommands are:")
-        console.log("  set              - set a value in the keystore")
-        console.log("  configure-driver - configure a Driver (like a Philips Hue)")
-        console.log("  configure-store-thing")
-        console.log("                   - configure a particular Thing for a store")
-        console.log("  new-project      - create a new IOTDB project")
-        console.log("  update-project   - update an IOTDB project settings")
-        console.log("  upload-model     - upload a Model to IOTDB")
-        console.log("  oauth-json       - store OAuth info using JSON record")
-        console.log("  oauth-token      - store OAuth info if you have a token")
-        console.log("")
-        console.log("A few other subcommands")
-        console.log("  download-model   - download a Model from IOTDB")
-        console.log("  jsonld-model     - print a Model's JSON-LD representation")
-        console.log("  camel-case       - convert arguments to CamelCase")
-        console.log("  dash-case        - convert arguments to dash-case")
-        console.log("  underscore-case  - convert arguments to underscore_case")
-        console.log("  drivers          - list all the drivers")
-        console.log("  enable-driver    - enable a driver")
-        console.log("  disable-driver   - disable a driver")
+        console.log("usage:", name, "<subcommand> [options]");
+        console.log("");
+        console.log("Type '" + name + " help <subcommand>' for help on a specific subcommand.");
+        console.log("");
+        console.log("Most important subcommands");
+        console.log("  oauth-iotdb      - add IOTDB OAuth info");
+        console.log("                     run once per folder or set globally for all");
+        console.log("                     projects with '--global'");
+        console.log("  machine-id       - assign a machine id");
+        console.log("                     run once per computer and you're done");
+        console.log("");
+        console.log("Other subcommands are:");
+        console.log("  set              - set a value in the keystore");
+        console.log("  configure-driver - configure a Driver (like a Philips Hue)");
+        console.log("  configure-store-thing");
+        console.log("                   - configure a particular Thing for a store");
+        console.log("  new-project      - create a new IOTDB project");
+        console.log("  update-project   - update an IOTDB project settings");
+        console.log("  upload-model     - upload a Model to IOTDB");
+        console.log("  oauth-json       - store OAuth info using JSON record");
+        console.log("  oauth-token      - store OAuth info if you have a token");
+        console.log("");
+        console.log("A few other subcommands");
+        console.log("  download-model   - download a Model from IOTDB");
+        console.log("  jsonld-model     - print a Model's JSON-LD representation");
+        console.log("  camel-case       - convert arguments to CamelCase");
+        console.log("  dash-case        - convert arguments to dash-case");
+        console.log("  underscore-case  - convert arguments to underscore_case");
+        console.log("  drivers          - list all the drivers");
+        console.log("  enable-driver    - enable a driver");
+        console.log("  disable-driver   - disable a driver");
 
     }
-    console.log("")
-    console.log("Universal options:")
-    console.log(" --project <dir>       : the project directory (default: '.')")
-    console.log(" --global              : the global project directory, $HOME")
-}
+    console.log("");
+    console.log("Universal options:");
+    console.log(" --project <dir>       : the project directory (default: '.')");
+    console.log(" --global              : the global project directory, $HOME");
+};
 
 var ad = require('minimist')(process.argv.slice(2), {
     boolean: "global"
 });
 
-if (ad._.length && (ad._[0] == "machine-id")) {
-    ad.global = true
+if (ad._.length && (ad._[0] === "machine-id")) {
+    ad.global = true;
 }
 if (ad.global) {
-    ad.project = process.env['HOME']
+    ad.project = process.env['HOME'];
 }
-var project = (ad.project !== undefined) ? ad.project : "."
+var project = (ad.project !== undefined) ? ad.project : ".";
 try {
-    process.chdir(project)
+    process.chdir(project);
 }
 catch (err) {
-    fs.mkdirSync(project)
-    process.chdir(project)
+    fs.mkdirSync(project);
+    process.chdir(project);
 }
 try {
-    fs.mkdirSync(".iotdb")
+    fs.mkdirSync(".iotdb");
 }
 catch (err) {
 }
@@ -199,12 +200,12 @@ catch (err) {
 /**
  */
 var file_dump = function(envd, filename) {
-    var file_path = path.join(__dirname, filename)
-    var data = fs.readFileSync(file_path, "utf-8")
-    data = cfg.cfg_expand(envd, data)
+    var file_path = path.join(__dirname, filename);
+    var data = fs.readFileSync(file_path, "utf-8");
+    data = cfg.cfg_expand(envd, data);
 
-    process.stdout.write(data)
-}
+    process.stdout.write(data);
+};
 
 /**
  *  IOTDB setup
@@ -219,110 +220,110 @@ var iotdb_nothingd = {
     load_things: false,
     iotdb_thing_get: false,
     iotdb_thing_create: false
-}
+};
 
 /**
  */
-if (ad._.length == 0) {
-    help()
-    process.exit(1)
-} else if (ad._[0] == "help") {
+if (ad._.length === 0) {
+    help();
+    process.exit(1);
+} else if (ad._[0] === "help") {
     if (ad._.length > 1) {
-        help(ad._[1])
+        help(ad._[1]);
     } else {
-        help()
+        help();
     }
-    process.exit(0)
-} else if (ad._[0] == "machine-id") {
-    var keystored = {}
-    var filename = ".iotdb/keystore.json"
+    process.exit(0);
+} else if (ad._[0] === "machine-id") {
+    var keystored = {};
+    var filename = ".iotdb/keystore.json";
 
     cfg.cfg_load_json([ filename ], function(paramd) {
         for (var key in paramd.doc) {
-            keystored[key] = paramd.doc[key]
+            keystored[key] = paramd.doc[key];
         }
-    })
+    });
 
     if (!keystored.machine_id) {
-        keystored.machine_id = uuid.v4()
-        fs.writeFile(filename, JSON.stringify(keystored, null, 2))
+        keystored.machine_id = uuid.v4();
+        fs.writeFile(filename, JSON.stringify(keystored, null, 2));
     }
 
-    console.log(keystored.machine_id)
-} else if (ad._[0] == "set") {
-    if (ad._.length != 3) {
-        console.log("missing arguments")
-        console.log("")
-        help("set")
-        process.exit(1)
+    console.log(keystored.machine_id);
+} else if (ad._[0] === "set") {
+    if (ad._.length !== 3) {
+        console.log("missing arguments");
+        console.log("");
+        help("set");
+        process.exit(1);
     }
 
-    var key = ad._[1]
-    var value = ad._[2]
+    var key = ad._[1];
+    var value = ad._[2];
 
-    var keystored = {}
-    var filename = ".iotdb/keystore.json"
+    var keystored = {};
+    var filename = ".iotdb/keystore.json";
 
     cfg.cfg_load_json([ filename ], function(paramd) {
         for (var key in paramd.doc) {
-            keystored[key] = paramd.doc[key]
+            keystored[key] = paramd.doc[key];
         }
-    })
+    });
 
-    var d = keystored
-    var subkeys = key.split('/')
-    var lastkey = subkeys[subkeys.length - 1]
+    var d = keystored;
+    var subkeys = key.split('/');
+    var lastkey = subkeys[subkeys.length - 1];
 
     for (var ski = 0; ski < subkeys.length - 1; ski++) {
         var subkey = subkeys[ski];
-        var subd = d[subkey]
+        var subd = d[subkey];
         if (!_.isObject(subd)) {
-            subd = {}
-            d[subkey] = subd
+            subd = {};
+            d[subkey] = subd;
         }
 
-        d = subd
+        d = subd;
     }
 
-    d[lastkey] = value
+    d[lastkey] = value;
 
-    fs.writeFile(filename, JSON.stringify(keystored, null, 2))
+    fs.writeFile(filename, JSON.stringify(keystored, null, 2));
     console.log(name + ": added key/value to keystore",
         "\n  key", key,
         "\n  value", value
-    )
+    );
 
-} else if ((ad._[0] == "new-project") || (ad._[0] == "update-project")) {
+} else if ((ad._[0] === "new-project") || (ad._[0] === "update-project")) {
     var envd = {
         FILE_IOTDB: ".iotdb/iotdb.json",
         FILE_JS: project === '.' ? 'project.js' : path.basename(project) + ".js",
         PROJECT: project
-    }
+    };
 
     if (ad.global) {
-        envd.FILE_JS = 'project.js'
+        envd.FILE_JS = 'project.js';
     }
 
     if (ad._.length > 1) {
-        console.log("use --project <project> to specify the project name")
-        process.exit(1)
+        console.log("use --project <project> to specify the project name");
+        process.exit(1);
     }
 
     // load existing data
-    var iotdbd = {}
+    var iotdbd = {};
     cfg.cfg_load_json([ envd.FILE_IOTDB ], function(paramd) {
         for (var key in paramd.doc) {
-            iotdbd[key] = paramd.doc[key]
+            iotdbd[key] = paramd.doc[key];
         }
-    })
+    });
 
     var p_username = {
         description: "Your IOTDB username",
         message: "If you don't have an IOTDB.org account yet, enter 'unknown'",
         required: true
-    }
+    };
     if (iotdbd.username !== undefined) {
-        p_username['default'] = iotdbd.username
+        p_username['default'] = iotdbd.username;
     }
 
     if (is_development) {
@@ -330,9 +331,9 @@ if (ad._.length == 0) {
             description: "IOTDB hostname",
             default: "https://iotdb.org",
             required: true
-        }
+        };
         if (iotdbd.iotdb_prefix !== undefined) {
-            p_hostname['default'] = iotdbd.iotdb_prefix
+            p_hostname['default'] = iotdbd.iotdb_prefix;
         }
     }
 
@@ -355,9 +356,9 @@ if (ad._.length == 0) {
             "in IOTDB.org, we'll add them. You can then use website to add additional info.",
         pattern: /^[yn]/,
         required: true
-    }
+    };
     if (iotdbd.iotdb_thing_get !== undefined) {
-        p_iotdb_thing_get['default'] = iotdbd.iotdb_thing_get ? 'y' : 'n'
+        p_iotdb_thing_get['default'] = iotdbd.iotdb_thing_get ? 'y' : 'n';
     }
 
     var p_iotdb_thing_create = {
@@ -366,9 +367,9 @@ if (ad._.length == 0) {
             "query IOTDB.org for information such as what room it's in, a name, etc.",
         pattern: /^[yn]/,
         required: true
-    }
+    };
     if (iotdbd.iotdb_thing_create !== undefined) {
-        p_discover['default'] = iotdbd.discover ? 'y' : 'n'
+        p_iotdb_thing_create['default'] = iotdbd.iotdb_thing_create ? 'y' : 'n';
     }
 
     /*
@@ -395,7 +396,7 @@ if (ad._.length == 0) {
                 iotdb_thing_create: p_iotdb_thing_create,
                 // twitter: p_twitter
             }
-        }
+        };
     } else {
         var schema = {
             properties: {
@@ -405,12 +406,12 @@ if (ad._.length == 0) {
                 iotdb_thing_create: p_iotdb_thing_create,
                 // twitter: p_twitter
             }
-        }
+        };
     }
 
-    file_dump(envd, "data/new-project-start.txt")
+    file_dump(envd, "data/new-project-start.txt");
 
-    prompt.message = "new-project"
+    prompt.message = "new-project";
     prompt.start();
     prompt.get(schema, function (err, resultd) {
         var iotdbd = {
@@ -420,73 +421,75 @@ if (ad._.length == 0) {
             iotdb_thing_get: false,
             iotdb_thing_create: false,
             twitter: false,
-        }
+        };
 
         if (resultd.username) {
-            iotdbd.username = resultd.username
+            iotdbd.username = resultd.username;
         }
         if (is_development && resultd.hostname) {
-            iotdbd.iotdb_prefix = resultd.hostname
+            iotdbd.iotdb_prefix = resultd.hostname;
         }
         if (resultd.discover === 'y') {
-            iotdbd.discover = true
+            iotdbd.discover = true;
         }
         if (resultd.iotdb_thing_get === 'y') {
-            iotdbd.iotdb_thing_get = true
+            iotdbd.iotdb_thing_get = true;
         }
         if (resultd.iotdb_thing_create === 'y') {
-            iotdbd.iotdb_thing_create = true
+            iotdbd.iotdb_thing_create = true;
         }
         if (resultd.twitter === 'y') {
-            iotdbd.twitter = true
+            iotdbd.twitter = true;
         }
         
-        fs.writeFileSync(envd.FILE_IOTDB, JSON.stringify(iotdbd, null, 2) + "\n")
+        fs.writeFileSync(envd.FILE_IOTDB, JSON.stringify(iotdbd, null, 2) + "\n");
 
-        if (ad._[0] == "new-project") {
+        if (ad._[0] === "new-project") {
             if (!fs.existsSync(envd.FILE_JS)) {
-                var file_path = path.join(__dirname, "data/project.js")
-                var data = fs.readFileSync(file_path, "utf-8")
-                data = cfg.cfg_expand(envd, data)
+                var file_path = path.join(__dirname, "data/project.js");
+                var data = fs.readFileSync(file_path, "utf-8");
+                data = cfg.cfg_expand(envd, data);
 
-                fs.writeFileSync(envd.FILE_JS, data)
+                fs.writeFileSync(envd.FILE_JS, data);
             }
 
-            file_dump(envd, "data/new-project-finish.txt")
+            file_dump(envd, "data/new-project-finish.txt");
         }
-    })
-} else if (ad._[0] == "oauth-iotdb") {
-    var iot = new iotdb.IOT(iotdb_nothingd)
+    });
+} else if (ad._[0] === "oauth-iotdb") {
+    var iot = new iotdb.IOT(iotdb_nothingd);
+    var filename;
+
     iot.on_ready(function() {
-        var p = {}
+        var p = {};
         var schema = {
             properties: p
-        }
+        };
 
         if (is_development) {
             p['iotdb'] = {
                 message: "",
                 required: true,
                 default: iot.initd.iotdb_prefix
-            }
+            };
         }
         p['username'] = {
             message: "",
             required: true
-        }
+        };
         p['password'] = {
             hidden: true,
             required: true
-        }
+        }.
 
-        prompt.message = "oauth-iotdb"
+        prompt.message = "oauth-iotdb";
         prompt.start();
         prompt.get(schema, function (err, result) {
             if (!result.iotdb) {
-                result.iotdb = iot.initd.iotdb_prefix
+                result.iotdb = iot.initd.iotdb_prefix;
             }
-            var iri = result.iotdb + "/" + result.username + "/apps/"
-            // console.log("HERE:A", iri)
+            var iri = result.iotdb + "/" + result.username + "/apps/";
+            // console.log("HERE:A", iri);
             unirest
                 .post(iri)
                 .auth({
@@ -501,374 +504,371 @@ if (ad._.length == 0) {
                 })
                 .end(function(result) {
                     if (result.ok) {
-                        var resultd = result.body
+                        var resultd = result.body;
                         // process.stdout.write(JSON.stringify(resultd, null, 2))
 
                         /*
                          *  Update oauth.json
                          */
                         {
-                        var oauthdd = {}
+                        var oauthdd = {};
 
-                        var filename = ".iotdb/oauth.json"
+                        filename = ".iotdb/oauth.json";
                         cfg.cfg_load_json([ filename ], function(paramd) {
                             if (!paramd.doc) {
-                                return
+                                return;
                             }
 
                             for (var api_location in paramd.doc) {
-                                oauthdd[api_location] = paramd.doc[api_location]
+                                oauthdd[api_location] = paramd.doc[api_location];
                             }
-                        })
+                        });
 
-                        var host = resultd.api_location
-                        var username = resultd.username
-                        var key = ( username && username.length ? username + "@" : "" ) + host 
+                        var host = resultd.api_location;
+                        var username = resultd.username;
+                        var key = ( username && username.length ? username + "@" : "" ) + host ;
 
-                        oauthdd[key] = resultd
-                        oauthdd[host] = resultd
-                        fs.writeFile(filename, JSON.stringify(oauthdd, null, 2))
+                        oauthdd[key] = resultd;
+                        oauthdd[host] = resultd;
+                        fs.writeFile(filename, JSON.stringify(oauthdd, null, 2));
 
-                        console.log(name + ": added oauth info for:", key)
+                        console.log(name + ": added oauth info for:", key);
                         }
 
                         /*
                          *  Update iotdb.json
                          */
                         {
-                            var d = {}
+                            var d = {};
 
-                            var filename = ".iotdb/iotdb.json"
+                            filename = ".iotdb/iotdb.json";
                             cfg.cfg_load_json([ filename ], function(paramd) {
                                 if (!paramd.doc) {
-                                    return
+                                    return;
                                 }
 
-                                d = paramd.doc
-                            })
+                                d = paramd.doc;
+                            });
 
-                            var any = false
+                            var any = false;
 
                             if (d.username === undefined) {
-                                d.username = resultd.username
-                                any = true
+                                d.username = resultd.username;
+                                any = true;
                             }
                             if (d.iotdb_thing_get === undefined) {
-                                d.iotdb_thing_get = true
-                                any = true
+                                d.iotdb_thing_get = true;
+                                any = true;
                             }
                             if (d.iotdb_thing_create === undefined) {
-                                d.iotdb_thing_create = true
-                                any = true
+                                d.iotdb_thing_create = true;
+                                any = true;
                             }
 
                             if (any) {
-                                fs.writeFile(filename, JSON.stringify(d, null, 2))
+                                fs.writeFile(filename, JSON.stringify(d, null, 2));
 
-                                console.log(name + ": updated", filename, "\n ", JSON.stringify(d, null, 2))
+                                console.log(name + ": updated", filename, "\n ", JSON.stringify(d, null, 2));
                             }
                         }
                     } else {
-                        console.log("error", result.error)
+                        console.log("error", result.error);
                     }
                 })
             ;
-
-
         });
-    })
-} else if (ad._[0] == "oauth-json") {
-    var raw = ""
+    });
+} else if (ad._[0] === "oauth-json") {
+    var raw = "";
+    var chunk;
+
     process.stdin.setEncoding('utf8');
 
-    console.log("-- paste the JSON and enter ^D --")
+    console.log("-- paste the JSON and enter ^D --");
 
     process.stdin.on('readable', function(chunk) {
-        var chunk = process.stdin.read();
+        chunk = process.stdin.read();
         if (chunk !== null) {
-            raw += chunk
+            raw += chunk;
         }
-    })
+    });
 
     process.stdin.on('end', function() {
-        var oauthd = JSON.parse(raw)
+        var oauthd = JSON.parse(raw);
         if (!oauthd.api_location) {
-            console.log("# iotdb-control: no '.api_location' in OAuth dictionary - did this come from IOTDB?")
-            process.exit(1)
+            console.log("# iotdb-control: no '.api_location' in OAuth dictionary - did this come from IOTDB?");
+            process.exit(1);
         }
 
-        var oauthdd = {}
+        var oauthdd = {};
 
-        var filename = ".iotdb/oauth.json"
+        var filename = ".iotdb/oauth.json";
         cfg.cfg_load_json([ filename ], function(paramd) {
             for (var api_location in paramd.doc) {
-                oauthdd[api_location] = paramd.doc[api_location]
+                oauthdd[api_location] = paramd.doc[api_location];
             }
-        })
+        });
 
         if (oauthd.api_username) {
-            oauthdd[oauthd.api_username + "@" + oauthd.api_location] = oauthd
+            oauthdd[oauthd.api_username + "@" + oauthd.api_location] = oauthd;
         } 
 
-        oauthdd[oauthd.api_location] = oauthd
-        fs.writeFile(filename, JSON.stringify(oauthdd, null, 2))
-        console.log(name + ": added oauth info for:", oauthd.api_location)
+        oauthdd[oauthd.api_location] = oauthd;
+        fs.writeFile(filename, JSON.stringify(oauthdd, null, 2));
+        console.log(name + ": added oauth info for:", oauthd.api_location);
     });
-} else if (ad._[0] == "oauth-token") {
-    if (ad._.length != 3) {
-        console.log("missing arguments")
-        console.log("")
-        help("oauth-token")
-        process.exit(1)
+} else if (ad._[0] === "oauth-token") {
+    if (ad._.length !== 3) {
+        console.log("missing arguments");
+        console.log("");
+        help("oauth-token");
+        process.exit(1);
     }
 
-    var api_location = ad._[1]
-    var token = ad._[2]
+    var api_location = ad._[1];
+    var token = ad._[2];
 
     var oauthd = {
         api_location: ad._[1],
         access_token: ad._[2],
         token_type: "Bearer"
-    }
-    var oauthdd = {}
+    };
+    var oauthdd = {};
 
-    var filename = ".iotdb/oauth.json"
+    var filename = ".iotdb/oauth.json";
     cfg.cfg_load_json([ filename ], function(paramd) {
         for (var api_location in paramd.doc) {
-            oauthdd[api_location] = paramd.doc[api_location]
+            oauthdd[api_location] = paramd.doc[api_location];
         }
-    })
+    });
 
-    oauthdd[oauthd.api_location] = oauthd
+    oauthdd[oauthd.api_location] = oauthd;
 
-    fs.writeFile(filename, JSON.stringify(oauthdd, null, 2))
-    console.log(name + ": added oauth info for:", oauthd.api_location)
-} else if (ad._[0] == "download-model") {
-    if (ad._.length != 2) {
-        console.log("missing arguments -- expected a model name")
-        console.log("")
-        help("download-model")
-        process.exit(1)
+    fs.writeFile(filename, JSON.stringify(oauthdd, null, 2));
+    console.log(name + ": added oauth info for:", oauthd.api_location);
+} else if (ad._[0] === "download-model") {
+    if (ad._.length !== 2) {
+        console.log("missing arguments -- expected a model name");
+        console.log("");
+        help("download-model");
+        process.exit(1);
     }
 
-    var model_code = ad._[1]
-    var iot = new iotdb.IOT(iotdb_nothingd)
+    var model_code = ad._[1];
+    var iot = new iotdb.IOT(iotdb_nothingd);
     iot.on_ready(function() {
-        var model_iri = iot.model_code_iri(model_code) + ".js"
+        var model_iri = iot.model_code_iri(model_code) + ".js";
 
         var headerd = {
             'Accept': 'application/ld+json'
-        }
+        };
         if (iot.iotdb_oauthd.access_token) {
-            headerd["Authorization"] = "Bearer " + iot.iotdb_oauthd.access_token
+            headerd["Authorization"] = "Bearer " + iot.iotdb_oauthd.access_token;
         } else {
-            console.log("+ iotdb-control: WARNING: no oauth token: this is probably going to fail")
+            console.log("+ iotdb-control: WARNING: no oauth token: this is probably going to fail");
         }
 
-        console.log("+ downloading model", model_iri)
+        console.log("+ downloading model", model_iri);
         unirest
             .get(model_iri)
             .headers(headerd)
             .end(function(result) {
-                if (result.status == 400) {
+                if (result.status === 400) {
                     console.log("+ iotdb-control: download-model - 400 'bad request'",
                         "\n  this is probably a IOTDB.org issue - please contact us",
                         "\n  iotdb@iotdb.org"
-                    )
-                } else if (result.status == 401) {
+                    );
+                } else if (result.status === 401) {
                     console.log("+ iotdb-control: download-model - 401 'unauthorized'",
                         "\n  have you set up OAuth correctly?"
-                    )
-                } else if (result.status == 403) {
+                    );
+                } else if (result.status === 403) {
                     console.log("+ iotdb-control: download-model - 403 'forbidden'",
                         "\n  you do not have permission from this user account to download models"
-                    )
-                } else if (result.status == 404) {
+                    );
+                } else if (result.status === 404) {
                     console.log("+ iotdb-control: download-model - 404 'not found'",
                         "\n  this is probably a IOTDB.org issue - please contact us",
                         "\n  iotdb@iotdb.org"
-                    )
-                } else if (result.status == 405) {
+                    );
+                } else if (result.status === 405) {
                     console.log("+ iotdb-control: download-model - 405 'method not allow'",
                         "\n  this is probably a IOTDB.org issue - please contact us",
                         "\n  iotdb@iotdb.org"
-                    )
-                } else if (result.status == 200) {
+                    );
+                } else if (result.status === 200) {
                     try {
-                        fs.mkdirSync("models")
+                        fs.mkdirSync("models");
                     }
                     catch (err) {
                     }
-                    var filename = "models/" + model_code + ".js"
-                    fs.writeFile(filename, result.body)
+                    var filename = "models/" + model_code + ".js";
+                    fs.writeFile(filename, result.body);
                     console.log("+ iotdb-control: download-model: saved model",
                         "\n  model_iri", model_iri,
                         "\n  filename", filename
-                    )
+                    );
                 } else {
                     console.log("+ iotdb-control: download-model",
                         "\n  model_iri", model_iri,
                         "\n  body", result.body,
                         "\n  error", result.status
-                    )
+                    );
                 }
             })
         ;
     });
 
-} else if (ad._[0] == "jsonld-model") {
-    if (ad._.length != 2) {
-        console.log("missing arguments -- expected a model name")
-        console.log("")
-        help("jsonld-model")
-        process.exit(1)
+} else if (ad._[0] === "jsonld-model") {
+    if (ad._.length !== 2) {
+        console.log("missing arguments -- expected a model name");
+        console.log("");
+        help("jsonld-model");
+        process.exit(1);
     }
 
     // try and load file directly
-    var model = null
-    var model_code = ad._[1]
+    var model = null;
+    var model_code = ad._[1];
     cfg.cfg_load_js([ ad._[1] ], function(paramd) {
         if (paramd.error) {
-            return
+            return;
         }
 
-        var module = paramd.doc
+        var module = paramd.doc;
         if (module.Model) {
-            model = module.Model
-            model_code = (new model).code
+            model = module.Model;
+            model_code = (new model()).code;
         }
-    })
+    });
 
     var iot = new iotdb.IOT({
         load_models: true,
         envd: {
             IOTDB_PROJECT: process.cwd()
         }
-    })
+    });
     iot.on_register_models(function() {
         if (model) {
-            iot.register_model(model)
+            iot.register_model(model);
         }
-    })
+    });
     iot.on_ready(function() {
-        var thing = iot.get_model_exemplar(model_code)
+        var thing = iot.get_model_exemplar(model_code);
         if (!thing) {
-            console.log("+ ERROR: model not found", model_code)
-            return
+            console.log("+ ERROR: model not found", model_code);
+            return;
         }
 
-        var jd = thing.jsonld()
+        var jd = thing.jsonld();
         _.compact_jsonld(jd, function(error, resultd) {
             if (error) {
                 console.log("+ ERROR: ", error);
-                return
+                return;
             } 
 
             if (ad.stdout) {
-                process.stdout.write(JSON.stringify(resultd, null, 2) + "\n")
+                process.stdout.write(JSON.stringify(resultd, null, 2) + "\n");
             } else {
-                var filename = thing.code + ".jsonld"
+                var filename = thing.code + ".jsonld";
                 fs.writeFile(filename, JSON.stringify(resultd, null, 2) + "\n", function(error) {
                     if (error) {
                         console.log("+ ERROR: writing file", filename);
                     } else {
-                        console.log("+ wrote", filename)
+                        console.log("+ wrote", filename);
                     }
                 }); 
             }
         });
-    })
-} else if (ad._[0] == "upload-model") {
-    if (ad._.length != 2) {
-        console.log("missing arguments -- expected a model name")
-        console.log("")
-        help("upload-model")
-        process.exit(1)
+    });
+} else if (ad._[0] === "upload-model") {
+    if (ad._.length !== 2) {
+        console.log("missing arguments -- expected a model name");
+        console.log("");
+        help("upload-model");
+        process.exit(1);
     }
 
-    var model_code = ad._[1]
+    var model_code = ad._[1];
 
     var iot = new iotdb.IOT({
         load_models: true,
         envd: {
             IOTDB_PROJECT: process.cwd()
         }
-    })
+    });
     iot.on_ready(function() {
-        var thing = iot.get_model_exemplar(model_code)
+        var thing = iot.get_model_exemplar(model_code);
         if (!thing) {
-            console.log("+ ERROR: model not found", model_code)
-            return
+            console.log("+ ERROR: model not found", model_code);
+            return;
         }
-        var jsonld = thing.jsonld()
-        // console.log(JSON.stringify(jsonld, null, 2))
-
-        // upload to IOTDB
-        var model_iri = thing.model_code_iri()
+        var jsonld = thing.jsonld();
+        var model_iri = thing.model_code_iri();
 
         var headerd = {
             'Accept': 'application/ld+json'
-        }
+        };
         if (iot.iotdb_oauthd.access_token) {
-            headerd["Authorization"] = "Bearer " + iot.iotdb_oauthd.access_token
+            headerd["Authorization"] = "Bearer " + iot.iotdb_oauthd.access_token;
         }
 
-        console.log("+ uploading model", model_iri)
+        console.log("+ uploading model", model_iri);
         unirest
             .put(model_iri)
             .headers(headerd)
             .type('json')
             .send(jsonld)
             .end(function(result) {
-                if (result.status == 400) {
+                if (result.status === 400) {
                     console.log("+ iotdb-control: upload model - 400 'bad request'",
                         "\n  this is probably a IOTDB.org issue - please contact us",
                         "\n  iotdb@iotdb.org"
-                    )
-                } else if (result.status == 401) {
+                    );
+                } else if (result.status === 401) {
                     console.log("+ iotdb-control: upload model - 401 'unauthorized'",
                         "\n  have you set up OAuth correctly?"
-                    )
-                } else if (result.status == 403) {
+                    );
+                } else if (result.status === 403) {
                     console.log("+ iotdb-control: upload model - 403 'forbidden'",
                         "\n  you do not have permission from this user account to upload models"
-                    )
-                } else if (result.status == 404) {
+                    );
+                } else if (result.status === 404) {
                     console.log("+ iotdb-control: upload model - 404 'not found'",
                         "\n  this is probably a IOTDB.org issue - please contact us",
                         "\n  iotdb@iotdb.org"
-                    )
-                } else if (result.status == 405) {
+                    );
+                } else if (result.status === 405) {
                     console.log("+ iotdb-control: upload model - 405 'method not allow'",
                         "\n  this is probably a IOTDB.org issue - please contact us",
                         "\n  iotdb@iotdb.org"
-                    )
+                    );
                 } else {
                     console.log("+ iotdb-control: upload model",
                         "\n  model_iri", model_iri,
                         "\n  body", result.body,
                         "\n  error", result.status
-                    )
+                    );
                 }
             })
         ;
-    })
-} else if (ad._[0] == "configure-driver") {
-    if (ad._.length != 2) {
-        console.log("missing arguments -- expected a driver name")
-        console.log("")
-        help("configure-driver")
-        process.exit(1)
+    });
+} else if (ad._[0] === "configure-driver") {
+    if (ad._.length !== 2) {
+        console.log("missing arguments -- expected a driver name");
+        console.log("");
+        help("configure-driver");
+        process.exit(1);
     }
 
     // load the specific keystore for the project
-    var file_keystore = path.join(project, ".iotdb", "keystore.json")
-    var keystored = {}
+    var file_keystore = path.join(project, ".iotdb", "keystore.json");
+    var keystored = {};
     cfg.cfg_load_json([ file_keystore ], function(paramd) {
         for (var key in paramd.doc) {
-            keystored[key] = paramd.doc[key]
+            keystored[key] = paramd.doc[key];
         }
-    })
+    });
 
     var iot = new iotdb.IOT({
         envd: {
@@ -880,56 +880,56 @@ if (ad._.length == 0) {
         load_things: false,
         iotdb_thing_get: false,
         iotdb_thing_create: false,
-    })
+    });
     iot.on_ready(function() {
-        var driver_iri = _.expand(ad._[1], "iot-driver:")
+        var driver_iri = _.expand(ad._[1], "iot-driver:");
         var found = false;
 
         for (var bi = 0; bi < iot.driver_exemplars.length; bi++) {
             var driver_exemplar = iot.driver_exemplars[bi];
-            var identityd = driver_exemplar.identity()
+            var identityd = driver_exemplar.identity();
             if (!identityd) {
-                continue
+                continue;
             }
-            if (identityd.driver != driver_iri) {
-                continue
+            if (identityd.driver !== driver_iri) {
+                continue;
             }
 
-            console.log("+ NOTE: you may have to ^C out of this after we're finished")
+            console.log("+ NOTE: you may have to ^C out of this after we're finished");
             driver_exemplar.configure(ad, function(updated) {
                 for (var key in updated) {
-                    keystored[key] = updated[key]
+                    keystored[key] = updated[key];
                 }
 
-                fs.writeFileSync(file_keystore, JSON.stringify(keystored, null, 2) + "\n")
-                console.log("+ updated keystore", file_keystore)
-            })
-            found = true
-            break
+                fs.writeFileSync(file_keystore, JSON.stringify(keystored, null, 2) + "\n");
+                console.log("+ updated keystore", file_keystore);
+            });
+            found = true;
+            break;
         }
 
         if (!found) {
-            console.log("# driver not found:", ad._[1])
-            process.exit(1)
+            console.log("# driver not found:", ad._[1]);
+            process.exit(1);
         }
-    })
-} else if (ad._[0] == "configure-store-thing") {
+    });
+} else if (ad._[0] === "configure-store-thing") {
     if (_.isEmpty(ad.store)) {
-        console.log("missing argument: --store <store_iri>")
-        console.log("")
-        help("configure-store-thing")
-        process.exit(1)
+        console.log("missing argument: --store <store_iri>");
+        console.log("");
+        help("configure-store-thing");
+        process.exit(1);
     }
     if (_.isEmpty(ad.thing)) {
-        console.log("missing argument: --thing <thing_id>")
-        console.log("")
-        help("configure-store-thing")
-        process.exit(1)
+        console.log("missing argument: --thing <thing_id>");
+        console.log("");
+        help("configure-store-thing");
+        process.exit(1);
     }
 
-    var store = undefined
-    var thing = undefined
-    var model_code = undefined
+    var store;
+    var thing;
+    var model_code;
 
     var iot = new iotdb.IOT({
         envd: {
@@ -941,121 +941,120 @@ if (ad._.length == 0) {
         load_things: true,
         iotdb_thing_get: false,
         iotdb_thing_create: false,
-    })
+    });
     iot.on_thing(function(t) {
         if (t.thing_id() !== ad.thing) {
-            return
+            return;
         }
 
-        thing = t
-    })
+        thing = t;
+    });
     iot.on_ready(function() {
-        store = iot.store(ad.store)
-        iot.connect(ad.model)
-    })
+        store = iot.store(ad.store);
+        iot.connect(ad.model);
+    });
 
-    var count = 0
+    var count = 0;
     var timeoutId = setInterval(function() {
-        count += 1
+        count += 1;
         if (thing) {
-            clearTimeout(timeoutId)
-            console.log("+ found it")
+            clearTimeout(timeoutId);
+            console.log("+ found it");
 
             store.configure_thing(thing, ad, function(error, result) {
-                iot.meta_save()
-            })
+                iot.meta_save();
+            });
         } else if (count > 5) {
-            console.log("+ could not find this Thing -- quitting, sorry")
-            process.exit(1)
+            console.log("+ could not find this Thing -- quitting, sorry");
+            process.exit(1);
         } else {
-            console.log("+ waiting for Thing…")
+            console.log("+ waiting for Thing…");
         }
 
-    }, 2500)
+    }, 2500);
+} else if (ad._[0] === "camel-case") {
+    for (var ai = 1; ai < ad._.length; ai++) {
+        var a = ad._[ai];
+        console.log(_.identifier_to_camel_case(a));
+    }
+} else if (ad._[0] === "underscore-case") {
+    for (var ai = 1; ai < ad._.length; ai++) {
+        var a = ad._[ai];
+        console.log(_.identifier_to_underscore_case(a));
+    }
+} else if (ad._[0] === "dash-case") {
+    for (var ai = 1; ai < ad._.length; ai++) {
+        var a = ad._[ai];
+        console.log(_.identifier_to_dash_case(a));
+    }
+} else if (ad._[0] === "list-drivers") {
+    var paramd = iotdb_nothingd;
+    paramd.load_drivers = true;
 
-} else if (ad._[0] == "camel-case") {
-    for (var ai = 1; ai < ad._.length; ai++) {
-        var a = ad._[ai]
-        console.log(_.identifier_to_camel_case(a))
-    }
-} else if (ad._[0] == "underscore-case") {
-    for (var ai = 1; ai < ad._.length; ai++) {
-        var a = ad._[ai]
-        console.log(_.identifier_to_underscore_case(a))
-    }
-} else if (ad._[0] == "dash-case") {
-    for (var ai = 1; ai < ad._.length; ai++) {
-        var a = ad._[ai]
-        console.log(_.identifier_to_dash_case(a))
-    }
-} else if (ad._[0] == "list-drivers") {
-    var paramd = iotdb_nothingd
-    paramd.load_drivers = true
-
-    var iot = new iotdb.IOT(paramd)
+    var iot = new iotdb.IOT(paramd);
 
     for (var di in iot.driver_exemplars) {
-        var driver = iot.driver_exemplars[di]
-        console.log("+", _.compact(driver.identity().driver))
+        var driver = iot.driver_exemplars[di];
+        console.log("+", _.compact(driver.identity().driver));
     }
-} else if ((ad._[0] == "enable-driver") || (ad._[0] == "disable-driver")) {
+} else if ((ad._[0] === "enable-driver") || (ad._[0] === "disable-driver")) {
     /*
      *  Find out the existing drivers
      */
-    var paramd = iotdb_nothingd
-    paramd.load_drivers = true
+    var paramd = iotdb_nothingd;
+    paramd.load_drivers = true;
 
-    var iot = new iotdb.IOT(paramd)
+    var iot = new iotdb.IOT(paramd);
 
-    var drivers = []
+    var drivers = [];
     for (var di in iot.driver_exemplars) {
-        var driver = iot.driver_exemplars[di]
-        drivers.push(_.compact(driver.identity().driver))
+        var driver = iot.driver_exemplars[di];
+        drivers.push(_.compact(driver.identity().driver));
     }
 
     /*
      *  Load iotdb.json
      */
-    var FILE_IOTDB = ".iotdb/iotdb.json"
+    var FILE_IOTDB = ".iotdb/iotdb.json";
 
-    var iotdbd = {}
+    var iotdbd = {};
     cfg.cfg_load_json([ FILE_IOTDB ], function(paramd) {
         for (var key in paramd.doc) {
-            iotdbd[key] = paramd.doc[key]
+            iotdbd[key] = paramd.doc[key];
         }
-    })
+    });
 
     if (iotdbd.drivers_disabled === undefined) {
-        iotdbd.drivers_disabled = []
+        iotdbd.drivers_disabled = [];
     }
 
     /*
      *  Enable / disable
      */
-    var changed = false
+    var changed = false;
 
     for (var ai = 1; ai < ad._.length; ai++) {
-        var driver = _.compact(_.expand(ad._[ai], "iot-driver:"))
-        if (ad._[0] == "enable-driver") {
-            var x = iotdbd.drivers_disabled.indexOf(driver)
-            if (x != -1) {
-                console.log("+ enabled", driver)
-                iotdbd.drivers_disabled.splice(x, 1)
-                changed = true
+        var driver = _.compact(_.expand(ad._[ai], "iot-driver:"));
+        if (ad._[0] === "enable-driver") {
+            var x = iotdbd.drivers_disabled.indexOf(driver);
+            if (x !== -1) {
+                console.log("+ enabled", driver);
+                iotdbd.drivers_disabled.splice(x, 1);
+                changed = true;
             } else {
-                console.log("# already enabled", driver)
+                console.log("# already enabled", driver);
             }
-        } else if (ad._[0] == "disable-driver") {
-            var x = iotdbd.drivers_disabled.indexOf(driver)
-            if (x == -1) {
-                console.log("+ disabled", driver)
-                iotdbd.drivers_disabled.push(driver)
-                changed = true
+        } else if (ad._[0] === "disable-driver") {
+            var x = iotdbd.drivers_disabled.indexOf(driver);
+            if (x === -1) {
+                console.log("+ disabled", driver);
+                iotdbd.drivers_disabled.push(driver);
+                changed = true;
             } else {
-                console.log("# already disabled", driver)
+                console.log("# already disabled", driver);
             }
         } else {
-            assert.ok(false)
+            assert.ok(false);
         }
     }
 
@@ -1063,12 +1062,13 @@ if (ad._.length == 0) {
      *  Save changes
      */
     if (changed) {
-        fs.writeFileSync(FILE_IOTDB, JSON.stringify(iotdbd, null, 2) + "\n")
+        fs.writeFileSync(FILE_IOTDB, JSON.stringify(iotdbd, null, 2) + "\n");
     }
 
 } else {
-    console.log(name + ": unknown command: " + ad._[0])
-    console.log()
-    help()
-    process.exit(0)
+    console.log(name + ": unknown command: " + ad._[0]);
+    console.log();
+    help();
+    process.exit(0);
 }
+

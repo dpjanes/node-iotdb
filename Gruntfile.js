@@ -37,6 +37,7 @@ module.exports = function (grunt) {
                     'drivers/*.js',
                     'stores/*.js',
                     'libs/*.js',
+                    'bin/iotdb',
                 ]
             },
             test: {
@@ -62,8 +63,8 @@ module.exports = function (grunt) {
                 '*.js',
                 'drivers/*.js',
                 'drivers/libs/*.js',
-                'stores/*.js',
                 'libs/*.js',
+                'stores/*.js',
             ],
             options: {
                 js: {
