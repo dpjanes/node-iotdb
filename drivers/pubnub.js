@@ -284,8 +284,8 @@ PubNubDriver.prototype._pubnub = function () {
             interaction.header("PubNubDriver: This store is not set up yet");
             interaction.log("Please set up your PubNub account and then enter the following command");
             interaction.log();
-            interaction.code("iotdb-control --global set stores/pubnub/publish_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
-            interaction.code("iotdb-control --global set stores/pubnub/subscribe_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
+            interaction.code("iotdb --global set stores/pubnub/publish_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
+            interaction.code("iotdb --global set stores/pubnub/subscribe_key 'pub-c-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'");
             interaction.end();
 
             logger.error({

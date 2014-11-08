@@ -219,13 +219,13 @@ HueDriver.prototype._foundDevice = function (discover_callback, upnp_device) {
             interaction.header("HueDriver: This Philips Hue hub is not set up yet");
             interaction.log("Please enter the following command and follow the instructions given");
             interaction.log();
-            interaction.code("iotdb-control configure-driver hue --global");
+            interaction.code("iotdb configure-driver hue --global");
             interaction.end();
 
             self.report_issue({
                 section: "drivers",
                 name: "hue",
-                message: "configure with: $ iotdb-control configure-driver hue --global"
+                message: "configure with: $ iotdb configure-driver hue --global"
             });
         }
         return;

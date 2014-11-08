@@ -268,7 +268,7 @@ IOT.prototype.cfg_load_paramd = function (initd) {
             // console.log("# IOT.cfg_load_paramd:", paramd.error, paramd.exception);
             logger.error({
                 method: "cfg_load_paramd",
-                cause: "likely user hasn't added iotdb.json using iotdb-control",
+                cause: "likely user hasn't added iotdb.json using 'iotdb'",
                 filename: paramd.filename,
                 error: paramd.error,
                 exception: paramd.exception,
@@ -360,7 +360,7 @@ IOT.prototype.cfg_load_keystore = function () {
             // console.log("# IOT.cfg_load_oauth:", paramd.error, paramd.exception);
             logger.error({
                 method: "cfg_load_keystore",
-                cause: "likely user hasn't added keystore.json using iotdb-control - not serious",
+                cause: "likely user hasn't added keystore.json using 'iotdb' - not serious",
                 filename: paramd.filename,
                 error: paramd.error,
                 exception: paramd.exception,
@@ -441,7 +441,7 @@ IOT.prototype.cfg_load_oauth = function () {
             // console.log("# IOT.cfg_load_oauth:", paramd.error, paramd.exception);
             logger.error({
                 method: "cfg_load_oauth",
-                cause: "likely user hasn't added oauth.json using iotdb-control - not serious",
+                cause: "likely user hasn't added oauth.json using 'iotdb' - not serious",
                 filename: paramd.filename,
                 error: paramd.error,
                 exception: paramd.exception,
@@ -465,7 +465,7 @@ IOT.prototype.cfg_load_oauth = function () {
         // console.log("# IOT.cfg_load_oauth: no IOTDB OAuth info", "\n  username", self.iotdb_oauth_key);
         logger.error({
             method: "cfg_load_oauth",
-            cause: "likely user hasn't added oauth.json using iotdb-control - not serious",
+            cause: "likely user hasn't added oauth.json using 'iotdb' - not serious",
             oauth_key: self.iotdb_oauth_key
         }, "no IOTDB OAuth Info");
     } else {
@@ -513,13 +513,13 @@ IOT.prototype._check_requirements = function () {
             interaction.log("- this is highly recommended (but not required");
             interaction.log("- run this command");
             interaction.log();
-            interaction.code("iotdb-control iotdb-oauth --global");
+            interaction.code("iotdb iotdb-oauth --global");
             interaction.end();
 
             self.report_issue({
                 section: "iotdb",
                 name: "username",
-                message: "set with $ iotdb-control iotdb-oauth --global"
+                message: "set with $ iotdb iotdb-oauth --global"
             });
         }
     }
@@ -531,13 +531,13 @@ IOT.prototype._check_requirements = function () {
         interaction.log("- this is highly recommended, but only required for some drivers");
         interaction.log("- run this command");
         interaction.log();
-        interaction.code("iotdb-control machine-id");
+        interaction.code("iotdb machine-id");
         interaction.end();
 
         self.report_issue({
             section: "iotdb",
             name: "machine_id",
-            message: "set with $ iotdb-control machine-id"
+            message: "set with $ iotdb machine-id"
         });
     }
 
@@ -552,7 +552,7 @@ IOT.prototype._check_requirements = function () {
              */
             logger.fatal({
                 method: "_check_requirements",
-                cause: "likely user hasn't added oauth.json using iotdb-control - SERIOUS because required",
+                cause: "likely user hasn't added oauth.json using iotdb - SERIOUS because required",
                 "username": self.username,
                 "iotdb_prefix": self.iotdb_prefix,
                 "iotdb_oauth_key": self.iotdb_oauth_key
@@ -952,12 +952,12 @@ IOT.prototype.register_driver = function (driver) {
         if (x !== -1) {
             /*
             console.log("# IOT.register_driver",
-                "ignoring driver - disabled in iotdb.json (use iotdb-control to change)", 
+                "ignoring driver - disabled in iotdb.json (use iotdb to change)", 
                 "\n  driver:", name)
             */
             logger.error({
                 method: "register_driver",
-                cause: "disabled in iotdb.json (use iotdb-control to change)",
+                cause: "disabled in iotdb.json (use iotdb to change)",
                 driver: name
             }, "ignoring Driver - disabled");
             return;

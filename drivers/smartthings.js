@@ -173,7 +173,7 @@ SmartThingsDriver.prototype.setup = function (paramd) {
             interaction.log("- updates will not be received!");
             interaction.log("- run this command");
             interaction.log();
-            interaction.code("iotdb-control iotdb-oauth");
+            interaction.code("iotdb iotdb-oauth");
             interaction.end();
         }
 

@@ -616,13 +616,13 @@ FirmataDriver.prototype.discover = function (paramd, discover_callback) {
             interaction.header("FirmataDriver.discover: setup is not complete");
             interaction.log("Please enter the following command first");
             interaction.log("");
-            interaction.code("iotdb-control machine-id");
+            interaction.code("iotdb machine-id");
             interaction.end();
 
             self.report_issue({
                 section: "drivers",
                 name: "twitter",
-                message: "configure with $ iotdb-control machine-id"
+                message: "configure with $ iotdb machine-id"
             });
 
             return;

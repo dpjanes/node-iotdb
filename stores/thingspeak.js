@@ -276,7 +276,7 @@ ThingSpeakStore.prototype._warn = function (thing, message) {
     console.log("# ThingSpeakStore.on_change", message ? message : "");
     console.log("# configure using:");
     console.log("#");
-    console.log("#   iotdb-control configure-store-thing",
+    console.log("#   iotdb configure-store-thing",
         "--store", ":thingspeak",
         "--thing", thing.thing_id(),
         "--model", thing.get_code()

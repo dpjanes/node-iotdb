@@ -144,8 +144,8 @@ MQTTStore.prototype.stored = function () {
             interaction.header("MQTTStore: This store is not set up yet");
             interaction.log("You must have an MQTT server. Then run the following command");
             interaction.log();
-            interaction.code("iotdb-control --global set stores/mqtt/host '<hostname>'");
-            interaction.code("iotdb-control --global set stores/mqtt/port '<port>' ## defaults to 1883");
+            interaction.code("iotdb --global set stores/mqtt/host '<hostname>'");
+            interaction.code("iotdb --global set stores/mqtt/port '<port>' ## defaults to 1883");
             interaction.end();
 
             logger.error({
@@ -164,9 +164,8 @@ MQTTStore.prototype.stored = function () {
                 "/u/{{ username }}/things/{{ facet }}/{{ thing_id }}",
                 "/u/{{ username }}/things/{{ model_code }}/{{ thing_id }}/{{ attribute_code }}",
             ]
-        } else if (_.isArray(topics)) {
-        } else {
-            topics = [ topics, ]
+        } else if (_.isArray(topics)) {} else {
+            topics = [topics, ]
         }
 
         d.topicds = []
@@ -185,13 +184,13 @@ MQTTStore.prototype.stored = function () {
         // connect
         __stored = d;
         __stored.client = mqtt.createClient(d.port, d.host);
-        __stored.client.on('error', function(error) {
+        __stored.client.on('error', function (error) {
             logger.error({
                 method: "_mqtt_client/on(error)",
                 error: error,
             }, "unexpected");
         })
-        __stored.client.on('disconnect', function() {
+        __stored.client.on('disconnect', function () {
             logger.info({
                 method: "_mqtt_client/on(disconnect)",
             }, "unexpected");

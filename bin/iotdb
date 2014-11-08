@@ -114,9 +114,10 @@ var help = function(subcommand) {
     } else if (subcommand == "set") {
         console.log("set: set a value in the keystore")
         console.log("")
-        console.log("usage:", name, "set <key> <value>")
+        console.log("usage:", name, "set [--list] <key> <value> [<value>...]")
         console.log("")
         console.log("Set a key/value in the keystore (see .iotdb/keystore.json)")
+        console.log("If you need to set multiple values, use --list");
     } else if (subcommand == "machine-id") {
         console.log("assign-machine-id: make up a random ID representing this computer")
         console.log("")
