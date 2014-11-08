@@ -1,7 +1,8 @@
 {
     "author": "David P. Janes <davidjanes@iotdb.org> (https://iotdb.org)", 
     "bin": {
-        "iotdb": "./bin/iotdb"
+        "iotdb": "./bin/iotdb", 
+        "iotdb-control": "./bin/iotdb"
     }, 
     "bugs": {
         "url": "https://github.com/dpjanes/node-iotdb/issues"
@@ -51,5 +52,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.3.3"
+    "version": "0.3.5"
 }
