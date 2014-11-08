@@ -125,8 +125,6 @@ Store.prototype.track = function (paramd) {
     self.things.on_change(function (thing) {
         self.on_change(thing);
     });
-
-    // console.log("# Store.track: NOT IMPLEMENETED", paramd)
 };
 
 /*
@@ -135,7 +133,6 @@ Store.prototype.track = function (paramd) {
  */
 Store.prototype.things_changed = function () {
     var self = this;
-    // console.log("# Store.track", "THINGS CHANGED", self.things.length)
 };
 
 /*
