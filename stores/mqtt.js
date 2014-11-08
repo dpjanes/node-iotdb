@@ -72,13 +72,22 @@ MQTTStore.prototype.on_change = function (thing) {
             username: iot.username,
             model_code: thing.get_code(),
             thing_id: thing.thing_id(),
-        }
+        };
 
         self._publish(topicd, datad, stored, stated);
     }
-}
+};
 
+/**
+ *  This handles actually pushing the stated to MQTT.
+ *  This sometimes has to be done recursively, e.g.
+ *  the topicd.topic specifies both looping on
+ *  facet and on attribute_code
+ */
 MQTTStore.prototype._publish = function (topicd, datad, stored, stated) {
+    var mqtt_topic;
+    var mqtt_payload;
+
     if (topicd.facet) {
         topicd.facet = false;
         topicd.facet = true;
@@ -86,13 +95,13 @@ MQTTStore.prototype._publish = function (topicd, datad, stored, stated) {
         for (var code in stated) {
             var value = stated[code];
             if ((value === null) || (value === undefined)) {
-                continue
+                continue;
             }
 
             datad.attribute_code = code;
 
-            var mqtt_topic = _.format(topicd.topic, datad);
-            var mqtt_payload = JSON.stringify(value, null, 2);
+            mqtt_topic = _.format(topicd.topic, datad);
+            mqtt_payload = JSON.stringify(value, null, 2);
 
             stored.client.publish(mqtt_topic, mqtt_payload);
 
@@ -103,8 +112,8 @@ MQTTStore.prototype._publish = function (topicd, datad, stored, stated) {
             }, "broadcast this message");
         }
     } else {
-        var mqtt_topic = _.format(topicd.topic, datad);
-        var mqtt_payload = JSON.stringify(stated, null, 2);
+        mqtt_topic = _.format(topicd.topic, datad);
+        mqtt_payload = JSON.stringify(stated, null, 2);
 
         stored.client.publish(mqtt_topic, mqtt_payload);
 
@@ -114,7 +123,7 @@ MQTTStore.prototype._publish = function (topicd, datad, stored, stated) {
             payload: mqtt_payload,
         }, "broadcast this message");
     }
-}
+};
 
 var __stored;
 
@@ -163,20 +172,20 @@ MQTTStore.prototype.stored = function () {
                 "/u/{{ username }}/things/{{ model_code }}/{{ thing_id }}",
                 "/u/{{ username }}/things/{{ facet }}/{{ thing_id }}",
                 "/u/{{ username }}/things/{{ model_code }}/{{ thing_id }}/{{ attribute_code }}",
-            ]
+            ];
         } else if (_.isArray(topics)) {} else {
-            topics = [topics, ]
+            topics = [topics, ];
         }
 
-        d.topicds = []
+        d.topicds = [];
         for (var ti in topics) {
             var topic = topics[ti];
             var topicd = {
                 topic: topic,
-            }
+            };
             topic.replace(/{{(.*?)}}/g, function (match, variable) {
                 variable = variable.replace(/ /g, '');
-                topicd[variable] = true
+                topicd[variable] = true;
             });
             d.topicds.push(topicd);
         }
@@ -189,12 +198,12 @@ MQTTStore.prototype.stored = function () {
                 method: "_mqtt_client/on(error)",
                 error: error,
             }, "unexpected");
-        })
+        });
         __stored.client.on('disconnect', function () {
             logger.info({
                 method: "_mqtt_client/on(disconnect)",
             }, "unexpected");
-        })
+        });
     }
 
 
