@@ -133,6 +133,16 @@ var help = function(subcommand) {
         console.log("");
         console.log("This is required for some drivers, like 'firmata'. It typically");
         console.log("needs to be run only once");
+    } else if (subcommand === "link-node-module") {
+        console.log("link-node-module: link /usr/local/lib/node_modules/iotdb to ./node_modules/iotdb");
+        console.log("");
+        console.log("usage:", name, "link-node-module");
+        console.log("");
+        console.log("If you installed Node-IOTDB globally, this will link it");
+        console.log("into the local node_modules folder so you can require('iotdb')");
+        console.log("");
+        console.log("Basically, we're working around node weirdness");
+        console.log("This may not work on Windows");
     } else {
         console.log("usage:", name, "<subcommand> [options]");
         console.log("");
@@ -1074,6 +1084,33 @@ if (ad._.length === 0) {
     if (changed) {
         fs.writeFileSync(FILE_IOTDB, JSON.stringify(iotdbd, null, 2) + "\n");
     }
+} else if (ad._[0] === "link-node-module") {
+    var src = "/usr/local/lib/node_modules/iotdb";
+    var dst = "./node_modules/iotdb";
+
+    if (!fs.existsSync(src)) {
+        console.log("# global node-iotdb installation does not exist - exiting", src);
+        process.exit(1);
+    }
+
+    if (fs.existsSync(dst)) {
+        console.log("# destination installation already exists - exiting", dst);
+        process.exit(1);
+    }
+
+    try {
+        fs.mkdirSync("node_modules");
+    } catch (x) {
+    }
+
+    fs.symlink(src, dst, function(error) {
+        if (error) {
+            console.log("# could not make symlink", src, dst, error);
+            process.exit(1);
+        }
+
+        console.log("+ ok, done!", src, dst);
+    });
 
 } else {
     console.log(name + ": unknown command: " + ad._[0]);

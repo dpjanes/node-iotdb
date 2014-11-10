@@ -3,7 +3,7 @@
  *
  *  David Janes
  *  IOTDB.org
- *  2014-10-23
+ *  2014-11-07
  *
  *  Connect to PubNub.io
  *
