@@ -1,5 +1,5 @@
 /*
- *  drivers/upnp.js
+ *  drivers/hue.js
  *
  *  David Janes
  *  IOTDB.org

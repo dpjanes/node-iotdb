@@ -125,8 +125,15 @@ var FirmataDriver = function (paramd) {
     self.pindd = {};
     self.board = null;
     self.sysex = 10;
+    self.extension = null;
+
+    self.n = 1; // 'n' is the number of similar things in a chain
+    self.device = paramd.device; // 'device' is the 0-index into the chain
 
     self._init(paramd.initd);
+
+    self.metad = {};
+    self.metad[_.expand("iot:number")] = self.device;
 
     return self;
 };
@@ -145,6 +152,14 @@ FirmataDriver.prototype._init = function (initd) {
 
     if (initd.tty) {
         self.tty = initd.tty;
+    }
+
+    if (initd.extension) {
+        self.extension = initd.extension;
+    }
+
+    if (initd.n) {
+        self.n = initd.n;
     }
 
     if (initd.pins && initd.pins.length) {
@@ -178,7 +193,8 @@ FirmataDriver.prototype._setup_code = function (code, code_value, initd) {
         initialized: false,
         identity: null,
         sysex: null,
-        extension: null
+        extension: self.extension,
+        device: self.device,
     };
 
     var parts = code_value.split(",");
@@ -199,14 +215,16 @@ FirmataDriver.prototype._setup_code = function (code, code_value, initd) {
             } else if (key === "pin") {
                 pind.pin = value;
             } else if (key === "extension") {
-                pind.extension = value;
+            /* pind.extension = value; */
             } else if (key === "sysex") {
                 pind.sysex = value;
             } else {
-                console.log("# FirmataDriver._setup_code: unknown key",
-                    "\n  key", key,
-                    "\n  value", value
-                );
+                logger.info({
+                    method: "_setup_code",
+                    cause: "likely a spelling error in paramd.initd.pins in the Model - ignoring",
+                    key: key,
+                    value: value,
+                }, "unknown key");
             }
         }
     }
@@ -216,11 +234,13 @@ FirmataDriver.prototype._setup_code = function (code, code_value, initd) {
     }
 
     if (pind.sysex !== null) {
-        if (pind.extension === null) {
-            console.log("# FirmataDriver._setup_code: 'extension' was not specified",
-                "\n  code", code,
-                "\n  code_value", code_value
-            );
+        if (self.extension === null) {
+            logger.error({
+                method: "_setup_code",
+                cause: "likely an IOTDB programming error - contact us",
+                code: code,
+                code_value: code_value,
+            }, "'extension' was not specified");
         }
         if (pind.pin === null) {
             pind.pin = 0;
@@ -229,16 +249,18 @@ FirmataDriver.prototype._setup_code = function (code, code_value, initd) {
             pind.sysex = self.sysex++;
         }
 
-        pind.identity = "pin=" + pind.pin + ",mode=" + pind.mode + ",extension=" + pind.extension;
+        pind.identity = "pin=" + pind.pin + ",mode=" + pind.mode + ",extension=" + self.extension;
         self.pindd[code] = pind;
     } else if (pind.pin !== null) {
         pind.identity = "pin=" + pind.pin + ",mode=" + pind.mode;
         self.pindd[code] = pind;
     } else {
-        console.log("# FirmataDriver._setup_code: 'pin' or 'mode=sysex-*' was not specified",
-            "\n  code", code,
-            "\n  code_value", code_value
-        );
+        logger.error({
+            method: "_setup_code",
+            cause: "likely an error in Model.driver_setup",
+            code: code,
+            code_value: code_value,
+        }, "'pin' or 'mode=sysex-*' was not specified");
         return;
     }
 };
@@ -256,6 +278,9 @@ FirmataDriver.prototype.identity = function (kitchen_sink) {
         if (self.tty) {
             identityd["tty"] = self.tty;
         }
+        if (self.thing) {
+            identityd["model-code"] = self.thing.get_code();
+        }
         if (self.pindd) {
             var codes = Object.keys(self.pindd);
             codes.sort();
@@ -266,6 +291,9 @@ FirmataDriver.prototype.identity = function (kitchen_sink) {
                 identityd[code] = pind.identity;
             }
         }
+        if (self.device !== undefined) {
+            identityd["device"] = self.device;
+        }
 
         _.thing_id(identityd);
 
@@ -273,6 +301,15 @@ FirmataDriver.prototype.identity = function (kitchen_sink) {
     }
 
     return self.__identityd;
+};
+
+/**
+ *  Request the Driver's metadata.
+ *  <p>
+ *  See {@link Driver#meta Driver.meta}
+ */
+FirmataDriver.prototype.driver_meta = function () {
+    return this.metad;
 };
 
 /**
@@ -306,7 +343,11 @@ FirmataDriver.prototype._setup_pind = function (pind) {
     } else if (pind.mode === "sysex-output-int32") {
         self._setup_sysex_output_int32(pind);
     } else {
-        console.log("# FirmataDriver.push: programming error", pind);
+        logger.error({
+            method: "push",
+            cause: "likely a spelling error error in Model.driver_setup",
+            pind: pind,
+        }, "unknown pin mode");
     }
 };
 
@@ -417,6 +458,9 @@ FirmataDriver.prototype._setup_sysex_input_float = function (pind) {
             self.board.sendString(pind.extension);
             self.board.sendString("sysex=" + pind.sysex);
             self.board.sendString("pin=" + pind.pin);
+            if (self.n > 1) {
+                self.board.sendString("n=" + self.n);
+            }
             self.board.sendString("");
 
             queue.finished(qitem);
@@ -444,6 +488,9 @@ FirmataDriver.prototype._setup_sysex_input_int16 = function (pind) {
             self.board.sendString(pind.extension);
             self.board.sendString("sysex=" + pind.sysex);
             self.board.sendString("pin=" + pind.pin);
+            if (self.n > 1) {
+                self.board.sendString("n=" + self.n);
+            }
             self.board.sendString("");
 
             queue.finished(qitem);
@@ -468,6 +515,9 @@ FirmataDriver.prototype._setup_sysex_output_int8 = function (pind) {
             self.board.sendString(pind.extension);
             self.board.sendString("sysex=" + pind.sysex);
             self.board.sendString("pin=" + pind.pin);
+            if (self.n > 1) {
+                self.board.sendString("n=" + self.n);
+            }
             self.board.sendString("");
 
             queue.finished(qitem);
@@ -490,6 +540,12 @@ FirmataDriver.prototype.setup = function (paramd) {
 
     /* chain */
     driver.Driver.prototype.setup.call(self, paramd);
+
+    /*
+     *  In all Model.driver_out and Model.driver_in, the device
+     *  will be available in 'paramd.initd.device'
+     */
+    paramd.initd.device = self.device;
 
     /* get values from settings */
     if (paramd.thing) {
@@ -524,22 +580,27 @@ FirmataDriver.prototype.setup = function (paramd) {
 
 
     if (!self.tty) {
-        console.log("# FirmataDriver.setup: self.tty not set - can't do anything");
+        logger.error({
+            method: "setup",
+            cause: "likely a program error",
+        }, "self.tty not set - can't do anything");
         return;
     }
 
     self.board = boardd[self.tty];
     if (self.board === undefined) {
-        console.log("- FirmataDriver.setup: create board",
-            "\n  tty", self.tty
-        );
+        logger.info({
+            method: "setup",
+            tty: self.tty,
+        }, "create board");
 
         self.board = new firmata.Board(self.tty, function (error) {
             if (error) {
-                console.log("# FirmataDriver.setup/board: couldn't connect to board",
-                    "\n  tty", self.tty,
-                    "\n  error", error
-                );
+                logger.error({
+                    method: "setup/firmata.Board",
+                    error: error,
+                    tty: self.tty,
+                }, "couldn't connect to board")
                 self.board.iotdb_ready = false;
                 return;
             }
@@ -631,8 +692,16 @@ FirmataDriver.prototype.discover = function (paramd, discover_callback) {
         return;
     }
 
+    var n = 1;
+    if (paramd.initd && paramd.initd.n) {
+        n = paramd.initd.n;
+    }
 
-    discover_callback(new FirmataDriver());
+    for (var device = 0; device < n; device++) {
+        discover_callback(new FirmataDriver({
+            device: device
+        }));
+    }
 };
 
 /**
@@ -645,7 +714,10 @@ FirmataDriver.prototype.push = function (paramd) {
 
     if (!self.reachable()) {
         if (!self.__reachable_message) {
-            console.log("# FirmataDriver.push", "firmata not reachable just yet");
+            logger.error({
+                method: "push",
+                cause: "likely just need to wait some more",
+            }, "firmata not reachable just yet");
             self.__reachable_message = true;
         }
 
@@ -665,16 +737,20 @@ FirmataDriver.prototype.push = function (paramd) {
         var value = paramd.driverd[key];
         var pind = self.pindd[key];
         if (!pind) {
-            console.log("# FirmataDriver.push: no 'pind' for key", key);
+            logger.error({
+                method: "push",
+                key: key,
+                cause: "IOTDB driver error - contact us",
+            }, "no 'pind' for key");
             continue;
         }
 
-        console.log("- FirmataDriver.push",
-            "\n  key", key,
-            "\n  value", value,
-            "\n  pind", pind
-            // "\n  attribute", attribute
-        );
+        logger.info({
+            method: "push",
+            key: key,
+            value: value,
+            pind: pind,
+        }, "called");
 
         if ((pind.mode === "output") || (pind.mode === "digital-output")) {
             self.queue.add({
@@ -696,14 +772,14 @@ FirmataDriver.prototype.push = function (paramd) {
         } else if (pind.mode === "sysex-output-int8") {
             self.queue.add({
                 run: function (queue, qitem) {
-                    var outb = new Buffer([
-                        START_SYSEX,
-                        pind.sysex,
-                        value[0] & 0xFF,
-                        value[1] & 0xFF,
-                        value[2] & 0xFF,
-                        END_SYSEX
-                    ]);
+                    var outb = new Buffer(value.length + 3);
+                    outb[0] = START_SYSEX
+                    outb[1] = pind.sysex
+                    outb[value.length + 3 - 1] = END_SYSEX
+
+                    for (var vi = 0; vi < value.length; vi++) {
+                        outb[vi + 2] = value[vi] & 0xFF;
+                    }
 
                     self.board.sp.write(outb);
 

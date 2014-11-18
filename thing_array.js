@@ -74,6 +74,7 @@ var ThingArray = function (paramd) {
     }
 
     events.EventEmitter.call(self);
+    this.setMaxListeners(128);   // hmmm, or bigger?
 };
 
 ThingArray.prototype = new Array(); // jshint ignore:line
