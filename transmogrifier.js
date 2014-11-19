@@ -62,7 +62,21 @@ var Transmogrifier = function () {
 
 /**
  */
-Transmogrifier.prototype.transmogrify = function (thing) {
+Transmogrifier.prototype.transmogrify = function (o) {
+    var self = this;
+    if (_.isModel(o)) {
+        return self._transmogrify_thing(o);
+    } else if (_.isThingArray(o)) {
+        return self._transmogrify_thing_array(o);
+    } else {
+        logger.error({
+            method: "transmogrify",
+            cause: "likely the programmer has called this with the wrong object"
+        }, "cannot transmogrify - needs to be a Thing or ThingArray");
+    }
+};
+
+Transmogrifier.prototype._transmogrify_thing = function (thing) {
     var self = this;
 
     self.__wrapped = thing;
@@ -82,7 +96,15 @@ Transmogrifier.prototype.transmogrify = function (thing) {
         };
     }
     return thing;
-};
+}
+
+Transmogrifier.prototype._transmogrify_thing_array = function (thing_array) {
+    logger.error({
+        method: "_transmogrify_thing_array",
+    }, "not implemented (yet)");
+
+    return thing_array;
+}
 
 /*
  *  API
@@ -90,7 +112,6 @@ Transmogrifier.prototype.transmogrify = function (thing) {
 exports.Transmogrifier = Transmogrifier;
 
 /*
- */
 
 var attribute = require("./attribute")
 var model = require("./model")
@@ -109,3 +130,4 @@ var wt = f.transmogrify(t);
 
 console.log("get_code", wt.get_code())
 console.log("jsonld", wt.jsonld())
+ */

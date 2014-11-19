@@ -175,7 +175,7 @@ IOT.prototype.configure = function (paramd) {
     self.model_exemplard = {};
     self.thing_instanced = {};
     self.store_instanced = {};
-    self.filter_instanced = {};
+    self.transmogrifier_classd = {};
     self.issueds = [];
 
     self.cfg_load_oauth();
@@ -318,8 +318,8 @@ IOT.prototype.cfg_load_paramd = function (initd) {
         stores_path: [
             "$IOTDB_INSTALL/stores"
         ],
-        filters_path: [
-            "$IOTDB_INSTALL/filters"
+        transmogrifiers_path: [
+            "$IOTDB_INSTALL/transmogrifiers"
         ],
         models_modules: [
             "iotdb-models"
@@ -1048,6 +1048,47 @@ IOT.prototype.store = function (store_id) {
     }
 
     return store;
+};
+
+/**
+ *  Register a {@link Transmogrifier}.
+ *  <p>
+ *  Internals note: we'll probably want to move
+ *  this to an exemplar based system
+ *
+ *  @param {Driver} transmogrifier
+ *
+ *  @return {this}
+ */
+IOT.prototype.register_transmogrifier = function (transmogrifier_class) {
+    var self = this;
+
+    self.transmogrifier_classd[_.expand(transmogrifier_class.prototype.transmogrifier_id, "iot-transmogrifier:")] = transmogrifier_class;
+    // console.log("- IOT.register_transmogrifier:", transmogrifier_class.prototype.transmogrifier_id);
+    logger.info({
+        method: "register_transmogrifier",
+        transmogrifier_id: transmogrifier_class.prototype.transmogrifier_id
+    }, "registered transmogrifier");
+
+    return self;
+};
+
+/**
+ *  Return the transmogrifier with the given name
+ */
+IOT.prototype.transmogrifier = function (transmogrifier_id, initd) {
+    var self = this;
+
+    var transmogrifier = self.transmogrifier_classd[_.expand(transmogrifier_id, "iot-transmogrifier:")];
+    if (!transmogrifier) {
+        // console.log("# IOT.transmogrifier", "transmogrifier not found", transmogrifier_id);
+        logger.error({
+            method: "transmogrifier",
+            transmogrifier_id: transmogrifier_id
+        }, "transmogrifier not found");
+    }
+
+    return new transmogrifier(initd);
 };
 
 /**
@@ -2419,14 +2460,14 @@ IOT.prototype._load_stores = function () {
 };
 
 /**
- *  Automatically load all filters. Set 'IOT.paramd.load_transmogrifiers'
+ *  Automatically load all transmogrifer. Set 'IOT.paramd.load_transmogrifiers'
  *
  *  @protected
  */
 IOT.prototype._load_transmogrifiers = function () {
     var self = this;
 
-    var filenames = cfg.cfg_find(self.envd, self.initd.filters_path, /[.]js$/);
+    var filenames = cfg.cfg_find(self.envd, self.initd.transmogrifiers_path, /[.]js$/);
     cfg.cfg_load_js(filenames, function (paramd) {
         if (paramd.error) {
             /*
@@ -2460,20 +2501,20 @@ IOT.prototype._load_transmogrifiers = function () {
         }
 
         var module = paramd.doc;
-        if (module.Store) {
+        if (module.Transmogrifier) {
             // console.log("- IOT._load_transmogrifiers:", "found Store", "\n ", paramd.filename);
             logger.debug({
                 method: "_load_transmogrifiers",
                 filename: paramd.filename
             }, "found Store");
-            self.register_filter(module.Store);
+            self.register_transmogrifier(module.Transmogrifier);
         } else {
             // console.log("- IOT._load_transmogrifiers:", "missing exports.Store?", "\n ", paramd.filename);
             logger.error({
                 method: "_load_transmogrifiers",
                 filename: paramd.filename,
-                cause: "likely a programming error in <Store>.js"
-            }, "missing exports.Store");
+                cause: "likely a programming error in <Transmogrifier>.js"
+            }, "missing exports.Transmogrifier");
         }
     });
 };
