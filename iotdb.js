@@ -58,7 +58,7 @@ var EVENT_REGISTER_BRIDGE = "iot_register_driver";
 var EVENT_ON_READY = "iot_ready";
 var EVENT_ON_REGISTER_DRIVERS = "iot_on_register_drivers";
 var EVENT_ON_REGISTER_STORES = "iot_on_register_stores";
-var EVENT_ON_REGISTER_FILTERS = "iot_on_register_filters";
+var EVENT_ON_REGISTER_TRANSMOGRIFIERS = "iot_on_register_transmogrifiers";
 var EVENT_ON_REGISTER_MODELS = "iot_on_register_models";
 var EVENT_ON_REGISTER_THINGS = "iot_on_register_things";
 var EVENT_ON_READY_CHANGE = "iot_ready_change";
@@ -102,7 +102,7 @@ exports.iot = function (paramd) {
             load_things: true,
             load_drivers: true,
             load_stores: true,
-            load_filters: true,
+            load_transmogrifiers: true,
             iotdb_thing_get: false,
             iotdb_thing_create: false,
             show_health: true,
@@ -141,8 +141,8 @@ IOT.prototype.configure = function (paramd) {
     self.ready_delta('on_register_drivers', 1);
     self.ready_delta('load_drivers', 1);
 
-    self.ready_delta('on_register_filters', 1);
-    self.ready_delta('load_filters', 1);
+    self.ready_delta('on_register_transmogrifiers', 1);
+    self.ready_delta('load_transmogrifiers', 1);
 
     self.ready_delta('on_register_models', 1);
     self.ready_delta('load_models', 1);
@@ -190,8 +190,8 @@ IOT.prototype.configure = function (paramd) {
     self.ready_delta('load_models', -1);
     self.ready_delta('on_register_things', -1);
     self.ready_delta('load_things', -1);
-    self.ready_delta('on_register_filters', -1);
-    self.ready_delta('load_filters', -1);
+    self.ready_delta('on_register_transmogrifiers', -1);
+    self.ready_delta('load_transmogrifiers', -1);
     self.ready_delta('iotdb_thing_get', -1);
     self.ready_delta('iotdb_places_get', -1);
     self.ready_delta('load_meta', -1);
@@ -335,7 +335,7 @@ IOT.prototype.cfg_load_paramd = function (initd) {
         discover: false,
         load_drivers: false,
         load_stores: false,
-        load_filters: false,
+        load_transmogrifiers: false,
         load_models: false,
         load_things: false,
         iotdb_places_get: false,
@@ -642,14 +642,14 @@ IOT.prototype.ready_delta = function (key, delta) {
         if (key === 'on_register_stores') {
             self.emit(EVENT_ON_REGISTER_STORES);
         }
-        if (key === 'on_register_filters') {
-            self.emit(EVENT_ON_REGISTER_FILTERS);
+        if (key === 'on_register_transmogrifiers') {
+            self.emit(EVENT_ON_REGISTER_TRANSMOGRIFIERS);
         }
         if ((key === 'load_stores') && self.initd.load_stores) {
             self._load_stores();
         }
-        if ((key === 'load_filters') && self.initd.load_filters) {
-            self._load_filters();
+        if ((key === 'load_transmogrifiers') && self.initd.load_transmogrifiers) {
+            self._load_transmogrifiers();
         }
         if (key === 'on_register_models') {
             self.emit(EVENT_ON_REGISTER_MODELS);
@@ -786,7 +786,7 @@ IOT.prototype.on_register_stores = function (callback) {
     }
 };
 
-IOT.prototype.on_register_filters = function (callback) {
+IOT.prototype.on_register_transmogrifiers = function (callback) {
     var self = this;
 
     var doit = function () {
@@ -802,10 +802,10 @@ IOT.prototype.on_register_filters = function (callback) {
         callback = null;
     };
 
-    if (self.readyd['on_register_filters'] === 0) {
+    if (self.readyd['on_register_transmogrifiers'] === 0) {
         doit();
     } else {
-        self.on(EVENT_ON_REGISTER_FILTERS, doit);
+        self.on(EVENT_ON_REGISTER_TRANSMOGRIFIERS, doit);
     }
 };
 
@@ -2419,24 +2419,24 @@ IOT.prototype._load_stores = function () {
 };
 
 /**
- *  Automatically load all filters. Set 'IOT.paramd.load_filters'
+ *  Automatically load all filters. Set 'IOT.paramd.load_transmogrifiers'
  *
  *  @protected
  */
-IOT.prototype._load_filters = function () {
+IOT.prototype._load_transmogrifiers = function () {
     var self = this;
 
     var filenames = cfg.cfg_find(self.envd, self.initd.filters_path, /[.]js$/);
     cfg.cfg_load_js(filenames, function (paramd) {
         if (paramd.error) {
             /*
-            console.log("# IOT._load_filters:", 
+            console.log("# IOT._load_transmogrifiers:", 
                 "\n  filename", paramd.filename, 
                 "\n  error", paramd.error, 
                 "\n  exception", paramd.exception)
              */
             logger.error({
-                method: "_load_filters",
+                method: "_load_transmogrifiers",
                 filename: paramd.filename,
                 error: paramd.error,
                 exception: paramd.exception,
@@ -2461,16 +2461,16 @@ IOT.prototype._load_filters = function () {
 
         var module = paramd.doc;
         if (module.Store) {
-            // console.log("- IOT._load_filters:", "found Store", "\n ", paramd.filename);
+            // console.log("- IOT._load_transmogrifiers:", "found Store", "\n ", paramd.filename);
             logger.debug({
-                method: "_load_filters",
+                method: "_load_transmogrifiers",
                 filename: paramd.filename
             }, "found Store");
             self.register_filter(module.Store);
         } else {
-            // console.log("- IOT._load_filters:", "missing exports.Store?", "\n ", paramd.filename);
+            // console.log("- IOT._load_transmogrifiers:", "missing exports.Store?", "\n ", paramd.filename);
             logger.error({
-                method: "_load_filters",
+                method: "_load_transmogrifiers",
                 filename: paramd.filename,
                 cause: "likely a programming error in <Store>.js"
             }, "missing exports.Store");

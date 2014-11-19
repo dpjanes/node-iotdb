@@ -1,5 +1,5 @@
 /*
- *  filter.js
+ *  transmogrifier.js
  *
  *  David Janes
  *  IOTDB
@@ -29,14 +29,14 @@ var ThingArray = require("./thing_array").ThingArray;
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'filter',
+    module: 'transmogrifier',
 });
 
 /* --- constants --- */
 var VERBOSE = true;
 
 /**
- *  A 'Filter' changes the way a Thing works
+ *  A 'Transmogrifier' changes the way a Thing works
  *  or appears in interface. It lets you do 
  *  stuff like:
  *  <ul>
@@ -55,14 +55,14 @@ var VERBOSE = true;
  *  <li>we can write caching functions for each Model
  *  </ul>
  */
-var Filter = function () {
+var Transmogrifier = function () {
     var self = this;
     self.__wrapped = null;
 };
 
 /**
  */
-Filter.prototype.wrap = function (thing) {
+Transmogrifier.prototype.transmogrify = function (thing) {
     var self = this;
 
     self.__wrapped = thing;
@@ -87,9 +87,10 @@ Filter.prototype.wrap = function (thing) {
 /*
  *  API
  */
-exports.Filter = Filter;
+exports.Transmogrifier = Transmogrifier;
 
 /*
+ */
 
 var attribute = require("./attribute")
 var model = require("./model")
@@ -103,9 +104,8 @@ var T = model.make_model('T')
     .make();
 var t = new T();
 
-var f = new Filter();
-var wt = f.wrap(t);
+var f = new Transmogrifier();
+var wt = f.transmogrify(t);
 
 console.log("get_code", wt.get_code())
 console.log("jsonld", wt.jsonld())
- */
