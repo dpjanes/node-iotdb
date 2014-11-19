@@ -38,7 +38,7 @@ var logger = bunyan.createLogger({
  */
 var DebounceTransmogrifier = function (initd) {
     var self = this;
-    
+
     initd = _.defaults(initd, {
         timeout: 100
     });
@@ -54,13 +54,11 @@ DebounceTransmogrifier.prototype.transmogrifier_id = "iot-transmogrifier:debounc
 /**
  *  Changing the way 'on' works
  */
-DebounceTransmogrifier.prototype.on = function(key, callback) {
-};
+DebounceTransmogrifier.prototype.on = function (key, callback) {};
 
 /**
  *  Changing the way 'on_bounce' works
  */
-DebounceTransmogrifier.prototype.on_change = function(callback) {
-};
+DebounceTransmogrifier.prototype.on_change = function (callback) {};
 
 exports.Transmogrifier = DebounceTransmogrifier;

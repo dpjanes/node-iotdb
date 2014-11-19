@@ -37,7 +37,7 @@ var VERBOSE = true;
 
 /**
  *  A 'Transmogrifier' changes the way a Thing works
- *  or appears in interface. It lets you do 
+ *  or appears in interface. It lets you do
  *  stuff like:
  *  <ul>
  *  <li>convert Fahrenheit to Celsius for all values
@@ -48,8 +48,8 @@ var VERBOSE = true;
  *  Random thoughts:
  *  </p>
  *  <ul>
- *  <li>when we transform attributes, we have to 
- *      rewrite the attributes() function to 
+ *  <li>when we transform attributes, we have to
+ *      rewrite the attributes() function to
  *      return the new version so we can introspect
  *      this properly
  *  <li>we can write caching functions for each Model
@@ -88,15 +88,15 @@ Transmogrifier.prototype._transmogrify_thing = function (thing) {
 
         var value = self.__wrapped[key];
         if (!_.isFunction(value)) {
-            continue
+            continue;
         }
 
-        self.key = function() {
+        self.key = function () {
             return self.__wrapped.call(self.__wrapped, Array.prototype.slice.call(arguments));
         };
     }
     return thing;
-}
+};
 
 Transmogrifier.prototype._transmogrify_thing_array = function (thing_array) {
     logger.error({
@@ -104,30 +104,9 @@ Transmogrifier.prototype._transmogrify_thing_array = function (thing_array) {
     }, "not implemented (yet)");
 
     return thing_array;
-}
+};
 
 /*
  *  API
  */
 exports.Transmogrifier = Transmogrifier;
-
-/*
-
-var attribute = require("./attribute")
-var model = require("./model")
-var T = model.make_model('T')
-    .attribute(attribute.make_boolean('on').control())
-    .attribute(
-        attribute.make_integer('intensity').control()
-            .maximum(10)
-            .minimum(0)
-    )
-    .make();
-var t = new T();
-
-var f = new Transmogrifier();
-var wt = f.transmogrify(t);
-
-console.log("get_code", wt.get_code())
-console.log("jsonld", wt.jsonld())
- */

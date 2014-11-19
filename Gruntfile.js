@@ -33,10 +33,12 @@ module.exports = function (grunt) {
                     'model_maker.js',
                     'queue.js',
                     'store.js',
+                    'transmogrifier.js',
                     'thing_array.js',
                     'drivers/*.js',
                     'stores/*.js',
                     'libs/*.js',
+                    'transmogrifiers/*.js',
                     'bin/iotdb',
                 ]
             },
@@ -65,6 +67,7 @@ module.exports = function (grunt) {
                 'drivers/libs/*.js',
                 'libs/*.js',
                 'stores/*.js',
+                'transmogrifiers/*.js',
             ],
             options: {
                 js: {

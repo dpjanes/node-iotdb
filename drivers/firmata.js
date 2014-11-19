@@ -215,7 +215,7 @@ FirmataDriver.prototype._setup_code = function (code, code_value, initd) {
             } else if (key === "pin") {
                 pind.pin = value;
             } else if (key === "extension") {
-            /* pind.extension = value; */
+                /* pind.extension = value; */
             } else if (key === "sysex") {
                 pind.sysex = value;
             } else {
@@ -600,7 +600,7 @@ FirmataDriver.prototype.setup = function (paramd) {
                     method: "setup/firmata.Board",
                     error: error,
                     tty: self.tty,
-                }, "couldn't connect to board")
+                }, "couldn't connect to board");
                 self.board.iotdb_ready = false;
                 return;
             }
@@ -773,9 +773,9 @@ FirmataDriver.prototype.push = function (paramd) {
             self.queue.add({
                 run: function (queue, qitem) {
                     var outb = new Buffer(value.length + 3);
-                    outb[0] = START_SYSEX
-                    outb[1] = pind.sysex
-                    outb[value.length + 3 - 1] = END_SYSEX
+                    outb[0] = START_SYSEX;
+                    outb[1] = pind.sysex;
+                    outb[value.length + 3 - 1] = END_SYSEX;
 
                     for (var vi = 0; vi < value.length; vi++) {
                         outb[vi + 2] = value[vi] & 0xFF;
