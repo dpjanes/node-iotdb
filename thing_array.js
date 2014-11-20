@@ -152,6 +152,14 @@ ThingArray.prototype.is_persist = function () {
 };
 
 /**
+ *  Return a Transmogrified object.
+ *  Great for chaining.
+ */
+ThingArray.prototype.transmogrify = function (transmogrifier) {
+    return transmogrifier.transmogrify(this);
+}
+
+/**
  *  @param {string} key - if used, only the latest command
  *  will be persisted with this key
  */

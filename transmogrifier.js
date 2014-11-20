@@ -99,9 +99,24 @@ Transmogrifier.prototype._transmogrify_thing = function (thing) {
 };
 
 Transmogrifier.prototype._transmogrify_thing_array = function (thing_array) {
-    logger.error({
-        method: "_transmogrify_thing_array",
-    }, "not implemented (yet)");
+    var self = this;
+
+    // new array, just like the old one
+    var new_array = new ThingArray({
+        persist: thing_array.is_persist(),
+    })
+
+    // all things added to the new array are transmogrified
+    new_array.___push = new_array.push;
+    new_array.push = function(thing) {
+        new_array.___push(self.transmogrify(thing));
+    }
+
+    // add things from the old array
+    for (var ti = 0; ti < thing_array.length; ti++) {
+        new_array.push(thing_array[ti]);
+    }
+
 
     return thing_array;
 };

@@ -1491,6 +1491,14 @@ Model.prototype.model_code_iri = function () {
 };
 
 /**
+ *  Return a Transmogrified object.
+ *  Great for chaining.
+ */
+Model.prototype.transmogrify = function (transmogrifier) {
+    return transmogrifier.transmogrify(this);
+}
+
+/**
  *  Return an object to access and
  *  manipulate the Metadata.
  */
