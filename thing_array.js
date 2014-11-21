@@ -153,7 +153,7 @@ ThingArray.prototype.is_persist = function () {
 
 /**
  *  Return a Transmogrified ThingArray. All
- *  Things added will be run through the 
+ *  Things added will be run through the
  *  Transmogrifier.
  */
 ThingArray.prototype.transmogrify = function (transmogrifier) {
@@ -166,7 +166,7 @@ ThingArray.prototype.transmogrify = function (transmogrifier) {
 
     // all things added to the new array are transmogrified
     new_array.___push = new_array.push;
-    new_array.push = function(thing) {
+    new_array.push = function (thing) {
         new_array.___push(transmogrifier.transmogrify(thing));
     }
 

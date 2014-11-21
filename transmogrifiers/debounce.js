@@ -51,14 +51,11 @@ DebounceTransmogrifier.prototype = new transmogrifier.Transmogrifier();
 DebounceTransmogrifier.prototype.transmogrifier_id = "iot-transmogrifier:debounce";
 
 DebounceTransmogrifier.prototype.___make = function () {
-    var self = this;
-    return new DebounceTransmogrifier({
-        timeout: self.___initd.timeout
-    });
-}
+    return new DebounceTransmogrifier(this.___initd);
+};
 
 DebounceTransmogrifier.prototype.___on = function (key, callback, av) {
-    var self = this
+    var self = this;
 
     self.___d[key] = {
         callback: callback,
@@ -69,8 +66,8 @@ DebounceTransmogrifier.prototype.___on = function (key, callback, av) {
         return;
     }
 
-    self.___timeoutId = setTimeout(function() {
-        for (key in self.___d) {
+    self.___timeoutId = setTimeout(function () {
+        for (var key in self.___d) {
             var vd = self.___d[key];
             // console.log("HERE:A", vd);
             vd.callback.apply(self.___wrapped, vd.av);
@@ -79,7 +76,7 @@ DebounceTransmogrifier.prototype.___on = function (key, callback, av) {
         self.___timeoutId = null;
         self.___d = {};
     }, self.___initd.timeout);
-}
+};
 
 /**
  *  Changing the way 'on' works
@@ -87,7 +84,7 @@ DebounceTransmogrifier.prototype.___on = function (key, callback, av) {
 DebounceTransmogrifier.prototype.on = function (key, callback) {
     var self = this;
 
-    return self.___wrapped.on(key, function() {
+    return self.___wrapped.on(key, function () {
         self.___on(key, callback, arguments);
     });
 };
@@ -97,8 +94,8 @@ DebounceTransmogrifier.prototype.on = function (key, callback) {
  */
 DebounceTransmogrifier.prototype.on_change = function (callback) {
     var self = this;
-    
-    return self.___wrapped.on_change(key, function() {
+
+    return self.___wrapped.on_change(function () {
         self.___on("*", callback, arguments);
     });
 };

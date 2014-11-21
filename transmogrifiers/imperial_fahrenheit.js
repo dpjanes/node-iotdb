@@ -39,10 +39,7 @@ var logger = bunyan.createLogger({
 var ImperialFahrenheitTransmogrifier = function (initd) {
     var self = this;
 
-    self.___initd = _.defaults(initd, {
-        timeout: 100
-    });
-
+    self.___initd = _.defaults(initd, {});
     self.___xdd = {};
 };
 
@@ -53,11 +50,8 @@ ImperialFahrenheitTransmogrifier.prototype.transmogrifier_id = "iot-transmogrifi
  *  See {@link Transmogrifier#___make Transmogrifier.___make}
  */
 ImperialFahrenheitTransmogrifier.prototype.___make = function () {
-    var self = this;
-    return new ImperialFahrenheitTransmogrifier({
-        timeout: self.___initd.timeout
-    });
-}
+    return new ImperialFahrenheitTransmogrifier(this.___initd);
+};
 
 /**
  *  See {@link Transmogrifier#___attach Transmogrifier.___attach}
@@ -72,36 +66,43 @@ ImperialFahrenheitTransmogrifier.prototype.___attach = function () {
     var unit_kelvin = _.expand("iot-unit:temperature.si.kelvin");
     var unit_fahrenheit = _.expand("iot-unit:temperature.imperial.fahrenheit");
 
+    var xd_celsius = function (attribute) {
+        attribute = _.clone(attribute);
+        attribute[unit_key] = unit_fahrenheit;
+        return {
+            attribute: attribute,
+            set: function (F) {
+                return (F - 32) * 5 / 9;
+            },
+            get: function (C) {
+                return C * 9 / 5 + 32;
+            }
+        };
+    };
+    var xd_kelvin = function (attribute) {
+        attribute = _.clone(attribute);
+        attribute[unit_key] = unit_fahrenheit;
+        return {
+            attribute: attribute,
+            set: function (F) {
+                return (F - 32) * 5 / 9 + 273.15;
+            },
+            get: function (K) {
+                return (K - 273.15) * 1.8 + 32;
+            }
+        };
+    };
+
     for (var ai in attributes) {
         var attribute = attributes[ai];
         var code = attribute.get_code();
         var unit = _.ld_get_first(attribute, unit_key);
         if (unit === unit_celsius) {
-            attribute = _.clone(attribute);
-            attribute[unit_key] = unit_fahrenheit
-            self.___xdd[code] = {
-                attribute: attribute,
-                set: function(F) {
-                    return (F - 32) * 5/9;
-                },
-                get: function(C) {
-                    return C * 9/5 + 32;
-                },
-            };
+            self.___xdd[code] = xd_celsius(attribute);
         } else if (unit === unit_kelvin) {
-            attribute = _.clone(attribute);
-            attribute[unit_key] = unit_fahrenheit
-            self.___xdd[code] = {
-                attribute: attribute,
-                set: function(F) {
-                    return (F - 32) * 5/9 + 273.15;
-                },
-                get: function(K) {
-                    return (K - 273.15) * 1.8 + 32;
-                }
-            };
+            self.___xdd[code] = xd_kelvin(attribute);
         }
     }
-}
+};
 
 exports.Transmogrifier = ImperialFahrenheitTransmogrifier;

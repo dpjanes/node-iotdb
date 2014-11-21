@@ -57,6 +57,9 @@ var VERBOSE = true;
  */
 var Transmogrifier = function () {
     var self = this;
+
+    self.___xd = null;
+    self.___initd = {};
     self.___wrapped = null;
 };
 
@@ -82,8 +85,7 @@ Transmogrifier.prototype.___make = function (thing) {
  *  may want to use this to do one-time setup,
  *  such as looking up the attributes
  */
-Transmogrifier.prototype.___attach = function () {
-}
+Transmogrifier.prototype.___attach = function () {}
 
 /**
  *  Transmogrify the 'Thing' object. A new object
@@ -104,9 +106,17 @@ Transmogrifier.prototype.transmogrify = function (thing) {
 
     var new_thing = self.___make(thing);
 
-    var wrap_function = function(key, value_function) {
+    var wrap_function = function (key, value_function) {
         return function () {
-            return value_function.apply(thing, Array.prototype.slice.call(arguments));
+            var result = value_function.apply(thing, Array.prototype.slice.call(arguments));
+            if (result === thing) {
+                // console.log("HERE:XXX.1");
+                return new_thing;
+            } else {
+                // console.log("HERE:XXX.2.1", result);
+                // console.log("HERE:XXX.2.2", thing);
+                return result;
+            }
         };
     }
 
@@ -136,6 +146,23 @@ Transmogrifier.prototype.transmogrify = function (thing) {
 };
 
 /**
+ *  We can't be the same model code as before if
+ *  things have changed.
+ */
+Transmogrifier.prototype.get_code = function (key, callback) {
+    var self = this;
+    var thing = self.___wrapped;
+
+    if (self.___initd.code) {
+        return self.___initd.code;
+    } else if (self.___xdd) {
+        return thing.get_code() + "*";
+    } else {
+        return thing.get_code();
+    }
+}
+
+/**
  *  Change the way 'on' works
  */
 Transmogrifier.prototype.on = function (key, callback) {
@@ -144,7 +171,7 @@ Transmogrifier.prototype.on = function (key, callback) {
 
     var xd = self.___xdd[key];
     if (xd) {
-        return thing.on(key, function(thing, attribute, value) {
+        return thing.on(key, function (thing, attribute, value) {
             callback(self, xd.attribute, xd.get(value));
         });
     } else {
@@ -163,7 +190,7 @@ Transmogrifier.prototype.set = function (key, value) {
     if (xd) {
         return thing.set(key, xd.set(value));
     } else {
-        return thing.get(key);
+        return thing.set(key, value);
     }
 };
 
