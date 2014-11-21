@@ -152,11 +152,30 @@ ThingArray.prototype.is_persist = function () {
 };
 
 /**
- *  Return a Transmogrified object.
- *  Great for chaining.
+ *  Return a Transmogrified ThingArray. All
+ *  Things added will be run through the 
+ *  Transmogrifier.
  */
 ThingArray.prototype.transmogrify = function (transmogrifier) {
-    return transmogrifier.transmogrify(this);
+    var self = this;
+
+    // new array, just like this one
+    var new_array = new ThingArray({
+        persist: self.is_persist(),
+    })
+
+    // all things added to the new array are transmogrified
+    new_array.___push = new_array.push;
+    new_array.push = function(thing) {
+        new_array.___push(transmogrifier.transmogrify(thing));
+    }
+
+    // add things from the old array
+    for (var ti = 0; ti < self.length; ti++) {
+        new_array.push(self[ti]);
+    }
+
+    return new_array;
 }
 
 /**

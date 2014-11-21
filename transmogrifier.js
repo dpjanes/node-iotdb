@@ -57,68 +57,172 @@ var VERBOSE = true;
  */
 var Transmogrifier = function () {
     var self = this;
-    self.__wrapped = null;
+    self.___wrapped = null;
 };
 
 /**
+ *  Make a new version of me. Redefine
+ *  in every subclass
  */
-Transmogrifier.prototype.transmogrify = function (o) {
+Transmogrifier.prototype.___make = function (thing) {
+    logger.error({
+        method: "___make",
+        cause: "Node-IOTDB error",
+    }, "the subclass Transmogrifier did not define a ___make() function");
+
+    return this;
+}
+
+/**
+ *  This is called after everything else is
+ *  done in 'transmogrify'. The original
+ *  thing will be available in '___wrapped'.
+ *  <p>
+ *  By default this does nothing, but you
+ *  may want to use this to do one-time setup,
+ *  such as looking up the attributes
+ */
+Transmogrifier.prototype.___attach = function () {
+}
+
+/**
+ *  Transmogrify the 'Thing' object. A new object
+ *  is returned that looks like the Thing, but
+ *  actually is wrapped functions that handle
+ *  the transmogrification.
+ */
+Transmogrifier.prototype.transmogrify = function (thing) {
     var self = this;
-    if (_.isModel(o)) {
-        return self._transmogrify_thing(o);
-    } else if (_.isThingArray(o)) {
-        return self._transmogrify_thing_array(o);
-    } else {
+
+    if (!_.isModel(thing)) {
         logger.error({
             method: "transmogrify",
             cause: "likely the programmer has called this with the wrong object"
-        }, "cannot transmogrify - needs to be a Thing or ThingArray");
+        }, "cannot transmogrify - needs to be a Thing");
+        return;
     }
-};
 
-Transmogrifier.prototype._transmogrify_thing = function (thing) {
-    var self = this;
+    var new_thing = self.___make(thing);
 
-    self.__wrapped = thing;
+    var wrap_function = function(key, value_function) {
+        return function () {
+            return value_function.apply(thing, Array.prototype.slice.call(arguments));
+        };
+    }
 
-    for (var key in self.__wrapped) {
+    for (var key in thing) {
         if (key.match(/^_/)) {
             continue;
         }
 
-        var value = self.__wrapped[key];
-        if (!_.isFunction(value)) {
+        if ((self[key] !== undefined) && (key !== "transmogrify")) {
             continue;
         }
 
-        self.key = function () {
-            return self.__wrapped.call(self.__wrapped, Array.prototype.slice.call(arguments));
-        };
+        var value_function = thing[key];
+        if (!_.isFunction(value_function)) {
+            continue;
+        }
+
+        new_thing[key] = wrap_function(key, value_function);
     }
-    return thing;
+
+    new_thing.___wrapped = thing;
+    new_thing.Model = thing.Model;
+
+    new_thing.___attach();
+
+    return new_thing;
 };
 
-Transmogrifier.prototype._transmogrify_thing_array = function (thing_array) {
+/**
+ *  Change the way 'on' works
+ */
+Transmogrifier.prototype.on = function (key, callback) {
     var self = this;
+    var thing = self.___wrapped;
 
-    // new array, just like the old one
-    var new_array = new ThingArray({
-        persist: thing_array.is_persist(),
-    })
+    var xd = self.___xdd[key];
+    if (xd) {
+        return thing.on(key, function(thing, attribute, value) {
+            callback(self, xd.attribute, xd.get(value));
+        });
+    } else {
+        return thing.on(key, callback);
+    }
+};
 
-    // all things added to the new array are transmogrified
-    new_array.___push = new_array.push;
-    new_array.push = function(thing) {
-        new_array.___push(self.transmogrify(thing));
+/**
+ *  Change the way 'set' works
+ */
+Transmogrifier.prototype.set = function (key, value) {
+    var self = this;
+    var thing = self.___wrapped;
+
+    var xd = self.___xdd[key];
+    if (xd) {
+        return thing.set(key, xd.set(value));
+    } else {
+        return thing.get(key);
+    }
+};
+
+/**
+ *  Change the way 'get' works
+ */
+Transmogrifier.prototype.get = function (key) {
+    var self = this;
+    var thing = self.___wrapped;
+
+    var xd = self.___xdd[key];
+    if (xd) {
+        return xd.get(thing.get(key));
+    } else {
+        return thing.get(key);
+    }
+};
+
+/**
+ *  Change the way 'state' works
+ *  <p>
+ *  XXX - need to start dealing properly with nested states
+ */
+Transmogrifier.prototype.state = function () {
+    var self = this;
+    var thing = self.___wrapped;
+    var state = thing.state();
+
+    for (var key in state) {
+        var xd = self.___xdd[key];
+        if (xd) {
+            state[key] = xd.get(state[key]);
+        }
     }
 
-    // add things from the old array
-    for (var ti = 0; ti < thing_array.length; ti++) {
-        new_array.push(thing_array[ti]);
+    return state;
+};
+
+/**
+ *  Change the way 'attributes' works
+ */
+Transmogrifier.prototype.attributes = function () {
+    var self = this;
+    var thing = self.___wrapped;
+    var oattributes = thing.attributes();
+    var nattributes = [];
+
+    for (var ai in oattributes) {
+        var attribute = oattributes[ai];
+        var code = attribute.get_code();
+        var xd = self.___xdd[key];
+        if (xd) {
+            nattributes.push(xd.attribute);
+        } else {
+            nattributes.push(attribute);
+        }
     }
 
-
-    return thing_array;
+    return nattributes;
 };
 
 /*

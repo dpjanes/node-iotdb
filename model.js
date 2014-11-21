@@ -287,8 +287,9 @@ Model.prototype.jsonld = function (paramd) {
 
     // attributes
     var ads = [];
-    for (var ax in self.__attributes) {
-        var attribute = self.__attributes[ax];
+    var attributes = self.attributes();
+    for (var ax in attributes) {
+        var attribute = attributes[ax];
         var ad = {};
         // ad[_.expand('iot:name')] = attribute.get_code()
         ads.push(ad);
@@ -1339,8 +1340,9 @@ Model.prototype._find = function (find_key) {
 
         return undefined;
     } else {
-        for (var ai = 0; ai < self.__attributes.length; ai++) {
-            attribute = self.__attributes[ai];
+        var attributes = self.attributes();
+        for (var ai = 0; ai < attributes.length; ai++) {
+            attribute = attributes[ai];
 
             var all = true;
             for (var match_key in find_key) {
@@ -1491,8 +1493,7 @@ Model.prototype.model_code_iri = function () {
 };
 
 /**
- *  Return a Transmogrified object.
- *  Great for chaining.
+ *  Return a Transmogrified version of this Thing.
  */
 Model.prototype.transmogrify = function (transmogrifier) {
     return transmogrifier.transmogrify(this);

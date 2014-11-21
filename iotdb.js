@@ -238,6 +238,7 @@ IOT.prototype._exit_cleanup = function (paramd, err) {
 
     if (paramd.exit) {
         if (time_wait === 0) {
+            console.log("CALL EXIT");
             process.exit(0);
         } else {
             // console.log("# IOT._exit_cleanup: exiting in", time_wait / 1000.0);

@@ -39,11 +39,10 @@ var logger = bunyan.createLogger({
 var DebounceTransmogrifier = function (initd) {
     var self = this;
 
-    initd = _.defaults(initd, {
+    self.___initd = _.defaults(initd, {
         timeout: 100
     });
 
-    self.___debounce = initd.timeout;
     self.___timeoutId = null;
     self.___d = {};
 };
@@ -51,14 +50,57 @@ var DebounceTransmogrifier = function (initd) {
 DebounceTransmogrifier.prototype = new transmogrifier.Transmogrifier();
 DebounceTransmogrifier.prototype.transmogrifier_id = "iot-transmogrifier:debounce";
 
+DebounceTransmogrifier.prototype.___make = function () {
+    var self = this;
+    return new DebounceTransmogrifier({
+        timeout: self.___initd.timeout
+    });
+}
+
+DebounceTransmogrifier.prototype.___on = function (key, callback, av) {
+    var self = this
+
+    self.___d[key] = {
+        callback: callback,
+        av: av
+    };
+
+    if (self.___timeoutId) {
+        return;
+    }
+
+    self.___timeoutId = setTimeout(function() {
+        for (key in self.___d) {
+            var vd = self.___d[key];
+            // console.log("HERE:A", vd);
+            vd.callback.apply(self.___wrapped, vd.av);
+        }
+
+        self.___timeoutId = null;
+        self.___d = {};
+    }, self.___initd.timeout);
+}
+
 /**
  *  Changing the way 'on' works
  */
-DebounceTransmogrifier.prototype.on = function (key, callback) {};
+DebounceTransmogrifier.prototype.on = function (key, callback) {
+    var self = this;
+
+    return self.___wrapped.on(key, function() {
+        self.___on(key, callback, arguments);
+    });
+};
 
 /**
  *  Changing the way 'on_bounce' works
  */
-DebounceTransmogrifier.prototype.on_change = function (callback) {};
+DebounceTransmogrifier.prototype.on_change = function (callback) {
+    var self = this;
+    
+    return self.___wrapped.on_change(key, function() {
+        self.___on("*", callback, arguments);
+    });
+};
 
 exports.Transmogrifier = DebounceTransmogrifier;
