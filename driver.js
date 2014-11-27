@@ -57,7 +57,7 @@ var EVENT_DISCONNECT = 'disconnect';
 var Driver = function () {
     // WE REALLY NEED TO FIX UP MQTT
     events.EventEmitter.call(this);
-    this.setMaxListeners(25);
+    this.setMaxListeners(128);
 };
 
 util.inherits(Driver, events.EventEmitter);
@@ -485,7 +485,7 @@ Driver.prototype.mqtt_subscribe = function () {
     mqtt_client.on('message', on_message);
 
     self.on(EVENT_DISCONNECT, function () {
-        // console.log("# Driver.mqtt_subscribe/DISCONNECT", "thing_id", self.thing_id())
+        //  console.log("# Driver.mqtt_subscribe/DISCONNECT", "thing_id", self.thing_id(), self.thing ? self.thing.get_code() : null)
         mqtt_client.removeListener('message', on_message);
     });
 

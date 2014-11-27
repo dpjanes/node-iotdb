@@ -1502,7 +1502,8 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
         thing: {
             driver_identityd: thing_exemplar.driver_identityd,
             initd: thing_exemplar.initd,
-            code: thing_exemplar.code
+            code: thing_exemplar.code,
+            cause: "Model is referencing a Driver that Node-IOTDB can't find",
         }
     }, "no Driver exemplar found for this Thing");
 

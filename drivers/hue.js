@@ -361,6 +361,25 @@ HueDriver.prototype.push = function (paramd) {
         putd.on = paramd.driverd.on;
     }
 
+    if (paramd.driverd.brightness !== undefined) {
+        var color = new Color();
+        color.set_rgb_1(paramd.driverd.brightness, paramd.driverd.brightness, paramd.driverd.brightness);
+        paramd.driverd.color = color.get_hex();
+    }
+
+    /*
+        putd.on = true;
+        putd.xy = hc.rgbToCIE1931(color.r, color.g, color.b);
+        putd.bri = Math.max(color.r, color.g, color.b) * 255;
+
+        console.log("COLOR", color.get_hex());
+
+        self.pulled({
+            on: true,
+            color: color.get_hex()
+        });
+    */
+
     if (_.isString(paramd.driverd.color)) {
         c2h(putd, paramd.driverd.color);
         putd.on = true;
@@ -380,7 +399,6 @@ HueDriver.prototype.push = function (paramd) {
         */
     }
 
-    // console.log("- HueDriver.push", "putd", putd)
     logger.info({
         method: "push",
         putd: putd
