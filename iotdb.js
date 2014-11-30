@@ -1674,7 +1674,7 @@ IOT.prototype._bind_driver = function (thing, driver_instance) {
 
     var paramd = {
         thing: thing,
-        initd: {}
+        initd: _.deepCopy(thing.initd), // DPJ 2014-11-27 check for issues
     };
 
     thing.driver_setup(paramd);

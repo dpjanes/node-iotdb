@@ -1,5 +1,5 @@
 /*
- *  drivers/proto.js
+ *  drivers/alarm.js
  *
  *  David Janes
  *  IOTDB.org
@@ -28,23 +28,23 @@ var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 
-var queue = new FIFOQueue("ProtoDriver");
+var queue = new FIFOQueue("AlarmDriver");
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'PrototypeDriver',
+    module: 'AlarmtypeDriver',
 });
 
 /**
  */
-var ProtoDriver = function (paramd) {
+var AlarmDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver: "iot-driver:proto",
+        driver: "iot-driver:alarm",
         initd: {}
     });
 
@@ -63,7 +63,7 @@ var ProtoDriver = function (paramd) {
     return self;
 };
 
-ProtoDriver.prototype = new driver.Driver();
+AlarmDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
@@ -72,7 +72,7 @@ ProtoDriver.prototype = new driver.Driver();
  *
  *  @protected
  */
-ProtoDriver.prototype._init = function (initd) {
+AlarmDriver.prototype._init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -88,14 +88,14 @@ ProtoDriver.prototype._init = function (initd) {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-ProtoDriver.prototype.driver_meta = function () {
+AlarmDriver.prototype.driver_meta = function () {
     return this.metad;
 };
 
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-ProtoDriver.prototype.identity = function (kitchen_sink) {
+AlarmDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -113,7 +113,7 @@ ProtoDriver.prototype.identity = function (kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-ProtoDriver.prototype.setup = function (paramd) {
+AlarmDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -127,8 +127,8 @@ ProtoDriver.prototype.setup = function (paramd) {
 /*
  *  See {@link Driver#discover Driver.discover}
  */
-ProtoDriver.prototype.discover = function (paramd, discover_callback) {
-    discover_callback(new ProtoDriver());
+AlarmDriver.prototype.discover = function (paramd, discover_callback) {
+    discover_callback(new AlarmDriver());
 };
 
 /**
@@ -136,7 +136,7 @@ ProtoDriver.prototype.discover = function (paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-ProtoDriver.prototype.push = function (paramd) {
+AlarmDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -155,7 +155,7 @@ ProtoDriver.prototype.push = function (paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-ProtoDriver.prototype.pull = function () {
+AlarmDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -170,4 +170,4 @@ ProtoDriver.prototype.pull = function () {
 /*
  *  API
  */
-exports.Driver = ProtoDriver;
+exports.Driver = AlarmDriver;
