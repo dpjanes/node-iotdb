@@ -1,11 +1,11 @@
 /*
- *  drivers/alarm.js
+ *  drivers/timer.js
  *
  *  David Janes
  *  IOTDB.org
- *  2014-XX-XX
+ *  2014-12-02
  *
- *  Connect to
+ *  Create time events
  *
  *  Copyright [2013-2014] [David P. Janes]
  *
@@ -31,12 +31,12 @@ var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 
-var queue = new FIFOQueue("AlarmDriver");
+var queue = new FIFOQueue("TimerDriver");
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'AlarmtypeDriver',
+    module: 'TimerDriver',
 });
 
 
@@ -55,13 +55,13 @@ var format2 = function(d) {
 
 /**
  */
-var AlarmDriver = function (paramd) {
+var TimerDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        driver: "iot-driver:alarm",
+        driver: "iot-driver:timer",
         initd: {}
     });
 
@@ -84,7 +84,7 @@ var AlarmDriver = function (paramd) {
     return self;
 };
 
-AlarmDriver.prototype = new driver.Driver();
+TimerDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
 
@@ -93,7 +93,7 @@ AlarmDriver.prototype = new driver.Driver();
  *
  *  @protected
  */
-AlarmDriver.prototype._init = function (initd) {
+TimerDriver.prototype._init = function (initd) {
     var self = this;
 
     if (!initd) {
@@ -106,14 +106,14 @@ AlarmDriver.prototype._init = function (initd) {
  *  <p>
  *  See {@link Driver#meta Driver.meta}
  */
-AlarmDriver.prototype.driver_meta = function () {
+TimerDriver.prototype.driver_meta = function () {
     return this.metad;
 };
 
 /**
  *  See {@link Driver#identity Driver.identity}
  */
-AlarmDriver.prototype.identity = function (kitchen_sink) {
+TimerDriver.prototype.identity = function (kitchen_sink) {
     var self = this;
 
     if (self.__identityd === undefined) {
@@ -131,7 +131,7 @@ AlarmDriver.prototype.identity = function (kitchen_sink) {
 /**
  *  See {@link Driver#setup Driver.setup}
  */
-AlarmDriver.prototype.setup = function (paramd) {
+TimerDriver.prototype.setup = function (paramd) {
     var self = this;
 
     /* chain */
@@ -150,8 +150,8 @@ AlarmDriver.prototype.setup = function (paramd) {
 /*
  *  See {@link Driver#discover Driver.discover}
  */
-AlarmDriver.prototype.discover = function (paramd, discover_callback) {
-    discover_callback(new AlarmDriver());
+TimerDriver.prototype.discover = function (paramd, discover_callback) {
+    discover_callback(new TimerDriver());
 };
 
 /**
@@ -159,7 +159,7 @@ AlarmDriver.prototype.discover = function (paramd, discover_callback) {
  *  <p>
  *  See {@link Driver#push Driver.push}
  */
-AlarmDriver.prototype.push = function (paramd) {
+TimerDriver.prototype.push = function (paramd) {
     var self = this;
 
     logger.info({
@@ -178,7 +178,7 @@ AlarmDriver.prototype.push = function (paramd) {
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
-AlarmDriver.prototype.pull = function () {
+TimerDriver.prototype.pull = function () {
     var self = this;
 
     logger.info({
@@ -193,14 +193,14 @@ AlarmDriver.prototype.pull = function () {
 /*
  *  API
  */
-exports.Driver = AlarmDriver;
+exports.Driver = TimerDriver;
 
 
 /**
  *  Reschedule the event to the next interval. If
  *  not rescheduable, return false
  */
-AlarmDriver.prototype._reschedule = function(paramd) {
+TimerDriver.prototype._reschedule = function(paramd) {
     var self = this;
 
     if (paramd.year_repeat) {
@@ -228,7 +228,7 @@ AlarmDriver.prototype._reschedule = function(paramd) {
  *  <p>
  *  Lots of rules built into the code need to be documented
  */
-AlarmDriver.prototype._schedule = function(paramd) {
+TimerDriver.prototype._schedule = function(paramd) {
     var self = this;
 
     var dt_now = new Date();
@@ -284,7 +284,14 @@ AlarmDriver.prototype._schedule = function(paramd) {
     paramd.ms_when = paramd.dt_when.getTime();
     if (paramd.ms_when < ms_now) {
         if (!self._reschedule(paramd)) {
-            console.log("date is in the past any this does not repeat -- not scheduling", paramd.dt_when);
+            logger.error({
+                method: "_schedule",
+                cause: "likely the programmer or data, often not serious",
+                paramd: paramd,
+                unique_id: self.unique_id,
+                initd: paramd.initd,
+                driverd: paramd.driverd
+            }, "date is in the past any this does not repeat -- not scheduling");
             return
         }
     }
@@ -306,7 +313,7 @@ AlarmDriver.prototype._schedule = function(paramd) {
 /**
  *  Run the event
  */
-AlarmDriver.prototype._execute = function(eventd) {
+TimerDriver.prototype._execute = function(eventd) {
     var self = this;
 
     eventd = _.clone(eventd);
@@ -321,14 +328,18 @@ AlarmDriver.prototype._execute = function(eventd) {
 
     self.pulled(eventd);
 
-    console.log("executing event", eventd);
+    logger.info({
+        method: "_execute",
+        eventd: eventd,
+        unique_id: self.unique_id,
+    }, "timer change")
 };
 
 /**
  *  This will run any events that are ready AND
  *  it will set the timer to wakeup at the next event
  */
-AlarmDriver.prototype._scheduler = function() {
+TimerDriver.prototype._scheduler = function() {
     var self = this;
 
     var dt_now = new Date();
@@ -364,20 +375,13 @@ AlarmDriver.prototype._scheduler = function() {
     }
 
     var delta = self.eventds[0].ms_when - ms_now
-    console.log("execte in", delta, "remaining", self.eventds.length);
+    logger.info({
+        method: "_scheduler",
+        next_run: delta / 1000,
+        unique_id: self.unique_id,
+    }, "schedule updated");
 
     setTimeout(function() {
         self._scheduler();
     }, delta);
 };
-
-/*
-var a = new AlarmDriver();
-
-a._schedule({
-    name: "on the minute event",
-    second: 0,
-    minute_repeat: 1
-})
-console.log(a.eventds)
-*/
