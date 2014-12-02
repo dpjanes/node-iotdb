@@ -80,6 +80,7 @@ var AlarmDriver = function (paramd) {
     self.metad[_.expand("schema:manufacturer")] = "";
     self.metad[_.expand("schema:model")] = "";
 
+
     return self;
 };
 
@@ -97,9 +98,6 @@ AlarmDriver.prototype._init = function (initd) {
 
     if (!initd) {
         return;
-    }
-    if (initd.iri) {
-        self.iri = initd.iri;
     }
 };
 
@@ -140,6 +138,11 @@ AlarmDriver.prototype.setup = function (paramd) {
     driver.Driver.prototype.setup.call(self, paramd);
 
     self._init(paramd.initd);
+
+    /*
+     *  This is where the event gets scheduled
+     */
+    self._schedule(paramd.initd)
 
     return self;
 };
@@ -200,18 +203,18 @@ exports.Driver = AlarmDriver;
 AlarmDriver.prototype._reschedule = function(paramd) {
     var self = this;
 
-    if (paramd.repeat_years) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.repeat_years, 'hours').toDate();
-    } else if (paramd.repeat_months) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.repeat_months, 'months').toDate();
-    } else if (paramd.repeat_days) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.repeat_days, 'days').toDate();
-    } else if (paramd.repeat_hours) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.repeat_hours, 'hours').toDate();
-    } else if (paramd.repeat_minutes) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.repeat_minutes, 'minutes').toDate();
-    } else if (paramd.repeat_seconds) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.repeat_seconds, 'seconds').toDate();
+    if (paramd.year_repeat) {
+        paramd.dt_when = moment(paramd.dt_when).add(paramd.year_repeat, 'hours').toDate();
+    } else if (paramd.month_repeat) {
+        paramd.dt_when = moment(paramd.dt_when).add(paramd.month_repeat, 'months').toDate();
+    } else if (paramd.day_repeat) {
+        paramd.dt_when = moment(paramd.dt_when).add(paramd.day_repeat, 'days').toDate();
+    } else if (paramd.hour_repeat) {
+        paramd.dt_when = moment(paramd.dt_when).add(paramd.hour_repeat, 'hours').toDate();
+    } else if (paramd.minute_repeat) {
+        paramd.dt_when = moment(paramd.dt_when).add(paramd.minute_repeat, 'minutes').toDate();
+    } else if (paramd.second_repeat) {
+        paramd.dt_when = moment(paramd.dt_when).add(paramd.second_repeat, 'seconds').toDate();
     } else {
         return false;
     }
@@ -368,13 +371,13 @@ AlarmDriver.prototype._scheduler = function() {
     }, delta);
 };
 
+/*
 var a = new AlarmDriver();
 
 a._schedule({
     name: "on the minute event",
     second: 0,
-    repeat_minutes: 1
+    minute_repeat: 1
 })
 console.log(a.eventds)
-
-
+*/
