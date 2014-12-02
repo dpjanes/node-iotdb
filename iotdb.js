@@ -525,13 +525,13 @@ IOT.prototype._check_requirements = function () {
             interaction.log("- this is highly recommended (but not required");
             interaction.log("- run this command");
             interaction.log();
-            interaction.code("iotdb iotdb-oauth --global");
+            interaction.code("iotdb oauth-iotdb --global");
             interaction.end();
 
             self.report_issue({
                 section: "iotdb",
                 name: "username",
-                message: "set with $ iotdb iotdb-oauth --global"
+                message: "set with $ iotdb oauth-iotdb --global"
             });
         }
     }
