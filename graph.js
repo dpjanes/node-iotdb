@@ -338,7 +338,7 @@ GraphManager.prototype.load_iri = function (iri, callback) {
     }
     self.irid[iri] = GraphManager.IRI_LOADING;
 
-    if (self.iot.iotdb_oauthd.access_token) {
+    if (self.iot.iotdb_oauthd && self.iot.iotdb_oauthd.access_token) {
         headerd["Authorization"] = "Bearer " + self.iot.iotdb_oauthd.access_token;
     }
 

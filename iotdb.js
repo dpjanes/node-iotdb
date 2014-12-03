@@ -2795,7 +2795,10 @@ IOT.prototype.connect = function (value) {
             connectd.driver = _.expand(connectd.driver, "iot-driver:");
         }
 
-        self._connect(connectd, things);
+        // so "on" etc can be hooked up - may need to do this above too
+        process.nextTick(function() {
+            self._connect(connectd, things);
+        });
     } else {
         // console.log("# IOT.connect: unexpected argument type", value);
         logger.error({

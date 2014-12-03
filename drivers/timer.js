@@ -28,6 +28,7 @@ var moment = require('moment');
 var util = require('util');
 
 var _ = require("../helpers");
+var DateTime = require("../libs/datetime").DateTime;
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 
@@ -41,7 +42,7 @@ var logger = bunyan.createLogger({
 
 
 var event_sorter = function(a, b) {
-    return a.ms_when - b.ms_when
+    return a.compare(b);
 }
 
 var format2 = function(d) {
@@ -68,7 +69,7 @@ var TimerDriver = function (paramd) {
     self.verbose = paramd.verbose;
     self.driver = _.expand(paramd.driver);
 
-    self.eventds = [];
+    self.events = [];
     self.timer_id = null;
 
     self._init(paramd.initd);
@@ -79,7 +80,6 @@ var TimerDriver = function (paramd) {
     }
     self.metad[_.expand("schema:manufacturer")] = "";
     self.metad[_.expand("schema:model")] = "";
-
 
     return self;
 };
@@ -119,6 +119,7 @@ TimerDriver.prototype.identity = function (kitchen_sink) {
     if (self.__identityd === undefined) {
         var identityd = {};
         identityd["driver"] = self.driver;
+        identityd["number"] = self.timer_id;    // THIS IS NOT CORRECT
 
         _.thing_id(identityd);
 
@@ -143,6 +144,30 @@ TimerDriver.prototype.setup = function (paramd) {
      *  This is where the event gets scheduled
      */
     self._schedule(paramd.initd)
+
+    /* heartbeats */
+    if (paramd.initd.day_heartbeat) {
+        self._schedule({
+            id: 'day_heartbeat',
+            hour: 0,
+            day_repeat: paramd.initd.day_heartbeat
+        });
+    }
+    if (paramd.initd.hour_heartbeat) {
+        self._schedule({
+            id: 'hour_heartbeat',
+            minute: 0,
+            hour_repeat: paramd.initd.hour_heartbeat
+        });
+    }
+    if (paramd.initd.minute_heartbeat) {
+        self._schedule({
+            id: 'minute_heartbeat',
+            second: 0,
+            minute_repeat: paramd.initd.minute_heartbeat
+        });
+    }
+
 
     return self;
 };
@@ -173,8 +198,7 @@ TimerDriver.prototype.push = function (paramd) {
 };
 
 /**
- *  Request the Driver's current state. It should
- *  be called back with <code>callback</code>
+ *  If called, the current time will be pulled
  *  <p>
  *  See {@link Driver#pull Driver.pull}
  */
@@ -185,6 +209,8 @@ TimerDriver.prototype.pull = function () {
         method: "pull",
         unique_id: self.unique_id
     }, "called");
+
+    self.pulled((new DateTime()).get());
 
     return self;
 };
@@ -200,26 +226,31 @@ exports.Driver = TimerDriver;
  *  Reschedule the event to the next interval. If
  *  not rescheduable, return false
  */
-TimerDriver.prototype._reschedule = function(paramd) {
+TimerDriver.prototype._reschedule = function(event) {
     var self = this;
 
-    if (paramd.year_repeat) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.year_repeat, 'hours').toDate();
-    } else if (paramd.month_repeat) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.month_repeat, 'months').toDate();
-    } else if (paramd.day_repeat) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.day_repeat, 'days').toDate();
-    } else if (paramd.hour_repeat) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.hour_repeat, 'hours').toDate();
-    } else if (paramd.minute_repeat) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.minute_repeat, 'minutes').toDate();
-    } else if (paramd.second_repeat) {
-        paramd.dt_when = moment(paramd.dt_when).add(paramd.second_repeat, 'seconds').toDate();
+    var dd = event.get()
+    var dt_old = event.getDate();
+    var dt_new = null;
+
+    if (dd.year_repeat) {
+        dt_new = moment(dt_old).add(dd.year_repeat, 'hours').toDate();
+    } else if (dd.month_repeat) {
+        dt_new = moment(dt_old).add(dd.month_repeat, 'months').toDate();
+    } else if (dd.day_repeat) {
+        dt_new = moment(dt_old).add(dd.day_repeat, 'days').toDate();
+    } else if (dd.hour_repeat) {
+        dt_new = moment(dt_old).add(dd.hour_repeat, 'hours').toDate();
+    } else if (dd.minute_repeat) {
+        dt_new = moment(dt_old).add(dd.minute_repeat, 'minutes').toDate();
+    } else if (dd.second_repeat) {
+        dt_new = moment(dt_old).add(dd.second_repeat, 'seconds').toDate();
     } else {
         return false;
     }
 
-    paramd.ms_when = paramd.dt_when.getTime();
+    event.set(dt_new);
+
     return true;
 };
 
@@ -231,106 +262,54 @@ TimerDriver.prototype._reschedule = function(paramd) {
 TimerDriver.prototype._schedule = function(paramd) {
     var self = this;
 
-    var dt_now = new Date();
-    dt_now.setMilliseconds(0);
-    var ms_now = dt_now.getTime();
+    var event = new DateTime(paramd);
 
-    paramd = _.defaults(paramd, {});
-    if ((paramd.year !== undefined) && (paramd.month === undefined)) {
-        paramd.month = 1
-    }
-    if ((paramd.month!== undefined)  && (paramd.day === undefined)) {
-        paramd.day = 1
-    }
-    if ((paramd.day !== undefined) && (paramd.hour === undefined)) {
-        paramd.hour = 0
-    }
-    if ((paramd.hour !== undefined) && (paramd.minute === undefined)) {
-        paramd.minute = 0
-    }
-    if ((paramd.minute !== undefined) && (paramd.second === undefined)) {
-        paramd.second = 0
+    if ((event.compare() < 0) && !self._reschedule(event)) {
+        logger.error({
+            method: "_schedule",
+            cause: "likely the programmer or data, often not serious",
+            event: event.get(),
+            unique_id: self.unique_id,
+            initd: paramd.initd,
+            driverd: paramd.driverd
+        }, "date is in the past any this does not repeat -- not scheduling");
+        return
     }
 
-    paramd = _.defaults(paramd, {
-        year: dt_now.getFullYear(),
-        month: dt_now.getMonth() + 1,
-        day: dt_now.getDate(),
-        hour: dt_now.getHours(),
-        minute: dt_now.getMinutes(),
-        second: dt_now.getSeconds(),
-        tz: -dt_now.getTimezoneOffset(),
-        delta: 0,
-    });
-
-    var whens = [
-        "" + paramd.year,
-        "-",
-        format2(paramd.month),
-        "-",
-        format2(paramd.day),
-        "T",
-        format2(paramd.hour),
-        ":",
-        format2(paramd.minute),
-        ":",
-        format2(paramd.second),
-        paramd.tz < 0 ? "-" : "+",
-        format2(paramd.tz / 60),
-        format2(paramd.tz % 60)
-    ];
-
-    paramd.dt_when = new Date(whens.join(""));
-    paramd.ms_when = paramd.dt_when.getTime();
-    if (paramd.ms_when < ms_now) {
-        if (!self._reschedule(paramd)) {
-            logger.error({
-                method: "_schedule",
-                cause: "likely the programmer or data, often not serious",
-                paramd: paramd,
-                unique_id: self.unique_id,
-                initd: paramd.initd,
-                driverd: paramd.driverd
-            }, "date is in the past any this does not repeat -- not scheduling");
-            return
-        }
-    }
-
-    // remove any event with the same ID
     if (paramd.id) {
-        for (var ei in self.eventds) {
-            if (self.eventds[ei].id === paramd.id) {
-                self.eventds.slice(ei, 1);
+        for (var ei in self.events) {
+            var e = self.events[ei];
+            var id = e.get().id;
+            if (e.get().id === paramd.id) {
+                self.events.slice(ei, 1);
                 break;
             }
         }
     }
 
-    self.eventds.push(paramd);
+    self.events.push(event);
     self._scheduler();
 };
 
 /**
  *  Run the event
  */
-TimerDriver.prototype._execute = function(eventd) {
+TimerDriver.prototype._execute = function(event) {
     var self = this;
 
-    eventd = _.clone(eventd);
-    eventd.isoweekday = ( eventd.dt_when.getDay() + 6 ) % 7 + 1;
-    eventd.isodatetime = eventd.dt_when.toISOString();
+    var dd = event.get()
 
-    for (var key in eventd) {
+    for (var key in dd) {
         if (key.indexOf('_') > -1) {
-            delete eventd[key];
+            delete dd[key];
         }
     }
 
-    self.pulled(eventd);
+    self.pulled(dd);
 
     logger.info({
         method: "_execute",
-        eventd: eventd,
+        event: dd,
         unique_id: self.unique_id,
     }, "timer change")
 };
@@ -342,46 +321,57 @@ TimerDriver.prototype._execute = function(eventd) {
 TimerDriver.prototype._scheduler = function() {
     var self = this;
 
-    var dt_now = new Date();
-    var ms_now = dt_now.getTime();
-
     if (self.timer_id) {
         clearTimeout(self.timer_id);
     }
 
-    if (self.eventds.length === 0) {
+    if (self.events.length === 0) {
         return;
     }
 
-    self.eventds.sort(event_sorter);
+    self.events.sort(event_sorter);
 
     while (true) {
-        var eventd = self.eventds[0]
-        if (eventd.ms_when > ms_now) {
+        var event = self.events[0]
+        if (event.compare() > 0) {
             break;
         }
 
-        self._execute(eventd);
+        self._execute(event);
 
-        if (self._reschedule(eventd)) {
-            self.eventds.sort(event_sorter);
+        if (self._reschedule(event)) {
+            self.events.sort(event_sorter);
         } else {
-            self.eventds.shift();
+            self.events.shift();
         }
 
-        if (self.eventds.length === 0) {
+        if (self.events.length === 0) {
             return
         }
     }
 
-    var delta = self.eventds[0].ms_when - ms_now
+    var delta = self.events[0].compare()
     logger.info({
         method: "_scheduler",
-        next_run: delta / 1000,
+        next_run: delta,
         unique_id: self.unique_id,
     }, "schedule updated");
 
     setTimeout(function() {
         self._scheduler();
-    }, delta);
+    }, delta * 1000);
 };
+
+/*
+var a = new TimerDriver();
+a._schedule({
+    name: "every minute",
+    second: 0,
+    minute_repeat: 1
+})
+a._schedule({
+    name: "every 90 seconds",
+    second: 0,
+    minute_repeat: 1.5
+})
+ */
