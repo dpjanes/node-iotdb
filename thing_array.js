@@ -82,6 +82,12 @@ util.inherits(ThingArray, events.EventEmitter);
 ThingArray.prototype._instanceof_ThingArray = true;
 
 /**
+ */
+ThingArray.prototype.first = function () {
+    return this[0];
+}
+
+/**
  *  Add a new thing to this ThingArray.
  */
 ThingArray.prototype.push = function (thing, paramd) {
@@ -116,15 +122,18 @@ ThingArray.prototype.push = function (thing, paramd) {
     /*
      *  event dispatch
      */
-    // console.log("HERE:push.1", self.array_id, self.length)
+    var changed = false;
     if (paramd.emit_pushed) {
-        // console.log("HERE:push.1.1", self.array_id, self.length)
         self.emit(EVENT_THING_PUSHED, thing);
+        changed = true;
     }
-    // console.log("HERE:push.2", self.array_id, self.length)
     if (paramd.emit_new) {
-        // console.log("HERE:push.2.1", self.array_id, self.length)
         self.emit(EVENT_THING_NEW, thing);
+        changed = true;
+    }
+
+    if (changed) {
+        self.things_changed();
     }
 
     /*
@@ -360,10 +369,18 @@ ThingArray.prototype.merge = function (new_items) {
 
     _merger(srcs, out_items);
 
+
     /*
      *  Persist the merging
      */
     var _on_things_changed = function () {
+        logger.trace({
+            method: "merge/_on_things_changed",
+            in_array_1: srcs[0].array_id,
+            in_array_2: srcs[1].array_id,
+            out_array: out_items.array_id,
+        }, "called");
+
         _merger(srcs, out_items);
     };
 
@@ -375,6 +392,14 @@ ThingArray.prototype.merge = function (new_items) {
 
         events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, _on_things_changed);
     }
+
+    logger.info({
+        method: "merge",
+        in_array_1: srcs[0].array_id,
+        in_array_2: srcs[1].array_id,
+        out_array: out_items.array_id,
+    }, "merged array")
+
 
     return out_items;
 };
@@ -401,7 +426,9 @@ ThingArray.prototype.connect = function () {
     var self = this;
     var iot = require('./iotdb').iot();
 
-    return self.merge(iot.connect.apply(iot, Array.prototype.slice.call(arguments)));
+    return self.merge(
+        iot.connect.apply(iot, Array.prototype.slice.call(arguments))
+    );
 };
 
 /**
@@ -625,7 +652,12 @@ ThingArray.prototype.metas = function (paramd) {
 ThingArray.prototype.things_changed = function () {
     var self = this;
 
-    // console.log("HERE:things_changed", self.array_id, self.length)
+    logger.trace({
+        method: "things_changed",
+        array: self.array_id,
+        length: self.length,
+    }, "called");
+
     self.emit(EVENT_THINGS_CHANGED);
 };
 
@@ -726,12 +758,8 @@ ThingArray.prototype.filter = function (d) {
      *  we use 'events.EventEmitter.prototype.on' because we are doing our own
      *  thing with 'self.on'
      */
-    // console.log("HERE:filter.EVENT_THINGS_CHANGED.XXX", self.array_id, self.length, "persist=", persist)
     if (persist) {
-        // console.log("HERE:filter.EVENT_THINGS_CHANGED.0", self.array_id, self.length)
-        // events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
         events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
-            // console.log("HERE:filter.EVENT_THINGS_CHANGED.1", self);
             // existing things by ID
             var oidd = {};
 
@@ -742,10 +770,6 @@ ThingArray.prototype.filter = function (d) {
 
             // find new things matching
             var is_updated = false;
-            // console.log("HERE:filter.EVENT_THINGS_CHANGED.2", self.array_id, self.length)
-
-            // console.log("! ThingArray.filter/things_changed: oidd (A)", oidd)
-            // console.log("! ThingArray.filter/things_changed: filter", d)
 
             for (var ii = 0; ii < self.length; ii++) {
                 var thing = self[ii];
@@ -756,10 +780,8 @@ ThingArray.prototype.filter = function (d) {
                 }
 
                 if (oidd[thing_id]) {
-                    // console.log("! ThingArray.filter/things_changed: pass", thing_id)
                     delete oidd[thing_id];
                 } else {
-                    // console.log("! ThingArray.filter/things_changed: found a new match", thing_id)
                     out_items.push(thing, {
                         emit_pushed: false
                     });
@@ -767,7 +789,6 @@ ThingArray.prototype.filter = function (d) {
                 }
             }
 
-            // console.log("! ThingArray.filter/things_changed: oidd (B)", oidd)
 
             // remove things that no longer match
             for (oi = 0; oi < out_items.length; oi++) {

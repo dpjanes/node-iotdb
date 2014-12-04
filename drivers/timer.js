@@ -119,7 +119,7 @@ TimerDriver.prototype.identity = function (kitchen_sink) {
     if (self.__identityd === undefined) {
         var identityd = {};
         identityd["driver"] = self.driver;
-        identityd["number"] = self.timer_id;    // THIS IS NOT CORRECT
+        identityd["number"] = self.unique_id;    // THIS IS NOT CORRECT
 
         _.thing_id(identityd);
 

@@ -1570,7 +1570,7 @@ IOT.prototype._discover_bind = function (paramd, things) {
                     initd: paramd.initd
                 });
                 // XXX - THIS SHOULD BE CHANGED to _discover_thing
-                self._discover(thing, things);
+                self._discover_thing(thing, things);
             } else {
                 // console.log("# IOT._discover_bind: unexpected state", callbackd.paramd);
                 logger.error({
