@@ -23,7 +23,6 @@
  */
 
 var mqtt = require('mqtt');
-var timers = require('timers');
 var events = require('events');
 var util = require('util');
 var _ = require('./helpers');
