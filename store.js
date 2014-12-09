@@ -109,12 +109,26 @@ Store.prototype.track = function (paramd) {
     /*
      *  Magically track changes to the ThingArray
      */
-    self.things = paramd.things.filter();
-    self.things._things_changed = self.things.things_changed;
-    self.things.things_changed = function () {
-        self.things._things_changed();
-        self.things_changed();
-    };
+    if (self.things) {
+        var x = self.things.things_changed;
+
+        for (var pi = 0; paramd.things.length; pi++) {
+            var thing = paramd.things[pi];
+
+            if (self.things.indexOf(thing) === -1) {
+                self.things.push(thing);
+            }
+        }
+
+        self.things.things_changed = x;
+    } else {
+        self.things = paramd.things.filter();
+        self.things._things_changed = self.things.things_changed;
+        self.things.things_changed = function () {
+            self.things._things_changed();
+            self.things_changed();
+        };
+    }
 
     if (!self.things.is_persist()) {
         logger.warn({
@@ -125,7 +139,10 @@ Store.prototype.track = function (paramd) {
     self.things.on_change(function (thing) {
         self.on_change(thing);
     });
+
+    self.things_changed();
 };
+
 
 /*
  *  This is called whenever underlying Array of things are changed.

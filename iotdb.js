@@ -2559,7 +2559,6 @@ IOT.prototype._load_models = function () {
     }, "loading Models");
 
     var filenames = cfg.cfg_find(self.envd, self.initd.models_path, /[.]js$/);
-    // console.log("- IOT._load_models", "filenames", filenames, self.envd);
     cfg.cfg_load_js(filenames, function (paramd) {
         if (paramd.error) {
             if (paramd.filename) {
@@ -2796,7 +2795,7 @@ IOT.prototype.connect = function (value) {
         }
 
         // so "on" etc can be hooked up - may need to do this above too
-        process.nextTick(function() {
+        process.nextTick(function () {
             self._connect(connectd, things);
         });
     } else {

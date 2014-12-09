@@ -27,7 +27,7 @@
 
 var _ = require("../helpers.js");
 
-var format2 = function(d) {
+var format2 = function (d) {
     d = Math.abs(d) % 100
     if (d < 10) {
         return "0" + d
@@ -54,7 +54,7 @@ var DateTime = function (paramd) {
     if ((paramd.year !== undefined) && (paramd.month === undefined)) {
         paramd.month = 1
     }
-    if ((paramd.month!== undefined)  && (paramd.day === undefined)) {
+    if ((paramd.month !== undefined) && (paramd.day === undefined)) {
         paramd.day = 1
     }
     if ((paramd.day !== undefined) && (paramd.hour === undefined)) {
@@ -84,18 +84,16 @@ var DateTime = function (paramd) {
 
 DateTime.prototype._isDateTime = true;
 
-DateTime.prototype.set = function(paramd) {
+DateTime.prototype.set = function (paramd) {
     var self = this;
 
-    if (paramd === undefined) {
-    } else if (_.isString(paramd)) {
+    if (paramd === undefined) {} else if (_.isString(paramd)) {
         paramd = (new DateTime(paramd)).get();
     } else if (_.isDate(paramd)) {
         paramd = (new DateTime(paramd)).get();
     } else if (paramd._isDateTime) {
         paramd = paramd.get();
-    } else if (_.isObject(paramd)) {
-    } else {
+    } else if (_.isObject(paramd)) {} else {
         throw new Error("unrecognized argument", paramd)
     }
 
@@ -122,23 +120,23 @@ DateTime.prototype.set = function(paramd) {
     var dt_when = new Date(whens.join(""));
 
     paramd.epoch = dt_when.getTime() / 1000.0;
-    paramd.isoweekday = ( dt_when.getDay() + 6 ) % 7 + 1;
+    paramd.isoweekday = (dt_when.getDay() + 6) % 7 + 1;
     paramd.isodatetime = dt_when.toISOString();
 
     self._dd = paramd;
 }
 
-DateTime.prototype.get = function() {
+DateTime.prototype.get = function () {
     var self = this;
     return _.clone(self._dd);
 }
 
-DateTime.prototype.getDate = function() {
+DateTime.prototype.getDate = function () {
     var self = this;
     return new Date(self._dd.epoch * 1000.0);
 }
 
-DateTime.prototype.compare = function(paramd) {
+DateTime.prototype.compare = function (paramd) {
     var self = this;
     var ms_compare;
 

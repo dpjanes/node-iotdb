@@ -155,7 +155,7 @@ LIFXDriver.prototype.discover = function (paramd, discover_callback) {
     }, "discovering LIFX bulbs");
 
     /* this is very barebones AND TOTALLY NEEDS TO BE UPDATED */
-    _lifx.on('bulb', function(bulb) {
+    _lifx.on('bulb', function (bulb) {
         paramd = _.clone(paramd)
         paramd.bulb = bulb
 

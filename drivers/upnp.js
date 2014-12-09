@@ -187,6 +187,14 @@ UPnPDriver.prototype.identity = function (kitchen_sink) {
         identityd["driver"] = self.driver;
 
         if (self.upnp_device) {
+            if (self.upnp_device.manufacturer === 'LG Electronics') {
+                console.log("-----------");
+                console.log(self.upnp_device);
+                console.log("-----------");
+            }
+            /*
+             */
+
             identityd["deviceType"] = self.upnp_device.deviceType;
             identityd["udn"] = self.upnp_device.udn;
 
@@ -207,6 +215,12 @@ UPnPDriver.prototype.identity = function (kitchen_sink) {
 
                     identityd[key] = value;
                 }
+
+                if (self.upnp_device.services) {
+                    identityd["services"] = _.keys(self.upnp_device.services);
+                }
+                /*
+                 */
             }
         }
 
