@@ -27,12 +27,12 @@
 var color = require("./color");
 var temperature = require("./temperature");
 var parse_link = require("./parse_link");
-var datetime = require("./datetime");
+var timers = require('iotdb-timers');
 
 exports.libs = {
     log: console.log,
     Color: color.Color,
-    DateTime: datetime.DateTime,
+    DateTime: timers.DateTime,
     temperature: temperature.temperature,
     http: {
         parse_link: parse_link.parse_link
