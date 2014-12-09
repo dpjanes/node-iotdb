@@ -85,7 +85,7 @@ ThingArray.prototype._instanceof_ThingArray = true;
  */
 ThingArray.prototype.first = function () {
     return this[0];
-}
+};
 
 /**
  *  Add a new thing to this ThingArray.
@@ -171,13 +171,13 @@ ThingArray.prototype.transmogrify = function (transmogrifier) {
     // new array, just like this one
     var new_array = new ThingArray({
         persist: self.is_persist(),
-    })
+    });
 
     // all things added to the new array are transmogrified
     new_array.___push = new_array.push;
     new_array.push = function (thing) {
         new_array.___push(transmogrifier.transmogrify(thing));
-    }
+    };
 
     // add things from the old array
     for (var ti = 0; ti < self.length; ti++) {
@@ -185,7 +185,7 @@ ThingArray.prototype.transmogrify = function (transmogrifier) {
     }
 
     return new_array;
-}
+};
 
 /**
  *  @param {string} key - if used, only the latest command
@@ -398,8 +398,7 @@ ThingArray.prototype.merge = function (new_items) {
         in_array_1: srcs[0].array_id,
         in_array_2: srcs[1].array_id,
         out_array: out_items.array_id,
-    }, "merged array")
-
+    }, "merged array");
 
     return out_items;
 };

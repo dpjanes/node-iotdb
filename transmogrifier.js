@@ -74,7 +74,7 @@ Transmogrifier.prototype.___make = function (thing) {
     }, "the subclass Transmogrifier did not define a ___make() function");
 
     return this;
-}
+};
 
 /**
  *  This is called after everything else is
@@ -85,7 +85,7 @@ Transmogrifier.prototype.___make = function (thing) {
  *  may want to use this to do one-time setup,
  *  such as looking up the attributes
  */
-Transmogrifier.prototype.___attach = function () {}
+Transmogrifier.prototype.___attach = function () {};
 
 /**
  *  Transmogrify the 'Thing' object. A new object
@@ -118,7 +118,7 @@ Transmogrifier.prototype.transmogrify = function (thing) {
                 return result;
             }
         };
-    }
+    };
 
     for (var key in thing) {
         if (key.match(/^_/)) {
@@ -160,7 +160,7 @@ Transmogrifier.prototype.get_code = function (key, callback) {
     } else {
         return thing.get_code();
     }
-}
+};
 
 /**
  *  Change the way 'on' works
@@ -241,7 +241,7 @@ Transmogrifier.prototype.attributes = function () {
     for (var ai in oattributes) {
         var attribute = oattributes[ai];
         var code = attribute.get_code();
-        var xd = self.___xdd[key];
+        var xd = self.___xdd[code];
         if (xd) {
             nattributes.push(xd.attribute);
         } else {

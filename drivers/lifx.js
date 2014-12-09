@@ -3,9 +3,9 @@
  *
  *  David Janes
  *  IOTDB.org
- *  2014-XX-XX
+ *  2014-12-01
  *
- *  Connect to
+ *  Connect to LIFX Bulb
  *
  *  Copyright [2013-2014] [David P. Janes]
  *
@@ -25,6 +25,8 @@
 "use strict";
 
 var _ = require("../helpers");
+var Color = require("../libs/color").Color;
+var hc = require('./libs/hue-colors.js');
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
 var lifx = require('lifx');
@@ -156,11 +158,11 @@ LIFXDriver.prototype.discover = function (paramd, discover_callback) {
 
     /* this is very barebones AND TOTALLY NEEDS TO BE UPDATED */
     _lifx.on('bulb', function (bulb) {
-        paramd = _.clone(paramd)
-        paramd.bulb = bulb
+        paramd = _.clone(paramd);
+        paramd.bulb = bulb;
 
         discover_callback(new LIFXDriver(paramd));
-    })
+    });
 
     return _lifx;
 };
@@ -206,7 +208,7 @@ LIFXDriver.prototype.push = function (paramd) {
     }, "push");
 
     var qitem = {
-        id: self.light + OFFSET_PUSH,
+        id: self.light,
         run: function () {
             var _lifx = self._lifx();
 
@@ -255,6 +257,13 @@ LIFXDriver.prototype._lifx = function (no_create) {
 
     return __lifx;
 };
+
+function c2h(outd, hex) {
+    var color = new Color(hex);
+
+    outd.xy = hc.rgbToCIE1931(color.r, color.g, color.b);
+    outd.bri = Math.max(color.r, color.g, color.b) * 255;
+}
 
 /*
  *  API

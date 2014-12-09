@@ -1497,7 +1497,7 @@ Model.prototype.model_code_iri = function () {
  */
 Model.prototype.transmogrify = function (transmogrifier) {
     return transmogrifier.transmogrify(this);
-}
+};
 
 /**
  *  Return an object to access and

@@ -90,7 +90,9 @@ exports.getChannel = function (client, callback) {
  *  Set the TV channel
  */
 exports.setChannel = function (client, channel, callback) {
-    _lg_doit(client, 'ssap://tv/openChannel', { channelNumber: channel }, callback);
+    _lg_doit(client, 'ssap://tv/openChannel', {
+        channelNumber: channel
+    }, callback);
 };
 
 /**

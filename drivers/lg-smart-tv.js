@@ -203,7 +203,7 @@ LGSmartTVDriver.prototype.push = function (paramd) {
         }
 
         if (paramd.driverd.launch !== undefined) {
-            LG.launch(client, paramd.driverd.launch, function(error, d) {
+            LG.launch(client, paramd.driverd.launch, function (error, d) {
                 logger.info({
                     method: "push/connect/launch",
                     unique_id: self.unique_id,
@@ -213,7 +213,7 @@ LGSmartTVDriver.prototype.push = function (paramd) {
         }
 
         if (paramd.driverd.channel !== undefined) {
-            LG.setChannel(client, paramd.driverd.channel, function(error, d) {
+            LG.setChannel(client, paramd.driverd.channel, function (error, d) {
                 logger.info({
                     method: "push/connect/setChannel",
                     unique_id: self.unique_id,
@@ -223,7 +223,7 @@ LGSmartTVDriver.prototype.push = function (paramd) {
         }
 
         if (paramd.driverd.volume !== undefined) {
-            LG.setVolume(client, paramd.driverd.volume, function(error, d) {
+            LG.setVolume(client, paramd.driverd.volume, function (error, d) {
                 logger.info({
                     method: "push/connect/setVolume",
                     unique_id: self.unique_id,
@@ -233,7 +233,7 @@ LGSmartTVDriver.prototype.push = function (paramd) {
         }
 
         if (paramd.driverd.mute !== undefined) {
-            LG.setMute(client, paramd.driverd.mute, function(error, d) {
+            LG.setMute(client, paramd.driverd.mute, function (error, d) {
                 logger.info({
                     method: "push/connect/setMute",
                     unique_id: self.unique_id,
