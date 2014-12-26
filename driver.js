@@ -424,7 +424,8 @@ Driver.prototype.pulled = function (driverd) {
 
     self.thing.update(paramd.thingd, {
         notify: true,
-        push: false
+        push: false,
+        force: false,
     });
 };
 

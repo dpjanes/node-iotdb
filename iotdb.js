@@ -2995,3 +2995,17 @@ exports.EVENT_LOADED_IRI = exports.GraphManager.EVENT_LOADED_IRI;
 exports.EVENT_UPDATED_DEVICE = exports.GraphManager.EVENT_UPDATED_DEVICE;
 exports.EVENT_UPDATED_PLACE = exports.GraphManager.EVENT_UPDATED_PLACE;
 exports.EVENT_UPDATED_MODEL = exports.GraphManager.EVENT_UPDATED_MODEL;
+
+var oneofd = {};
+exports.oneof = function(module) {
+    var m = oneofd[module];
+    if (m === undefined) {
+        m = require(module);
+        if (module === 'seneca') {   // HACK!
+            m = m();
+        }
+        oneofd[module] = m;
+    }
+
+    return m;
+};

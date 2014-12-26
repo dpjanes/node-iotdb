@@ -484,7 +484,14 @@ Model.prototype.set = function (find_key, new_value) {
         var attribute_key = rd.attribute.get_code();
         var attribute_value = rd.thing.stated[attribute_key];
 
-        if (attribute_value === new_value) {
+        var force = false;
+        if (self.stacks.length === 0) {
+            force = true;
+        } else {
+            force = self.stacks[self.stacks.length - 1].force;
+        }
+
+        if (!force && (attribute_value === new_value)) {
             return self;
         }
 
@@ -569,7 +576,8 @@ Model.prototype.start = function (paramd) {
     paramd = _.defaults(paramd, {
         notify: false,
         validate: true,
-        push: true
+        push: true,
+        force: true
     });
 
     self.stacks.push({

@@ -14,6 +14,7 @@ var logger = bunyan.createLogger({
 });
 
 var TRACE = true;
+var seend = {};
 
 /**
  * A UPnP WeMo Controllee.  Includes socket switch.
@@ -24,7 +25,7 @@ var UpnpDevice = function (controlPoint, uuid, location, desc, localAddress) {
     if (TRACE) {
         logger.info({
             method: "UpnpDevice",
-            uuid: uuid
+            uuid: uuid,
         }, "new device object");
     }
     this.controlPoint = controlPoint;
@@ -60,6 +61,25 @@ var UpnpDevice = function (controlPoint, uuid, location, desc, localAddress) {
     this.services = {};
 
     this._handleDeviceInfo(desc);
+
+    if (seend[this.uuid] === undefined) {
+        seend[this.uuid] = true;
+        logger.info({
+            method: "UpnpDevice",
+            device: {
+                loction: this.location,
+                uuid: this.uuid,
+                deviceType: this.deviceType,
+                friendlyName: this.friendlyName,
+                manufacturer: this.manufacturer,
+                manufacturerUrl: this.manufacturerURL,
+                modelNumber: this.modelNumber,
+                modelDescription: this.modelDescription,
+                modelName: this.modelName,
+                modelUrl: this.modelURL,
+            }
+        }, "previously unseen UPnP device");
+    }
     // var self = this;
     // this._getDeviceDetails(function(desc) {
     // self._handleDeviceInfo(desc);

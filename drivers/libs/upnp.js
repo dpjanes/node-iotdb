@@ -81,21 +81,45 @@ ControlPoint.prototype.onRequestMessage = function (msg, rinfo) {
 };
 
 /**
+ *  This emits the 'DeviceFound' message. It is used iternally
+ *  but also can be called from clients who want to 'fake' 
+ *  UPnP search message results
+ */
+ControlPoint.prototype.injectDeviceFound = function(headerd) {
+    this.emit('DeviceFound', headerd);
+};
+
+/**
  * Message handler for HTTPU response.
  */
 ControlPoint.prototype.onResponseMessage = function (msg, rinfo) {
-    //console.log("rinfo: " + JSON.stringify(rinfo));
-    //console.log("msg: " + msg);
+    this.responseParser.reinitialize(HTTP_PARSER_RESPONSE); 
 
-    this.responseParser.reinitialize(HTTP_PARSER_RESPONSE); // reinitialise the HTTP parser
-    var ret = this.responseParser.execute(msg, 0, msg.length);
-    if (!(ret instanceof Error)) {
-        var res = this.responseParser.incoming;
-        if (res.statusCode == 200) {
-            debug('RESPONSE ST=' + res.headers.st + ' USN=' + res.headers.usn);
-            this.emit('DeviceFound', res.headers);
-        }
+    var r = this.responseParser.execute(msg, 0, msg.length);
+    if (r instanceof Error) {
+        logger.error({
+            method: "ControlPoint.onResponseMessage",
+            cause: "probably UPnP protocol stuff",
+            error: r,
+        }, "error from this.responseParser.execute");
+        return;
     }
+
+    var incoming = this.responseParser.incoming;
+    if (incoming.statusCode !== 200) {
+        logger.error({
+            method: "ControlPoint.onResponseMessage",
+            cause: "probably UPnP protocol stuff",
+            statusCode: incoming.statusCode,
+        }, "response code was not 200");
+    }
+
+    logger.debug({
+        method: "ControlPoint.onResponseMessage",
+        headerd: incoming.headers,
+    }, "device was found");
+
+    this.injectDeviceFound(incoming.headers);
 }
 
 /**

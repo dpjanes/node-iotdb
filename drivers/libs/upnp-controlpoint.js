@@ -91,6 +91,14 @@ var UpnpControlPoint = function () {
      * Device alive
      */
     this.ssdp.on("DeviceAvailable", function (device) {
+        if (!device.location) {
+            logger.error({
+                method: "UpnpControlPoint/on(DeviceAvailable)",
+                device: device,
+                cause: "UPnP error - nothing can be done",
+            }, "no device.location?");
+            return;
+        }
         var udn = getUUID(device.usn);
 
         // DPJ 

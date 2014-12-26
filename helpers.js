@@ -2198,7 +2198,9 @@ exports.smart_extend = function (od) {
             var xvalue = xd[key]
             var ovalue = od[key]
 
-            if (exports.isObject(ovalue) && exports.isObject(xvalue)) {
+            if ((ovalue === null) || (ovalue === undefined)) {
+                od[key] = exports.deepCopy(xvalue);
+            } else if (exports.isObject(ovalue) && exports.isObject(xvalue)) {
                 exports.smart_extend(ovalue, xvalue)
             } else if (xvalue === undefined) {} else if (exports.isFunction(xvalue)) {} else if (exports.isNaN(xvalue)) {} else {
                 od[key] = xvalue
@@ -2406,4 +2408,44 @@ exports.isModel = function (o) {
     } else {
         return false
     }
+};
+
+/**
+ *  Try to figure out our IP address
+ */
+exports.ipv4 = function() {
+    var os = require('os');
+    var ifaces = os.networkInterfaces();
+    for (var dev in ifaces) {
+        var devs = ifaces[dev]
+        for (var di in devs) {
+            var details = devs[di]
+
+            if (details.family != 'IPv4') {
+                continue
+            }
+            if (details.address == '127.0.0.1') {
+                continue
+            }
+
+            return details.address
+        }
+    }
+}
+
+/**
+ */
+exports.uid = function(len) {
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  var buf = []
+    , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    , charlen = chars.length;
+
+  for (var i = 0; i < len; ++i) {
+    buf.push(chars[getRandomInt(0, charlen - 1)]);
+  }
+
+  return buf.join('');
 };

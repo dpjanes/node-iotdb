@@ -171,6 +171,14 @@ TelnetDriver.prototype.push = function (paramd) {
                 }
             }
         });
+        client.on('error', function (error) {
+            logger.info({
+                method: "push/net.connect",
+                unique_id: self.unique_id,
+                error: error,
+            }, "error");
+            
+        });
         client.on('data', function (data) {
             console.log(data.toString());
             client.end();

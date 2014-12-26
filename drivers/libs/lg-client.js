@@ -59,13 +59,13 @@ events.EventEmitter.call(LGClient);
 util.inherits(LGClient, events.EventEmitter);
 
 LGClient.prototype.connect = function (ip, cb) {
+    // console.log("HERE:A.1", ip);
     if (cb) {
         var handler = function () {
+            // console.log("HERE:AAA ---------", arguments);
             this.removeListener('connected', handler);
             this.removeListener('error', handler);
             this.removeListener('close', handler);
-
-            cb();
         };
 
         this.on('connected', handler);
@@ -76,8 +76,10 @@ LGClient.prototype.connect = function (ip, cb) {
     this.ws = new WebSocket("ws://" + ip + ":3000", {
         origin: "null"
     });
+    // console.log("HERE:A.2", ip);
 
     this.ws.on('open', function () {
+        console.log("HERE:B.1:open");
         logger.info({
             method: "connect/on(open)",
         }, "called");
@@ -92,6 +94,7 @@ LGClient.prototype.connect = function (ip, cb) {
     }.bind(this));
 
     this.ws.on('message', function (data) {
+        // console.log("HERE:B.2:message");
         logger.info({
             method: "connect/on(message)",
             data: data
@@ -113,14 +116,21 @@ LGClient.prototype.connect = function (ip, cb) {
             }
         } else if (message.type === "registered") {
             this.emit('connected');
+
+            if (cb !== undefined) {
+                cb();
+                cb = undefined;
+            }
         }
     }.bind(this));
 
     this.ws.on('error', function (err) {
+        // console.log("HERE:B.1:error", err);
         this.emit('error', err);
     }.bind(this));
 
     this.ws.on('close', function () {
+        // console.log("HERE:B.1:close");
         this.emit('close', 'connection closed');
     }.bind(this));
 };

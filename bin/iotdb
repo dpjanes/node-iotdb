@@ -184,7 +184,7 @@ var help = function(subcommand) {
 };
 
 var ad = require('minimist')(process.argv.slice(2), {
-    boolean: [ "global", "list", ],
+    boolean: [ "global", "list", "boolean", "number", "integer", "uuid" ],
 });
 
 if (ad._.length && (ad._[0] === "machine-id")) {
@@ -277,6 +277,14 @@ if (ad._.length === 0) {
     var value;
     if (ad.list) {
         value = ad._.slice(2);
+    } else if (ad.boolean) {
+        value = ad._[2] ? true : false;
+    } else if (ad.number) {
+        value = parseFloat(ad._[2]);
+    } else if (ad.integer) {
+        value = parseInt(ad._[2]);
+    } else if (ad.uuid) {
+        value = uuid.v4();
     } else {
         value = ad._[2];
     }
@@ -500,7 +508,7 @@ if (ad._.length === 0) {
         p['password'] = {
             hidden: true,
             required: true
-        }.
+        };
 
         prompt.message = "oauth-iotdb";
         prompt.start();
