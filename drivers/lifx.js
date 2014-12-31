@@ -217,6 +217,13 @@ LIFXDriver.prototype.push = function (paramd) {
             } else {
                 _lifx.lightsOff();
             }
+
+            if (putd.h !== undefined) {
+                // _lifx.lightsColour(putd.h, putd.s, putd.l, 0x0dac);
+                _lifx.lightsColour(putd.h, putd.s, putd.l, putd.brightness, 0x25); // 0x0513);
+            }
+
+            queue.finished(qitem);
         }
     };
     queue.add(qitem);
@@ -261,8 +268,10 @@ LIFXDriver.prototype._lifx = function (no_create) {
 function c2h(outd, hex) {
     var color = new Color(hex);
 
-    outd.xy = hc.rgbToCIE1931(color.r, color.g, color.b);
-    outd.bri = Math.max(color.r, color.g, color.b) * 255;
+    outd.h = Math.round(color.h * 0xFFFF);
+    outd.s = Math.round(color.s * 0xFFFF);
+    outd.l = Math.round(color.l * 0xFFFF);
+    outd.brightness = Math.max(color.r, color.g, color.b) * 0xFFFF;
 }
 
 /*
