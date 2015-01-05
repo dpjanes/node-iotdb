@@ -590,16 +590,6 @@ ThingArray.prototype.on_meta = function () {
 
     self._persist_command(model.Model.prototype.on_meta, arguments);
 
-    /*
-     *  Apply to new things
-    var persist = this._persistds !== null
-    if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
-            item.on_meta.apply(item, Array.prototype.slice.call(av));
-        })
-    }
-     */
-
     return self;
 };
 
@@ -642,6 +632,22 @@ ThingArray.prototype.metas = function (paramd) {
     }
 
     return metas;
+};
+
+/**
+ *  Return the number of things that can be reached
+ */
+ThingArray.prototype.reachable = function () {
+    var self = this;
+    var count = 0;
+
+    for (var ii = 0; ii < self.length; ii++) {
+        if (self[ii].reachable()) {
+            count += 1;
+        }
+    }
+
+    return count;
 };
 
 /**

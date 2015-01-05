@@ -10,7 +10,7 @@
     "dependencies": {
         "bunyan": "~0.22.3", 
         "iotdb-models": ">=0.0.20", 
-        "iotdb-timers": ">=0.0.6", 
+        "iotdb-timers": "~0.0.9", 
         "jsonld": "~0.1.25", 
         "minimist": "~0.0.5", 
         "mqtt": "~0.3.7", 
@@ -54,5 +54,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.3.12"
+    "version": "0.3.14"
 }
