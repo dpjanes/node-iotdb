@@ -25,7 +25,7 @@
 var _ = require("../helpers");
 var driver = require('../driver');
 var FIFOQueue = require('../queue').FIFOQueue;
-var UPnPDriver = require('./upnp').Driver;
+var upnp = require('../upnp');
 
 var LGClient = require('./libs/lg-client').LGClient;
 var LG = require('./libs/lg-commands');
@@ -137,7 +137,7 @@ LGSmartTVDriver.prototype.discover = function (paramd, discover_callback) {
     // discover_callback(new LGSmartTVDriver());
     var self = this;
 
-    var cp = UPnPDriver.cp();
+    var cp = upnp.control_point();
     cp.on("device", function (upnp_device) {
         self._foundDevice(discover_callback, upnp_device);
     });

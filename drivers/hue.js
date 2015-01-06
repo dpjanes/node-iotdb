@@ -32,9 +32,8 @@ var Interaction = require('../interaction').Interaction;
 var unirest = require('unirest');
 
 var driver = require('../driver');
-var upnp = require('./upnp');
+var upnp = require('../upnp');
 var FIFOQueue = require('../queue').FIFOQueue;
-var UPnPDriver = require('./upnp').Driver;
 
 var queue = new FIFOQueue("HueDriver");
 
@@ -85,7 +84,7 @@ HueDriver.prototype = new driver.Driver();
 HueDriver.prototype.configure = function (ad, callback) {
     var self = this;
 
-    var cp = UPnPDriver.cp();
+    var cp = upnp.control_point();
     cp.on("device", function (upnp_device) {
         self._configure_device(upnp_device, callback);
     });
@@ -172,7 +171,7 @@ HueDriver.prototype._configure_device = function (upnp_device, callback) {
 HueDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
-    var cp = UPnPDriver.cp();
+    var cp = upnp.control_point();
     cp.on("device", function (upnp_device) {
         self._foundDevice(discover_callback, upnp_device);
     });

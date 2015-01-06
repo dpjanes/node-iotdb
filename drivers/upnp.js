@@ -33,11 +33,7 @@ var logger = bunyan.createLogger({
     module: 'UPnPDriver',
 });
 
-var u = require("./libs/upnp-controlpoint");
-var UpnpControlPoint = u.UpnpControlPoint;
-
-var DELTA_SCRUB = 60 * 1000;
-var DELTA_SEARCH = 20 * 1000;
+var upnp = require("../upnp");
 
 /**
  *  Typically this will be created by one of
@@ -66,26 +62,6 @@ var UPnPDriver = function (upnp_device) {
 UPnPDriver.prototype = new driver.Driver();
 
 /* --- class methods --- */
-var _cp;
-
-UPnPDriver.cp = function () {
-    if (_cp === undefined) {
-        logger.info({
-            method: "cp"
-        }, "made UpnpControlPoint");
-
-        _cp = new UpnpControlPoint();
-
-        // we periodically kick off a new search to find devices that have come online
-        setInterval(function () {
-            _cp.search();
-            _cp.scrub(DELTA_SCRUB);
-        }, DELTA_SEARCH);
-    }
-
-    return _cp;
-};
-
 /**
  *  See {@link Driver#discover Driver.discover}
  *  - Scan the local network for UPnPs
@@ -93,7 +69,7 @@ UPnPDriver.cp = function () {
 UPnPDriver.prototype.discover = function (paramd, discover_callback) {
     var self = this;
 
-    var cp = UPnPDriver.cp();
+    var cp = upnp.control_point();
 
     if (!self.__subscribe_device) {
         self.__subscribe_device = true;
