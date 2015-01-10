@@ -52,7 +52,7 @@ var Interaction = require('./interaction').Interaction;
 
 var EVENT_NEW_THING = "iot_new_thing";
 var EVENT_REGISTER_MODEL = "iot_register_thing";
-var EVENT_REGISTER_BRIDGE = "iot_register_driver";
+var EVENT_RESIGTER_DRIVER = "iot_register_driver";
 
 // internal
 var EVENT_ON_READY = "iot_ready";
@@ -1008,7 +1008,7 @@ IOT.prototype.register_driver = function (driver) {
     driver_exemplar.register(self);
 
     self.driver_exemplars.push(driver_exemplar);
-    self.emit(EVENT_REGISTER_BRIDGE, driver_exemplar);
+    self.emit(EVENT_RESIGTER_DRIVER, driver_exemplar);
 
     return self;
 };
@@ -2973,7 +2973,7 @@ exports.shutting_down = function () {
 };
 
 exports.EVENT_REGISTER_MODEL = EVENT_REGISTER_MODEL;
-exports.EVENT_REGISTER_BRIDGE = EVENT_REGISTER_BRIDGE;
+exports.EVENT_RESIGTER_DRIVER = EVENT_RESIGTER_DRIVER;
 exports.EVENT_NEW_THING = EVENT_NEW_THING;
 
 exports.attribute = require('./attribute');
@@ -2988,6 +2988,7 @@ exports.GraphManager = require('./graph').GraphManager;
 exports.helpers = _;
 exports.cfg = cfg;
 exports.libs = libs.libs;
+exports.upnp = require('./upnp');
 
 exports.EVENT_UPDATE_SUBJECT = exports.GraphManager.EVENT_UPDATED_SUBJECT;
 exports.EVENT_UPDATED_GRAPH = exports.GraphManager.EVENT_UPDATED_GRAPH;

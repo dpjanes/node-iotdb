@@ -93,6 +93,15 @@ ThingArray.prototype.first = function () {
 ThingArray.prototype.push = function (thing, paramd) {
     var self = this;
 
+    if (!_.isModel(thing)) {
+        console.trace();
+        logger.fatal({
+            method: "push",
+            thing: thing,
+        }, "attempt to push a non-Thing on a ThingArray");
+        process.exit(1);
+    }
+
     /*
      *  If the Thing is already in the array
      *  we do nothing. There may be a deeper bug
@@ -898,6 +907,7 @@ ThingArray.prototype.with_model = function (model) {
 };
 
 
+/*
 ThingArray.prototype.apply = function (paramd, f) {
     var self = this;
 
@@ -916,6 +926,7 @@ ThingArray.prototype.apply = function (paramd, f) {
     }
     return results;
 };
+*/
 
 ThingArray.prototype.after = function (delay, f) {
     var self = this;

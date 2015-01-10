@@ -2212,6 +2212,72 @@ exports.smart_extend = function (od) {
 };
 
 /**
+ *  Remove any loops in the hierarchy
+ *  This isn't really working yet - something wrong in the array part
+ */
+exports.scrub_circular = function(value, parents) {
+    if (parents === undefined) {
+        parents = [];
+    }
+
+    if (value === undefined) {
+        return undefined;
+    } else if (value === null) {
+        return null;
+    } else if (exports.isBoolean(value)) {
+        return value;
+    } else if (exports.isNumber(value)) {
+        return value;
+    } else if (exports.isString(value)) {
+        return value;
+    } else if (exports.isArray(value)) {
+        // BROKEN
+        if (parents.length > 5) {
+            return undefined;
+        }
+
+        var nparents = parents.slice();
+        nparents.push(value);
+
+        var nvalues = [];
+        for (var vi in value) {
+            var ovalue = value[vi];
+            var nvalue = exports.scrub_circular(ovalue, nparents);
+            if (nvalue !== undefined) {
+                nvalues.push(nvalue);
+            }
+        }
+
+        return nvalues;
+    } else if (exports.isObject(value)) {
+        // BROKEN
+        if (parents.length > 5) {
+            return undefined;
+        }
+        
+        if (parents.indexOf(value) !== -1) {
+            return undefined;
+        }
+
+        var nparents = parents.slice();
+        nparents.push(value);
+
+        var nvalued = {}
+        for (var okey in value) {
+            var ovalue = value[okey];
+            var nvalue = exports.scrub_circular(ovalue, nparents);
+            if (nvalue !== undefined) {
+                nvalued[okey] = nvalue;
+            }
+        }
+
+        return nvalued;
+    } else {
+        return undefined;
+    }
+};
+
+/**
  *  Get a 'code' (like a model_code) from a URL. Basically
  *  the last path component in either the hash or in the path itself
  *

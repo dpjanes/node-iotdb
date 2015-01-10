@@ -106,8 +106,8 @@ UPnPDriver.prototype._forget_device = function () {
         return;
     }
 
-    if (_cp) {
-        _cp.forget(self.upnp_device);
+    if (upnp.initialized()) {
+        upnp.control_point().forget(self.upnp_device);
     }
 
     self.upnp_device = null;

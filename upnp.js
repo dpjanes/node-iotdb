@@ -56,7 +56,27 @@ var control_point = function() {
     return _cp;
 };
 
+var initialized = function() {
+    return _cp !== undefined;
+}
+
+var devices = function() {
+    var ds = [];
+    
+    var cp = control_point();
+    for (var dkey in cp.devices) {
+        var device = cp.devices[dkey];
+        if (_.isObject(device)) {
+            ds.push(device);
+        }
+    };
+    
+    return ds;
+};
+
 /*
  *  API
  */
 exports.control_point = control_point;
+exports.initialized = initialized;
+exports.devices = devices;

@@ -540,6 +540,8 @@ Model.prototype.update = function (updated, paramd) {
         self.set(key, updated[key]);
     }
     self.end();
+
+    return self;
 };
 
 
