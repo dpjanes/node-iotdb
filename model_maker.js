@@ -323,7 +323,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         in_code = out_code + "-value";
     } else if (arguments.length === 2) {
         attribute = arguments[1];
-        in_code = out_code + "-value"
+        in_code = out_code + "-value";
     }
 
     this.attribute(

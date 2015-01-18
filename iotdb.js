@@ -3003,11 +3003,11 @@ exports.EVENT_UPDATED_PLACE = exports.GraphManager.EVENT_UPDATED_PLACE;
 exports.EVENT_UPDATED_MODEL = exports.GraphManager.EVENT_UPDATED_MODEL;
 
 var oneofd = {};
-exports.oneof = function(module) {
+exports.oneof = function (module) {
     var m = oneofd[module];
     if (m === undefined) {
         m = require(module);
-        if (module === 'seneca') {   // HACK!
+        if (module === 'seneca') { // HACK!
             m = m();
         }
         oneofd[module] = m;

@@ -82,10 +82,10 @@ ControlPoint.prototype.onRequestMessage = function (msg, rinfo) {
 
 /**
  *  This emits the 'DeviceFound' message. It is used iternally
- *  but also can be called from clients who want to 'fake' 
+ *  but also can be called from clients who want to 'fake'
  *  UPnP search message results
  */
-ControlPoint.prototype.injectDeviceFound = function(headerd) {
+ControlPoint.prototype.injectDeviceFound = function (headerd) {
     this.emit('DeviceFound', headerd);
 };
 
@@ -93,7 +93,7 @@ ControlPoint.prototype.injectDeviceFound = function(headerd) {
  * Message handler for HTTPU response.
  */
 ControlPoint.prototype.onResponseMessage = function (msg, rinfo) {
-    this.responseParser.reinitialize(HTTP_PARSER_RESPONSE); 
+    this.responseParser.reinitialize(HTTP_PARSER_RESPONSE);
 
     var r = this.responseParser.execute(msg, 0, msg.length);
     if (r instanceof Error) {

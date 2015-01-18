@@ -38,7 +38,7 @@ var DELTA_SEARCH = 20 * 1000;
 var UpnpControlPoint = require("./drivers/libs/upnp-controlpoint").UpnpControlPoint;
 
 var _cp;
-var control_point = function() {
+var control_point = function () {
     if (_cp === undefined) {
         logger.info({
             method: "cp"
@@ -56,13 +56,13 @@ var control_point = function() {
     return _cp;
 };
 
-var initialized = function() {
+var initialized = function () {
     return _cp !== undefined;
 }
 
-var devices = function() {
+var devices = function () {
     var ds = [];
-    
+
     var cp = control_point();
     for (var dkey in cp.devices) {
         var device = cp.devices[dkey];
@@ -70,7 +70,7 @@ var devices = function() {
             ds.push(device);
         }
     };
-    
+
     return ds;
 };
 

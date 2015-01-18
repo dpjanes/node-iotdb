@@ -2215,7 +2215,7 @@ exports.smart_extend = function (od) {
  *  Remove any loops in the hierarchy
  *  This isn't really working yet - something wrong in the array part
  */
-exports.scrub_circular = function(value, parents) {
+exports.scrub_circular = function (value, parents) {
     if (parents === undefined) {
         parents = [];
     }
@@ -2254,7 +2254,7 @@ exports.scrub_circular = function(value, parents) {
         if (parents.length > 5) {
             return undefined;
         }
-        
+
         if (parents.indexOf(value) !== -1) {
             return undefined;
         }
@@ -2479,7 +2479,7 @@ exports.isModel = function (o) {
 /**
  *  Try to figure out our IP address
  */
-exports.ipv4 = function() {
+exports.ipv4 = function () {
     var os = require('os');
     var ifaces = os.networkInterfaces();
     for (var dev in ifaces) {
@@ -2501,17 +2501,17 @@ exports.ipv4 = function() {
 
 /**
  */
-exports.uid = function(len) {
+exports.uid = function (len) {
     function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-  var buf = []
-    , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    , charlen = chars.length;
+    var buf = [],
+        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+        charlen = chars.length;
 
-  for (var i = 0; i < len; ++i) {
-    buf.push(chars[getRandomInt(0, charlen - 1)]);
-  }
+    for (var i = 0; i < len; ++i) {
+        buf.push(chars[getRandomInt(0, charlen - 1)]);
+    }
 
-  return buf.join('');
+    return buf.join('');
 };

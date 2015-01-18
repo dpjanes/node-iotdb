@@ -177,7 +177,7 @@ TelnetDriver.prototype.push = function (paramd) {
                 unique_id: self.unique_id,
                 error: error,
             }, "error");
-            
+
         });
         client.on('data', function (data) {
             console.log(data.toString());

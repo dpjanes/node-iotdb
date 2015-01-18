@@ -42,24 +42,19 @@ attribute.integer = iotdb.make_integer(":value")
 attribute.integer.percent = iotdb.make_integer(":value")
     .minimum(0)
     .maximum(100)
-    .unit("iot-unit:math.fraction.percent")
-    ;
+    .unit("iot-unit:math.fraction.percent");
 attribute.integer.channel = iotdb.make_integer(":value")
-    .minimum(1)
-    ;
+    .minimum(1);
 
 /* numbers */
 attribute.number = iotdb.make_number(":value");
 attribute.number.temperature = iotdb.make_number(":temperature");
 attribute.number.temperature.celsius = iotdb.make_number(":temperature")
-    .unit("iot-unit:temperature.metric.celsius")
-    ;
+    .unit("iot-unit:temperature.metric.celsius");
 attribute.number.fahrenheit = iotdb.make_number(":temperature")
-    .unit("iot-unit:temperature.imperial.fahrenheit")
-    ;
+    .unit("iot-unit:temperature.imperial.fahrenheit");
 attribute.number.temperature.kelvin = iotdb.make_number(":temperature")
-    .unit("iot-unit:temperature.metric.kelvin")
-    ;
+    .unit("iot-unit:temperature.metric.kelvin");
 
 attribute.percent = iotdb.make_percent(":value")
 attribute.percent.volume = iotdb.make_percent(":volume")
