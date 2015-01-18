@@ -2981,6 +2981,11 @@ for (var key in exports.attribute) {
     exports[key] = exports.attribute[key];
 }
 
+var definitions = require('./definitions');
+for (var key in definitions.attribute) {
+    exports[key] = definitions.attribute[key];
+}
+
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;
 exports.make_generic = require('./generic').make_generic;

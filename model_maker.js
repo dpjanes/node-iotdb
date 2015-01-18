@@ -305,6 +305,36 @@ ModelMaker.prototype.attribute = function (attribute) {
     return self;
 };
 
+// reading
+ModelMaker.prototype.i = function (code, attribute) {
+    return this.attribute(_.deepCopy(attribute).code(code).reading());
+};
+
+// control
+ModelMaker.prototype.o = function (code, attribute) {
+    return this.attribute(_.deepCopy(attribute).code(code).control());
+};
+
+// reading & control
+ModelMaker.prototype.io = function (out_code, in_code, attribute) {
+    if (arguments.length === 1) {
+        attribute = arguments[0];
+        out_code = attribute.code();
+        in_code = out_code + "-value";
+    } else if (arguments.length === 2) {
+        attribute = arguments[1];
+        in_code = out_code + "-value"
+    }
+
+    this.attribute(
+        _.deepCopy(attribute)
+        .code(in_code)
+        .reading()
+    );
+    this.make_attribute_control(in_code, out_code);
+    return this;
+};
+
 /**
  *  XXX - not finished
  *
