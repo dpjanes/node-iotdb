@@ -358,6 +358,7 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
 var EventHandler = function () {
     var self = this;
 
+    /*
     this.serverPort = 6767;
     this.responseCount = 1; // not sure if this is supposed to be per-subscription
     this.server = http.createServer(function (req, res) {
@@ -365,6 +366,14 @@ var EventHandler = function () {
     });
 
     this.server.listen(this.serverPort);
+    */
+    this.responseCount = 1; // not sure if this is supposed to be per-subscription
+    this.server = http.createServer(function (req, res) {
+        self._serviceCallbackHandler(req, res);
+    });
+
+    this.server.listen(0);
+    this.serverPort = this.server.address().port;
 
     this.subscriptions = {};
 }

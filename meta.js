@@ -56,6 +56,7 @@ Meta.prototype.state = function () {
     var metad = {};
     metad[_.expand('iot:thing')] = self.thing_iri;
     metad[_.expand('iot:model')] = self.thing.model_code_iri();
+    metad[_.expand('iot:name')] = self.thing.name;   // ultimate fallback
 
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         _.extend(metad, self.thing.driver_meta());
