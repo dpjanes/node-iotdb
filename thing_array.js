@@ -682,21 +682,21 @@ ThingArray.prototype._filter_test = function (d, iot, thing) {
     var thing_place_iri = thing.place_iri();
     var thing_thing_iri = thing.thing_iri();
     var place_predicates = [
-        _.expand("iot:place-location"),
-        _.expand("iot:place-room"),
-        _.expand("iot:place-floor"),
-        _.expand("iot:place-placement"),
+        _.ld.expand("iot:place-location"),
+        _.ld.expand("iot:place-room"),
+        _.ld.expand("iot:place-floor"),
+        _.ld.expand("iot:place-placement"),
     ];
     var meta = thing.meta();
 
     for (var dpredicate in d) {
         var dobject = d[dpredicate];
         if (dpredicate === "_location") {
-            dpredicate = _.expand("iot:place-location");
+            dpredicate = _.ld.expand("iot:place-location");
         } else if (dpredicate === "_room") {
-            dpredicate = _.expand("iot:place-room");
+            dpredicate = _.ld.expand("iot:place-room");
         } else if (dpredicate === "_floor") {
-            dpredicate = _.expand("iot:place-floor");
+            dpredicate = _.ld.expand("iot:place-floor");
         } else if (dpredicate === "_driver") {
             var driver_got = thing.identity().driver;
             var driver_want = dobject;
@@ -723,7 +723,7 @@ ThingArray.prototype._filter_test = function (d, iot, thing) {
             }
             continue;
         } else {
-            dpredicate = _.expand(dpredicate);
+            dpredicate = _.ld.expand(dpredicate);
         }
 
 
@@ -885,13 +885,13 @@ ThingArray.prototype.with_tag = function (tag) {
 
 ThingArray.prototype.with_facet = function (facet) {
     return this.filter({
-        "iot:facet": _.expand(facet, "iot-facet:")
+        "iot:facet": _.ld.expand(facet, "iot-facet:")
     });
 };
 
 ThingArray.prototype.with_driver = function (driver) {
     return this.filter({
-        "_driver": _.expand(driver, "iot-driver:")
+        "_driver": _.ld.expand(driver, "iot-driver:")
     });
 };
 

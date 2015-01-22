@@ -15,18 +15,18 @@ var attribute = require("../attribute")
 var _ = require("../helpers")
 
 /* --- constants --- */
-var iot_js_boolean = _.expand("iot-js:boolean");
-var iot_js_integer = _.expand("iot-js:integer");
-var iot_js_number = _.expand("iot-js:number");
-var iot_js_string = _.expand("iot-js:string");
+var iot_js_boolean = _.ld.expand("iot-js:boolean");
+var iot_js_integer = _.ld.expand("iot-js:integer");
+var iot_js_number = _.ld.expand("iot-js:number");
+var iot_js_string = _.ld.expand("iot-js:string");
 
-var iot_js_type = _.expand("iot-js:type");
+var iot_js_type = _.ld.expand("iot-js:type");
 
-var iot_js_minimum = _.expand("iot-js:minimum");
-var iot_js_maximum = _.expand("iot-js:maximum");
+var iot_js_minimum = _.ld.expand("iot-js:minimum");
+var iot_js_maximum = _.ld.expand("iot-js:maximum");
 
-var iot_attribute = _.expand("iot:Attribute");
-var iot_purpose = _.expand("iot:purpose");
+var iot_attribute = _.ld.expand("iot:Attribute");
+var iot_purpose = _.ld.expand("iot:purpose");
 
 /* --- tests --- */
 describe('test_attribute_setup', function(){
@@ -68,7 +68,7 @@ describe('test_attribute_setup', function(){
     });
     it('simple setup with purpose_key', function(){
         var d = { '@type': iot_attribute };
-        d[iot_purpose] = _.expand("iot-attribute:on");
+        d[iot_purpose] = _.ld.expand("iot-attribute:on");
         d["@id"] = "#on";
         {
             var e = _.deepCopy(d);

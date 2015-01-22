@@ -55,7 +55,7 @@ var TCPConnectedDriver = function (paramd) {
     self.name = paramd.name;
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
 
     self._init(paramd.initd);
 
@@ -64,9 +64,9 @@ var TCPConnectedDriver = function (paramd) {
         self.metad = _.extend(paramd.metad);
     }
     if (self.name) {
-        self.metad[_.expand("iot:name")] = self.name;
+        self.metad[_.ld.expand("iot:name")] = self.name;
     }
-    self.metad[_.expand("schema:manufacturer")] = "http://www.tcpi.com/";
+    self.metad[_.ld.expand("schema:manufacturer")] = "http://www.tcpi.com/";
 
     /*
      *  Might consider 'network_id' in future? because multiple
@@ -75,7 +75,7 @@ var TCPConnectedDriver = function (paramd) {
      */
     var machine_id = self.cfg_get("machine_id", null);
     if (machine_id && self.name) {
-        self.metad["iot:dsid"] = _.expand("iot-driver:tcp-connected/" + machine_id + "/" + self.name);
+        self.metad["iot:dsid"] = _.ld.expand("iot-driver:tcp-connected/" + machine_id + "/" + self.name);
     }
 
     return self;

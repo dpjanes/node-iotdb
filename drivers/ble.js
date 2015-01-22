@@ -57,7 +57,7 @@ var BLEDriver = function (paramd) {
     self.s = paramd.s;
     self.cd = null;
 
-    self.driver = _.expand("iot-driver:ble");
+    self.driver = _.ld.expand("iot-driver:ble");
     self.subscribes = null;
 
     /* */
@@ -471,7 +471,7 @@ BLEDriver.prototype.driver_meta = function () {
     }
 
     var metad = {};
-    metad["iot:dsid"] = _.expand("iot-driver:ble/" + self.p.uuid);
+    metad["iot:dsid"] = _.ld.expand("iot-driver:ble/" + self.p.uuid);
 
     if (self.p.advertisement && self.p.advertisement.localName) {
         metad["iot:name"] = self.p.advertisement.localName;

@@ -101,6 +101,9 @@ describe('test_iotdb_load_model:', function(){
 
                 // at this point we have a thing we can test conventionally
                 var thing = new model()
+                // console.log("HERE:XXX",thing.get('iot-attribute:when-instant'))
+                // process.exit(0)
+
                 assert.strictEqual(null, thing.get('iot-attribute:when-instant'))
                 assert.ok(_.equals({ 'when-instant': null }, thing.stated))
 

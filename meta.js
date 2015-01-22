@@ -54,14 +54,14 @@ Meta.prototype.state = function () {
     var self = this;
 
     var metad = {};
-    metad[_.expand('iot:thing')] = self.thing_iri;
-    metad[_.expand('iot:model')] = self.thing.model_code_iri();
-    metad[_.expand('iot:name')] = self.thing.name;   // ultimate fallback
+    metad[_.ld.expand('iot:thing')] = self.thing_iri;
+    metad[_.ld.expand('iot:model')] = self.thing.model_code_iri();
+    metad[_.ld.expand('iot:name')] = self.thing.name;   // ultimate fallback
 
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         _.extend(metad, self.thing.driver_meta());
 
-        _.ld.extend(metad, _.expand("iot:facet"), _.ld.expand(self.thing.__facets));
+        _.ld.extend(metad, _.ld.expand("iot:facet"), _.ld.expand(self.thing.__facets));
     } else {
         var tds = self.iot.gm.get_triples(self.thing_iri, null, null);
         for (var tx in tds) {
@@ -94,7 +94,7 @@ Meta.prototype.get = function (key, otherwise) {
     var self = this;
     assert.ok(self.thing_iri);
 
-    key = _.expand(key);
+    key = _.ld.expand(key);
 
     var stated = self.state();
     var value = stated[key];
@@ -118,7 +118,7 @@ Meta.prototype.set = function (key, value) {
     var self = this;
     assert.ok(self.thing_iri);
 
-    key = _.expand(key);
+    key = _.ld.expand(key);
 
     if (self.updated[key] !== value) {
         self.updated[key] = value;

@@ -118,7 +118,7 @@ GraphManager.prototype.load_jsonld = function (jd) {
 GraphManager.prototype.has_subject = function (subject) {
     var self = this;
     var ts = self.graph.match(
-        _.expand(subject),
+        _.ld.expand(subject),
         null,
         null
     );
@@ -128,8 +128,8 @@ GraphManager.prototype.has_subject = function (subject) {
 GraphManager.prototype.get_object = function (subject, predicate) {
     var self = this;
     var ts = self.graph.match(
-        _.expand(subject),
-        _.expand(predicate),
+        _.ld.expand(subject),
+        _.ld.expand(predicate),
         null
     );
     if (!ts.length) {
@@ -147,8 +147,8 @@ GraphManager.prototype.get_subjects = function (predicate, object) {
     var self = this;
     var ts = self.graph.match(
         null,
-        _.expand(predicate),
-        _.expand(object)
+        _.ld.expand(predicate),
+        _.ld.expand(object)
     );
 
     var resultd = {};
@@ -165,8 +165,8 @@ GraphManager.prototype.get_subjects = function (predicate, object) {
 GraphManager.prototype.get_objects = function (subject, predicate) {
     var self = this;
     var ts = self.graph.match(
-        _.expand(subject),
-        _.expand(predicate),
+        _.ld.expand(subject),
+        _.ld.expand(predicate),
         null
     );
 
@@ -213,13 +213,13 @@ GraphManager.prototype.get_triples = function (subject, predicate, object, param
     paramd.compact_object = (paramd.compact_object === undefined) ? true : false;
 
     if (paramd.expand_subject) {
-        subject = _.expand(subject);
+        subject = _.ld.expand(subject);
     }
     if (paramd.expand_predicate) {
-        predicate = _.expand(predicate);
+        predicate = _.ld.expand(predicate);
     }
     if (paramd.expand_subject) {
-        object = _.expand(object);
+        object = _.ld.expand(object);
     }
 
     var ts = self.graph.match(subject, predicate, object);
@@ -246,8 +246,8 @@ GraphManager.prototype.get_triples = function (subject, predicate, object, param
 
 GraphManager.prototype.has_type = function (subject, type) {
     var self = this;
-    type = _.expand(type);
-    subject = _.expand(subject);
+    type = _.ld.expand(type);
+    subject = _.ld.expand(subject);
 
     var types = self.get_objects(subject, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     for (var ti = 0; ti < types.length; ti++) {
@@ -260,8 +260,8 @@ GraphManager.prototype.has_type = function (subject, type) {
 
 GraphManager.prototype.contains_triple = function (subject, predicate, object) {
     return this.iot.gm.graph.match(
-        _.expand(subject),
-        _.expand(predicate),
+        _.ld.expand(subject),
+        _.ld.expand(predicate),
         object
     ).length > 0;
 };

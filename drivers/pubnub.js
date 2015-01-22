@@ -52,7 +52,7 @@ var PubNubDriver = function (paramd) {
     });
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
 
     self.channel = null;
     self.selector = null;

@@ -43,7 +43,7 @@ var UPnPDriver = function (upnp_device) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
-    self.driver = _.expand("iot-driver:upnp");
+    self.driver = _.ld.expand("iot-driver:upnp");
 
     if (upnp_device !== undefined) {
         self.upnp_device = upnp_device;
@@ -398,7 +398,7 @@ UPnPDriver.prototype.driver_meta = function () {
     }
 
     if (self.upnp_device.udn) {
-        metad["iot:dsid"] = _.expand("iot-driver:upnp/" + self.upnp_device.udn);
+        metad["iot:dsid"] = _.ld.expand("iot-driver:upnp/" + self.upnp_device.udn);
     }
 
     return metad;

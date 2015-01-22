@@ -15,15 +15,15 @@ var attribute = require("../attribute")
 var _ = require("../helpers")
 
 /* --- constants --- */
-var iot_js_boolean = _.expand("iot-js:boolean");
-var iot_js_integer = _.expand("iot-js:integer");
-var iot_js_number = _.expand("iot-js:number");
-var iot_js_string = _.expand("iot-js:string");
+var iot_js_boolean = _.ld.expand("iot-js:boolean");
+var iot_js_integer = _.ld.expand("iot-js:integer");
+var iot_js_number = _.ld.expand("iot-js:number");
+var iot_js_string = _.ld.expand("iot-js:string");
 
-var iot_js_type = _.expand("iot-js:type");
+var iot_js_type = _.ld.expand("iot-js:type");
 
-var iot_js_minimum = _.expand("iot-js:minimum");
-var iot_js_maximum = _.expand("iot-js:maximum");
+var iot_js_minimum = _.ld.expand("iot-js:minimum");
+var iot_js_maximum = _.ld.expand("iot-js:maximum");
 
 /* --- tests --- */
 describe('test_attribute_convert:', function(){

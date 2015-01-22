@@ -365,7 +365,7 @@ Driver.prototype.meta = function () {
     var nd = {};
     for (var key in metad) {
         if (key.indexOf(':') > -1) {
-            nd[_.expand(key)] = metad[key];
+            nd[_.ld.expand(key)] = metad[key];
         }
     }
 

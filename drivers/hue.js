@@ -54,7 +54,7 @@ var HueDriver = function (paramd) {
     var self = this;
     driver.Driver.prototype.driver_construct.call(self);
 
-    self.driver = _.expand("iot-driver:hue");
+    self.driver = _.ld.expand("iot-driver:hue");
 
     if ((paramd !== undefined) && (paramd.upnp_device !== undefined)) {
         self.upnp_device = paramd.upnp_device;
@@ -68,8 +68,8 @@ var HueDriver = function (paramd) {
     if (paramd && paramd.metad) {
         self.metad = _.extend(paramd.metad);
     }
-    self.metad[_.expand("schema:manufacturer")] = "http://philips.com/";
-    self.metad[_.expand("schema:model")] = "http://meethue.com/";
+    self.metad[_.ld.expand("schema:manufacturer")] = "http://philips.com/";
+    self.metad[_.ld.expand("schema:model")] = "http://meethue.com/";
 
     return self;
 };
@@ -249,11 +249,11 @@ HueDriver.prototype._foundDevice = function (discover_callback, upnp_device) {
 
                 var md = result.body[light];
                 var metad = {};
-                metad[_.expand("iot:name")] = md.name;
-                metad[_.expand("iot:number")] = parseInt(light);
+                metad[_.ld.expand("iot:name")] = md.name;
+                metad[_.ld.expand("iot:number")] = parseInt(light);
 
                 if (upnp_device.udn) {
-                    metad["iot:dsid"] = _.expand("iot-driver:hue/" + upnp_device.udn + "/" + light);
+                    metad["iot:dsid"] = _.ld.expand("iot-driver:hue/" + upnp_device.udn + "/" + light);
                 }
 
                 discover_callback(new HueDriver({

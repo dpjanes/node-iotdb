@@ -61,10 +61,10 @@ ImperialFahrenheitTransmogrifier.prototype.___attach = function () {
     var thing = self.___wrapped;
     var attributes = thing.attributes();
 
-    var unit_key = _.expand("iot:unit");
-    var unit_celsius = _.expand("iot-unit:temperature.si.celsius");
-    var unit_kelvin = _.expand("iot-unit:temperature.si.kelvin");
-    var unit_fahrenheit = _.expand("iot-unit:temperature.imperial.fahrenheit");
+    var unit_key = _.ld.expand("iot:unit");
+    var unit_celsius = _.ld.expand("iot-unit:temperature.si.celsius");
+    var unit_kelvin = _.ld.expand("iot-unit:temperature.si.kelvin");
+    var unit_fahrenheit = _.ld.expand("iot-unit:temperature.imperial.fahrenheit");
 
     var xd_celsius = function (attribute) {
         attribute = _.clone(attribute);

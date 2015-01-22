@@ -43,7 +43,7 @@ var MQTTStore = function (paramd) {};
 MQTTStore.prototype = new store.Store();
 MQTTStore.prototype.store_id = "iot-store:mqtt";
 
-var key_topic = _.expand("iot-store:mqtt/topic");
+var key_topic = _.ld.expand("iot-store:mqtt/topic");
 
 /*
  *  See {@link Store#on_change Store.on_change}

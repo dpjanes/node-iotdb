@@ -53,7 +53,7 @@ var FeedDriver = function (paramd) {
     });
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
     self.iri = null;
     self.seend = {};
     self.fresh = true;

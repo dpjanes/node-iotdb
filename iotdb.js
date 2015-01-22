@@ -1023,7 +1023,7 @@ IOT.prototype.register_driver = function (driver) {
 IOT.prototype.register_store = function (store_class) {
     var self = this;
 
-    self.store_instanced[_.expand(store_class.prototype.store_id, "iot-store:")] = new store_class();
+    self.store_instanced[_.ld.expand(store_class.prototype.store_id, "iot-store:")] = new store_class();
     // console.log("- IOT.register_store:", store_class.prototype.store_id);
     logger.info({
         method: "register_store",
@@ -1039,7 +1039,7 @@ IOT.prototype.register_store = function (store_class) {
 IOT.prototype.store = function (store_id) {
     var self = this;
 
-    var store = self.store_instanced[_.expand(store_id, "iot-store:")];
+    var store = self.store_instanced[_.ld.expand(store_id, "iot-store:")];
     if (!store) {
         // console.log("# IOT.store", "store not found", store_id);
         logger.error({
@@ -1064,7 +1064,7 @@ IOT.prototype.store = function (store_id) {
 IOT.prototype.register_transmogrifier = function (transmogrifier_class) {
     var self = this;
 
-    self.transmogrifier_classd[_.expand(transmogrifier_class.prototype.transmogrifier_id, "iot-transmogrifier:")] = transmogrifier_class;
+    self.transmogrifier_classd[_.ld.expand(transmogrifier_class.prototype.transmogrifier_id, "iot-transmogrifier:")] = transmogrifier_class;
     // console.log("- IOT.register_transmogrifier:", transmogrifier_class.prototype.transmogrifier_id);
     logger.info({
         method: "register_transmogrifier",
@@ -1080,7 +1080,7 @@ IOT.prototype.register_transmogrifier = function (transmogrifier_class) {
 IOT.prototype.transmogrifier = function (transmogrifier_id, initd) {
     var self = this;
 
-    var transmogrifier = self.transmogrifier_classd[_.expand(transmogrifier_id, "iot-transmogrifier:")];
+    var transmogrifier = self.transmogrifier_classd[_.ld.expand(transmogrifier_id, "iot-transmogrifier:")];
     if (!transmogrifier) {
         // console.log("# IOT.transmogrifier", "transmogrifier not found", transmogrifier_id);
         logger.error({
@@ -1186,7 +1186,7 @@ IOT.prototype._discover_nearby = function (paramd, things) {
 
     paramd = _.defaults(paramd, {});
     if (paramd.driver) {
-        paramd.driver = _.expand(paramd.driver, "iot-driver:");
+        paramd.driver = _.ld.expand(paramd.driver, "iot-driver:");
     }
 
     logger.info({
@@ -1566,7 +1566,7 @@ IOT.prototype._discover_bind = function (paramd, things) {
                 });
 
                 var thing = callbackd.model_exemplar.make({
-                    driver: _.expand(paramd.driver),
+                    driver: _.ld.expand(paramd.driver),
                     initd: paramd.initd
                 });
                 // XXX - THIS SHOULD BE CHANGED to _discover_thing
@@ -2761,7 +2761,7 @@ IOT.prototype.connect = function (value) {
         connectd = {};
 
         if (value.match(/^:/) || value.match(/^iot-driver:/)) {
-            value = _.expand(value, "iot-driver:");
+            value = _.ld.expand(value, "iot-driver:");
         }
 
         var driver_prefix = "https://iotdb.org/pub/iot-driver#";
@@ -2791,7 +2791,7 @@ IOT.prototype.connect = function (value) {
         }
 
         if (connectd.driver) {
-            connectd.driver = _.expand(connectd.driver, "iot-driver:");
+            connectd.driver = _.ld.expand(connectd.driver, "iot-driver:");
         }
 
         // so "on" etc can be hooked up - may need to do this above too

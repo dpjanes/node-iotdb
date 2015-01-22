@@ -189,10 +189,10 @@ ModelMaker.prototype.facet = function (_value) {
         var parts = _value.split(".");
         for (var pi = 0; pi < parts.length; pi++) {
             var sub = parts.slice(0, pi + 1).join(".");
-            this.__facets.push(_.expand(sub, "iot-facet:"));
+            this.__facets.push(_.ld.expand(sub, "iot-facet:"));
         }
     } else {
-        this.__facets.push(_.expand(_value, "iot-facet:"));
+        this.__facets.push(_.ld.expand(_value, "iot-facet:"));
     }
 
     return this;
@@ -347,8 +347,8 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
 ModelMaker.prototype.initializer = function (attribute) {
     var self = this;
 
-    delete attribute[_.expand("iot:purpose")];
-    attribute['@type'] = _.expand("iot:initializer");
+    delete attribute[_.ld.expand("iot:purpose")];
+    attribute['@type'] = _.ld.expand("iot:initializer");
 
     self.initializers.push(attribute);
 
@@ -373,8 +373,8 @@ ModelMaker.prototype.link_control_reading = function (control_attribute_code, re
         throw "# value attribute not found: " + reading_attribute_code;
     }
 
-    reading_attribute[_.expand("iot:related-role")] = '#' + control_attribute_code;
-    control_attribute[_.expand("iot:related-role")] = '#' + reading_attribute_code;
+    reading_attribute[_.ld.expand("iot:related-role")] = '#' + control_attribute_code;
+    control_attribute[_.ld.expand("iot:related-role")] = '#' + reading_attribute_code;
 
     return self;
 };
@@ -396,7 +396,7 @@ ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, 
     var control_attribute = _.deepCopy(reading_attribute);
     control_attribute['@id'] = '#' + control_attribute_code;
 
-    _.ld.remove(control_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-reading"));
+    _.ld.remove(control_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-attribute:role-reading"));
     control_attribute.control();
 
     self.attributed[control_attribute_code] = control_attribute;
@@ -424,7 +424,7 @@ ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, 
     var reading_attribute = _.deepCopy(control_attribute);
     reading_attribute['@id'] = '#' + reading_attribute_code;
 
-    _.ld.remove(reading_attribute, _.expand("iot:role"), _.expand("iot-attribute:role-control"));
+    _.ld.remove(reading_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-attribute:role-control"));
     reading_attribute.reading();
 
     self.attributed[reading_attribute_code] = reading_attribute;

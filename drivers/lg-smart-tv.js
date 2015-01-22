@@ -59,14 +59,14 @@ var LGSmartTVDriver = function (paramd) {
     }
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
 
     self.metad = {};
     if (paramd && paramd.metad) {
         self.metad = _.extend(paramd.metad);
     }
-    self.metad[_.expand("schema:manufacturer")] = "";
-    self.metad[_.expand("schema:model")] = "";
+    self.metad[_.ld.expand("schema:manufacturer")] = "";
+    self.metad[_.ld.expand("schema:model")] = "";
 
     return self;
 };

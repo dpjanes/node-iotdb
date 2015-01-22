@@ -53,7 +53,7 @@ var LIFXDriver = function (paramd) {
     });
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
     self.bulb = paramd.bulb;
     // bulb looks like this:
     // {addr:pkt.preamble.bulbAddress, name:pkt.payload.bulbLabel};
@@ -64,9 +64,9 @@ var LIFXDriver = function (paramd) {
     if (paramd && paramd.metad) {
         self.metad = _.extend(paramd.metad);
     }
-    self.metad[_.expand("schema:manufacturer")] = "http://lifx.co/";
+    self.metad[_.ld.expand("schema:manufacturer")] = "http://lifx.co/";
     if (self.bulb) {
-        self.metad[_.expand("iot:name")] = self.bulb.name;
+        self.metad[_.ld.expand("iot:name")] = self.bulb.name;
     }
 
     return self;

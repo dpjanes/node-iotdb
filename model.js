@@ -38,7 +38,7 @@ var logger = bunyan.createLogger({
 
 /* --- constants --- */
 var VERBOSE = true;
-var iot_name = _.expand("iot:name");
+var iot_name = _.ld.expand("iot:name");
 
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "thing_changed";
@@ -267,16 +267,16 @@ Model.prototype.jsonld = function (paramd) {
         rd["@id"] = "#";
     }
 
-    rd["@type"] = _.expand("iot:Model");
+    rd["@type"] = _.ld.expand("iot:Model");
 
     if (self.name) {
-        rd[_.expand("iot:name")] = self.name;
+        rd[_.ld.expand("iot:name")] = self.name;
     }
     if (self.description) {
-        rd[_.expand("iot:description")] = self.description;
+        rd[_.ld.expand("iot:description")] = self.description;
     }
     if (self.help) {
-        rd[_.expand("iot:help")] = self.help;
+        rd[_.ld.expand("iot:help")] = self.help;
     }
 
     if (paramd.include_state) {
@@ -291,7 +291,7 @@ Model.prototype.jsonld = function (paramd) {
     for (var ax in attributes) {
         var attribute = attributes[ax];
         var ad = {};
-        // ad[_.expand('iot:name')] = attribute.get_code()
+        // ad[_.ld.expand('iot:name')] = attribute.get_code()
         ads.push(ad);
 
         for (key in attribute) {
@@ -313,7 +313,7 @@ Model.prototype.jsonld = function (paramd) {
             }
 
             if (key === "__validator") {
-                ad[_.expand("iot-iotdb:iotdb-attribute-validator")] = value;
+                ad[_.ld.expand("iot-iotdb:iotdb-attribute-validator")] = value;
             } else if (key === "@id") {
                 ad[key] = "#" + paramd.path + value.substring(1);
             } else {
@@ -322,7 +322,7 @@ Model.prototype.jsonld = function (paramd) {
         }
     }
     if (ads.length > 0) {
-        rd[_.expand("iot:attribute")] = ads;
+        rd[_.ld.expand("iot:attribute")] = ads;
     }
 
     // initializers
@@ -355,7 +355,7 @@ Model.prototype.jsonld = function (paramd) {
         }
     }
     if (ids.length > 0) {
-        rd[_.expand("iot:initializer")] = ids;
+        rd[_.ld.expand("iot:initializer")] = ids;
     }
 
     // subthings
@@ -369,20 +369,20 @@ Model.prototype.jsonld = function (paramd) {
         }));
     }
     if (sds.length > 0) {
-        rd[_.expand("iot:model")] = sds;
+        rd[_.ld.expand("iot:model")] = sds;
     }
 
     if (self.__validator) {
-        rd[_.expand("iot-iotdb:model-validator")] = self.__validator.toString();
+        rd[_.ld.expand("iot-iotdb:model-validator")] = self.__validator.toString();
     }
     if (self.__driver_setup) {
-        rd[_.expand("iot-iotdb:model-driver-setup")] = self.__driver_setup.toString();
+        rd[_.ld.expand("iot-iotdb:model-driver-setup")] = self.__driver_setup.toString();
     }
     if (self.__driver_in) {
-        rd[_.expand("iot-iotdb:model-driver-in")] = self.__driver_in.toString();
+        rd[_.ld.expand("iot-iotdb:model-driver-in")] = self.__driver_in.toString();
     }
     if (self.__driver_out) {
-        rd[_.expand("iot-iotdb:model-driver-out")] = self.__driver_out.toString();
+        rd[_.ld.expand("iot-iotdb:model-driver-out")] = self.__driver_out.toString();
     }
 
     if (self.driver_identityd) {
@@ -392,7 +392,7 @@ Model.prototype.jsonld = function (paramd) {
             dids.push(self.driver_identityd[key]);
         }
         if (dids.length) {
-            rd[_.expand("iot-iotdb:driver-identity")] = dids;
+            rd[_.ld.expand("iot-iotdb:driver-identity")] = dids;
         }
     }
 
@@ -1322,12 +1322,12 @@ Model.prototype._find = function (find_key) {
         var last_key = subkeys[subkeys.length - 1];
         if (last_key.substring(0, 1) === ":") {
             d = {};
-            d[_.expand("iot:purpose")] = _.expand("iot-attribute:" + last_key.substring(1));
+            d[_.ld.expand("iot:purpose")] = _.ld.expand("iot-attribute:" + last_key.substring(1));
 
             return thing._find(d);
         } else if (last_key.indexOf(":") > -1) {
             d = {};
-            d[_.expand("iot:purpose")] = _.expand(last_key);
+            d[_.ld.expand("iot:purpose")] = _.ld.expand(last_key);
 
             return thing._find(d);
         }

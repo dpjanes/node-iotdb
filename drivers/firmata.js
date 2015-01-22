@@ -117,7 +117,7 @@ var FirmataDriver = function (paramd) {
     });
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
 
     self.firmata_ready = false;
 
@@ -133,7 +133,7 @@ var FirmataDriver = function (paramd) {
     self._init(paramd.initd);
 
     self.metad = {};
-    self.metad[_.expand("iot:number")] = self.device;
+    self.metad[_.ld.expand("iot:number")] = self.device;
 
     return self;
 };

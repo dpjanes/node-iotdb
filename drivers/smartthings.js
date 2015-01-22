@@ -53,7 +53,7 @@ var SmartThingsDriver = function (paramd) {
     });
 
     self.verbose = paramd.verbose;
-    self.driver = _.expand(paramd.driver);
+    self.driver = _.ld.expand(paramd.driver);
 
     // smartthings values, setup in setup
     self.id = null;
@@ -239,7 +239,7 @@ SmartThingsDriver.prototype.discover = function (paramd, discover_callback) {
                 },
                 metad: {
                     "iot:name": device.label,
-                    "iot:dsid": _.expand("iot-driver:smartthings/" + device.id)
+                    "iot:dsid": _.ld.expand("iot-driver:smartthings/" + device.id)
                 }
             });
 

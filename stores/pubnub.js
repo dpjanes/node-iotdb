@@ -30,7 +30,7 @@ var store = require('../store');
 var Interaction = require('../interaction').Interaction;
 var node_pubnub = require("pubnub");
 
-var key_name = _.expand("iot-store:pubnub/name");
+var key_name = _.ld.expand("iot-store:pubnub/name");
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
