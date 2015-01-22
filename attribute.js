@@ -534,7 +534,7 @@ Attribute.prototype.validator = function (f) {
 Attribute.prototype.validate = function (paramd) {
     var self = this;
 
-    var iot_types = _.ld_get_list(self, iot_js_type, []);
+    var iot_types = _.ld.list(self, iot_js_type, []);
 
     if (_.isDate(paramd.value)) {
         paramd.value = paramd.value.toISOString();
@@ -545,13 +545,13 @@ Attribute.prototype.validate = function (paramd) {
     if (_.isNumber(paramd.value)) {
         paramd.value = self._bounded(
             paramd.value,
-            _.ld_get_first(self, iot_js_minimum),
-            _.ld_get_first(self, iot_js_maximum)
+            _.ld.first(self, iot_js_minimum),
+            _.ld.first(self, iot_js_maximum)
         );
     }
 
     if (_.isString(paramd.value)) {
-        var iot_formats = _.ld_get_list(self, iot_js_format, []);
+        var iot_formats = _.ld.list(self, iot_js_format, []);
         if (iot_formats.length > 0) {
             var formatted_value = self._format(paramd.value, iot_formats, paramd);
             if (formatted_value === undefined) {

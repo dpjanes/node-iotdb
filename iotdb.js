@@ -988,7 +988,7 @@ IOT.prototype.register_driver = function (driver) {
     }
 
     if (self.initd.drivers_disabled) {
-        var name = _.compact(driver_identity.driver);
+        var name = _.ld.compact(driver_identity.driver);
         var x = self.initd.drivers_disabled.indexOf(name);
         if (x !== -1) {
             /*
@@ -2177,7 +2177,7 @@ IOT.prototype._build_model = function (model_iri) {
         var t = ts[ti];
 
         if (t.predicate === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") {
-            at_types.push(_.compact(t.object_value));
+            at_types.push(_.ld.compact(t.object_value));
         } else if (t.predicate === "iot:attribute") {
             var attribute = self._build_attribute(t.object_value);
             if (attribute) {
@@ -2249,7 +2249,7 @@ IOT.prototype._build_attribute = function (attribute_iri) {
         var t = ts[ti];
 
         if (t.predicate === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") {
-            at_types.push(_.compact(t.object_value));
+            at_types.push(_.ld.compact(t.object_value));
         } else if (t.predicate === "validator") {
             a.validator(t.object_value);
         } else if (t.object.value !== undefined) {
@@ -2897,7 +2897,7 @@ IOT.prototype.health = function () {
 
     for (var di in self.driver_exemplars) {
         var d = self.driver_exemplars[di];
-        interaction.log(_.compact(d.driver));
+        interaction.log(_.ld.compact(d.driver));
     }
 
     interaction.log();
@@ -2907,7 +2907,7 @@ IOT.prototype.health = function () {
     interaction.log();
 
     for (var sname in self.store_instanced) {
-        interaction.log(_.compact(sname));
+        interaction.log(_.ld.compact(sname));
     }
     interaction.log();
 
@@ -2917,7 +2917,7 @@ IOT.prototype.health = function () {
 
     var mnames = [];
     for (var mname in self.model_exemplard) {
-        mnames.push(_.compact(mname));
+        mnames.push(_.ld.compact(mname));
     }
     mnames.sort();
     for (var mi in mnames) {

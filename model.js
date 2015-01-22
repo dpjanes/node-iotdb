@@ -213,7 +213,7 @@ Model.prototype.freeze = function () {
  *  Tags are for locally identitfying devices
  */
 Model.prototype.has_tag = function (tag) {
-    return _.ld_contains(this.initd, "tag", tag);
+    return _.ld.contains(this.initd, "tag", tag);
 
     /*
     var self = this;
@@ -1545,7 +1545,7 @@ Model.prototype.tag = function (tag) {
 
     assert.ok(_.isString(tag));
 
-    _.ld_add(self.initd, "tag", tag);
+    _.ld.add(self.initd, "tag", tag);
 };
 
 /**

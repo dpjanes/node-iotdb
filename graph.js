@@ -192,7 +192,7 @@ GraphManager.prototype.get_dictionary = function (subject, paramd) {
         var t = ts[ti];
 
         if (paramd.as_list) {
-            _.ld_set(d, t.predicate, t.object_value);
+            _.ld.set(d, t.predicate, t.object_value);
         } else {
             d[t.predicate] = t.object_value;
         }
@@ -226,14 +226,14 @@ GraphManager.prototype.get_triples = function (subject, predicate, object, param
 
     ts.map(function (t) {
         if (paramd.compact_subject) {
-            t.subject = _.compact(t.subject);
+            t.subject = _.ld.compact(t.subject);
         }
         if (paramd.compact_predicate) {
-            t.predicate = _.compact(t.predicate);
+            t.predicate = _.ld.compact(t.predicate);
         }
         if (_.isString(t.object)) {
             if (paramd.compact_object) {
-                t.object = _.compact(t.object);
+                t.object = _.ld.compact(t.object);
             }
             t.object_value = t.object;
         } else {

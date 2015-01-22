@@ -61,7 +61,7 @@ Meta.prototype.state = function () {
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         _.extend(metad, self.thing.driver_meta());
 
-        _.ld_extend(metad, _.expand("iot:facet"), _.ld.expand(self.thing.__facets));
+        _.ld.extend(metad, _.expand("iot:facet"), _.ld.expand(self.thing.__facets));
     } else {
         var tds = self.iot.gm.get_triples(self.thing_iri, null, null);
         for (var tx in tds) {

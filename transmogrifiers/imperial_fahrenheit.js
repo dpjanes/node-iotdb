@@ -96,7 +96,7 @@ ImperialFahrenheitTransmogrifier.prototype.___attach = function () {
     for (var ai in attributes) {
         var attribute = attributes[ai];
         var code = attribute.get_code();
-        var unit = _.ld_get_first(attribute, unit_key);
+        var unit = _.ld.first(attribute, unit_key);
         if (unit === unit_celsius) {
             self.___xdd[code] = xd_celsius(attribute);
         } else if (unit === unit_kelvin) {
