@@ -2831,7 +2831,7 @@ IOT.prototype._connect = function (connectd, things) {
  *  <p>
  *  Tons of work needed here
  */
-IOT.prototype.meta_save = function () {
+IOT.prototype.meta_save = function (t) {
     var self = this;
 
     if (!self.initd.meta_dir) {
@@ -2846,21 +2846,33 @@ IOT.prototype.meta_save = function () {
         fs.mkdirSync(meta_dir);
     } catch (err) {}
 
-    for (var thing_id in self.thing_instanced) {
-        var thing = self.thing_instanced[thing_id];
+    var _persist = function(thing) {
         if (!thing) {
-            continue;
+            return;
         }
 
         var meta = thing.meta();
         if (_.isEmpty(meta.updated)) {
-            continue;
+            return;
         }
 
+        var thing_id = thing.thing_id();
         var file_meta = path.join(meta_dir, thing_id.replace(/^.*:/, '') + ".json");
         fs.writeFileSync(file_meta, JSON.stringify(meta.updated, null, 2) + "\n");
 
-        console.log("- IOT.meta_save", "wrote", file_meta);
+        logger.error({
+            method: "meta_save",
+            file: file_meta,
+            thing_id: thing_id,
+        }, "no initd.meta_dir");
+    };
+
+    if (t) {
+        _persist(t);
+    } else {
+        for (var thing_id in self.thing_instanced) {
+            _persist(self.thing_instanced[thing_id]);
+        }
     }
 };
 

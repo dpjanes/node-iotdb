@@ -1344,6 +1344,7 @@ exports.json = function (v, paramd) {
 
 
 /**
+ *  JSON-LD expand
  */
 exports.expand = function (v, otherwise) {
     if (exports.isArray(v)) {
@@ -1368,7 +1369,7 @@ exports.expand = function (v, otherwise) {
             } else if (exports.isFunction(otherwise)) {
                 return otherwise(v);
             } else {
-                throw "- expected a function or a string for 'otherwise'"
+                return v;
             }
         } else {
             return v;
@@ -1392,7 +1393,8 @@ exports.expand = function (v, otherwise) {
  */
 exports.compact = function (v, paramd) {
     paramd = exports.defaults(paramd, {
-        json: true
+        json: true,     // only JSON-friendly
+        scrub: false,   // only with ':' in key
     })
 
     if (exports.isArray(v)) {
@@ -1410,6 +1412,10 @@ exports.compact = function (v, paramd) {
         var ovd = v
         var nvd = {}
         for (var ovkey in ovd) {
+            if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
+                continue;
+            }
+            
             var ovvalue = ovd[ovkey]
             var nvvalue = exports.compact(ovvalue, paramd)
             if (nvvalue !== undefined) {
@@ -1429,6 +1435,71 @@ exports.compact = function (v, paramd) {
         }
 
         return v
+    } else {
+        if (!paramd.json) {
+            return v
+        } else if (exports.isNumber(v)) {
+            return v
+        } else if (exports.isInteger(v)) {
+            return v
+        } else if (exports.isBoolean(v)) {
+            return v
+        } else if (exports.isNull(v)) {
+            return v
+        } else {
+            return undefined
+        }
+    }
+
+};
+
+/**
+ *  Compacts the value according to the namespace.
+ *  If value is an array or a dictionary, it will
+ *  be recursive
+ */
+exports.ld_expand = function (v, paramd) {
+    if (exports.isString(paramd)) {
+        paramd = { otherwise: paramd };
+    } else if (exports.isFunction(paramd)) {
+        paramd = { otherwise: paramd };
+    }
+
+    paramd = exports.defaults(paramd, {
+        otherwise: null,
+        json: true,     // only JSON-friendly
+        scrub: false,   // only with ':' in key
+    })
+
+    if (exports.isArray(v)) {
+        var ovs = v
+        var nvs = []
+        for (var ovx in ovs) {
+            var ov = ovs[ovx]
+            var nv = exports.ld_expand(ov, paramd)
+            if (nv !== undefined) {
+                nvs.push(nv)
+            }
+        }
+        return nvs
+    } else if (exports.isObject(v)) {
+        var ovd = v
+        var nvd = {}
+        for (var ovkey in ovd) {
+            if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
+                continue;
+            }
+            
+            var ovvalue = ovd[ovkey]
+            var nvvalue = exports.ld_expand(ovvalue, paramd)
+            if (nvvalue !== undefined) {
+                var nvkey = exports.expand(ovkey, null);
+                nvd[nvkey] = nvvalue;
+            }
+        }
+        return nvd
+    } else if (exports.isString(v)) {
+        return exports.expand(v, paramd.otherwise);
     } else {
         if (!paramd.json) {
             return v
@@ -2514,4 +2585,19 @@ exports.uid = function (len) {
     }
 
     return buf.join('');
+};
+
+/*
+ *  JSON-LD section. NEW 0.4.X
+ */
+exports.ld = {
+    compact: exports.compact,
+    expand: exports.ld_expand,
+    set: exports.ld_set,
+    get_first: exports.ld_get_first,
+    get_list: exports.ld_get_list,
+    contains: exports.ld_contains,
+    remove: exports.ld_remove,
+    add: exports.ld_add,
+    extend: exports.ld_extend,
 };

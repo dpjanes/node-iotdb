@@ -61,7 +61,7 @@ Meta.prototype.state = function () {
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         _.extend(metad, self.thing.driver_meta());
 
-        _.ld_extend(metad, _.expand("iot:facet"), self.thing.__facets);
+        _.ld_extend(metad, _.expand("iot:facet"), _.ld.expand(self.thing.__facets));
     } else {
         var tds = self.iot.gm.get_triples(self.thing_iri, null, null);
         for (var tx in tds) {
@@ -120,8 +120,42 @@ Meta.prototype.set = function (key, value) {
 
     key = _.expand(key);
 
-    self.updated[key] = value;
-    self.thing.meta_changed();
+    if (self.updated[key] !== value) {
+        self.updated[key] = value;
+        self.thing.meta_changed();
+    }
+};
+
+/**
+ *  'ind' must be expanded!
+ */
+Meta.prototype.update = function (ind) {
+    var self = this;
+    assert.ok(self.thing_iri);
+
+    var state = self.state();
+    var changed = false;
+
+    var in_keys = _.keys(ind);
+    for (var ki in in_keys) {
+        var in_key = in_keys[ki];
+        var in_value = ind[in_key];
+
+        var old_value = state[in_key];
+        if (_.isEqual(in_value, old_value)) {
+            continue;
+        }
+
+        self.updated[in_key] = in_value;
+        changed = true;
+    }
+
+    if (changed) {
+        self.thing.meta_changed();
+        return true;
+    }
+
+    return false;
 };
 
 exports.Meta = Meta;
