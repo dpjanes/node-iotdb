@@ -31,23 +31,15 @@ var crypto = require('crypto');
 var node_url = require('url');
 var path = require('path');
 
-exports.rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-
-exports.namespaced = {
-    "schema": "http://schema.org/",
-    "wikipedia": "https://en.wikipedia.org/wiki/",
-
-    "iot": "https://iotdb.org/pub/iot#",
-    "iot-attribute": "https://iotdb.org/pub/iot-attribute#",
-    "iot-facet": "https://iotdb.org/pub/iot-facet#",
-    "iot-js": "https://iotdb.org/pub/iot-js#",
-    "iot-iotdb": "https://iotdb.org/pub/iot-iotdb#",
-    "iot-ble": "https://iotdb.org/pub/iot-ble#",
-    "iot-unit": "https://iotdb.org/pub/iot-unit#",
-    "iot-driver": "https://iotdb.org/pub/iot-driver#",
-    "iot-store": "https://iotdb.org/pub/iot-store#",
-    "iot-placement": "https://iotdb.org/pub/iot-placement#"
-};
+var modules = [
+    require('./helpers/ld'),
+];
+for (var mi in modules) {
+    var module = modules[mi];
+    for (var key in module) {
+        exports[key] = module[key];
+    }
+}
 
 /**
  *  @module helpers
@@ -1288,6 +1280,7 @@ exports.chain = function (obj) {
  *  allowing JSON-valid values. If the value
  *  is not valid-JSON, undefined is returned
  */
+/*
 exports.json = function (v, paramd) {
     paramd = exports.defaults(paramd, {
         json: true
@@ -1341,11 +1334,13 @@ exports.json = function (v, paramd) {
         }
     }
 };
+*/
 
 
 /**
  *  JSON-LD expand
  */
+/*
 exports.expand = function (v, otherwise) {
     if (exports.isArray(v)) {
         var nv = [];
@@ -1385,6 +1380,7 @@ exports.expand = function (v, otherwise) {
     return v;
 
 };
+*/
 
 
 /*
@@ -2333,233 +2329,4 @@ exports.uid = function (len) {
     }
 
     return buf.join('');
-};
-
-/*
- *  JSON-LD section. NEW 0.4.X
- */
-var _ld_set = function (d, key, value) {
-    var existing = d[key];
-    if (existing === undefined) {
-        d[key] = value;
-    } else if (exports.isArray(existing)) {
-        existing.push(value);
-    } else {
-        d[key] = [existing, value];
-    }
-};
-
-var _ld_get_first = function (d, key, otherwise) {
-    var existing = d[key];
-    if (existing === undefined) {
-        return otherwise;
-    } else if (exports.isArray(existing)) {
-        return existing[0];
-    } else {
-        return existing;
-    }
-};
-
-var _ld_get_list = function (d, key, otherwise) {
-    var existing = d[key];
-    if (existing === undefined) {
-        return otherwise;
-    } else if (exports.isArray(existing)) {
-        return existing;
-    } else {
-        return [existing];
-    }
-};
-
-var _ld_contains = function (d, key, value) {
-    var existing = d[key];
-    if (existing === undefined) {
-        return false;
-    } else if (exports.isArray(existing)) {
-        return existing.indexOf(value) > -1;
-    } else {
-        return existing == value;
-    }
-};
-
-var _ld_remove = function (d, key, value) {
-    var existing = d[key];
-    if (existing === undefined) {
-        return;
-    } else if (exports.isArray(existing)) {
-        var x = existing.indexOf(value)
-        if (x > -1) {
-            existing.splice(x, 1)
-        }
-    } else {
-        if (existing == value) {
-            delete d[key]
-        }
-    }
-};
-
-var _ld_add = function (d, key, value) {
-    var existing = d[key];
-    if (existing === undefined) {
-        d[key] = value
-    } else if (exports.isArray(existing)) {
-        if (existing.indexOf(value) == -1) {
-            existing.push(value)
-        }
-    } else {
-        if (existing != value) {
-            d[key] = [existing, value]
-        }
-    }
-};
-
-var _ld_extend = function (d, key, values) {
-    for (var vi in values) {
-        var value = values[vi]
-        _ld_add(d, key, value)
-    }
-};
-
-/**
- *  Compacts the value according to the namespace.
- *  If value is an array or a dictionary, it will
- *  be recursive
- */
-var _ld_compact = function (v, paramd) {
-    paramd = exports.defaults(paramd, {
-        json: true,     // only JSON-friendly
-        scrub: false,   // only with ':' in key
-    })
-
-    if (exports.isArray(v)) {
-        var ovs = v
-        var nvs = []
-        for (var ovx in ovs) {
-            var ov = ovs[ovx]
-            var nv = _ld_compact(ov, paramd)
-            if (nv !== undefined) {
-                nvs.push(nv)
-            }
-        }
-        return nvs
-    } else if (exports.isObject(v)) {
-        var ovd = v
-        var nvd = {}
-        for (var ovkey in ovd) {
-            if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
-                continue;
-            }
-            
-            var ovvalue = ovd[ovkey]
-            var nvvalue = _ld_compact(ovvalue, paramd)
-            if (nvvalue !== undefined) {
-                var nvkey = _ld_compact(ovkey, paramd)
-                nvd[nvkey] = nvvalue;
-            }
-        }
-        return nvd
-    } else if (exports.isString(v)) {
-        for (var ns in exports.namespaced) {
-            var prefix = exports.namespaced[ns];
-            if (v.substring(0, prefix.length) !== prefix) {
-                continue;
-            }
-
-            return ns + ":" + v.substring(prefix.length)
-        }
-
-        return v
-    } else {
-        if (!paramd.json) {
-            return v
-        } else if (exports.isNumber(v)) {
-            return v
-        } else if (exports.isInteger(v)) {
-            return v
-        } else if (exports.isBoolean(v)) {
-            return v
-        } else if (exports.isNull(v)) {
-            return v
-        } else {
-            return undefined
-        }
-    }
-
-};
-
-/**
- *  Compacts the value according to the namespace.
- *  If value is an array or a dictionary, it will
- *  be recursive
- */
-var _ld_expand = function (v, paramd) {
-    if (exports.isString(paramd)) {
-        paramd = { otherwise: paramd };
-    } else if (exports.isFunction(paramd)) {
-        paramd = { otherwise: paramd };
-    }
-
-    paramd = exports.defaults(paramd, {
-        otherwise: null,
-        json: true,     // only JSON-friendly
-        scrub: false,   // only with ':' in key
-    })
-
-    if (exports.isArray(v)) {
-        var ovs = v
-        var nvs = []
-        for (var ovx in ovs) {
-            var ov = ovs[ovx]
-            var nv = _ld_expand(ov, paramd)
-            if (nv !== undefined) {
-                nvs.push(nv)
-            }
-        }
-        return nvs
-    } else if (exports.isObject(v)) {
-        var ovd = v
-        var nvd = {}
-        for (var ovkey in ovd) {
-            if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
-                continue;
-            }
-            
-            var ovvalue = ovd[ovkey]
-            var nvvalue = _ld_expand(ovvalue, paramd)
-            if (nvvalue !== undefined) {
-                var nvkey = exports.expand(ovkey, null);
-                nvd[nvkey] = nvvalue;
-            }
-        }
-        return nvd
-    } else if (exports.isString(v)) {
-        return exports.expand(v, paramd.otherwise);
-    } else {
-        if (!paramd.json) {
-            return v
-        } else if (exports.isNumber(v)) {
-            return v
-        } else if (exports.isInteger(v)) {
-            return v
-        } else if (exports.isBoolean(v)) {
-            return v
-        } else if (exports.isNull(v)) {
-            return v
-        } else {
-            return undefined
-        }
-    }
-
-};
-
-exports.ld = {
-    compact: _ld_compact,
-    expand: _ld_expand,
-    set: _ld_set,
-    first: _ld_get_first,
-    list: _ld_get_list,
-    contains: _ld_contains,
-    remove: _ld_remove,
-    add: _ld_add,
-    extend: _ld_extend,
 };
