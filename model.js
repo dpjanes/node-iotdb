@@ -39,6 +39,9 @@ var logger = bunyan.createLogger({
 /* --- constants --- */
 var VERBOSE = true;
 var iot_name = _.ld.expand("iot:name");
+var iot_role = _.ld.expand("iot:role");
+var iot_role_reading = _.ld.expand("iot-attribute:role-reading");
+var iot_role_control = _.ld.expand("iot-attribute:role-control");
 
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "thing_changed";
@@ -171,11 +174,13 @@ Model.prototype.state = function () {
     var self = this;
     var d = _.deepCopy(self.stated);
 
+    /* -- phasing out subthings
     for (var subkey in self.subthingd) {
         var subthing = self.subthingd[subkey];
         var subd = subthing.state();
         d[subkey] = subd;
     }
+     */
 
     return d;
 };
@@ -360,6 +365,7 @@ Model.prototype.jsonld = function (paramd) {
 
     // subthings
     var sds = [];
+    /* -- phasing out subthings
     for (var skey in self.subthingd) {
         var subthing = self.subthingd[skey];
         var subpath = paramd.path + skey + "/";
@@ -371,6 +377,7 @@ Model.prototype.jsonld = function (paramd) {
     if (sds.length > 0) {
         rd[_.ld.expand("iot:model")] = sds;
     }
+    */
 
     if (self.__validator) {
         rd[_.ld.expand("iot-iotdb:model-validator")] = self.__validator.toString();
@@ -413,12 +420,14 @@ Model.prototype.jsonld = function (paramd) {
 Model.prototype.get = function (find_key) {
     var self = this;
 
+    /* -- phasing out subthings
     var subthing = self.subthingd[find_key];
     if (subthing !== undefined) {
         return subthing;
     }
+    */
 
-    var rd = self._find(find_key);
+    var rd = self._find(find_key, { get: true });
     if (rd === undefined) {
         // console.log("# Model.get: attribute '" + find_key + "' not found XXX");
         logger.error({
@@ -468,7 +477,7 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
-    var rd = self._find(find_key);
+    var rd = self._find(find_key, { set: true });
     if (rd === undefined) {
         // console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code);
         logger.warn({
@@ -479,6 +488,7 @@ Model.prototype.set = function (find_key, new_value) {
         }, "attribute not found");
         return self;
     }
+
 
     if (rd.attribute) {
         var attribute_key = rd.attribute.get_code();
@@ -589,10 +599,12 @@ Model.prototype.start = function (paramd) {
         attribute_pushd: {},
     });
 
+    /* -- phasing out subthings
     for (var subthing_key in self.subthingd) {
         var subthing = self.subthingd[subthing_key];
         subthing.start(paramd);
     }
+    */
 
     return self;
 };
@@ -626,10 +638,12 @@ Model.prototype.start = function (paramd) {
 Model.prototype.end = function () {
     var self = this;
 
+    /* -- phasing out subthings
     for (var subthing_key in self.subthingd) {
         var subthing = self.subthingd[subthing_key];
         subthing.end();
     }
+    */
 
     var topd = self.stacks.pop();
 
@@ -694,7 +708,7 @@ Model.prototype.on = function (find_key, callback) {
         return self;
     }
 
-    var rd = self._find(find_key);
+    var rd = self._find(find_key, { on: true });
     if (rd === undefined) {
         // console.log("# Model.on: error: attribute '" + find_key + "' not found");
         logger.error({
@@ -1009,6 +1023,7 @@ Model.prototype._do_driver = function (attribute) {};
 Model.prototype._do_push = function (attribute, immediate) {
     var self = this;
 
+
     if ((self.stacks.length === 0) || immediate) {
         var attributed = {};
         attributed[attribute.get_code()] = attribute;
@@ -1023,6 +1038,7 @@ Model.prototype._do_push = function (attribute, immediate) {
         var topd = self.stacks[self.stacks.length - 1];
         topd.attribute_pushd[attribute.get_code()] = attribute;
     }
+
 };
 
 Model.prototype._deep_copy_state = function (thing, use_push_keys) {
@@ -1036,6 +1052,7 @@ Model.prototype._deep_copy_state = function (thing, use_push_keys) {
         d[key] = thing.stated[key];
     }
 
+    /* -- phasing out subthings
     for (var subthing_key in thing.subthingd) {
         var subthing = thing.subthingd[subthing_key];
         if (subthing.__parent_thing === undefined) {
@@ -1044,6 +1061,7 @@ Model.prototype._deep_copy_state = function (thing, use_push_keys) {
 
         d[subthing_key] = self._deep_copy_state(subthing, use_push_keys);
     }
+    */
 
     return d;
 };
@@ -1297,16 +1315,23 @@ Model.prototype._do_notifies = function (attributed) {
  *
  *  @protected
  */
-Model.prototype._find = function (find_key) {
+Model.prototype._find = function (find_key, paramd) {
     var self = this;
     var d;
     var subthing;
     var attribute;
 
+    paramd = _.defaults(paramd, {
+        set: false,
+        get: false,
+        on: false,
+    });
+
     if (typeof find_key === "string") {
         var subkeys = find_key.split("/");
         var thing = self;
 
+        /* -- phasing out subthings
         for (var ski = 0; ski < subkeys.length - 1; ski++) {
             var subkey = subkeys[ski];
             subthing = thing.subthingd[subkey];
@@ -1318,18 +1343,19 @@ Model.prototype._find = function (find_key) {
                 thing = subthing;
             }
         }
+         */
 
         var last_key = subkeys[subkeys.length - 1];
         if (last_key.substring(0, 1) === ":") {
             d = {};
             d[_.ld.expand("iot:purpose")] = _.ld.expand("iot-attribute:" + last_key.substring(1));
 
-            return thing._find(d);
+            return thing._find(d, paramd);
         } else if (last_key.indexOf(":") > -1) {
             d = {};
             d[_.ld.expand("iot:purpose")] = _.ld.expand(last_key);
 
-            return thing._find(d);
+            return thing._find(d, paramd);
         }
 
         attribute = thing.attributed[last_key];
@@ -1340,6 +1366,7 @@ Model.prototype._find = function (find_key) {
             };
         }
 
+        /* -- phasing out subthings
         subthing = thing.subthingd[last_key];
         if (subthing !== undefined) {
             return {
@@ -1347,10 +1374,12 @@ Model.prototype._find = function (find_key) {
                 subthing: subthing
             };
         }
+        */
 
         return undefined;
     } else {
         var attributes = self.attributes();
+        var matches = [];
         for (var ai = 0; ai < attributes.length; ai++) {
             attribute = attributes[ai];
 
@@ -1391,11 +1420,48 @@ Model.prototype._find = function (find_key) {
             }
 
             if (all) {
-                return {
+                matches.push({
                     thing: self,
                     attribute: attribute
-                };
+                });
             }
+        }
+
+        /*
+         *  Because there's paired items with the same semantic meaning
+         *  e.g. (on / on-value), we have to choose which one we want
+         *  if there's multiple choices. I think more work will be needed here
+         */
+        if (!matches) {
+            return undefined;
+        } else if (matches.length === 1) {
+            return matches[0];
+        }
+
+        var match_reading = null;
+        var match_control = null;
+        for (var mi in matches) {
+            var match = matches[mi];
+            if (_.ld.contains(match.attribute, iot_role, iot_role_reading)) {
+                match_reading = match;
+            }
+            if (_.ld.contains(match.attribute, iot_role, iot_role_control)) {
+                match_control = match;
+            }
+        }
+
+        if (paramd.set && match_control) {
+            return match_control;
+        } else if (paramd.get && match_reading) {
+            return match_reading;
+        } else if (paramd.on && match_reading) {
+            return match_reading;
+        } else if (match_control) {
+            return match_control;
+        } else if (match_reading) {
+            return match_control;
+        } else {
+            return matches[0];
         }
 
         return undefined;

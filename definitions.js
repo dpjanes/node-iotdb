@@ -28,6 +28,9 @@ var iotdb = require('iotdb')
 
 /*
  *  Version 0.4 - explicit declarations
+ *
+ *  These are all available in IOTDB as a top
+ *  level export (i.e. iotdb.boolean.mute)
  */
 var attribute = {};
 exports.attribute = attribute;

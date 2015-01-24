@@ -1880,11 +1880,11 @@ exports.identity_expand = function (d) {
         return d;
     } else if (exports.isString(d)) {
         return {
-            "driver": exports.expand(d, "iot-driver:")
+            "driver": exports.ld.expand(d, "iot-driver:")
         };
     } else {
         if (d.driver) {
-            d.driver = exports.expand(d.driver, "iot-driver:")
+            d.driver = exports.ld.expand(d.driver, "iot-driver:")
         }
         return d;
     }
