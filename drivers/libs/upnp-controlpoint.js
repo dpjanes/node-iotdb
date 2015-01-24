@@ -5,7 +5,7 @@ var upnp = require("./upnp"),
     util = require('util'),
     EventEmitter = require('events').EventEmitter,
     http = require("http"),
-    Url = require("url"),
+    url = require("url"),
     xml2js = require('xml2js'),
     UpnpDevice = require("./upnp-device").UpnpDevice;
 
@@ -266,7 +266,16 @@ UpnpControlPoint.prototype._getDeviceDetails = function (udn, location, callback
             location: location
         }, "getting device details");
     }
-    var options = Url.parse(location);
+    var options = url.parse(location);
+    if (options.protocol !== "http:") {
+        logger.error({
+            method: "UpnpControlPoint._getDeviceDetails",
+            location: location,
+            cause: "we are only supporting http: in UPnP for now",
+        }, "ignoring not http: device");
+        return;
+    }
+
     var req = http.request(options, function (res) {
         //res.setEncoding('utf8');
         var resData = "";
