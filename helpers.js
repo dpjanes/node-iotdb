@@ -32,6 +32,7 @@ var node_url = require('url');
 var path = require('path');
 
 var modules = [
+    require('underscore'),
     require('./helpers/ld'),
 ];
 for (var mi in modules) {
