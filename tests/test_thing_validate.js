@@ -16,15 +16,15 @@ var model = require("../model")
 var _ = require("../helpers")
 
 /* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot-js:boolean");
-var iot_js_integer = _.ld.expand("iot-js:integer");
-var iot_js_number = _.ld.expand("iot-js:number");
-var iot_js_string = _.ld.expand("iot-js:string");
+var iot_js_boolean = _.ld.expand("iot:boolean");
+var iot_js_integer = _.ld.expand("iot:integer");
+var iot_js_number = _.ld.expand("iot:number");
+var iot_js_string = _.ld.expand("iot:string");
 
-var iot_js_type = _.ld.expand("iot-js:type");
+var iot_js_type = _.ld.expand("iot:type");
 
-var iot_js_minimum = _.ld.expand("iot-js:minimum");
-var iot_js_maximum = _.ld.expand("iot-js:maximum");
+var iot_js_minimum = _.ld.expand("iot:minimum");
+var iot_js_maximum = _.ld.expand("iot:maximum");
 
 var iot_attribute = _.ld.expand("iot:attribute");
 var iot_purpose = _.ld.expand("iot:purpose");

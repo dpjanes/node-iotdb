@@ -66,7 +66,7 @@ var HueLight = model.make_model('HueLight')
     .attribute(attribute.make_boolean("on"))
     .attribute(
         attribute.make_string("color")
-            .format("iot-js:rgb")
+            .format("iot:color")
     )
     .make()
  *  </pre>

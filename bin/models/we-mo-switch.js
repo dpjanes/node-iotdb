@@ -17,14 +17,14 @@ exports.Model = iotdb.make_model()
         iotdb.make_attribute()
             .code("on")
             .purpose("iot-attribute:on")
-            .type("iot-js:boolean")
+            .type("iot:boolean")
     )
     .attribute(
         iotdb.make_attribute()
             .code("is-on")
             .purpose("iot-attribute:is-on")
             .purpose("iot-attribute:reading")
-            .type("iot-js:boolean")
+            .type("iot:boolean")
     )
     .driver_identity({
       "deviceType": "urn:Belkin:device:controllee:1", 

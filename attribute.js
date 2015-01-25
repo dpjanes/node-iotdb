@@ -32,25 +32,25 @@ var logger = bunyan.createLogger({
 });
 
 /* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot-js:boolean");
-var iot_js_integer = _.ld.expand("iot-js:integer");
-var iot_js_number = _.ld.expand("iot-js:number");
-var iot_js_string = _.ld.expand("iot-js:string");
+var iot_js_boolean = _.ld.expand("iot:boolean");
+var iot_js_integer = _.ld.expand("iot:integer");
+var iot_js_number = _.ld.expand("iot:number");
+var iot_js_string = _.ld.expand("iot:string");
 
-var iot_js_type = _.ld.expand("iot-js:type");
+var iot_js_type = _.ld.expand("iot:type");
 
-var iot_js_minimum = _.ld.expand("iot-js:minimum");
-var iot_js_maximum = _.ld.expand("iot-js:maximum");
+var iot_js_minimum = _.ld.expand("iot:minimum");
+var iot_js_maximum = _.ld.expand("iot:maximum");
 
-var iot_js_read = _.ld.expand("iot-js:read");
-var iot_js_write = _.ld.expand("iot-js:write");
+var iot_js_read = _.ld.expand("iot:read");
+var iot_js_write = _.ld.expand("iot:write");
 
-var iot_js_format = _.ld.expand("iot-js:format");
-var iot_js_color = _.ld.expand("iot-js:color");
-var iot_js_iri = _.ld.expand("iot-js:iri");
-var iot_js_time = _.ld.expand("iot-js:time");
-var iot_js_date = _.ld.expand("iot-js:date");
-var iot_js_datetime = _.ld.expand("iot-js:datetime");
+var iot_js_format = _.ld.expand("iot:format");
+var iot_js_color = _.ld.expand("iot:color");
+var iot_js_iri = _.ld.expand("iot:iri");
+var iot_js_time = _.ld.expand("iot:time");
+var iot_js_date = _.ld.expand("iot:date");
+var iot_js_datetime = _.ld.expand("iot:datetime");
 
 var VERBOSE = false;
 
@@ -403,41 +403,41 @@ Attribute.prototype.active = function (f) {
 };
 
 /**
- *  Set the <code>iot-js:type</code> for this
+ *  Set the <code>iot:type</code> for this
  *  Attribute, which defines the type(s) of values
  *  this attribute can take.
  *
  *  @param {string} type
- *  Usually one of 'iot-js:boolean', 'iot-js:integer', 'iot-js:number',
- *  'iot-js:string'.
+ *  Usually one of 'iot:boolean', 'iot:integer', 'iot:number',
+ *  'iot:string'.
  *
  *  @return {this}
  */
 Attribute.prototype.type = function (format_iri) {
-    return this.property_value(_.ld.expand("iot-js:type"), _.ld.expand(format_iri, function (v) {
-        return _.ld.expand("iot-js:" + v);
+    return this.property_value(_.ld.expand("iot:type"), _.ld.expand(format_iri, function (v) {
+        return _.ld.expand("iot:" + v);
     }));
 };
 
 /**
- *  Set the <code>iot-js:format</code> for this
+ *  Set the <code>iot:format</code> for this
  *  Attribute, which constrains the values a string can take.
  *
  *  @param {string} format_iri
  *  Typically <code>rgb<code>, <code>datetime</code>.
- *  If it does not contain a ":", <code>iot-js:</code>
+ *  If it does not contain a ":", <code>iot:</code>
  *  is prepended.
  *
  *  @return {this}
  */
 Attribute.prototype.format = function (format_iri) {
-    return this.property_value(_.ld.expand("iot-js:format"), _.ld.expand(format_iri, function (v) {
-        return _.ld.expand("iot-js:" + v);
+    return this.property_value(_.ld.expand("iot:format"), _.ld.expand(format_iri, function (v) {
+        return _.ld.expand("iot:" + v);
     }));
 };
 
 /**
- *  Specify the <code>iot-js:minimum</code> of this attribute.
+ *  Specify the <code>iot:minimum</code> of this attribute.
  *
  *  @param {number|integer} value
  *  The minimum value
@@ -449,7 +449,7 @@ Attribute.prototype.minimum = function (value) {
 };
 
 /**
- *  Specify the <code>iot-js:maximum</code> of this attribute.
+ *  Specify the <code>iot:maximum</code> of this attribute.
  *
  *  @param {number|integer} value
  *  The maximum value
@@ -560,7 +560,7 @@ Attribute.prototype.validate = function (paramd) {
                     original: paramd.value,
                     formats: iot_formats,
                     cause: "likely programmer error - bad type passed in"
-                }, "iot-js:format failed");
+                }, "iot:format failed");
 
                 paramd.value = undefined;
             } else {
@@ -661,7 +661,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
             method: "_format",
             formats: formats,
             cause: "likely Node-IOTDB error, shouldn't be called with bad format"
-        }, "iot-js:format failed");
+        }, "iot:format failed");
     }
 
     return undefined;
@@ -887,7 +887,7 @@ exports.make = function (purpose, code, name) {
  *  a new attribute
  */
 exports.make_boolean = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot-js:type", "iot-js:boolean");
+    return exports.make(purpose, code, name).property("iot:type", "iot:boolean");
 };
 
 /**
@@ -900,7 +900,7 @@ exports.make_boolean = function (purpose, code, name) {
  *  a new attribute
  */
 exports.make_integer = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot-js:type", "iot-js:integer");
+    return exports.make(purpose, code, name).property("iot:type", "iot:integer");
 };
 
 /**
@@ -913,13 +913,13 @@ exports.make_integer = function (purpose, code, name) {
  *  a new attribute
  */
 exports.make_number = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot-js:type", "iot-js:number");
+    return exports.make(purpose, code, name).property("iot:type", "iot:number");
 };
 
 exports.make_unit = function (purpose, code, name) {
     return exports
         .make(purpose, code, name)
-        .property("iot-js:type", "iot-js:number")
+        .property("iot:type", "iot:number")
         .unit("iot-unit:math.fraction.unit")
         .minimum(0)
         .maximum(1);
@@ -928,7 +928,7 @@ exports.make_unit = function (purpose, code, name) {
 exports.make_percent = function (purpose, code, name) {
     return exports
         .make(purpose, code, name)
-        .property("iot-js:type", "iot-js:number")
+        .property("iot:type", "iot:number")
         .unit("iot-unit:math.fraction.percent")
         .minimum(0)
         .maximum(100);
@@ -944,35 +944,35 @@ exports.make_percent = function (purpose, code, name) {
  *  a new attribute
  */
 exports.make_string = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot-js:type", "iot-js:string");
+    return exports.make(purpose, code, name).property("iot:type", "iot:string");
 };
 
 exports.make_iri = function (purpose, code, name) {
     return exports.make(purpose, code, name)
-        .property("iot-js:type", "iot-js:string")
+        .property("iot:type", "iot:string")
         .format(":iri");
 };
 
 exports.make_datetime = function (purpose, code, name) {
     return exports.make(purpose, code, name)
-        .property("iot-js:type", "iot-js:string")
+        .property("iot:type", "iot:string")
         .format(":datetime");
 };
 
 exports.make_date = function (purpose, code, name) {
     return exports.make(purpose, code, name)
-        .property("iot-js:type", "iot-js:string")
+        .property("iot:type", "iot:string")
         .format(":date");
 };
 
 exports.make_time = function (purpose, code, name) {
     return exports.make(purpose, code, name)
-        .property("iot-js:type", "iot-js:string")
+        .property("iot:type", "iot:string")
         .format(":time");
 };
 
 exports.make_color = function (purpose, code, name) {
     return exports.make(purpose, code, name)
-        .property("iot-js:type", "iot-js:string")
+        .property("iot:type", "iot:string")
         .format(":color");
 };

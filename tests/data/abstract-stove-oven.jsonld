@@ -5,7 +5,7 @@
     "iot-attribute": "https://iotdb.org/pub/iot-attribute#", 
     "iot-iotdb": "https://iotdb.org/pub/iot-iotdb#", 
     "iot-js": "https://iotdb.org/pub/iot-js#", 
-    "iot-js:type": {
+    "iot:type": {
       "@type": "@id"
     }, 
     "iot-unit": "https://iotdb.org/pub/iot-unit#", 
@@ -26,38 +26,38 @@
     {
       "@id": "#on", 
       "@type": "iot:Attribute", 
-      "iot-js:type": "iot-js:boolean", 
+      "iot:type": "iot:boolean", 
       "iot:purpose": "iot-attribute:on"
     }, 
     {
       "@id": "#temperature_f", 
       "@type": "iot:Attribute", 
-      "iot-js:maximum": 500, 
-      "iot-js:minimum": 0, 
-      "iot-js:type": "iot-js:integer", 
+      "iot:maximum": 500, 
+      "iot:minimum": 0, 
+      "iot:type": "iot:integer", 
       "iot:purpose": "iot-attribute:temperature", 
       "iot:unit": "iot-unit:temperature.si.fahrenheit"
     }, 
     {
       "@id": "#temperature_c", 
       "@type": "iot:Attribute", 
-      "iot-js:maximum": 260, 
-      "iot-js:minimum": 0, 
-      "iot-js:type": "iot-js:integer", 
+      "iot:maximum": 260, 
+      "iot:minimum": 0, 
+      "iot:type": "iot:integer", 
       "iot:purpose": "iot-attribute:temperature", 
       "iot:unit": "iot-unit:temperature.si.celsius"
     }, 
     {
       "@id": "#reading_c", 
       "@type": "iot:Attribute", 
-      "iot-js:type": "iot-js:integer", 
+      "iot:type": "iot:integer", 
       "iot:purpose": "iot-attribute:reading", 
       "iot:unit": "iot-unit:temperature.si.celsius"
     }, 
     {
       "@id": "#reading_f", 
       "@type": "iot:Attribute", 
-      "iot-js:type": "iot-js:integer", 
+      "iot:type": "iot:integer", 
       "iot:purpose": "iot-attribute:reading", 
       "iot:unit": "iot-unit:temperature.si.fahrenheit"
     }

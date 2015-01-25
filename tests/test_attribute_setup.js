@@ -15,15 +15,15 @@ var attribute = require("../attribute")
 var _ = require("../helpers")
 
 /* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot-js:boolean");
-var iot_js_integer = _.ld.expand("iot-js:integer");
-var iot_js_number = _.ld.expand("iot-js:number");
-var iot_js_string = _.ld.expand("iot-js:string");
+var iot_js_boolean = _.ld.expand("iot:boolean");
+var iot_js_integer = _.ld.expand("iot:integer");
+var iot_js_number = _.ld.expand("iot:number");
+var iot_js_string = _.ld.expand("iot:string");
 
-var iot_js_type = _.ld.expand("iot-js:type");
+var iot_js_type = _.ld.expand("iot:type");
 
-var iot_js_minimum = _.ld.expand("iot-js:minimum");
-var iot_js_maximum = _.ld.expand("iot-js:maximum");
+var iot_js_minimum = _.ld.expand("iot:minimum");
+var iot_js_maximum = _.ld.expand("iot:maximum");
 
 var iot_attribute = _.ld.expand("iot:Attribute");
 var iot_purpose = _.ld.expand("iot:purpose");
@@ -108,10 +108,10 @@ describe('test_attribute_setup', function(){
             'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#temperature',
             'https://iotdb.org/pub/iot#role': 'https://iotdb.org/pub/iot-attribute#role-reading',
             'https://iotdb.org/pub/iot#unit': 'https://iotdb.org/pub/iot-unit#temperature.si.fahrenheit',
-            'https://iotdb.org/pub/iot-js#type': 'https://iotdb.org/pub/iot-js#number',
-            'https://iotdb.org/pub/iot-js#write': false,
-            'https://iotdb.org/pub/iot-js#minimum': 0,
-            'https://iotdb.org/pub/iot-js#maximum': 500 
+            'https://iotdb.org/pub/iot#type': 'https://iotdb.org/pub/iot#number',
+            'https://iotdb.org/pub/iot#write': false,
+            'https://iotdb.org/pub/iot#minimum': 0,
+            'https://iotdb.org/pub/iot#maximum': 500 
         }
 
         var a = attribute.make_number("value")

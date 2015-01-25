@@ -54,8 +54,8 @@ describe('test_iotdb_load_model:', function(){
                   'iot:name': 'abstract-clock' }
                 var whend = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:Attribute',
                   'iot:purpose': 'iot-attribute:when-instant',
-                  'iot-js:format': 'iot-js:datetime',
-                  'iot-js:type': 'iot-js:string' }
+                  'iot:format': 'iot:datetime',
+                  'iot:type': 'iot:string' }
 
                 assert.ok(_.equals(clockd, iot.gm.get_dictionary(CLOCK_IRI)))
                 assert.ok(_.equals(whend, iot.gm.get_dictionary(CLOCK_WHEN_IRI)))
@@ -73,8 +73,8 @@ describe('test_iotdb_load_model:', function(){
                 var attributed = { '@type': 'https://iotdb.org/pub/iot#Attribute',
                   '@id': '#when-instant',
                   'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#when-instant',
-                  'https://iotdb.org/pub/iot-js#format': 'https://iotdb.org/pub/iot-js#datetime',
-                  'https://iotdb.org/pub/iot-js#type': 'https://iotdb.org/pub/iot-js#string' }
+                  'https://iotdb.org/pub/iot#format': 'https://iotdb.org/pub/iot#datetime',
+                  'https://iotdb.org/pub/iot#type': 'https://iotdb.org/pub/iot#string' }
 
                 // _.equals doesn't work for us because javascriptsuck
                 var attribute = iot._build_attribute(CLOCK_WHEN_IRI)
@@ -167,12 +167,12 @@ describe('test_iotdb_load_model:', function(){
                 var temperature_got = iot.gm.get_dictionary(OVEN_TEMPERATURE_C_IRI, {
                     as_list: true
                 })
-                var temperature_expect = { 'iot-js:minimum': 0,
-                    'iot-js:maximum': 260,
+                var temperature_expect = { 'iot:minimum': 0,
+                    'iot:maximum': 260,
                     'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:attribute',
                     'iot:purpose': 'iot-attribute:temperature',
                     'iot:unit': 'iot-unit:temperature.si.celsius',
-                    'iot-js:type': 'iot-js:integer'
+                    'iot:type': 'iot:integer'
                 }
                 assert.ok(_.equals(temperature_got, temperature_expect))
 
@@ -188,11 +188,11 @@ describe('test_iotdb_load_model:', function(){
             iot.on(iotdb.EVENT_UPDATED_MODEL, function(iri) {
                 var attributed = { '@type': 'https://iotdb.org/pub/iot#Attribute',
                   '@id': '#temperature_c',
-                  'https://iotdb.org/pub/iot-js#minimum': 0,
-                  'https://iotdb.org/pub/iot-js#maximum': 260,
+                  'https://iotdb.org/pub/iot#minimum': 0,
+                  'https://iotdb.org/pub/iot#maximum': 260,
                   'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#temperature',
                   'https://iotdb.org/pub/iot#unit': 'https://iotdb.org/pub/iot-unit#temperature.si.celsius',
-                  'https://iotdb.org/pub/iot-js#type': 'https://iotdb.org/pub/iot-js#integer' }
+                  'https://iotdb.org/pub/iot#type': 'https://iotdb.org/pub/iot#integer' }
 
 
                 // _.equals doesn't work for us because javascriptsuck

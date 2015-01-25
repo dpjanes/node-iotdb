@@ -4,10 +4,10 @@
     "iot": "https://iotdb.org/pub/iot#", 
     "iot-attribute": "https://iotdb.org/pub/iot-attribute#", 
     "iot-js": "https://iotdb.org/pub/iot-js#", 
-    "iot-js:format": {
+    "iot:format": {
       "@type": "@id"
     }, 
-    "iot-js:type": {
+    "iot:type": {
       "@type": "@id"
     }, 
     "iot:model": {
@@ -22,8 +22,8 @@
   "iot:attribute": {
     "@id": "#when-instant", 
     "@type": "iot:Attribute", 
-    "iot-js:format": "iot-js:datetime", 
-    "iot-js:type": "iot-js:string", 
+    "iot:format": "iot:datetime", 
+    "iot:type": "iot:string", 
     "iot:purpose": "iot-attribute:when-instant"
   }, 
   "iot:name": "abstract-clock"
