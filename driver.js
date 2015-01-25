@@ -54,9 +54,8 @@ var EVENT_DISCONNECT = 'disconnect';
  *  @constructor
  */
 var Driver = function () {
-    // WE REALLY NEED TO FIX UP MQTT
     events.EventEmitter.call(this);
-    this.setMaxListeners(128);
+    this.setMaxListeners(0);
 };
 
 util.inherits(Driver, events.EventEmitter);
@@ -451,7 +450,7 @@ Driver.prototype.mqtt_subscribe = function () {
     self.mqtt_last_millis = (new Date()).getTime();
 
     var mqtt_client = mqtt.createClient(self.mqtt_port, self.mqtt_host);
-    mqtt_client.setMaxListeners(25);
+    mqtt_client.setMaxListeners(0);
 
     logger.info({
         method: "mqtt_subscribe",

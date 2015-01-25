@@ -9,7 +9,7 @@
     }, 
     "dependencies": {
         "bunyan": "~0.22.3", 
-        "iotdb-models": ">=0.0.20", 
+        "iotdb-models": ">=0.0.22", 
         "iotdb-timers": "~0.0.9", 
         "jsonld": "~0.1.25", 
         "minimist": "~0.0.5", 
@@ -54,5 +54,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.3.19"
+    "version": "0.4.2"
 }

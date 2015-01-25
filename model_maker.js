@@ -607,6 +607,7 @@ ModelMaker.prototype.make = function () {
         this.Model = new_thing;
 
         this.__emitter = new events.EventEmitter();
+        this.__emitter.setMaxListeners(0);
         this.name = (self.__name !== null) ? self.__name : self.__code;
         this.description = self.__description;
         this.help = self.__help;
