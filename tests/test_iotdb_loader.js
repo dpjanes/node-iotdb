@@ -49,15 +49,22 @@ describe('test_iotdb_load_model:', function(){
         it('data looks correct', function(done){
             var iot = new iotdb.IOT(iotd)
             iot.on(iotdb.EVENT_UPDATED_MODEL, function(iri) {
-                var clockd = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:Model',
+                var clockd = {
+                  'rdf:type': 'iot:Model',
                   'iot:attribute': 'file:///abstract-clock#when-instant',
-                  'iot:name': 'abstract-clock' }
-                var whend = { 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type': 'iot:Attribute',
+                  'iot:name': 'abstract-clock'
+                }
+                var whend = {
+                  'rdf:type': 'iot:Attribute',
                   'iot:purpose': 'iot-attribute:when-instant',
                   'iot:format': 'iot:datetime',
                   'iot:type': 'iot:string' }
 
-                assert.ok(_.equals(clockd, iot.gm.get_dictionary(CLOCK_IRI)))
+                // console.log("HERE:XXX", whend);
+                // console.log("HERE:YYY", iot.gm.get_dictionary(CLOCK_IRI));
+                // process.exit(0)
+
+                assert.ok(_.equals(clockd, iot.gm.get_dictionary(CLOCK_IRI)));
                 assert.ok(_.equals(whend, iot.gm.get_dictionary(CLOCK_WHEN_IRI)))
 
                 done()

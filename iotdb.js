@@ -2176,7 +2176,7 @@ IOT.prototype._build_model = function (model_iri) {
     for (var ti in ts) {
         var t = ts[ti];
 
-        if (t.predicate === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") {
+        if (t.predicate === "rdf:type") {
             at_types.push(_.ld.compact(t.object_value));
         } else if (t.predicate === "iot:attribute") {
             var attribute = self._build_attribute(t.object_value);
@@ -2248,7 +2248,7 @@ IOT.prototype._build_attribute = function (attribute_iri) {
     for (var ti in ts) {
         var t = ts[ti];
 
-        if (t.predicate === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") {
+        if (t.predicate === "rdf:type") {
             at_types.push(_.ld.compact(t.object_value));
         } else if (t.predicate === "validator") {
             a.validator(t.object_value);
@@ -2726,7 +2726,7 @@ IOT.prototype.places = function () {
     var self = this;
 
     var pds = [];
-    var iris = this.gm.get_subjects('http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'iot:place');
+    var iris = this.gm.get_subjects('rdf:type', 'iot:place');
     for (var ii in iris) {
         var iri = iris[ii];
         var pd = self.gm.get_dictionary(iri);

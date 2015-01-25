@@ -533,7 +533,7 @@ GraphManager.prototype._load_flattened_object = function (robjectd) {
         node_types.map(function (node_type) {
             self._load_node({
                 node_subject: node_subject,
-                node_predicate: _.rdf_type,
+                node_predicate: _.ld.namespace.rdf + "type",
                 node_object_id: node_type
             });
         });

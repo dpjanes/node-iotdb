@@ -66,7 +66,7 @@ Meta.prototype.state = function () {
         var tds = self.iot.gm.get_triples(self.thing_iri, null, null);
         for (var tx in tds) {
             var td = tds[tx];
-            if (td.predicate === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+            if (td.predicate === 'rdf:type') {
                 continue;
             } else if (td.predicate === 'rdfs:type') {
                 continue;
