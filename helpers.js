@@ -106,6 +106,7 @@ var each = exports.each = exports.forEach = function (obj, iterator, context) {
     }
 };
 
+/*
 // Return the results of applying the iterator to each element.
 // Delegates to **ECMAScript 5**'s native `map` if available.
 exports.map = exports.collect = function (obj, iterator, context) {
@@ -422,6 +423,8 @@ exports.size = function (obj) {
     if (obj == null) return 0;
     return (obj.length === +obj.length) ? obj.length : exports.keys(obj).length;
 };
+*/
+/*
 
 // Array Functions
 // ---------------
@@ -489,6 +492,8 @@ exports.flatten = function (array, shallow) {
 exports.without = function (array) {
     return exports.difference(array, slice.call(arguments, 1));
 };
+*/
+/*
 
 // Produce a duplicate-free version of the array. If the array has already
 // been sorted, you have the option of using a faster algorithm.
@@ -622,10 +627,12 @@ exports.range = function (start, stop, step) {
 
     return range;
 };
+*/
 
 // Function (ahem) Functions
 // ------------------
 
+/*
 // Reusable constructor function for prototype setting.
 var ctor = function () {};
 
@@ -814,6 +821,8 @@ exports.after = function (times, func) {
         }
     };
 };
+*/
+/*
 
 // Object Functions
 // ----------------
@@ -901,6 +910,7 @@ exports.omit = function (obj) {
     }
     return copy;
 };
+*/
 
 // Fill in a given object with default properties.
 exports.defaults = function (obj) {
@@ -913,6 +923,7 @@ exports.defaults = function (obj) {
     });
     return obj;
 };
+
 
 // Create a (shallow-cloned) duplicate of an object.
 exports.clone = function (obj) {
@@ -928,6 +939,7 @@ exports.tap = function (obj, interceptor) {
     return obj;
 };
 
+/*
 // Internal recursive comparison function for `isEqual`.
 var eq = function (a, b, aStack, bStack) {
     // Identical objects are equal. `0 === -0`, but they aren't identical.
@@ -1038,6 +1050,7 @@ exports.isEmpty = function (obj) {
 exports.isElement = function (obj) {
     return !!(obj && obj.nodeType === 1);
 };
+*/
 
 // Is a given value an array?
 // Delegates to ECMA5's native Array.isArray
@@ -1072,6 +1085,7 @@ if (typeof (/./) !== 'function') {
     };
 };
 
+/*
 // Is a given object a finite number?
 exports.isFinite = function (obj) {
     return isFinite(obj) && !isNaN(parseFloat(obj));
@@ -1081,6 +1095,7 @@ exports.isFinite = function (obj) {
 exports.isNaN = function (obj) {
     return exports.isNumber(obj) && obj != +obj;
 };
+*/
 
 // Is a given value a boolean?
 exports.isBoolean = function (obj) {
@@ -1103,6 +1118,7 @@ exports.has = function (obj, key) {
     return hasOwnProperty.call(obj, key);
 };
 
+/*
 // Utility Functions
 // -----------------
 
@@ -1174,7 +1190,9 @@ exports.result = function (object, property) {
     var value = object[property];
     return exports.isFunction(value) ? value.call(object) : value;
 };
+*/
 
+/*
 
 // Generate a unique integer id (unique within the entire client session).
 // Useful for temporary DOM ids.
@@ -1275,6 +1293,7 @@ exports.template = function (text, data, settings) {
 exports.chain = function (obj) {
     return exports(obj).chain();
 };
+ */
 
 
 exports.dump = function (bodyd, optd) {

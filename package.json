@@ -17,6 +17,7 @@
         "node-uuid": "~1.4.1", 
         "prompt": "~0.2.12", 
         "rdf": "~2.1.2", 
+        "underscore": "~1.7.0", 
         "unirest": "~0.1.9", 
         "xml2js": "~0.4.0"
     }, 
@@ -54,5 +55,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.4.2"
+    "version": "0.4.3"
 }
