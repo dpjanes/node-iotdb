@@ -225,5 +225,25 @@ UpnpDevice.prototype._getServiceDesc = function (service) {
     req.end();
 }
 
+/**
+ *  IOTDB
+ */
+UpnpDevice.prototype.service_by_urn = function (service_urn) {
+    var self = this;
+
+    if (!self.services) {
+        return null;
+    }
+
+    for (var s_name in self.services) {
+        var service = self.services[s_name];
+        if (service.serviceType === service_urn) {
+            return service;
+        }
+    }
+
+    return null;
+};
+
 
 exports.UpnpDevice = UpnpDevice;

@@ -3002,6 +3002,7 @@ exports.model = require('./model');
 exports.make_model = exports.model.make_model;
 exports.make_generic = require('./generic').make_generic;
 exports.GraphManager = require('./graph').GraphManager;
+exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;
 exports.cfg = cfg;
 exports.libs = libs.libs;

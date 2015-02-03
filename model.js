@@ -862,10 +862,19 @@ Model.prototype.is_driver_supported = function (driver, otherwise) {
  *  An idenitity object
  */
 Model.prototype.identity = function (kitchen_sink) {
-    if (this.driver_instance) {
-        return this.driver_instance.identity(kitchen_sink);
+    var self = this;
+    if (self._identityd) {
+        return self._identityd;
+    }
+
+    if (self.bridge_instance && self.bridge_instance.reachable()) {
+        self._identityd = _.deepCopy(self.bridge_instance.identity());
+        _.thing_id(self._identityd);
+        return self._identityd;
+    } else if (self.driver_instance) {
+        return self.driver_instance.identity(kitchen_sink);
     } else {
-        // console.log("# Model.identity: returning null because this.driver_instance=null");
+        // console.log("# Model.identity: returning null because self.driver_instance=null");
         if (!shutting_down()) {
             logger.error({
                 method: "identity",
@@ -969,6 +978,11 @@ Model.prototype.driver_out = function (paramd) {
  */
 Model.prototype.pull = function () {
     var self = this;
+
+    if (self.bridge_instance) {
+        self.bridge_instance.pull();
+        return;
+    }
 
     if (!self.driver_instance) {
         // console.log("# Model.pull: no self.driver_instance?");
@@ -1080,6 +1094,11 @@ Model.prototype._do_pushes = function (attributed) {
 
     // this magically does things to '__deep_copy_state'
     self.__push_keys = _.keys(attributed);
+
+    if (self.bridge_instance) {
+        self.bridge_instance.push(self._deep_copy_state(self, true));
+        return;
+    }
 
     if (!self.driver_instance) {
         // if there's a parent and this has no driver, it will handle it
@@ -1619,11 +1638,13 @@ Model.prototype.tag = function (tag) {
 Model.prototype.reachable = function () {
     var self = this;
 
-    if (!self.driver_instance) {
+    if (self.bridge_instance) {
+        return self.bridge_instance.reachable();
+    } else if (self.driver_instance) {
+        return self.driver_instance.reachable();
+    } else {
         return false;
     }
-
-    return self.driver_instance.reachable();
 };
 
 /**
@@ -1632,12 +1653,42 @@ Model.prototype.reachable = function () {
 Model.prototype.driver_meta = function () {
     var self = this;
 
-    if (self.driver_instance) {
+    if (self.bridge_instance && self.bridge_instance.reachable()) {
+        var metad = self.bridge_instance.meta();
+        metad = _.ld.expand(metad);
+        return metad;
+    } else if (self.driver_instance) {
         return self.driver_instance.meta();
     } else {
         return {};
     }
 
+};
+
+/*
+ *  IOTDB 0.5 - Bridges
+ */
+Model.prototype.bind_bridge = function (bridge_instance) {
+    var self = this;
+
+    self.bridge_instance = bridge_instance;
+    if (self.bridge_instance) {
+        self.bridge_instance.pulled = function(stated) {
+            if (stated) {
+                self.update(stated, {
+                    notify: true,
+                    push: false,
+                    force: false,
+                });
+            } else {
+                self.meta_changed();
+            }
+        };
+    }
+
+    self.meta_changed();
+
+    return self;
 };
 
 /*

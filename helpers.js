@@ -34,6 +34,7 @@ var path = require('path');
 var modules = [
     require('underscore'),
     require('./helpers/ld'),
+    require('./helpers/id'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
