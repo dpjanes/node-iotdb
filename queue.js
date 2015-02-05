@@ -183,7 +183,17 @@ FIFOQueue.prototype.run = function () {
     self.qitems.splice(0, 1);
     self.qurrents.push(qitem);
 
-    qitem.run(self, qitem);
+    try {
+        qitem.run(self, qitem);
+    }
+    catch (x) {
+        logger.error({
+            method: "run",
+            name: self.name
+        }, "exception running qitem - finishing just in case");
+
+        self.finished(qitem);
+    }
 };
 
 /* --- API --- */

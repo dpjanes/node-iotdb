@@ -868,8 +868,8 @@ Model.prototype.identity = function (kitchen_sink) {
     }
 
     if (self.bridge_instance && self.bridge_instance.reachable()) {
-        self._identityd = _.deepCopy(self.bridge_instance.identity());
-        _.thing_id(self._identityd);
+        self._identityd = {};
+        self._identityd.thing_id = self.bridge_instance.meta()["iot:thing"];
         return self._identityd;
     } else if (self.driver_instance) {
         return self.driver_instance.identity(kitchen_sink);
