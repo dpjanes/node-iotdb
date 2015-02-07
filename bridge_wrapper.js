@@ -35,7 +35,7 @@ var logger = bunyan.createLogger({
     module: 'bridge_wrapper',
 });
 
-var BridgeWrapper = function(exemplar) {
+var BridgeWrapper = function(exemplar, binding) {
     var self = this;
     events.EventEmitter.call(self);
 
@@ -51,7 +51,20 @@ var BridgeWrapper = function(exemplar) {
             }
         };
 
-        instance.connect();
+        if (binding && binding.matchd) {
+            var bridge_meta = _.ld.compact(instance.meta());
+            var binding_meta = _.ld.compact(binding.matchd);
+            if (!_.d_contains_d(bridge_meta, binding_meta)) {
+                if (exemplar.ignore) {
+                    exemplar.ignore(instance);
+                }
+
+                self.emit("ignored", instance);
+                return;
+            }     
+        }
+
+        instance.connect(binding && binding.connectd);
 
         self.emit("discovered", instance);
     };
@@ -64,8 +77,8 @@ var BridgeWrapper = function(exemplar) {
 
 util.inherits(BridgeWrapper, events.EventEmitter);
 
-var bridge_wrapper = function(exemplar) {
-    return new BridgeWrapper(exemplar);
+var bridge_wrapper = function(exemplar, binding) {
+    return new BridgeWrapper(exemplar, binding);
 };
 
 exports.bridge_wrapper = bridge_wrapper;
