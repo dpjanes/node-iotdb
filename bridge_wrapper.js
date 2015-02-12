@@ -35,50 +35,66 @@ var logger = bunyan.createLogger({
     module: 'bridge_wrapper',
 });
 
-var BridgeWrapper = function(exemplar, binding) {
+var BridgeWrapper = function(binding, initd, use_model) {
     var self = this;
     events.EventEmitter.call(self);
 
-    exemplar.discovered = function(instance) {
-        instance.pulled = function(stated) {
-            if (stated) {
-                self.emit("state", instance, stated);
-            } else if (instance.reachable()) {
-                self.emit("meta", instance);
-            } else {
-                self.emit("meta", instance);
-                self.emit("disconnected", instance);
-            }
-        };
+    initd = _.defaults(initd, binding.initd, initd, {});
+    var discoverd = _.defaults(binding.discoverd, {});
+    var connectd = _.defaults(binding.connectd, {});
 
+    var bridge_exemplar = new binding.bridge(initd);
+
+    bridge_exemplar.discovered = function(bridge_instance) {
+        /* bindings can ignore certatin discoveries */
         if (binding && binding.matchd) {
-            var bridge_meta = _.ld.compact(instance.meta());
+            var bridge_meta = _.ld.compact(bridge_instance.meta());
             var binding_meta = _.ld.compact(binding.matchd);
             if (!_.d_contains_d(bridge_meta, binding_meta)) {
-                if (exemplar.ignore) {
-                    exemplar.ignore(instance);
+                if (bridge_exemplar.ignore) {
+                    bridge_exemplar.ignore(bridge_instance);
                 }
 
-                self.emit("ignored", instance);
+                self.emit("ignored", bridge_instance);
                 return;
             }     
         }
 
-        instance.connect(binding && binding.connectd);
+        /* now make a model */
+        var model_instance = new binding.model();
+        model_instance.bind_bridge(bridge_instance);
 
-        self.emit("discovered", instance);
+        self.emit("model", model_instance);
+
+        /* OK: here's dealing with pulls */
+        var model_pulled = bridge_instance.pulled;
+        bridge_instance.pulled = function(stated) {
+            /* this will go to the Model */
+            model_pulled(stated);
+
+            if (stated) {
+                self.emit("state", bridge_instance, stated);
+            } else if (bridge_instance.reachable()) {
+                self.emit("meta", bridge_instance);
+            } else {
+                self.emit("meta", bridge_instance);
+                self.emit("disconnected", bridge_instance);
+            }
+        };
+
+        /* the last thing we do before announcing discovery is connect it */
+        bridge_instance.connect(connectd)
+
+        self.emit("bridge", bridge_instance);
     };
-
     
     process.nextTick(function() {
-        exemplar.discover();
+        bridge_exemplar.discover(discoverd);
     });
 };
 
 util.inherits(BridgeWrapper, events.EventEmitter);
 
-var bridge_wrapper = function(exemplar, binding) {
-    return new BridgeWrapper(exemplar, binding);
+exports.bridge_wrapper = function(binding, initd) {
+    return new BridgeWrapper(binding, initd);
 };
-
-exports.bridge_wrapper = bridge_wrapper;

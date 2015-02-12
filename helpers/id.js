@@ -40,6 +40,22 @@ var _thing_urn_unique = function() {
 };
 
 /**
+ *  Unique thing, but hashing required of last com
+ */
+var _thing_urn_unique_hash = function() {
+    var parts = [ "urn", "iotdb", "thing" ];
+    for (var ai = 0; ai < arguments.length - 1; ai++) {
+        parts.push(encodeURIComponent(arguments[ai]));
+    }
+
+    var hasher = crypto.createHash('md5');
+    hasher.update(arguments[ai - 1])
+    parts.push(hasher.digest("hex"))
+
+    return parts.join(":");
+};
+
+/**
  *  Unique on this network
  */
 var _thing_urn_network = function() {
@@ -78,6 +94,7 @@ var _thing_urn_machine = function() {
 exports.id = {
     thing_urn: {
         unique: _thing_urn_unique,
+        unique_hash: _thing_urn_unique_hash,
         network_unique: _thing_urn_network,
         machine_unique: _thing_urn_machine,
     },

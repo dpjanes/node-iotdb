@@ -39,6 +39,7 @@ exports.attribute = attribute;
 attribute.boolean = iotdb.make_boolean(":value");
 attribute.boolean.on = iotdb.make_boolean(":on");
 attribute.boolean.mute = iotdb.make_boolean(":mute");
+attribute.boolean.flag = iotdb.make_boolean(":flag");
 
 /* integer */
 attribute.integer = iotdb.make_integer(":value")
@@ -69,12 +70,23 @@ attribute.unit.brightness = iotdb.make_unit(":brightness");
 
 /* strings */
 attribute.string = iotdb.make_string(":value");
+attribute.string.iri = iotdb.make_iri(":iri");
 attribute.string.color = iotdb.make_color(":color");
+attribute.color = iotdb.make_color(":color");
 attribute.string.band = iotdb.make_string(":band");
+
+attribute.datetime = iotdb.make_datetime(":when")
+attribute.datetime.timestamp = iotdb.make_datetime(":timestamp")
+attribute.datetime.date = iotdb.make_date(":when")
+attribute.datetime.time = iotdb.make_time(":when");
 
 /* vectors */
 attribute.vector = {};
 attribute.vector.number = {};
+attribute.vector.number.xy = {
+    x: iotdb.make_number(':x').vector("x/y"),
+    y: iotdb.make_number(':y').vector("x/y"),
+};
 attribute.vector.number.xyz = {
     x: iotdb.make_number(':x').vector("x/y/z"),
     y: iotdb.make_number(':y').vector("x/y/z"),
@@ -84,6 +96,37 @@ attribute.vector.number.axes = {
     roll: iotdb.make_number(':roll').vector("roll/pitch/yaw"),
     pitch: iotdb.make_number(':pitch').vector("roll/pitch/yaw"),
     yaw: iotdb.make_number(':yaw').vector("roll/pitch/yaw"),
+};
+attribute.vector.number.ll = {
+    latitude: iotdb
+        .make_number(':latitude')
+        .unit("iot-unit:math.angle.degree")
+        .minimum(-90)
+        .maximum(90)
+        .vector("lat/lon"),
+    longitude: iotdb
+        .make_number(':longitude')
+        .unit("iot-unit:math.angle.degree")
+        .minimum(-180)
+        .maximum(180)
+        .vector("lat/lon"),
+};
+attribute.vector.number.lle = {
+    latitude: iotdb
+        .make_number(':latitude')
+        .unit("iot-unit:math.angle.degree")
+        .minimum(-90)
+        .maximum(90)
+        .vector("lat/lon/elevation"),
+    longitude: iotdb
+        .make_number(':longitude')
+        .unit("iot-unit:math.angle.degree")
+        .minimum(-180)
+        .maximum(180)
+        .vector("lat/lon/elevation"),
+    elevation: iotdb
+        .make_number(':elevation')
+        .vector("lat/lon/elevation"),
 };
 
 /* sensors */
