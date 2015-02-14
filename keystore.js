@@ -46,13 +46,16 @@ var Keystore = function(paramd) {
 
     self.paramd = _.defaults(paramd, {
         root: "/",
-        path: [ ".iotdb/keystore.json", "$HOME/.iotdb/keystore.json", ],
+        keystore: "keystore.json",
+        path: [ ".iotdb", "$HOME/.iotdb", ],
         makedirs: true,
     })
     self.d = {}
 
     events.EventEmitter.call(this);
     this.setMaxListeners(0);
+
+    self._load();
 };
 
 util.inherits(Keystore, events.EventEmitter);
@@ -67,7 +70,8 @@ Keystore.prototype._normalize_key = function(key) {
     return "/" + key.replace(/^\/*/, '');
 };
 
-Keystore._load = function() {
+Keystore.prototype._load = function() {
+    var self = this;
     self.d = {};
 
     var filenames = cfg.cfg_find(cfg.cfg_envd(), self.paramd.path, "keystore.json");
@@ -137,9 +141,9 @@ Keystore.prototype.save = function(key, value, paramd) {
     if (paramd.filename) {
         filename = paramd.filename
     } else if (paramd.global) {
-        filename = self.paramd.path[self.paramd.path.length - 1];
+        filename = self.paramd.path[self.paramd.path.length - 1] + "/" + self.paramd.keystore;
     } else {
-        filename = self.paramd.path[0];;
+        filename = self.paramd.path[0] + "/" + self.paramd.keystore;
     }
 
     // load keystore
@@ -188,4 +192,4 @@ var keystore = function() {
  *  API
  */
 exports.Keystore = Keystore;
-
+exports.keystore = keystore;
