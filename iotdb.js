@@ -3009,6 +3009,10 @@ exports.libs = libs.libs;
 exports.upnp = require('./upnp');
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 
+var keystore = require('./keystore')
+exports.keystore = keystore.keystore;
+exports.Keystore = keystore.Keystore;
+
 exports.EVENT_UPDATE_SUBJECT = exports.GraphManager.EVENT_UPDATED_SUBJECT;
 exports.EVENT_UPDATED_GRAPH = exports.GraphManager.EVENT_UPDATED_GRAPH;
 exports.EVENT_LOADED_IRI = exports.GraphManager.EVENT_LOADED_IRI;
