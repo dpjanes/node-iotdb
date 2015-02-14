@@ -29,6 +29,7 @@ var attribute = require("./attribute");
 var meta_thing = require("./meta");
 var model_maker = require("./model_maker");
 var libs = require("./libs/libs");
+var iotdb = require("./iotdb");
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
@@ -47,10 +48,6 @@ var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "thing_changed";
 var EVENT_META_CHANGED = "meta_changed";
 
-
-var shutting_down = function () {
-    return require('./iotdb').iot().shutting_down;
-};
 
 /**
  *  Convenience function to make a ModelMaker instance
@@ -775,7 +772,7 @@ Model.prototype.on_meta = function (callback) {
     assert.ok(_.isFunction(callback));
 
     self.__emitter.on(EVENT_META_CHANGED, function (thing) {
-        if (shutting_down()) {
+        if (iotdb.shutting_down()) {
             return;
         }
 
@@ -789,7 +786,7 @@ Model.prototype.on_meta = function (callback) {
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function () {
-    if (shutting_down()) {
+    if (iotdb.shutting_down()) {
         return;
     }
 
@@ -867,11 +864,13 @@ Model.prototype.identity = function (kitchen_sink) {
         return self._identityd;
     }
 
+    /*
+     * DPJ 2015-02-14 Don't need to do this - setup when bridge is connected
     if (self.bridge_instance && self.bridge_instance.reachable()) {
         self._identityd = {};
         self._identityd.thing_id = self.bridge_instance.meta()["iot:thing"];
         return self._identityd;
-    } else if (self.driver_instance) {
+    } else */ if (self.driver_instance) {
         return self.driver_instance.identity(kitchen_sink);
     } else {
         // console.log("# Model.identity: returning null because self.driver_instance=null");
@@ -1492,7 +1491,17 @@ Model.prototype._find = function (find_key, paramd) {
  *  Return the IOTDB Thing IRI for this Thing
  */
 Model.prototype.thing_iri = function () {
-    return require('./iotdb').iot().thing_iri(this);
+    var self = this;
+    if (self.bridge_instance) {
+        var identity = self.identity();
+        if (identity) {
+            return identity.thing_id;    // this should become an IRI
+        } else {
+            return null;
+        }
+    } else {
+        return require('./iotdb').iot().thing_iri(this);
+    }
 };
 
 /**
@@ -1574,6 +1583,10 @@ Model.prototype.model_iri = function () {
 Model.prototype.model_code_iri = function () {
     var self = this;
 
+    /* should be returning the GitHub page */
+    return "urn:iotdb:model:" + self.code;
+
+    /* DPJ removing dependence on global IOT object?
     var iot = require('./iotdb').iot();
     if (!iot) {
         logger.fatal({
@@ -1585,6 +1598,7 @@ Model.prototype.model_code_iri = function () {
     }
 
     return iot.model_code_iri(self.code);
+    */
 };
 
 /**
@@ -1602,6 +1616,8 @@ Model.prototype.meta = function () {
     var self = this;
 
     if (self.__meta_thing === undefined) {
+        /* DPJ 2015-05-14 Phasing out IOT in Meta */
+        /*
         var iot = require('./iotdb').iot();
         if (!iot) {
             logger.fatal({
@@ -1613,6 +1629,8 @@ Model.prototype.meta = function () {
         }
 
         self.__meta_thing = new meta_thing.Meta(iot, self);
+        */
+        self.__meta_thing = new meta_thing.Meta(self);
     }
 
     return self.__meta_thing;
@@ -1683,6 +1701,10 @@ Model.prototype.bind_bridge = function (bridge_instance) {
             } else {
                 self.meta_changed();
             }
+        };
+
+        self._identityd = {
+            thing_id: self.bridge_instance.meta()["iot:thing"] + ":" + self.code,
         };
     }
 

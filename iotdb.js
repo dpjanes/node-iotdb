@@ -68,6 +68,8 @@ var EVENT_ON_READY_CHANGE = "iot_ready_change";
  */
 exports.instance = null;
 
+var _shutting_down = false;
+
 /**
  *  Manage things, drivers and connections to the
  *  {@link https://iotdb.org/ IOTDB.org} running
@@ -96,6 +98,9 @@ util.inherits(IOT, events.EventEmitter);
 /**
  */
 exports.iot = function (paramd) {
+    console.trace()
+    process.exit(0)
+
     if (exports.instance == null) {
         paramd = _.defaults(paramd, {
             load_models: true,
@@ -160,7 +165,6 @@ IOT.prototype.configure = function (paramd) {
 
     self.username = self.initd.username;
     self.cfg_root = self.initd.cfg_root;
-    self.shutting_down = false;
 
     self.iotdb_prefix = self.initd.iotdb_prefix;
     self.iotdb_oauthd = {};
@@ -212,7 +216,7 @@ IOT.prototype.configure = function (paramd) {
 IOT.prototype._exit_cleanup = function (paramd, err) {
     var self = this;
 
-    self.shutting_down = true;
+    _shutting_down = true;
     // console.log("- IOT._exit_cleanup", paramd, err);
     logger.info({
         method: "_exit_cleanup",
@@ -1212,7 +1216,7 @@ IOT.prototype._discover_nearby = function (paramd, things) {
             initd: initd,
         };
         driver_exemplar.discover(discover_paramd, function (driver) {
-            if (self.shutting_down) {
+            if (_shutting_down) {
                 // console.log("# IOT._discover_nearby", "ignoring this Driver because shutting down");
                 logger.error({
                     method: "_discover_nearby"
@@ -1415,7 +1419,7 @@ IOT.prototype._discover_thing = function (thing_exemplar, things) {
             initd: thing_exemplar.initd
         };
         driver_exemplar.discover(discover_paramd, function (driver) {
-            if (self.shutting_down) {
+            if (_shutting_down) {
                 // console.log("# IOT._discover_thing", "ignoring this Driver because shutting down");
                 logger.error({
                     method: "_discover_thing"
@@ -2045,7 +2049,7 @@ IOT.prototype.thing_iri = function (thing) {
     } else {
         thing_id = thing.thing_id();
         if (thing_id == null) {
-            if (!self.shutting_down) {
+            if (!_shutting_down) {
                 logger.error({
                     method: "thing_iri"
                 }, "thing_id is null:perhaps not bound to a driver yet?");
@@ -2977,11 +2981,7 @@ IOT.prototype.report_issue = function (issued) {
  */
 exports.IOT = IOT;
 exports.shutting_down = function () {
-    if (exports.instance == null) {
-        return exports.instance.shutting_down;
-    } else {
-        return false;
-    }
+    return _shutting_down;
 };
 
 exports.EVENT_REGISTER_MODEL = EVENT_REGISTER_MODEL;

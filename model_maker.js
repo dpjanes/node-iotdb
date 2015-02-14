@@ -601,7 +601,6 @@ ModelMaker.prototype.make = function () {
         this.driver_instance = (paramd.driver_instance !== undefined) ? paramd.driver_instance : undefined;
         this.initd = (paramd.initd !== undefined) ? paramd.initd : {};
 
-        var iot = require('./iotdb').iot();
 
         this.code = self.__code;
         this.Model = new_thing;
@@ -657,8 +656,10 @@ ModelMaker.prototype.make = function () {
          *  using IOT. This adds a whole asynchronous element
          *  too which has to be accounted for in IOT
          */
+        /* DPJ 2015-02-14 Phase out Subthings
         this.subthingd = [];
         for (var code in self.subthingd) {
+            var iot = require('./iotdb').iot();
             var model = self.subthingd[code];
 
             if (_.isFunction(model)) {
@@ -716,6 +717,7 @@ ModelMaker.prototype.make = function () {
                 }
             }
         }
+        */
 
         this.ostated = {}; // scratchpad
         this.stated = {};

@@ -35,10 +35,12 @@ var logger = bunyan.createLogger({
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
  */
-var Meta = function (iot, thing) {
+var Meta = function (thing) {
     var self = this;
 
-    self.iot = iot;
+    /* DPJ phase out IOT in Meta
+    self.iot = null;
+    */
     self.thing = thing;
 
     self.thing_iri = self.thing.thing_iri();
@@ -58,6 +60,7 @@ Meta.prototype.state = function () {
     metad[_.ld.expand('iot:model')] = self.thing.model_code_iri();
     metad[_.ld.expand('iot:name')] = self.thing.name;   // ultimate fallback
 
+    /* DPJ phase out IOT in Meta
     if (!self.iot.gm.has_subject(self.thing_iri)) {
         _.extend(metad, self.thing.driver_meta());
 
@@ -75,6 +78,7 @@ Meta.prototype.state = function () {
             metad[td.predicate] = td.object_value;
         }
     }
+    */
 
     _.extend(metad, self.updated);
 

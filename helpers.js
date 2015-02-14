@@ -35,6 +35,7 @@ var modules = [
     require('underscore'),
     require('./helpers/ld'),
     require('./helpers/id'),
+    require('./helpers/d'),
     require('./libs/libs').libs,
 ];
 for (var mi in modules) {
