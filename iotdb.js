@@ -98,8 +98,8 @@ util.inherits(IOT, events.EventEmitter);
 /**
  */
 exports.iot = function (paramd) {
-    console.trace()
-    process.exit(0)
+    // console.trace()
+    // process.exit(0)
 
     if (exports.instance == null) {
         paramd = _.defaults(paramd, {
