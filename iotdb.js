@@ -3013,6 +3013,10 @@ var keystore = require('./keystore')
 exports.keystore = keystore.keystore;
 exports.Keystore = keystore.Keystore;
 
+var modules = require('./modules')
+exports.modules = modules.modules;
+exports.Modules = modules.Modules;
+
 exports.EVENT_UPDATE_SUBJECT = exports.GraphManager.EVENT_UPDATED_SUBJECT;
 exports.EVENT_UPDATED_GRAPH = exports.GraphManager.EVENT_UPDATED_GRAPH;
 exports.EVENT_LOADED_IRI = exports.GraphManager.EVENT_LOADED_IRI;
