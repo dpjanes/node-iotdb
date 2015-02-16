@@ -59,7 +59,7 @@ print 'new package version:', jd['version']
             README.md \
             LICENSE.txt \
             *.js *.json \
-            libs/*js drivers/*js stores/*js drivers/libs/*.js bin/data/* bin/iotdb |
+            libs/*js helpers/*js drivers/*js stores/*js drivers/libs/*.js bin/data/* bin/iotdb |
         ( cd "${NPM_IOTDB_DST}" && tar xvf - )
 
         ## cp dist/*.* "${NPM_IOTDB_DST}" || exit 1
