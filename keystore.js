@@ -149,12 +149,18 @@ Keystore.prototype.save = function(key, value, paramd) {
     // load keystore
     var d = {};
     cfg.cfg_load_json([ filename ], function(paramd) {
-        for (var key in paramd.doc) {
-            keystored[key] = paramd.doc[key];
+        for (var pd in paramd.doc) {
+            d[pd] = paramd.doc[pd];
         }
     });
 
-    // update the (just loadedl) keystore
+    // if value is a function, we call it with the current value to get a new value
+    // this allows "in-place" updating of a particular value
+    if (_.isFunction(value)) {
+        value = value(_.d.get(d, key));
+    }
+
+    // update the (just loaded) keystore
     _.d.set(d, key, value);
 
     // save - XXX does not deal with recursion yet
