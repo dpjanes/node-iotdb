@@ -45,8 +45,8 @@ var iot_role_reading = _.ld.expand("iot-attribute:role-reading");
 var iot_role_control = _.ld.expand("iot-attribute:role-control");
 
 var EVENT_THINGS_CHANGED = "things_changed";
-var EVENT_THING_CHANGED = "thing_changed";
-var EVENT_META_CHANGED = "meta_changed";
+var EVENT_THING_CHANGED = "state";
+var EVENT_META_CHANGED = "meta";
 
 
 /**
@@ -692,6 +692,14 @@ Model.prototype.on = function (find_key, callback) {
     var attribute_key = null;
     var callbacks = null;
 
+    /* HORRIBLE. */
+    if ((find_key === "state") || (find_key === "meta")) {
+        self.__emitter.on(find_key, function(a, b, c) {
+            callback(self, a, b, c); /* LAZY */
+        });
+        return self;
+    }
+
     if (find_key === null) {
         attribute_key = null;
 
@@ -712,7 +720,7 @@ Model.prototype.on = function (find_key, callback) {
             method: "on",
             find_key: find_key
         }, "find_key not found");
-        return;
+        return self;
     }
 
     if (rd.subthing) {
