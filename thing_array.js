@@ -64,6 +64,7 @@ var ThingArray = function (paramd) {
     self.array_id = '__thing_array_' + array_id++;
     self.length = 0;
     self.transaction_depth = 0;
+    self._things = null;
 
     /*
      *  If paramd.persist is true, create an array for peristing commands
@@ -71,6 +72,10 @@ var ThingArray = function (paramd) {
     this._persistds = null;
     if (paramd.persist) {
         this._persistds = [];
+    }
+
+    if (paramd.things) {
+        self._things = paramd.things;
     }
 
     events.EventEmitter.call(self);
@@ -430,13 +435,18 @@ ThingArray.prototype.merge = function (new_items) {
  *
  *  @return {this}
  */
-ThingArray.prototype.connect = function () {
+ThingArray.prototype.connect = function (modeld) {
     var self = this;
-    var iot = require('./iotdb').iot();
 
-    return self.merge(
-        iot.connect.apply(iot, Array.prototype.slice.call(arguments))
-    );
+    if (self._things) {
+        return self.merge(self._things.connect(modeld));
+    } else {
+        var iot = require('./iotdb').iot();
+
+        return self.merge(
+            iot.connect.apply(iot, Array.prototype.slice.call(arguments))
+        );
+    }
 };
 
 /**
@@ -678,7 +688,7 @@ ThingArray.prototype.things_changed = function () {
 
 /* --- */
 
-ThingArray.prototype._filter_test = function (d, iot, thing) {
+ThingArray.prototype._filter_test = function (d, thing) {
     var thing_place_iri = thing.place_iri();
     var thing_thing_iri = thing.thing_iri();
     var place_predicates = [
@@ -751,12 +761,11 @@ ThingArray.prototype.filter = function (d) {
     var out_items = new ThingArray({
         persist: persist
     });
-    var iot = require('./iotdb').iot();
 
     for (var ii = 0; ii < self.length; ii++) {
         var thing = self[ii];
 
-        if (self._filter_test(d, iot, thing)) {
+        if (self._filter_test(d, thing)) {
             out_items.push(thing);
         }
     }
@@ -789,7 +798,7 @@ ThingArray.prototype.filter = function (d) {
                 var thing = self[ii];
                 var thing_id = thing.thing_id();
 
-                if (!self._filter_test(d, iot, thing)) {
+                if (!self._filter_test(d, thing)) {
                     continue;
                 }
 

@@ -38,15 +38,8 @@ var logger = bunyan.createLogger({
 var Meta = function (thing) {
     var self = this;
 
-    /* DPJ phase out IOT in Meta
-    self.iot = null;
-    */
     self.thing = thing;
-
-    self.thing_iri = self.thing.thing_iri();
-
-    // updated metadata
-    self.updated = {};
+    self._updated = {};
 };
 
 /**
@@ -56,31 +49,13 @@ Meta.prototype.state = function () {
     var self = this;
 
     var metad = {};
-    metad[_.ld.expand('iot:thing')] = self.thing_iri;
-    metad[_.ld.expand('iot:model')] = self.thing.model_code_iri();
-    metad[_.ld.expand('iot:name')] = self.thing.name;   // ultimate fallback
+    metad[_.ld.expand('iot:thing')] = self.thing.thing_id();
+    metad[_.ld.expand('iot:name')] = self.thing.name;       
 
-    /* DPJ phase out IOT in Meta
-    if (!self.iot.gm.has_subject(self.thing_iri)) {
-        _.extend(metad, self.thing.driver_meta());
-
-        _.ld.extend(metad, _.ld.expand("iot:facet"), _.ld.expand(self.thing.__facets));
-    } else {
-        var tds = self.iot.gm.get_triples(self.thing_iri, null, null);
-        for (var tx in tds) {
-            var td = tds[tx];
-            if (td.predicate === 'rdf:type') {
-                continue;
-            } else if (td.predicate === 'rdfs:type') {
-                continue;
-            }
-
-            metad[td.predicate] = td.object_value;
-        }
+    if (self.thing.bridge_instance) {
+        _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()))
     }
-    */
-
-    _.extend(metad, self.updated);
+    _.extend(metad, self._updated);
 
     return metad;
 };
@@ -96,7 +71,6 @@ Meta.prototype.state = function () {
  */
 Meta.prototype.get = function (key, otherwise) {
     var self = this;
-    assert.ok(self.thing_iri);
 
     key = _.ld.expand(key);
 
@@ -120,22 +94,28 @@ Meta.prototype.get = function (key, otherwise) {
  */
 Meta.prototype.set = function (key, value) {
     var self = this;
-    assert.ok(self.thing_iri);
 
     key = _.ld.expand(key);
 
-    if (self.updated[key] !== value) {
-        self.updated[key] = value;
+    if (self._updated[key] !== value) {
+        self._updated[key] = value;
         self.thing.meta_changed();
     }
 };
 
 /**
- *  'ind' must be expanded!
+ *  Update the metadata. Return 'true' if there's
+ *  a change.
  */
-Meta.prototype.update = function (ind) {
+Meta.prototype.update = function (ind, paramd) {
     var self = this;
-    assert.ok(self.thing_iri);
+
+    console.trace();
+    paramd = _.defaults(paramd, {
+        emit: true,
+    });
+
+    ind = _.ld.expand(ind)
 
     var state = self.state();
     var changed = false;
@@ -150,16 +130,26 @@ Meta.prototype.update = function (ind) {
             continue;
         }
 
-        self.updated[in_key] = in_value;
+        self._updated[in_key] = in_value;
         changed = true;
     }
 
     if (changed) {
-        self.thing.meta_changed();
+        if (paramd.emit) {
+            self.thing.meta_changed();
+        }
+
         return true;
     }
 
     return false;
+};
+
+/**
+ *  Return all local updates
+ */
+Meta.prototype.updates = function() {
+    return self._updated;
 };
 
 exports.Meta = Meta;

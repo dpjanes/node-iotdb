@@ -24,8 +24,6 @@
 
 "use strict";
 
-var jsonld = require('jsonld');
-var url = require('url');
 var crypto = require('crypto');
 var node_url = require('url');
 var path = require('path');
@@ -1313,6 +1311,7 @@ exports.chain = function (obj) {
 
 
 exports.dump = function (bodyd, optd) {
+    /*
     context = bodyd['@context'];
 
     if (!optd || optd.compact) jsonld.compact(bodyd, context, function (error, resultd) {
@@ -1329,11 +1328,12 @@ exports.dump = function (bodyd, optd) {
         if (error) console.log("error", error);
         console.log("normalize", result)
     })
+    */
 };
 
 exports.isAbsoluteURL = function (o) {
     if (typeof o !== 'string') return;
-    var u = url.parse(o);
+    var u = node_url.parse(o);
     if (!u) return false;
     if (!u.protocol) return false;
     return u.protocol.length > 0;
@@ -2218,3 +2218,17 @@ exports.uid = function (len) {
     return buf.join('');
 };
 
+
+var oneofd = {};
+exports.oneof = function (module) {
+    var m = oneofd[module];
+    if (m === undefined) {
+        m = require(module);
+        if (module === 'seneca') { // HACK!
+            m = m();
+        }
+        oneofd[module] = m;
+    }
+
+    return m;
+};

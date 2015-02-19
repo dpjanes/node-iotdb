@@ -1527,6 +1527,7 @@ Model.prototype.thing_iri = function () {
 Model.prototype.place_iri = function () {
     var self = this;
 
+    /*
     var iot = require('./iotdb').iot();
     if (!iot) {
         logger.fatal({
@@ -1543,6 +1544,7 @@ Model.prototype.place_iri = function () {
     }
 
     return iot.gm.get_object(thing_iri, 'iot:place');
+    */
 };
 
 /**
@@ -1671,6 +1673,24 @@ Model.prototype.reachable = function () {
     } else {
         return false;
     }
+};
+
+/**
+ *  Disconnect this Model
+ */
+Model.prototype.disconnect = function () {
+    var self = this;
+    var wait = 0;
+
+    if (self.bridge_instance) {
+        if (self.bridge_instance.disconnect) {
+            wait = self.bridge_instance.disconnect();
+        }
+
+        self.bridge_instance = null;
+    }
+
+    return wait;
 };
 
 /**

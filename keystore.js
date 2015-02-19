@@ -25,8 +25,7 @@
 
 "use strict";
 
-var iotdb = require('./iotdb');
-var _ = iotdb.helpers;
+var _ = require('./helpers');
 
 var cfg = require('./cfg');
 

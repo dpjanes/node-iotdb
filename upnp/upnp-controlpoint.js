@@ -9,7 +9,7 @@ var upnp = require("./upnp"),
     xml2js = require('xml2js'),
     UpnpDevice = require("./upnp-device").UpnpDevice;
 
-var _ = require('../../helpers')
+var _ = require('../helpers')
 
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({

@@ -25,9 +25,8 @@
 
 "use strict";
 
-var iotdb = require('./iotdb');
-var _ = iotdb.helpers;
-var keystore = iotdb.keystore;
+var _ = require('./helpers');
+var keystore = require("./keystore").keystore;
 
 var cfg = require('./cfg');
 
@@ -61,13 +60,12 @@ Modules.prototype._load = function() {
 
     self._load_master();
     self._load_bridges();
-    self._load_models();
 };
 
 Modules.prototype._load_master = function() {
     var self = this;
 
-    self._masterd = {}
+    self._moduled = {}
 
     var moduled = keystore().get("modules");
     for (var module_name in moduled) {
@@ -88,7 +86,7 @@ Modules.prototype._load_master = function() {
         module.module_name = module_name;
         module.module_folder = module_folder;
 
-        self._masterd[module_name] = module
+        self._moduled[module_name] = module
     }
 };
 
@@ -97,18 +95,13 @@ Modules.prototype._load_bridges = function() {
 
     self._bridges = [];
 
-    for (var module_name in self._masterd) {
-        var module = self._masterd[module_name];
+    for (var module_name in self._moduled) {
+        var module = self._moduled[module_name];
         if (module.Bridge) {
             module.Bridge.module_name = module_name;
             self._bridges.push(module.Bridge);
         }
     }
-};
-
-Modules.prototype._load_models = function() {
-    var self = this;
-
 };
 
 Modules.prototype.bridges = function() {
@@ -120,7 +113,7 @@ Modules.prototype.bridges = function() {
 Modules.prototype.bridge = function(module_name) {
     var self = this;
 
-    var module = self._masterd[module_name];
+    var module = self._moduled[module_name];
     if (!module) {
         return module;
     }
@@ -128,14 +121,38 @@ Modules.prototype.bridge = function(module_name) {
     return module.Bridge ? module.Bridge : null;
 };
 
-Modules.prototype.models = function() {
-    var self = this;
-
-};
-
 Modules.prototype.bindings = function() {
     var self = this;
 
+    if (self._bindings === undefined) {
+        self._bindings = [];
+
+        for (var module_name in self._moduled) {
+            var module = self._moduled[module_name];
+            if (!module.bindings) {
+                continue;
+            }
+
+            for (var bi in module.bindings) {
+                var binding = module.bindings[bi];
+                if (!binding) {
+                    continue;
+                } else if (!binding.bridge) {
+                    continue;
+                } else if (!binding.model) {
+                    continue;
+                }
+
+                if (binding.model_code === undefined) {
+                    binding.model_code = (new binding.model()).code;
+                }
+
+                self._bindings.push(binding);
+            }
+        }
+    }
+
+    return self._bindings;
 };
 
 var _modules;

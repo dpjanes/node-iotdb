@@ -35,7 +35,7 @@ var logger = bunyan.createLogger({
 var DELTA_SCRUB = 60 * 1000;
 var DELTA_SEARCH = 20 * 1000;
 
-var UpnpControlPoint = require("./drivers/libs/upnp-controlpoint").UpnpControlPoint;
+var UpnpControlPoint = require("./upnp/upnp-controlpoint").UpnpControlPoint;
 
 var _cp;
 var control_point = function () {

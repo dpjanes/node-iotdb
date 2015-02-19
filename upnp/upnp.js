@@ -9,7 +9,7 @@ var events = require("events");
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'drivers/libs/upnp',
+    module: 'upnp/upnp',
 });
 
 // HTTP parser

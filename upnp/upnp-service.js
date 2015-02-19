@@ -9,7 +9,7 @@ var util = require('util'),
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'drivers/libs/upnp-service',
+    module: 'upnp/upnp-service',
 });
 
 var TRACE = true;
