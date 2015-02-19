@@ -25,7 +25,6 @@
 "use strict";
 
 var jsonld = require('jsonld');
-var rdf = require('rdf');
 var url = require('url');
 var crypto = require('crypto');
 var node_url = require('url');

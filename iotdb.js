@@ -2819,9 +2819,11 @@ IOT.prototype.connect = function (value) {
 IOT.prototype._connect = function (connectd, things) {
     var self = this;
 
+    /* DPJ 2015-02-18 Generic Sidelined
     if (connectd.iri && !(connectd.model || connectd.driver)) {
         connectd.model = exports.make_generic();
     }
+     */
 
     self.on_ready(function () {
         self._discover_bind(connectd, things);
@@ -3000,7 +3002,7 @@ for (var key in exports.definitions.attribute) {
 
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;
-exports.make_generic = require('./generic').make_generic;
+// exports.make_generic = require('./generic').make_generic;
 exports.GraphManager = require('./graph').GraphManager;
 exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;

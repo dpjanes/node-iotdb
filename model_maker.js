@@ -737,6 +737,7 @@ ModelMaker.prototype.make = function () {
 /**
  *  Make the special "Generic" model
  */
+/*
 ModelMaker.prototype.make_generic = function () {
     var generic = require("./generic");
     this.__code = "generic";
@@ -748,5 +749,6 @@ ModelMaker.prototype.make_generic = function () {
 
     return model;
 };
+*/
 
 exports.ModelMaker = ModelMaker;
