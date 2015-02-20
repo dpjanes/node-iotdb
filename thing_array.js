@@ -689,14 +689,6 @@ ThingArray.prototype.things_changed = function () {
 /* --- */
 
 ThingArray.prototype._filter_test = function (d, thing) {
-    var thing_place_iri = thing.place_iri();
-    var thing_thing_iri = thing.thing_iri();
-    var place_predicates = [
-        _.ld.expand("iot:place-location"),
-        _.ld.expand("iot:place-room"),
-        _.ld.expand("iot:place-floor"),
-        _.ld.expand("iot:place-placement"),
-    ];
     var meta = thing.meta();
 
     for (var dpredicate in d) {

@@ -127,7 +127,6 @@ var Model = function () {};
  *  options are optional.
  *
  *  @param {dictionary} paramd
- *  @param {undefined|Driver} paramd.driver_instance
  *  The driver for this thing.
  *
  *  @param {*} paramd.api_*
@@ -166,20 +165,29 @@ Model.prototype.get_code = function () {
 };
 
 /**
+ *  State is now constructed on the fly
  */
 Model.prototype.state = function () {
     var self = this;
-    var d = _.deepCopy(self.stated);
 
-    /* -- phasing out subthings
-    for (var subkey in self.subthingd) {
-        var subthing = self.subthingd[subkey];
-        var subd = subthing.state();
-        d[subkey] = subd;
+    var state = {};
+    var attributes = self.attributes();
+    for (var ai in attributes) {
+        var attribute = attributes[ai];
+        var attribute_code = attribute.get_code();
+
+        var attribute_value = null;
+        if (attribute._ivalue != null) {
+            attribute_value = attribute._ivalue;
+        } else if (attribute._ovalue != null) {
+            attribute_value = attribute._ovalue;
+        } else {
+        }
+
+        _.d.set(state, attribute_code, attribute_value);
     }
-     */
 
-    return d;
+    return state;
 };
 
 /**
@@ -190,44 +198,10 @@ Model.prototype.attributes = function () {
 };
 
 /**
- *  Return a duplicate of this Thing that
- *  cannot be manipulated further. This is
- *  used (e.g.) when you need to keep a particular
- *  sensor state
- */
-Model.prototype.freeze = function () {
-    var self = this;
-
-    var new_thing = self.make();
-    new_thing.stated = _.deepCopy(self.stated);
-
-    new_thing.update = function () {
-        throw new Error("You cannot call 'update' on a frozen Thing");
-    };
-    new_thing.set = function () {
-        throw new Error("You cannot call 'set' on a frozen Thing");
-    };
-
-    return new_thing;
-};
-
-/**
  *  Tags are for locally identitfying devices
  */
 Model.prototype.has_tag = function (tag) {
     return _.ld.contains(this.initd, "tag", tag);
-
-    /*
-    var self = this;
-
-    if (_.isArray(self.initd.tag) && (self.initd.tag.indexOf(tag) > -1)) {
-        return true
-    } else if (self.initd.tag === tag) {
-        return true
-    } else {
-        return false
-    }
-    */
 };
 
 /**
@@ -282,9 +256,6 @@ Model.prototype.jsonld = function (paramd) {
     }
 
     if (paramd.include_state) {
-        for (key in self.stated) {
-            rd[key] = self.stated[key];
-        }
     }
 
     // attributes
@@ -360,44 +331,9 @@ Model.prototype.jsonld = function (paramd) {
         rd[_.ld.expand("iot:initializer")] = ids;
     }
 
-    // subthings
-    var sds = [];
-    /* -- phasing out subthings
-    for (var skey in self.subthingd) {
-        var subthing = self.subthingd[skey];
-        var subpath = paramd.path + skey + "/";
-        sds.push(subthing.jsonld({
-            context: false,
-            path: subpath
-        }));
-    }
-    if (sds.length > 0) {
-        rd[_.ld.expand("iot:model")] = sds;
-    }
-    */
 
     if (self.__validator) {
         rd[_.ld.expand("iot-iotdb:model-validator")] = self.__validator.toString();
-    }
-    if (self.__driver_setup) {
-        rd[_.ld.expand("iot-iotdb:model-driver-setup")] = self.__driver_setup.toString();
-    }
-    if (self.__driver_in) {
-        rd[_.ld.expand("iot-iotdb:model-driver-in")] = self.__driver_in.toString();
-    }
-    if (self.__driver_out) {
-        rd[_.ld.expand("iot-iotdb:model-driver-out")] = self.__driver_out.toString();
-    }
-
-    if (self.driver_identityd) {
-        var dids = [];
-        for (key in self.driver_identityd) {
-            dids.push(key);
-            dids.push(self.driver_identityd[key]);
-        }
-        if (dids.length) {
-            rd[_.ld.expand("iot-iotdb:driver-identity")] = dids;
-        }
     }
 
     return rd;
@@ -417,13 +353,6 @@ Model.prototype.jsonld = function (paramd) {
 Model.prototype.get = function (find_key) {
     var self = this;
 
-    /* -- phasing out subthings
-    var subthing = self.subthingd[find_key];
-    if (subthing !== undefined) {
-        return subthing;
-    }
-    */
-
     var rd = self._find(find_key, { get: true });
     if (rd === undefined) {
         // console.log("# Model.get: attribute '" + find_key + "' not found XXX");
@@ -435,12 +364,13 @@ Model.prototype.get = function (find_key) {
     }
 
     if (rd.attribute) {
-        var attribute_key = rd.attribute.get_code();
-        var attribute_value = rd.thing.stated[attribute_key];
-
-        return attribute_value;
-    } else if (rd.subthing) {
-        return rd.subthing;
+        if (attribute._ivalue != null) {
+            return attribute._ivalue;
+        } else if (attribute._ovalue != null) {
+            return attribute._ovalue;
+        } else {
+            return null;
+        }
     } else {
         logger.error({
             method: "get",
@@ -474,9 +404,10 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
+    console.log("HERE:SET:A", find_key, new_value);
+
     var rd = self._find(find_key, { set: true });
     if (rd === undefined) {
-        // console.log("# Model.set: ERROR: attribute '%s' not found for model '%s'", find_key, self.code);
         logger.warn({
             method: "set",
             find_key: find_key,
@@ -484,41 +415,7 @@ Model.prototype.set = function (find_key, new_value) {
             cause: "likely programmer error"
         }, "attribute not found");
         return self;
-    }
-
-
-    if (rd.attribute) {
-        var attribute_key = rd.attribute.get_code();
-        var attribute_value = rd.thing.stated[attribute_key];
-
-        var force = false;
-        if (self.stacks.length === 0) {
-            force = true;
-        } else {
-            force = self.stacks[self.stacks.length - 1].force;
-        }
-
-        if (!force && (attribute_value === new_value)) {
-            return self;
-        }
-
-        rd.thing.ostated[attribute_key] = rd.thing.stated[attribute_key];
-        rd.thing.stated[attribute_key] = new_value;
-
-        rd.thing._do_validate(rd.attribute, false);
-        rd.thing._do_notify(rd.attribute, false);
-        rd.thing._do_push(rd.attribute, false);
-
-        return self;
-    } else if (rd.subthing) {
-        logger.error({
-            method: "set",
-            find_key: find_key,
-            cause: "caller error / not implemented"
-        }, "cannot set a subthing");
-
-        throw new Error("# Model.get: error: cannot set a subthing: " + find_key);
-    } else {
+    } else if (!rd.attribute) {
         logger.error({
             method: "set",
             find_key: find_key,
@@ -527,13 +424,30 @@ Model.prototype.set = function (find_key, new_value) {
 
         throw new Error("# Model.get: internal error: impossible state for: " + find_key);
     }
+
+    var attribute = rd.attribute;
+    var attribute_key = attribute.get_code();
+    var attribute_value = attribute._ovalue;
+
+    var force = !self._transaction || self._transaction.force;
+    if (!force && (attribute_value === new_value)) {
+        return self;
+    }
+
+    if (!self.transaction || self._transaction.validate) {
+        self._do_validate(attribute, new_value);
+    } else {
+        attribute._ovalue = new_value;
+    }
+
+    self._do_notify(attribute, false);
+    self._do_push(attribute, false);
+
+    return self;
 };
 
 /**
  *  Set many values at once, using a dictionary
- *
- *  <p>
- *  NOT FINISHED - NEEDS TO DEAL WITH SUBTHINGS
  */
 Model.prototype.update = function (updated, paramd) {
     var self = this;
@@ -582,26 +496,20 @@ Model.prototype.update = function (updated, paramd) {
 Model.prototype.start = function (paramd) {
     var self = this;
 
-    paramd = _.defaults(paramd, {
+    if (self._transaction) {
+        throw new Error("Model.start: cannot nest start/end transactions");
+    }
+
+    self._transaction = _.defaults(paramd, {
         notify: false,
         validate: true,
         push: true,
-        force: true
-    });
+        force: true,
 
-    self.stacks.push({
-        paramd: paramd,
-        attribute_notifyd: {},
-        attribute_validated: {},
-        attribute_pushd: {},
+        _notifyd: {},
+        _validated: {},
+        _pushd: {},
     });
-
-    /* -- phasing out subthings
-    for (var subthing_key in self.subthingd) {
-        var subthing = self.subthingd[subthing_key];
-        subthing.start(paramd);
-    }
-    */
 
     return self;
 };
@@ -624,7 +532,6 @@ Model.prototype.start = function (paramd) {
  *  </p>
  *  <ol>
  *  <li>{@link Thing#end Model.end} is called on all submodels
- *  <li>{@link Thing#_do_validates validation} (if paramd.validate is true)
  *  <li>{@link Thing#_do_notifies notification} (if paramd.notify is true)
  *  <li>{@link Thing#_do_pushes driver} push (if paramd.push is true)
  *  </ol>
@@ -635,38 +542,19 @@ Model.prototype.start = function (paramd) {
 Model.prototype.end = function () {
     var self = this;
 
-    /* -- phasing out subthings
-    for (var subthing_key in self.subthingd) {
-        var subthing = self.subthingd[subthing_key];
-        subthing.end();
-    }
-    */
+    if (self._transaction) {
+        if (self._transaction.notify) {
+            self._do_notifies(self._transaction._notifyd);
+        }
 
-    var topd = self.stacks.pop();
+        if (self._transaction.push) {
+            self._do_pushes(self._transaction._pushd);
+        }
 
-    if (topd.paramd.validate) {
-        self._do_validates(topd.attribute_validated);
-    }
-
-    if (topd.paramd.notify) {
-        self._do_notifies(topd.attribute_notifyd);
-    }
-
-    if (topd.paramd.push) {
-        self._do_pushes(topd.attribute_pushd);
+        self._transaction = null;
     }
 
     return self;
-};
-
-/*
- *  Return the parent of this thing
- *
- *  @return
- *  this
- */
-Model.prototype.parent = function () {
-    return this.__parent_thing;
 };
 
 /**
@@ -723,13 +611,7 @@ Model.prototype.on = function (find_key, callback) {
         return self;
     }
 
-    if (rd.subthing) {
-        // console.log("# Model.on: subscribing to a subthing not implemented yet");
-        logger.error({
-            method: "on",
-            find_key: find_key
-        }, "subscribing to a subthing not implemented yet");
-    } else if (rd.attribute) {
+    if (rd.attribute) {
         attribute_key = rd.attribute.get_code();
 
         callbacks = rd.thing.callbacksd[attribute_key];
@@ -801,185 +683,32 @@ Model.prototype.meta_changed = function () {
     this.__emitter.emit(EVENT_META_CHANGED, true);
 };
 
-/* --- driver section --- */
 /**
- *  Return true iff this {@link Thing} works with the {@link Driver driver}.
- *
- *  <p>
- *  If __driver_supported is called, this function is called.
- *  Otherwise the {@link Thing#driver_identityd} is
- *  checked. This array is set up by the function
- *  {@link Thing#driver_identity}. It may be called multiple
- *  times when setting up the thing so
- *  that multiple drivers are supported.
- *  The function {@link helpers#identity_overlap} is used for matching.
- *
- *  <p>
- *  Typically this function is called by {@link IOTDB#discover_nearby}
- *  or similar.
- *
- *  <p>
- *  XXX consider removing the matchup function
- *
- *  @param {Driver} driver
- *  The {@link Driver}
- *
- *  @param {boolean} otherwise
- *  If this driver does not have an identity, return this value.
- *  This lets us force binding of abstract models to arbitrary drivers
- *
- *  @return {boolean}
- *  true iff this Thing works for the driver
- */
-Model.prototype.is_driver_supported = function (driver, otherwise) {
-    var self = this;
-
-    if (self.__driver_supported) {
-        return self.__driver_supported(driver);
-    } else if (self.driver_identityd !== null) {
-        var match_identityd = driver.identity(true);
-        // console.log("---")
-        // console.log("HERE:THING (superd)", match_identityd)
-        // console.log("HERE:DRIVER (subd)", self.driver_identityd);
-        if (_.identity_overlap(match_identityd, self.driver_identityd)) {
-            return true;
-        }
-
-        return false;
-    } else if (otherwise === undefined) {
-        // console.log("# Model.is_driver_supported: the Model has no identity?")
-        return false;
-    } else {
-        return otherwise;
-    }
-};
-
-/**
- *  Return the identity of the Driver this thing
- *  is bound to. See {@link Driver#identity Driver.identity)
- *
- *  @param {boolean} kitchen_sink
- *  If true, the {@link Driver} may add additional parameters to
- *  help find and appropriate driver. However, thing_id
- *  must be computed beforehand.
- *
  *  @return {dictionary}
  *  An idenitity object
  */
 Model.prototype.identity = function (kitchen_sink) {
     var self = this;
+
     if (self._identityd) {
         return self._identityd;
     }
 
-    /*
-     * DPJ 2015-02-14 Don't need to do this - setup when bridge is connected
-    if (self.bridge_instance && self.bridge_instance.reachable()) {
-        self._identityd = {};
-        self._identityd.thing_id = self.bridge_instance.meta()["iot:thing"];
-        return self._identityd;
-    } else */ if (self.driver_instance) {
-        return self.driver_instance.identity(kitchen_sink);
-    } else {
-        // console.log("# Model.identity: returning null because self.driver_instance=null");
-        if (!shutting_down()) {
-            logger.error({
-                method: "identity",
-            }, "returning null self.driver_instance=null");
-        }
-
-        return null;
-    }
+    return null;
 };
 
 Model.prototype.thing_id = function () {
     var id = this.identity();
     if (id) {
         return id.thing_id;
-    } else {
-        // console.log("# Model.thing_id: returning null because this.identity=null");
-        if (!shutting_down()) {
-            logger.error({
-                method: "thing_id",
-            }, "returning null self.identity=null");
-        }
-
-        return null;
     }
+
+    return null;
 };
 
 /**
- *  Call a thing to fill in <code>paramd.initd</code>
- *  <p>
- *  Usually called from
- *  {@link IOT#discover_nearby IOT.discover_nearby} or
- *  {@link IOT#discover_thing IOT.discover_thing}.
- *
- *  @param {dictionary} paramd
- *  See {@link Driver#setup Driver.setup}
- */
-Model.prototype.driver_setup = function (paramd) {
-    var self = this;
-
-    if (self.__driver_setup) {
-        self.__driver_setup(paramd);
-    }
-};
-
-/**
- *  Translates between the Driver's state and what the Thing's.
- *  Typically this will be done with a function
- *  defined by {@link ModelMaker#driver_in ModelMaker.driver_in}.
- *
- *  <p>
- *  This is usually called by {@link Thing#pull Model.pull} and sometimes
- *  by {@link Driver Drivers} in their setup phase.
- *
- *  @param {dictionary} paramd
- *  See {@link ModelMaker~driver_out_function ModelMaker.driver_out_function}
- */
-Model.prototype.driver_in = function (paramd) {
-    var self = this;
-
-    if (self.__driver_in) {
-        self.__driver_in(paramd);
-    } else {
-        for (var key in paramd.driverd) {
-            paramd.thingd[key] = paramd.driverd[key];
-        }
-    }
-};
-
-/**
- *  Translate between the Thing's state to the Driver's.
- *  <p>
- *  If a {@link ModelMaker~driver_in_function ModelMaker.driver_in_function}
- *  function was defined, it will do the work. Otherwise
- *  we just copy the state as-is.
- *  <p>
- *  This is usually called by {@link Thing#_do_pushes Model._do_pushes}
- *
- *  @param {dictionary} paramd
- *  See {@link ModelMaker~driver_in_function ModelMaker.driver_in_function}
- */
-Model.prototype.driver_out = function (paramd) {
-    var self = this;
-
-    if (self.__driver_out) {
-        self.__driver_out(paramd);
-    } else {
-        for (var key in paramd.thingd) {
-            var value = paramd.thingd[key];
-            if ((value !== null) && (value !== undefined)) {
-                paramd.driverd[key] = value;
-            }
-        }
-    }
-};
-
-/**
- *  Request values from the driver be brought to this object.
- *  Note that it's basically asynchronous
+ *  Request values from the Bridge be brought to this object.
+ *  Note that it's asynchronous
  *
  *  @return {this}
  */
@@ -988,42 +717,12 @@ Model.prototype.pull = function () {
 
     if (self.bridge_instance) {
         self.bridge_instance.pull();
-        return;
     }
-
-    if (!self.driver_instance) {
-        // console.log("# Model.pull: no self.driver_instance?");
-        logger.error({
-            method: "pull",
-            cause: "this Model has been disconnected from it's driver, or was never connected"
-        }, "no driver_instance?");
-        return;
-    }
-
-    /* --- allow model opportunity to send a message */
-    var paramd = {
-        is_pull: true,
-        initd: self.initd,
-        driverd: {},
-        thingd: {},
-        libs: libs.libs,
-        scratchd: self.__scratchd
-    };
-    self.driver_out(paramd);
-
-    if (!_.isEmpty(paramd.driverd)) {
-        self.driver_instance.push(paramd);
-    }
-
-    /* --- tell driver to pull --- */
-    self.driver_instance.pull();
 
     return self;
 };
 
 /* --- internals --- */
-Model.prototype._do_driver = function (attribute) {};
-
 /**
  *  Push this updated attribute's value
  *  across the driver to make the change
@@ -1044,52 +743,19 @@ Model.prototype._do_driver = function (attribute) {};
 Model.prototype._do_push = function (attribute, immediate) {
     var self = this;
 
-
-    if ((self.stacks.length === 0) || immediate) {
+    if (!self._transaction || immediate) {
         var attributed = {};
         attributed[attribute.get_code()] = attribute;
 
         self._do_pushes(attributed);
-
-        // if this is happening now, propagate upwards
-        if (self.__parent_thing) {
-            self.__parent_thing._do_pushes({});
-        }
     } else {
-        var topd = self.stacks[self.stacks.length - 1];
-        topd.attribute_pushd[attribute.get_code()] = attribute;
+        self._transaction._pushd[attribute.get_code()] = attribute;
     }
 
 };
-
-Model.prototype._deep_copy_state = function (thing, use_push_keys) {
-    var self = this;
-    var d = {};
-
-    for (var key in thing.stated) {
-        if (use_push_keys && (thing.__push_keys.indexOf(key) === -1)) {
-            continue;
-        }
-        d[key] = thing.stated[key];
-    }
-
-    /* -- phasing out subthings
-    for (var subthing_key in thing.subthingd) {
-        var subthing = thing.subthingd[subthing_key];
-        if (subthing.__parent_thing === undefined) {
-            continue;
-        }
-
-        d[subthing_key] = self._deep_copy_state(subthing, use_push_keys);
-    }
-    */
-
-    return d;
-};
-
 
 /**
- *  Send values from this object to the driver
+ *  Send values from this object to the Bridge
  *
  *  @return
  *  self
@@ -1099,51 +765,29 @@ Model.prototype._deep_copy_state = function (thing, use_push_keys) {
 Model.prototype._do_pushes = function (attributed) {
     var self = this;
 
-    // this magically does things to '__deep_copy_state'
-    self.__push_keys = _.keys(attributed);
-
-    if (self.bridge_instance) {
-        self.bridge_instance.push(self._deep_copy_state(self, true));
+    if (!self.bridge_instance) {
         return;
     }
+    
+    var pushd = {};
 
-    if (!self.driver_instance) {
-        // if there's a parent and this has no driver, it will handle it
-        if (self.__parent_thing !== undefined) {
-            // console.log("HERE:C", self.__push_keys)
-            return;
-        }
+    for (var key in attributed) {
+        var attribute = attributed[key];
+        var attribute_code = attribute.get_code();
+        var attribute_value = attribute._ovalue;
 
-        // console.log("- Model.push: no self.driver_instance?");
-        logger.error({
-            method: "_do_pushes",
-            cause: "this Model has been disconnected from it's driver, or was never connected"
-        }, "no driver_instance?");
-        return;
+        _.d.set(pushd, attribute_code, attribute_value);
     }
 
-    var paramd = {
-        initd: self.initd,
-        driverd: {},
-        thingd: self._deep_copy_state(self, true),
-        libs: libs.libs,
-        scratchd: self.__scratchd
-    };
-    self.driver_out(paramd);
-
-    if (!_.isEmpty(paramd.driverd)) {
-        self.driver_instance.push(paramd);
-    }
-
-    return self;
+    console.log("HERE:B", pushd);
+    self.bridge_instance.push(pushd);
 };
 
 /**
  *  Validate this updated attribute.
  *
- *  If there is a no stack or immediate is
- *  <b>true</b>, do the validation immediately.
- *  Otherwise we store for later bulk validation.
+ *  VALIDATES ARE ALWAYS IMMEDIATE AND
+ *  ONLY ARE FOR 'ovalue'
  *
  *  @param attributes
  *  The {@link Attribute} to validate
@@ -1153,71 +797,19 @@ Model.prototype._do_pushes = function (attributed) {
  *
  *  @protected
  */
-Model.prototype._do_validate = function (attribute, immediate) {
+Model.prototype._do_validate = function (attribute, new_value) {
     var self = this;
 
-    if ((self.stacks.length === 0) || immediate) {
-        var attributed = {};
-        attributed[attribute.get_code()] = attribute;
+    var paramd = {
+        value: new_value,
+        code: attribute.get_code(),
+        libs: libs.libs,
+    };
 
-        self._do_validates(attributed);
-    } else {
-        var topd = self.stacks[self.stacks.length - 1];
-        topd.attribute_validated[attribute.get_code()] = attribute;
-    }
-};
+    attribute.validate(paramd);
 
-/**
- *  Validate all the attributes, then this thing as a whole
- *
- *  @param attributed
- *  A dictionary of {@link Attribute}, which are all the changed
- *  attributes.
- *
- *  @protected
- */
-Model.prototype._do_validates = function (attributed) {
-    var self = this;
-    var paramd;
-    var code;
-
-    for (code in attributed) {
-        var attribute = attributed[code];
-        code = attribute.get_code();
-
-        paramd = {
-            value: self.stated[code],
-            code: code,
-            libs: libs.libs
-        };
-
-        attribute.validate(paramd);
-
-        if (paramd.value !== undefined) {
-            self.stated[code] = paramd.value;
-        } else {
-            self.stated[code] = self.ostated[code];
-        }
-    }
-
-    if (self.__validator) {
-        paramd = {
-            codes: _.keys(attributed), // attributes that have changed
-            thingd: _.deepCopy(self.stated), // the current state of the model
-            changed: {}, // update these values (passed back)
-            libs: libs.libs
-        };
-        self.__validator(paramd);
-
-        self.start({
-            notify: false,
-            validate: false,
-            push: true
-        });
-        for (code in paramd.changed) {
-            self.set(code, paramd.changed[code]);
-        }
-        self.end();
+    if (paramd.value !== undefined) {
+        attribute._ovalue = paramd.value;
     }
 };
 
@@ -1236,17 +828,16 @@ Model.prototype._do_validates = function (attributed) {
  *
  *  @protected
  */
-Model.prototype._do_notify = function (attribute, immediate) {
+Model.prototype._do_notify = function (attribute, immediate, new_value) {
     var self = this;
 
-    if ((self.stacks.length === 0) || immediate) {
+    if (!self._transaction || immediate) {
         var attributed = {};
         attributed[attribute.get_code()] = attribute;
 
         self._do_notifies(attributed);
     } else {
-        var topd = self.stacks[self.stacks.length - 1];
-        topd.attribute_notifyd[attribute.get_code()] = attribute;
+        self._transaction._notifyd[attribute.get_code()] = attribute;
     }
 };
 
@@ -1272,21 +863,21 @@ Model.prototype._do_notifies = function (attributed) {
         any = true;
 
         var attribute = attributed[attribute_key];
-        var attribute_value = self.stated[attribute_key];
+        var attribute_value = null;
+        if (attribute._ivalue != null) {
+            attribute_value = attribute._ivalue;
+        } else if (attribute._ovalue != null) {
+            attribute_value = attribute._ovalue;
+        }
 
-        var thing = self;
-        while (thing) {
-            var callbacks = thing.callbacksd[attribute_key];
-            if (callbacks === undefined) {
-                callbacks = thing.callbacksd[null];
-            }
-            if (callbacks) {
-                callbacks.map(function (callback) {
-                    callback(self, attribute, attribute_value);
-                });
-            }
-
-            thing = thing.__parent_thing;
+        var callbacks = self.callbacksd[attribute_key];
+        if (callbacks === undefined) {
+            callbacks = self.callbacksd[null];
+        }
+        if (callbacks) {
+            callbacks.map(function (callback) {
+                callback(self, attribute, attribute_value);
+            });
         }
     }
 
@@ -1344,7 +935,6 @@ Model.prototype._do_notifies = function (attributed) {
 Model.prototype._find = function (find_key, paramd) {
     var self = this;
     var d;
-    var subthing;
     var attribute;
 
     paramd = _.defaults(paramd, {
@@ -1354,22 +944,8 @@ Model.prototype._find = function (find_key, paramd) {
     });
 
     if (typeof find_key === "string") {
-        var subkeys = find_key.split("/");
+        var subkeys = find_key.replace(/\/+/, "").split("/");
         var thing = self;
-
-        /* -- phasing out subthings
-        for (var ski = 0; ski < subkeys.length - 1; ski++) {
-            var subkey = subkeys[ski];
-            subthing = thing.subthingd[subkey];
-            if (subthing === undefined) {
-                return undefined;
-            } else if (!subthing.__is_thing) {
-                return undefined;
-            } else {
-                thing = subthing;
-            }
-        }
-         */
 
         var last_key = subkeys[subkeys.length - 1];
         if (last_key.substring(0, 1) === ":") {
@@ -1391,16 +967,6 @@ Model.prototype._find = function (find_key, paramd) {
                 attribute: attribute
             };
         }
-
-        /* -- phasing out subthings
-        subthing = thing.subthingd[last_key];
-        if (subthing !== undefined) {
-            return {
-                thing: thing,
-                subthing: subthing
-            };
-        }
-        */
 
         return undefined;
     } else {
@@ -1496,122 +1062,6 @@ Model.prototype._find = function (find_key, paramd) {
 };
 
 /**
- *  Return the IOTDB Thing IRI for this Thing
- */
-Model.prototype.thing_iri = function () {
-    var self = this;
-    if (self.bridge_instance) {
-        var identity = self.identity();
-        if (identity) {
-            return identity.thing_id;    // this should become an IRI
-        } else {
-            return null;
-        }
-    } else {
-        return require('./iotdb').iot().thing_iri(this);
-    }
-};
-
-/**
- *  Return the IOTDB Place IRI for this Model. The Thing must
- *  be loaded into the graph.
- *
- *  @param {string|Thing} self
- *  If a string, it is expected to be the 'thing_id' for
- *  the Model.
- *
- *  @return {string|null}
- *  The IRI on IOTDB for the Place assigned to this Model. If there
- *  is no Place assigned or the Thing is not loaded, null is returned
- */
-Model.prototype.place_iri = function () {
-    var self = this;
-
-    /*
-    var iot = require('./iotdb').iot();
-    if (!iot) {
-        logger.fatal({
-            method: "place_iri",
-            cause: "this is almost impossible"
-        }, "no iot() object");
-
-        return null;
-    }
-
-    var thing_iri = self.thing_iri();
-    if (!thing_iri) {
-        return null;
-    }
-
-    return iot.gm.get_object(thing_iri, 'iot:place');
-    */
-};
-
-/**
- *  Return the IOTDB Model IRI for this Model. The Thing
- *  must have been loaded into the Graph.
- *
- *  @param {string|Thing} self
- *  If a string, it is expected to be the 'thing_id' for
- *  the Model.
- *
- *  @return {string|null}
- *  The IRI on IOTDB for the Thing's Model.
- *  If the Thing is not loaded, null is returned
- */
-Model.prototype.model_iri = function () {
-    return this.model_code_iri();
-    /*
-    var self = this;
-
-    var iot = require('./iotdb').iot();
-    if (!iot) {
-        logger.fatal({
-            method: "model_iri",
-            cause: "this is almost impossible"
-        }, "no iot() object");
-
-        return null;
-    }
-
-    var thing_iri = self.thing_iri();
-    if (!thing_iri) {
-        return null;
-    }
-
-    return iot.gm.get_object(thing_iri, 'iot:Model');
-    */
-};
-
-/**
- *  Return the IOTDB Model IRI for this Thing, based on the
- *  model_code. Does not depend on the Graph.
- *
- *  @return {string}
- *  The IRI on IOTDB for the Thing's Model.
- */
-Model.prototype.model_code_iri = function () {
-    var self = this;
-
-    /* should be returning the GitHub page */
-    return "urn:iotdb:model:" + self.code;
-
-    /* DPJ removing dependence on global IOT object?
-    var iot = require('./iotdb').iot();
-    if (!iot) {
-        logger.fatal({
-            method: "model_code_iri",
-            cause: "this is almost impossible"
-        }, "no iot() object");
-
-        return null;
-    }
-
-    return iot.model_code_iri(self.code);
-    */
-};
-
-/**
  *  Return a Transmogrified version of this Thing.
  */
 Model.prototype.transmogrify = function (transmogrifier) {
@@ -1626,20 +1076,6 @@ Model.prototype.meta = function () {
     var self = this;
 
     if (self.__meta_thing === undefined) {
-        /* DPJ 2015-05-14 Phasing out IOT in Meta */
-        /*
-        var iot = require('./iotdb').iot();
-        if (!iot) {
-            logger.fatal({
-                method: "meta",
-                cause: "this is almost impossible"
-            }, "no iot() object");
-
-            return undefined;
-        }
-
-        self.__meta_thing = new meta_thing.Meta(iot, self);
-        */
         self.__meta_thing = new meta_thing.Meta(self);
     }
 
@@ -1668,8 +1104,6 @@ Model.prototype.reachable = function () {
 
     if (self.bridge_instance) {
         return self.bridge_instance.reachable();
-    } else if (self.driver_instance) {
-        return self.driver_instance.reachable();
     } else {
         return false;
     }
@@ -1694,34 +1128,17 @@ Model.prototype.disconnect = function () {
 };
 
 /**
- *  Return the metadata of the driver
- */
-Model.prototype.driver_meta = function () {
-    var self = this;
-
-    if (self.bridge_instance && self.bridge_instance.reachable()) {
-        var metad = self.bridge_instance.meta();
-        metad = _.ld.expand(metad);
-        return metad;
-    } else if (self.driver_instance) {
-        return self.driver_instance.meta();
-    } else {
-        return {};
-    }
-
-};
-
-/*
- *  IOTDB 0.5 - Bridges
+ *  Note it's OK if we're already bound - this will just replace it
  */
 Model.prototype.bind_bridge = function (bridge_instance) {
     var self = this;
 
     self.bridge_instance = bridge_instance;
     if (self.bridge_instance) {
-        self.bridge_instance.pulled = function(stated) {
-            if (stated) {
-                self.update(stated, {
+        self.bridge_instance.pulled = function(pulld) {
+            if (pulld) {
+                console.log("HERE:AAA", pulld)
+                self.update(pulld, {
                     notify: true,
                     push: false,
                     force: false,

@@ -648,88 +648,17 @@ ModelMaker.prototype.make = function () {
         }
 
         this.callbacksd = {};
-        this.stacks = [];
+        self._transaction = null;
 
-        /*
-         *  Complicated because subthings can be passed in
-         *  as strings, which mean they have to be looked up
-         *  using IOT. This adds a whole asynchronous element
-         *  too which has to be accounted for in IOT
-         */
-        /* DPJ 2015-02-14 Phase out Subthings
-        this.subthingd = [];
-        for (var code in self.subthingd) {
-            var iot = require('./iotdb').iot();
-            var model = self.subthingd[code];
-
-            if (_.isFunction(model)) {
-                // model class
-                var subthing = new model();
-                subthing.__parent_thing = this;
-
-                this.subthingd[code] = subthing;
-            } else if (model.Model) {
-                // model exemplar
-                this.subthingd[code] = new model.Model();
-            } else {
-                var d = {};
-                if (_.isAbsoluteURL(model)) {
-                    d["model_iri"] = model;
-                } else {
-                    d["model_code"] = _.identifier_to_dash_case(model);
-                }
-
-                if (!iot) {
-                    logger.error({
-                        method: "make",
-                        cause: "Node-IOTDB error: this really shouldn't happen any more"
-                    }, "no 'iot' so can't properly instantiate");
-                    // self.subthingd[code] = "http://xxx"
-                } else {
-                    var outer_this = this;
-                    iot.ask_model(d, function (callbackd) {
-                        if (callbackd.error) {
-                            // console.log("# ModelMaker.make: Model not found", "\n ", model, callbackd.error);
-                            logger.error({
-                                method: "make/subthing",
-                                error: callbackd.error,
-                                code: code,
-                                cause: "Model may not be defined or network error"
-                            }, "Model not found");
-                        } else if (callbackd.model_exemplar) {
-                            // console.log("- ModelMaker.make: model found", model);
-                            logger.debug({
-                                method: "make/subthing",
-                                code: code
-                            }, "model found");
-                            outer_this.subthingd[code] = new callbackd.model_exemplar.Model();
-                            self.subthingd[code] = new callbackd.model_exemplar.Model();
-                        } else {
-                            // console.log("# ModelMaker.make: Model not found", model);
-                            logger.error({
-                                method: "make/subthing",
-                                error: callbackd.error,
-                                code: code,
-                                cause: "likely Model has not been defined anywhere"
-                            }, "Model not found");
-                        }
-                    });
-                }
-            }
-        }
-        */
-
-        this.ostated = {}; // scratchpad
-        this.stated = {};
         for (var acode in this.attributed) {
-            var a = this.attributed[acode];
-            this.stated[acode] = null;
+            var attribute = this.attributed[acode];
+            attribute._ivalue = null;
+            attribute._ovalue = null;
         }
     };
 
     new_thing.prototype = new model.Model();
     new_thing.prototype.__make = new_thing;
-
 
     return new_thing;
 };

@@ -64,12 +64,6 @@ util.inherits(Things, events.EventEmitter);
 Things.prototype.things = function(model_code) {
     var self = this;
 
-    if (model_code) {
-        console.log("HERE:T", model_code);
-        console.trace()
-        process.exit(0);
-    }
-
     // the result
     var things = new thing_array.ThingArray({
         persist: true,
