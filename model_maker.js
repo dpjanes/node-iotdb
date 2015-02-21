@@ -94,7 +94,6 @@ var ModelMaker = function (_code) {
     this.__driver_in = null;
     this.__driver_out = null;
     this.driver_identityd = null;
-    this.subthingd = {};
     this.attributed = {};
     this.__attributes = [];
     this.initializers = [];
@@ -224,32 +223,6 @@ ModelMaker.prototype.driver_identity = function (identity) {
     return self;
 };
 
-/**
- *  Add a subthing to the {@link Thing} we
- *  are defining. This lets us define
- *  composite / nested Things. For example,
- *  an Stove can have 4 nested Burners, a nested
- *  Clock, and a nested Oven (which in turn
- *  has a nested Light).
- *
- *  @param {string} code
- *  A simple string to name the subthing
- *
- *  @param {function} subthing_class
- *  Inherit all the attributes and subthings from this class.
- *  Don't pass an Object, pass the class function.
- *
- *  @return {this}
- */
-ModelMaker.prototype.subthing = function (code, subthing_class) {
-    var self = this;
-
-    self.subthingd[code] = subthing_class;
-
-    // XXX delete corresponding attribute if it exists
-
-    return self;
-};
 
 /**
  *  Copy over all the the attributes and subthings from an
@@ -320,18 +293,28 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
     if (arguments.length === 1) {
         attribute = arguments[0];
         out_code = attribute.code();
-        in_code = out_code + "-value";
+        in_code = out_code;
     } else if (arguments.length === 2) {
         attribute = arguments[1];
-        in_code = out_code + "-value";
+        in_code = out_code;
     }
 
-    this.attribute(
-        _.deepCopy(attribute)
-        .code(in_code)
-        .reading()
-    );
-    this.make_attribute_control(in_code, out_code);
+    if (out_code === in_code) {
+        this.attribute(
+            _.deepCopy(attribute)
+            .code(in_code)
+            .reading()
+            .control()
+        );
+    } else {
+        this.attribute(
+            _.deepCopy(attribute)
+            .code(in_code)
+            .reading()
+        );
+        this.make_attribute_control(in_code, out_code);
+    }
+
     return this;
 };
 

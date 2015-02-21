@@ -129,8 +129,6 @@ Things.prototype.discover = function(modeld) {
         throw new Error("expected undefined|null|string|dictionary");
     }
 
-    console.log("LOOKING FOR", modeld);
-
     // run when ready
     self.when_ready(function() {
         self._discover(modeld);
@@ -175,7 +173,7 @@ Things.prototype._discover_binding = function(modeld, binding) {
     self._bridge_exemplars.push(bridge_exemplar);
 
     bridge_exemplar.discovered = function(bridge_instance) {
-        self._discover_binding_bridge(modeld, binding, bridge_instance);
+        self._discover_binding_bridge(modeld, binding, bridge_exemplar, bridge_instance);
     };
 
     // and kick off the discovery … later
@@ -197,7 +195,7 @@ Things.prototype._discover_binding = function(modeld, binding) {
  *      - see if exiting one is reachable?
  *      - if it isn't, replace the bridge with this one
  */
-Things.prototype._discover_binding_bridge = function(modeld, binding, bridge_instance) {
+Things.prototype._discover_binding_bridge = function(modeld, binding, bridge_exemplar, bridge_instance) {
     var self = this;
 
     if (require('iotdb').shutting_down()) {

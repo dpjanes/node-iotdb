@@ -404,8 +404,6 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
-    console.log("HERE:SET:A", find_key, new_value);
-
     var rd = self._find(find_key, { set: true });
     if (rd === undefined) {
         logger.warn({
@@ -779,7 +777,6 @@ Model.prototype._do_pushes = function (attributed) {
         _.d.set(pushd, attribute_code, attribute_value);
     }
 
-    console.log("HERE:B", pushd);
     self.bridge_instance.push(pushd);
 };
 
@@ -828,7 +825,7 @@ Model.prototype._do_validate = function (attribute, new_value) {
  *
  *  @protected
  */
-Model.prototype._do_notify = function (attribute, immediate, new_value) {
+Model.prototype._do_notify = function (attribute, immediate) {
     var self = this;
 
     if (!self._transaction || immediate) {
@@ -1137,7 +1134,6 @@ Model.prototype.bind_bridge = function (bridge_instance) {
     if (self.bridge_instance) {
         self.bridge_instance.pulled = function(pulld) {
             if (pulld) {
-                console.log("HERE:AAA", pulld)
                 self.update(pulld, {
                     notify: true,
                     push: false,
