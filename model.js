@@ -180,8 +180,7 @@ Model.prototype.state = function () {
             attribute_value = attribute._ivalue;
         } else if (attribute._ovalue != null) {
             attribute_value = attribute._ovalue;
-        } else {
-        }
+        } else {}
 
         _.d.set(state, attribute_code, attribute_value);
     }
@@ -254,8 +253,7 @@ Model.prototype.jsonld = function (paramd) {
         rd[_.ld.expand("iot:help")] = self.help;
     }
 
-    if (paramd.include_state) {
-    }
+    if (paramd.include_state) {}
 
     // attributes
     var ads = [];
@@ -352,7 +350,9 @@ Model.prototype.jsonld = function (paramd) {
 Model.prototype.get = function (find_key) {
     var self = this;
 
-    var rd = self._find(find_key, { get: true });
+    var rd = self._find(find_key, {
+        get: true
+    });
     if (rd === undefined) {
         // console.log("# Model.get: attribute '" + find_key + "' not found XXX");
         logger.error({
@@ -403,7 +403,9 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
-    var rd = self._find(find_key, { set: true });
+    var rd = self._find(find_key, {
+        set: true
+    });
     if (rd === undefined) {
         logger.warn({
             method: "set",
@@ -431,10 +433,14 @@ Model.prototype.set = function (find_key, new_value) {
         return self;
     }
 
-    if (!self.transaction || self._transaction.validate) {
-        self._do_validate(attribute, new_value);
+    if (self._transaction) {
+        if (self._transaction.validate) {
+            self._do_validate(attribute, new_value);
+        } else {
+            attribute._ovalue = new_value;
+        }
     } else {
-        attribute._ovalue = new_value;
+        self._do_validate(attribute, new_value);
     }
 
     self._do_notify(attribute, false);
@@ -579,7 +585,7 @@ Model.prototype.on = function (find_key, callback) {
 
     /* HORRIBLE. */
     if ((find_key === "state") || (find_key === "meta")) {
-        self.__emitter.on(find_key, function(a, b, c) {
+        self.__emitter.on(find_key, function (a, b, c) {
             callback(self, a, b, c); /* LAZY */
         });
         return self;
@@ -598,7 +604,9 @@ Model.prototype.on = function (find_key, callback) {
         return self;
     }
 
-    var rd = self._find(find_key, { on: true });
+    var rd = self._find(find_key, {
+        on: true
+    });
     if (rd === undefined) {
         // console.log("# Model.on: error: attribute '" + find_key + "' not found");
         logger.error({
@@ -765,7 +773,7 @@ Model.prototype._do_pushes = function (attributed) {
     if (!self.bridge_instance) {
         return;
     }
-    
+
     var pushd = {};
 
     for (var key in attributed) {
@@ -1130,7 +1138,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
 
     self.bridge_instance = bridge_instance;
     if (self.bridge_instance) {
-        self.bridge_instance.pulled = function(pulld) {
+        self.bridge_instance.pulled = function (pulld) {
             if (pulld) {
                 self.update(pulld, {
                     notify: true,

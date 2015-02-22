@@ -40,13 +40,13 @@ var logger = bunyan.createLogger({
     module: 'keystore',
 });
 
-var Keystore = function(paramd) {
+var Keystore = function (paramd) {
     var self = this;
 
     self.paramd = _.defaults(paramd, {
         root: "/",
         keystore: "keystore.json",
-        path: [ ".iotdb", "$HOME/.iotdb", ],
+        path: [".iotdb", "$HOME/.iotdb", ],
         makedirs: true,
     })
     self.d = {}
@@ -59,7 +59,7 @@ var Keystore = function(paramd) {
 
 util.inherits(Keystore, events.EventEmitter);
 
-Keystore.prototype._normalize_key = function(key) {
+Keystore.prototype._normalize_key = function (key) {
     var self = this;
 
     if (!key.match(/^\//)) {
@@ -69,7 +69,7 @@ Keystore.prototype._normalize_key = function(key) {
     return "/" + key.replace(/^\/*/, '');
 };
 
-Keystore.prototype._load = function() {
+Keystore.prototype._load = function () {
     var self = this;
     self.d = {};
 
@@ -80,7 +80,7 @@ Keystore.prototype._load = function() {
         self.emit("loaded");
         return;
     }
-    
+
     var count = 0;
 
     cfg.cfg_load_json(filenames, function (paramd) {
@@ -104,7 +104,7 @@ Keystore.prototype._load = function() {
 
 /**
  */
-Keystore.prototype.get = function(key, otherwise) {
+Keystore.prototype.get = function (key, otherwise) {
     var self = this;
 
     key = self._normalize_key(key);
@@ -114,7 +114,7 @@ Keystore.prototype.get = function(key, otherwise) {
 
 /**
  */
-Keystore.prototype.set = function(key, value) {
+Keystore.prototype.set = function (key, value) {
     var self = this;
 
     key = self._normalize_key(key);
@@ -126,7 +126,7 @@ Keystore.prototype.set = function(key, value) {
 
 /**
  */
-Keystore.prototype.save = function(key, value, paramd) {
+Keystore.prototype.save = function (key, value, paramd) {
     var self = this;
 
     key = self._normalize_key(key);
@@ -147,7 +147,7 @@ Keystore.prototype.save = function(key, value, paramd) {
 
     // load keystore
     var d = {};
-    cfg.cfg_load_json([ filename ], function(paramd) {
+    cfg.cfg_load_json([filename], function (paramd) {
         for (var pd in paramd.doc) {
             d[pd] = paramd.doc[pd];
         }
@@ -185,7 +185,7 @@ var _keystore;
 
 /**
  */
-var keystore = function() {
+var keystore = function () {
     if (!_keystore) {
         _keystore = new Keystore();
     }

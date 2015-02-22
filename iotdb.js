@@ -39,26 +39,12 @@ var logger = bunyan.createLogger({
     module: 'IOT',
 });
 
-var things = require('./things')
+var things = require('./things');
 var thing_array = require('./thing_array');
 var cfg = require('./cfg');
 var _ = require('./helpers');
 
 var _shutting_down = false;
-
-/**
- *  Singleton
- */
-exports.instance = null;
-
-exports.iot = function (paramd) {
-    if (exports.instance == null) {
-        exports.instance = new IOT(paramd);
-    }
-
-    return exports.instance;
-};
-
 
 /**
  *  Manage things, drivers and connections to the
@@ -87,14 +73,14 @@ var IOT = function (initd) {
 };
 util.inherits(IOT, events.EventEmitter);
 
-IOT.prototype._setup_events = function() {
+IOT.prototype._setup_events = function () {
     var self = this;
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
 };
 
-IOT.prototype._setup_exit = function() {
+IOT.prototype._setup_exit = function () {
     var self = this;
 
     process.on('exit', self._exit_cleanup.bind(self, {
@@ -110,12 +96,12 @@ IOT.prototype._setup_exit = function() {
 /**
  *  self._things is the singleton Things manager
  */
-IOT.prototype._setup_things = function() {
+IOT.prototype._setup_things = function () {
     var self = this;
 
     self._things = things.things();
 
-    self.things().on_thing(function(thing) {
+    self.things().on_thing(function (thing) {
         self.emit("thing", thing);
     });
 };
@@ -154,7 +140,7 @@ IOT.prototype._exit_cleanup = function (paramd, err) {
  *  Return all the Things
  */
 IOT.prototype.things = function (model_code) {
-    return this._things.things(model_code)
+    return this._things.things(model_code);
 };
 
 
@@ -163,14 +149,14 @@ IOT.prototype.things = function (model_code) {
  *  of things thus discovered
  */
 IOT.prototype.connect = function (modeld) {
-    return this._things.connect(modeld)
+    return this._things.connect(modeld);
 };
 
 /**
  *  Connect to Things.
  */
 IOT.prototype.discover = function (modeld) {
-    this._things.discover(modeld)
+    this._things.discover(modeld);
     return this;
 };
 
@@ -194,7 +180,7 @@ IOT.prototype.meta_save = function (t) {
         fs.mkdirSync(meta_dir);
     } catch (err) {}
 
-    var _persist = function(thing) {
+    var _persist = function (thing) {
         if (!thing) {
             return;
         }
@@ -250,10 +236,24 @@ exports.cfg = cfg;
 exports.upnp = require('./upnp');
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 
-var keystore = require('./keystore')
+var keystore = require('./keystore');
 exports.keystore = keystore.keystore;
 exports.Keystore = keystore.Keystore;
 
-var modules = require('./modules')
+var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
+
+
+/**
+ *  Singleton
+ */
+exports.instance = null;
+
+exports.iot = function (paramd) {
+    if (exports.instance == null) {
+        exports.instance = new IOT(paramd);
+    }
+
+    return exports.instance;
+};

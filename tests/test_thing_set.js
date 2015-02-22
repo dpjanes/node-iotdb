@@ -41,33 +41,19 @@ describe('test_thing_set:', function(){
             )
             .make();
         var t = new T();
-        assert.ok(_.equals({ on: null, intensity: null }, t.stated))
+        assert.ok(_.equals({ on: null, intensity: null }, t.state()))
         t.set('on', true);
-        assert.ok(_.equals({ on: true, intensity: null }, t.stated))
+        assert.ok(_.equals({ on: true, intensity: null }, t.state()))
         t.set('on', false);
-        assert.ok(_.equals({ on: false, intensity: null }, t.stated))
+        assert.ok(_.equals({ on: false, intensity: null }, t.state()))
         t.set('on', 10);
-        assert.ok(_.equals({ on: true, intensity: null }, t.stated))
+        assert.ok(_.equals({ on: true, intensity: null }, t.state()))
         t.set('on', 0);
-        assert.ok(_.equals({ on: false, intensity: null }, t.stated))
+        assert.ok(_.equals({ on: false, intensity: null }, t.state()))
         t.set('intensity', 10);
-        assert.ok(_.equals({ on: false, intensity: 10 }, t.stated))
+        assert.ok(_.equals({ on: false, intensity: 10 }, t.state()))
         t.set('intensity', 1);
-        assert.ok(_.equals({ on: false, intensity: 1 }, t.stated))
-    });
-    it('transaction - delay validation', function(){
-        var T = model.make_model('T')
-            .attribute(attribute.make_boolean('on').control())
-            .make();
-        var t = new T();
-
-        // until 'end' is called, no notifcations will happen
-        t.start();
-        assert.ok(_.equals({ on: null}, t.stated))
-        t.set('on', 1);
-        assert.ok(_.equals({ on: 1}, t.stated))
-        t.end()
-        assert.ok(_.equals({ on: true}, t.stated))
+        assert.ok(_.equals({ on: false, intensity: 1 }, t.state()))
     });
     it('transaction - no validation', function(){
         var T = model.make_model('T')
@@ -77,11 +63,11 @@ describe('test_thing_set:', function(){
 
         // turn off validation
         t.start({ validate: false });
-        assert.ok(_.equals({ on: null}, t.stated))
+        assert.ok(_.equals({ on: null}, t.state()))
         t.set('on', 1);
-        assert.ok(_.equals({ on: 1}, t.stated))
+        assert.ok(_.equals({ on: 1}, t.state()))
         t.end()
-        assert.ok(_.equals({ on: 1}, t.stated))
+        assert.ok(_.equals({ on: 1}, t.state()))
     });
     it('transaction - force validation', function(){
         var T = model.make_model('T')
@@ -89,13 +75,13 @@ describe('test_thing_set:', function(){
             .make();
         var t = new T();
 
-        // turn off validation
+        // turn on validation
         t.start({ validate: true });
-        assert.ok(_.equals({ on: null}, t.stated))
+        assert.ok(_.equals({ on: null}, t.state()))
         t.set('on', 1);
-        assert.ok(_.equals({ on: 1}, t.stated))
+        assert.ok(_.equals({ on: true}, t.state()))
         t.end()
-        assert.ok(_.equals({ on: true}, t.stated))
+        assert.ok(_.equals({ on: true}, t.state()))
     });
     it('set - semantic', function(){
         var T = model.make_model('T')
@@ -107,19 +93,19 @@ describe('test_thing_set:', function(){
             .make();
         var t = new T();
 
-        assert.strictEqual(null, t.stated['powered'])
-        assert.ok(isNaN(t.stated['on']))
+        assert.strictEqual(null, t.state()['powered'])
+        assert.ok(isNaN(t.state()['on']))
 
         t.set('powered', true)
-        assert.strictEqual(true, t.stated['powered'])
+        assert.strictEqual(true, t.state()['powered'])
 
         t.set('on', false)
-        assert.strictEqual(true, t.stated['powered']) // no change
+        assert.strictEqual(true, t.state()['powered']) // no change
 
         t.set('iot-attribute:on', false)
-        assert.strictEqual(false, t.stated['powered']) 
+        assert.strictEqual(false, t.state()['powered']) 
 
         t.set('iot-attribute:on', true)
-        assert.strictEqual(true, t.stated['powered']) 
+        assert.strictEqual(true, t.state()['powered']) 
     });
 })

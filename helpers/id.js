@@ -49,8 +49,8 @@ var _thing_urn_unique_hash = function() {
     }
 
     var hasher = crypto.createHash('md5');
-    hasher.update(arguments[ai - 1])
-    parts.push(hasher.digest("hex"))
+    hasher.update(arguments[ai - 1]);
+    parts.push(hasher.digest("hex"));
 
     return parts.join(":");
 };
@@ -68,7 +68,7 @@ var _thing_urn_network = function() {
         hasher.update("" + arguments[ai]);
     }
 
-    parts.push(hasher.digest("hex"))
+    parts.push(hasher.digest("hex"));
 
     return parts.join(":");
 };
@@ -86,7 +86,7 @@ var _thing_urn_machine = function() {
         hasher.update("" + arguments[ai]);
     }
 
-    parts.push(hasher.digest("hex"))
+    parts.push(hasher.digest("hex"));
 
     return parts.join(":");
 };
@@ -99,4 +99,3 @@ exports.id = {
         machine_unique: _thing_urn_machine,
     },
 };
-

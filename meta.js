@@ -50,10 +50,10 @@ Meta.prototype.state = function () {
 
     var metad = {};
     metad[_.ld.expand('iot:thing')] = self.thing.thing_id();
-    metad[_.ld.expand('iot:name')] = self.thing.name;       
+    metad[_.ld.expand('iot:name')] = self.thing.name;
 
     if (self.thing.bridge_instance) {
-        _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()))
+        _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));
     }
     _.extend(metad, self._updated);
 
@@ -115,7 +115,7 @@ Meta.prototype.update = function (ind, paramd) {
         emit: true,
     });
 
-    ind = _.ld.expand(ind)
+    ind = _.ld.expand(ind);
 
     var state = self.state();
     var changed = false;
@@ -148,8 +148,8 @@ Meta.prototype.update = function (ind, paramd) {
 /**
  *  Return all local updates
  */
-Meta.prototype.updates = function() {
-    return self._updated;
+Meta.prototype.updates = function () {
+    return this._updated;
 };
 
 exports.Meta = Meta;

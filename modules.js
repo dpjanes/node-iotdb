@@ -41,11 +41,10 @@ var logger = bunyan.createLogger({
     module: 'modules',
 });
 
-var Modules = function(paramd) {
+var Modules = function (paramd) {
     var self = this;
 
-    self.paramd = _.defaults(paramd, {
-    })
+    self.paramd = _.defaults(paramd, {})
 
     events.EventEmitter.call(this);
     this.setMaxListeners(0);
@@ -55,14 +54,14 @@ var Modules = function(paramd) {
 
 util.inherits(Modules, events.EventEmitter);
 
-Modules.prototype._load = function() {
+Modules.prototype._load = function () {
     var self = this;
 
     self._load_master();
     self._load_bridges();
 };
 
-Modules.prototype._load_master = function() {
+Modules.prototype._load_master = function () {
     var self = this;
 
     self._moduled = {}
@@ -72,8 +71,7 @@ Modules.prototype._load_master = function() {
         var module_folder = moduled[module_name];
         try {
             var module = require(module_folder);
-        } 
-        catch (x) {
+        } catch (x) {
             logger.error({
                 method: "_load",
                 module_name: module_name,
@@ -90,7 +88,7 @@ Modules.prototype._load_master = function() {
     }
 };
 
-Modules.prototype._load_bridges = function() {
+Modules.prototype._load_bridges = function () {
     var self = this;
 
     self._bridges = [];
@@ -104,13 +102,13 @@ Modules.prototype._load_bridges = function() {
     }
 };
 
-Modules.prototype.bridges = function() {
+Modules.prototype.bridges = function () {
     var self = this;
 
     return self._bridges;
 };
 
-Modules.prototype.bridge = function(module_name) {
+Modules.prototype.bridge = function (module_name) {
     var self = this;
 
     var module = self._moduled[module_name];
@@ -121,7 +119,7 @@ Modules.prototype.bridge = function(module_name) {
     return module.Bridge ? module.Bridge : null;
 };
 
-Modules.prototype.bindings = function() {
+Modules.prototype.bindings = function () {
     var self = this;
 
     if (self._bindings === undefined) {
@@ -159,7 +157,7 @@ var _modules;
 
 /**
  */
-var modules = function() {
+var modules = function () {
     if (!_modules) {
         _modules = new Modules();
     }

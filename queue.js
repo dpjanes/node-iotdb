@@ -185,8 +185,7 @@ FIFOQueue.prototype.run = function () {
 
     try {
         qitem.run(self, qitem);
-    }
-    catch (x) {
+    } catch (x) {
         logger.error({
             method: "run",
             name: self.name

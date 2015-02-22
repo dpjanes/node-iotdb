@@ -33,7 +33,6 @@ var modules = [
     require('./helpers/ld'),
     require('./helpers/id'),
     require('./helpers/d'),
-    require('./libs/libs').libs,
 ];
 for (var mi in modules) {
     var module = modules[mi];
@@ -50,7 +49,7 @@ exports.http.parse_link = require("./helpers/parse_link");
 
 var _queued = {};
 exports.Queue = require('./queue').FIFOQueue;
-exports.queue = function(name) {
+exports.queue = function (name) {
     var queue = _queued[name];
     if (!queue) {
         queue = new exports.Queue(name);

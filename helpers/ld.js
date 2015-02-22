@@ -88,7 +88,7 @@ var _ld_contains = function (d, key, value) {
     } else if (_.isArray(existing)) {
         return existing.indexOf(value) > -1;
     } else {
-        return existing == value;
+        return existing === value;
     }
 };
 
@@ -97,13 +97,13 @@ var _ld_remove = function (d, key, value) {
     if (existing === undefined) {
         return;
     } else if (_.isArray(existing)) {
-        var x = existing.indexOf(value)
+        var x = existing.indexOf(value);
         if (x > -1) {
-            existing.splice(x, 1)
+            existing.splice(x, 1);
         }
     } else {
-        if (existing == value) {
-            delete d[key]
+        if (existing === value) {
+            delete d[key];
         }
     }
 };
@@ -111,22 +111,22 @@ var _ld_remove = function (d, key, value) {
 var _ld_add = function (d, key, value) {
     var existing = d[key];
     if (existing === undefined) {
-        d[key] = value
+        d[key] = value;
     } else if (_.isArray(existing)) {
-        if (existing.indexOf(value) == -1) {
-            existing.push(value)
+        if (existing.indexOf(value) === -1) {
+            existing.push(value);
         }
     } else {
-        if (existing != value) {
-            d[key] = [existing, value]
+        if (existing !== value) {
+            d[key] = [existing, value];
         }
     }
 };
 
 var _ld_extend = function (d, key, values) {
     for (var vi in values) {
-        var value = values[vi]
-        _ld_add(d, key, value)
+        var value = values[vi];
+        _ld_add(d, key, value);
     }
 };
 
@@ -139,35 +139,35 @@ var _ld_compact = function (v, paramd) {
     paramd = _.defaults(paramd, {
         json: true,     // only JSON-friendly
         scrub: false,   // only with ':' in key
-    })
+    });
 
     if (_.isArray(v)) {
-        var ovs = v
-        var nvs = []
+        var ovs = v;
+        var nvs = [];
         for (var ovx in ovs) {
-            var ov = ovs[ovx]
-            var nv = _ld_compact(ov, paramd)
+            var ov = ovs[ovx];
+            var nv = _ld_compact(ov, paramd);
             if (nv !== undefined) {
-                nvs.push(nv)
+                nvs.push(nv);
             }
         }
-        return nvs
+        return nvs;
     } else if (_.isObject(v)) {
-        var ovd = v
-        var nvd = {}
+        var ovd = v;
+        var nvd = {};
         for (var ovkey in ovd) {
             if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
                 continue;
             }
             
-            var ovvalue = ovd[ovkey]
-            var nvvalue = _ld_compact(ovvalue, paramd)
+            var ovvalue = ovd[ovkey];
+            var nvvalue = _ld_compact(ovvalue, paramd);
             if (nvvalue !== undefined) {
-                var nvkey = _ld_compact(ovkey, paramd)
+                var nvkey = _ld_compact(ovkey, paramd);
                 nvd[nvkey] = nvvalue;
             }
         }
-        return nvd
+        return nvd;
     } else if (_.isString(v)) {
         for (var ns in _namespace) {
             var prefix = _namespace[ns];
@@ -175,23 +175,23 @@ var _ld_compact = function (v, paramd) {
                 continue;
             }
 
-            return ns + ":" + v.substring(prefix.length)
+            return ns + ":" + v.substring(prefix.length);
         }
 
-        return v
+        return v;
     } else {
         if (!paramd.json) {
-            return v
+            return v;
         } else if (_.isNumber(v)) {
-            return v
+            return v;
         } else if (_.isInteger(v)) {
-            return v
+            return v;
         } else if (_.isBoolean(v)) {
-            return v
+            return v;
         } else if (_.isNull(v)) {
-            return v
+            return v;
         } else {
-            return undefined
+            return undefined;
         }
     }
 
@@ -211,42 +211,42 @@ var _ld_expand = function (v, paramd) {
         otherwise: undefined,
         json: true,     // only JSON-friendly
         scrub: false,   // only with ':' in key
-    })
+    });
 
     if (_.isArray(v)) {
-        var ovs = v
-        var nvs = []
+        var ovs = v;
+        var nvs = [];
         for (var ovx in ovs) {
-            var ov = ovs[ovx]
-            var nv = _ld_expand(ov, paramd)
+            var ov = ovs[ovx];
+            var nv = _ld_expand(ov, paramd);
             if (nv !== undefined) {
-                nvs.push(nv)
+                nvs.push(nv);
             }
         }
-        return nvs
+        return nvs;
     } else if ((v !== null) && _.isObject(v)) {
-        var ovd = v
-        var nvd = {}
+        var ovd = v;
+        var nvd = {};
         for (var ovkey in ovd) {
             if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
                 continue;
             }
             
-            var ovvalue = ovd[ovkey]
-            var nvvalue = _ld_expand(ovvalue, paramd)
+            var ovvalue = ovd[ovkey];
+            var nvvalue = _ld_expand(ovvalue, paramd);
             if (nvvalue !== undefined) {
                 var nvkey = _ld_expand(ovkey, paramd);
                 nvd[nvkey] = nvvalue;
             }
         }
-        return nvd
+        return nvd;
     } else if (_.isString(v)) {
         var match = v.match(/([-a-z0-9_]+):(.*)/);
         if (match === null) {
             if ((paramd.otherwise !== undefined) && (paramd.otherwise !== null)) {
-                v = v.replace(/^:/, '')
+                v = v.replace(/^:/, '');
                 if (_.isString(paramd.otherwise)) {
-                    return _ld_expand(paramd.otherwise) + v
+                    return _ld_expand(paramd.otherwise) + v;
                 } else if (_.isFunction(paramd.otherwise)) {
                     return paramd.otherwise(v);
                 } else {
@@ -257,7 +257,7 @@ var _ld_expand = function (v, paramd) {
             }
         }
 
-        var url = _namespace[match[1]]
+        var url = _namespace[match[1]];
 
         if (url && url.length) {
             return url + match[2];
@@ -266,17 +266,17 @@ var _ld_expand = function (v, paramd) {
         return v;
     } else {
         if (!paramd.json) {
-            return v
+            return v;
         } else if (_.isNumber(v)) {
-            return v
+            return v;
         } else if (_.isInteger(v)) {
-            return v
+            return v;
         } else if (_.isBoolean(v)) {
-            return v
+            return v;
         } else if (_.isNull(v)) {
             return paramd.otherwise;
         } else {
-            return undefined
+            return undefined;
         }
     }
 

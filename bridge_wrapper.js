@@ -35,7 +35,7 @@ var logger = bunyan.createLogger({
     module: 'bridge_wrapper',
 });
 
-var BridgeWrapper = function(binding, initd, use_model) {
+var BridgeWrapper = function (binding, initd, use_model) {
     var self = this;
     events.EventEmitter.call(self);
 
@@ -44,7 +44,7 @@ var BridgeWrapper = function(binding, initd, use_model) {
 
     var bridge_exemplar = new binding.bridge(initd);
 
-    bridge_exemplar.discovered = function(bridge_instance) {
+    bridge_exemplar.discovered = function (bridge_instance) {
         /* bindings can ignore certatin discoveries */
         if (binding && binding.matchd) {
             var bridge_meta = _.ld.compact(bridge_instance.meta());
@@ -56,7 +56,7 @@ var BridgeWrapper = function(binding, initd, use_model) {
 
                 self.emit("ignored", bridge_instance);
                 return;
-            }     
+            }
         }
 
         /* now make a model */
@@ -67,7 +67,7 @@ var BridgeWrapper = function(binding, initd, use_model) {
 
         /* OK: here's dealing with pulls */
         var model_pulled = bridge_instance.pulled;
-        bridge_instance.pulled = function(stated) {
+        bridge_instance.pulled = function (stated) {
             /* this will go to the Model */
             model_pulled(stated);
 
@@ -86,14 +86,14 @@ var BridgeWrapper = function(binding, initd, use_model) {
 
         self.emit("bridge", bridge_instance);
     };
-    
-    process.nextTick(function() {
+
+    process.nextTick(function () {
         bridge_exemplar.discover();
     });
 };
 
 util.inherits(BridgeWrapper, events.EventEmitter);
 
-exports.bridge_wrapper = function(binding, initd) {
+exports.bridge_wrapper = function (binding, initd) {
     return new BridgeWrapper(binding, initd);
 };

@@ -44,11 +44,10 @@ var logger = bunyan.createLogger({
     module: 'things',
 });
 
-var Things = function(paramd) {
+var Things = function (paramd) {
     var self = this;
 
-    self.paramd = _.defaults(paramd, {
-    });
+    self.paramd = _.defaults(paramd, {});
     self._thingd = {};
     self._bridge_exemplars = [];
 
@@ -61,7 +60,7 @@ util.inherits(Things, events.EventEmitter);
 /**
  *  Return all things that we know about
  */
-Things.prototype.things = function(model_code) {
+Things.prototype.things = function (model_code) {
     var self = this;
 
     // the result
@@ -70,10 +69,9 @@ Things.prototype.things = function(model_code) {
         things: self,
     });
 
-    var _add = function(thing) {
+    var _add = function (thing) {
         // console.log("HERE:FOUND", thing.thing_id(), thing.code, _.isModel(thing));
-        if (!thing.reachable()) {
-        } else if (!model_code) {
+        if (!thing.reachable()) {} else if (!model_code) {
             // console.log("HERE:F.1");
             things.push(thing);
         } else if (model_code === thing.code) {
@@ -97,13 +95,13 @@ Things.prototype.things = function(model_code) {
 
 /**
  */
-Things.prototype.connect = function(modeld) {
+Things.prototype.connect = function (modeld) {
     return this.things(this.discover(modeld));
 };
 
 /**
  */
-Things.prototype.discover = function(modeld) {
+Things.prototype.discover = function (modeld) {
     var self = this;
 
     logger.info({
@@ -130,7 +128,7 @@ Things.prototype.discover = function(modeld) {
     }
 
     // run when ready
-    self.when_ready(function() {
+    self.when_ready(function () {
         self._discover(modeld);
     });
 
@@ -140,7 +138,7 @@ Things.prototype.discover = function(modeld) {
 /**
  *  This does the actual connect work
  */
-Things.prototype._discover = function(modeld) {
+Things.prototype._discover = function (modeld) {
     var self = this;
 
     var bindings = modules().bindings();
@@ -157,7 +155,7 @@ Things.prototype._discover = function(modeld) {
 /**
  *  This does the connect for a particular binding
  */
-Things.prototype._discover_binding = function(modeld, binding) {
+Things.prototype._discover_binding = function (modeld, binding) {
     var self = this;
 
     logger.info({
@@ -172,12 +170,12 @@ Things.prototype._discover_binding = function(modeld, binding) {
     var bridge_exemplar = new binding.bridge(initd);
     self._bridge_exemplars.push(bridge_exemplar);
 
-    bridge_exemplar.discovered = function(bridge_instance) {
+    bridge_exemplar.discovered = function (bridge_instance) {
         self._discover_binding_bridge(modeld, binding, bridge_exemplar, bridge_instance);
     };
 
     // and kick off the discovery … later
-    process.nextTick(function() {
+    process.nextTick(function () {
         bridge_exemplar.discover();
     });
 };
@@ -195,7 +193,7 @@ Things.prototype._discover_binding = function(modeld, binding) {
  *      - see if exiting one is reachable?
  *      - if it isn't, replace the bridge with this one
  */
-Things.prototype._discover_binding_bridge = function(modeld, binding, bridge_exemplar, bridge_instance) {
+Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_exemplar, bridge_instance) {
     var self = this;
 
     if (require('iotdb').shutting_down()) {
@@ -219,7 +217,7 @@ Things.prototype._discover_binding_bridge = function(modeld, binding, bridge_exe
             }
 
             return;
-        }     
+        }
     }
 
     // now make a model 
@@ -256,13 +254,13 @@ Things.prototype._discover_binding_bridge = function(modeld, binding, bridge_exe
  *  Will callback when ready. If already ready,
  *  will just callback;
  */
-Things.prototype.when_ready = function(callback) {
+Things.prototype.when_ready = function (callback) {
     callback();
 };
 
 /*
  */
-Things.prototype.disconnect = function() {
+Things.prototype.disconnect = function () {
     var self = this;
 
     var max_wait = 0;
@@ -302,7 +300,7 @@ Things.prototype.disconnect = function() {
  */
 var _things;
 
-var things = function() {
+var things = function () {
     if (!_things) {
         _things = new Things();
     }

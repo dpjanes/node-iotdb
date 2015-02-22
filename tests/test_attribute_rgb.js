@@ -70,13 +70,13 @@ describe('test_attribute_rgb:', function(){
 
         var a = new AModel();
         a.set('rgb', 'A')
-        assert.strictEqual(a.stated.rgb, null)
+        assert.strictEqual(a.state().rgb, null)
 
         a.set('rgb', '')
-        assert.strictEqual(a.stated.rgb, null)
+        assert.strictEqual(a.state().rgb, null)
 
         a.set('rgb', 'FF')
-        assert.strictEqual(a.stated.rgb, null)
+        assert.strictEqual(a.state().rgb, null)
     });
     it('good RGB', function(){
         var AModel = model.make_model('A')
@@ -88,13 +88,13 @@ describe('test_attribute_rgb:', function(){
 
         var a = new AModel();
         a.set('rgb', '#000000')
-        assert.strictEqual(a.stated.rgb, "#000000")
+        assert.strictEqual(a.state().rgb, "#000000")
 
         a.set('rgb', '#FF00FF')
-        assert.strictEqual(a.stated.rgb, "#FF00FF")
+        assert.strictEqual(a.state().rgb, "#FF00FF")
 
         a.set('rgb', '#FFFFFF')
-        assert.strictEqual(a.stated.rgb, "#FFFFFF")
+        assert.strictEqual(a.state().rgb, "#FFFFFF")
     });
     it('good color', function(){
         var AModel = model.make_model('A')
@@ -106,13 +106,13 @@ describe('test_attribute_rgb:', function(){
 
         var a = new AModel();
         a.set('rgb', 'red')
-        assert.strictEqual(a.stated.rgb, "#FF0000")
+        assert.strictEqual(a.state().rgb, "#FF0000")
 
         a.set('rgb', 'green')
-        assert.strictEqual(a.stated.rgb, "#008000")
+        assert.strictEqual(a.state().rgb, "#008000")
 
         a.set('rgb', 'blue')
-        assert.strictEqual(a.stated.rgb, "#0000FF")
+        assert.strictEqual(a.state().rgb, "#0000FF")
     });
   });
 })

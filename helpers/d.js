@@ -53,7 +53,7 @@ var get = function(keystored, key, otherwise) {
     }
 
     return value;
-}
+};
 
 /**
  *  Slash-path oriented
@@ -74,10 +74,10 @@ var set = function(keystored, key, value) {
         d = subd;
     }
 
-    d[lastkey] = value
+    d[lastkey] = value;
 };
 
 exports.d = {
     get: get,
     set: set,
-}
+};
