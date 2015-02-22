@@ -40,7 +40,6 @@ var BridgeWrapper = function(binding, initd, use_model) {
     events.EventEmitter.call(self);
 
     initd = _.defaults(initd, binding.initd, initd, {});
-    var discoverd = _.defaults(binding.discoverd, {});
     var connectd = _.defaults(binding.connectd, {});
 
     var bridge_exemplar = new binding.bridge(initd);
@@ -64,7 +63,7 @@ var BridgeWrapper = function(binding, initd, use_model) {
         var model_instance = new binding.model();
         model_instance.bind_bridge(bridge_instance);
 
-        self.emit("model", model_instance);
+        self.emit("thing", model_instance);
 
         /* OK: here's dealing with pulls */
         var model_pulled = bridge_instance.pulled;
@@ -89,7 +88,7 @@ var BridgeWrapper = function(binding, initd, use_model) {
     };
     
     process.nextTick(function() {
-        bridge_exemplar.discover(discoverd);
+        bridge_exemplar.discover();
     });
 };
 

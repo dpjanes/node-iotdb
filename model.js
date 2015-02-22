@@ -28,7 +28,6 @@ var _ = require("./helpers");
 var attribute = require("./attribute");
 var meta_thing = require("./meta");
 var model_maker = require("./model_maker");
-var libs = require("./libs/libs");
 var iotdb = require("./iotdb");
 
 var bunyan = require('bunyan');
@@ -800,7 +799,6 @@ Model.prototype._do_validate = function (attribute, new_value) {
     var paramd = {
         value: new_value,
         code: attribute.get_code(),
-        libs: libs.libs,
     };
 
     attribute.validate(paramd);

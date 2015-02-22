@@ -42,6 +42,12 @@ for (var mi in modules) {
     }
 }
 
+exports.Color = require("./helpers/color").Color;
+exports.temperature = require("./helpers/temperature").temperature;
+
+exports.http = {};
+exports.http.parse_link = require("./helpers/parse_link");
+
 var _queued = {};
 exports.Queue = require('./queue').FIFOQueue;
 exports.queue = function(name) {

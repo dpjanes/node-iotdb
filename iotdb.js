@@ -41,7 +41,6 @@ var logger = bunyan.createLogger({
 
 var things = require('./things')
 var thing_array = require('./thing_array');
-var libs = require('./libs/libs');
 var cfg = require('./cfg');
 var _ = require('./helpers');
 
@@ -248,7 +247,6 @@ exports.make_model = exports.model.make_model;
 exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;
 exports.cfg = cfg;
-exports.libs = libs.libs;
 exports.upnp = require('./upnp');
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 
