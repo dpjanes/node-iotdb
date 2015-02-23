@@ -403,6 +403,12 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
+    var transaction = _.defaults(self._transaction, {
+        force: false,
+        push: true,
+        validate: true,
+    });
+
     var rd = self._find(find_key, {
         set: true
     });
@@ -426,25 +432,21 @@ Model.prototype.set = function (find_key, new_value) {
 
     var attribute = rd.attribute;
     var attribute_key = attribute.get_code();
-    var attribute_value = attribute._ovalue;
+    var attribute_value_old = transaction.push ? attribute._ivalue : attribute._ovalue;
+    var attribute_value_new = transaction.validate ? self._validate(attribute, new_value) : new_value;
 
-    var force = !self._transaction || self._transaction.force;
-    if (!force && (attribute_value === new_value)) {
+    if (transaction.force && (attribute_value_old === attribute_value_new)) {
         return self;
     }
 
-    if (self._transaction) {
-        if (self._transaction.validate) {
-            self._do_validate(attribute, new_value);
-        } else {
-            attribute._ovalue = new_value;
-        }
+    if (transaction.push) {
+        attribute._ovalue = attribute_value_new;
+        self._do_push(attribute, false);
+        self._do_notify(attribute, false);
     } else {
-        self._do_validate(attribute, new_value);
+        attribute._ivalue = attribute_value_new;
+        self._do_notify(attribute, false);
     }
-
-    self._do_notify(attribute, false);
-    self._do_push(attribute, false);
 
     return self;
 };
@@ -788,20 +790,15 @@ Model.prototype._do_pushes = function (attributed) {
 };
 
 /**
- *  Validate this updated attribute.
- *
- *  VALIDATES ARE ALWAYS IMMEDIATE AND
- *  ONLY ARE FOR 'ovalue'
+ *  Validate this updated attribute. Attribute
+ *  should be rewritten to make this redundant
  *
  *  @param attributes
  *  The {@link Attribute} to validate
  *
- *  @param immediate
- *  If true, validate immediately no matter what
- *
  *  @protected
  */
-Model.prototype._do_validate = function (attribute, new_value) {
+Model.prototype._validate = function (attribute, new_value) {
     var self = this;
 
     var paramd = {
@@ -811,9 +808,7 @@ Model.prototype._do_validate = function (attribute, new_value) {
 
     attribute.validate(paramd);
 
-    if (paramd.value !== undefined) {
-        attribute._ovalue = paramd.value;
-    }
+    return paramd.value;
 };
 
 /**
