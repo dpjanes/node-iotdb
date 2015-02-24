@@ -156,7 +156,7 @@ Modules.prototype.bindings = function () {
 
 Modules.prototype._load_setup = function () {
     var self = this;
-    var iotdb @ require('./iotdb');
+    var iotdb = require('./iotdb');
 
     self._bridges = [];
 
@@ -173,7 +173,7 @@ Modules.prototype._load_setup = function () {
                 method: "_load_setup",
                 module_name: module_name,
                 exception: x,
-                cause: "likely the module has a bad setup function");
+                cause: "likely the module has a bad setup function",
             }, "unexpected exception running module.setup");
         }
     }

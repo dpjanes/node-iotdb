@@ -233,7 +233,7 @@ exports.make_model = exports.model.make_model;
 exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;
 exports.cfg = cfg;
-exports.upnp = require('./upnp');
+exports.upnp = null;
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 
 var keystore = require('./keystore');
