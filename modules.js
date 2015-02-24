@@ -59,6 +59,7 @@ Modules.prototype._load = function () {
 
     self._load_master();
     self._load_bridges();
+    self._load_setup();
 };
 
 Modules.prototype._load_master = function () {
@@ -151,6 +152,31 @@ Modules.prototype.bindings = function () {
     }
 
     return self._bindings;
+};
+
+Modules.prototype._load_setup = function () {
+    var self = this;
+    var iotdb @ require('./iotdb');
+
+    self._bridges = [];
+
+    for (var module_name in self._moduled) {
+        var module = self._moduled[module_name];
+        if (!module.setup) {
+            continue;
+        }
+
+        try {
+            module.setup(iotdb);
+        } catch (x) {
+            logger.error({
+                method: "_load_setup",
+                module_name: module_name,
+                exception: x,
+                cause: "likely the module has a bad setup function");
+            }, "unexpected exception running module.setup");
+        }
+    }
 };
 
 var _modules;
