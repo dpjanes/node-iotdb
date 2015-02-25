@@ -931,19 +931,6 @@ exports.omit = function (obj) {
 };
 */
 
-// Fill in a given object with default properties.
-exports.defaults = function (obj) {
-    each(slice.call(arguments, 1), function (source) {
-        if (source) {
-            for (var prop in source) {
-                if (obj[prop] === void 0) obj[prop] = source[prop];
-            }
-        }
-    });
-    return obj;
-};
-
-
 // Create a (shallow-cloned) duplicate of an object.
 exports.clone = function (obj) {
     if (!exports.isObject(obj)) return obj;
@@ -1875,17 +1862,19 @@ exports.slugify = function (identifier) {
  *  @param {dictionary}
  *  The paramd to use, not necessarily the one passed in
  */
-exports.defaults = function (paramd, defaultd) {
+exports.defaults = function (paramd) {
     if (!paramd) {
         paramd = {}
     }
 
-    for (var key in defaultd) {
-        var pvalue = paramd[key]
-        if (pvalue === undefined) {
-            paramd[key] = defaultd[key]
+    each(slice.call(arguments, 1), function (defaultd) {
+        for (var key in defaultd) {
+            var pvalue = paramd[key]
+            if (pvalue === undefined) {
+                paramd[key] = defaultd[key]
+            }
         }
-    }
+    });
 
     return paramd;
 };

@@ -5,8 +5,6 @@
  *  IOT.org
  *  2015-01-31
  *
- *  Configuration helpers
- *
  *  Copyright [2013-2014] [David P. Janes]
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +33,15 @@ var logger = bunyan.createLogger({
     module: 'bridge_wrapper',
 });
 
+/**
+ *  A Bridge wrapper does all the work IOTDB would
+ *  do so you can use the Bridge without bringing
+ *  in the rest of IOTDB.
+ *
+ *  In practice, it's much easier to use IOTDB
+ *  but sometimes this is helpful, especially if
+ *  you just want to use the moduels stand-alone
+ */
 var BridgeWrapper = function (binding, initd, use_model) {
     var self = this;
     events.EventEmitter.call(self);
@@ -94,6 +101,30 @@ var BridgeWrapper = function (binding, initd, use_model) {
 
 util.inherits(BridgeWrapper, events.EventEmitter);
 
+/**
+ *  Explicitly given a binding, make a Bridge Wrapper
+ */
 exports.bridge_wrapper = function (binding, initd) {
     return new BridgeWrapper(binding, initd);
+};
+
+/**
+ *  Finds a Model by name in a list of bindings,
+ *  then wraps it
+ */
+exports.make_wrap = function(name, bindings, initd) {
+    var model_code = _.identifier_to_dash_case(name);
+    for (var bi in bindings) {
+        var binding = bindings[bi];
+        if (!binding.model) {
+            continue
+        }
+
+        var model = new binding.model();
+        if (model_code !== model.code) {
+            continue;
+        }
+
+        return exports.bridge_wrapper(binding, initd);
+    }
 };

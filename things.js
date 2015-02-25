@@ -93,13 +93,13 @@ Things.prototype.things = function (model_code) {
 
 /**
  */
-Things.prototype.connect = function (modeld) {
-    return this.things(this.discover(modeld));
+Things.prototype.connect = function (modeld, initd) {
+    return this.things(this.discover(modeld, initd));
 };
 
 /**
  */
-Things.prototype.discover = function (modeld) {
+Things.prototype.discover = function (modeld, initd) {
     var self = this;
 
     logger.info({
@@ -123,6 +123,15 @@ Things.prototype.discover = function (modeld) {
         modeld.model_code = _.identifier_to_dash_case(modeld.model_code);
     } else {
         throw new Error("expected undefined|null|string|dictionary");
+    }
+
+    // optional second dictionary
+    if (initd !== undefined) {
+        if (!_.isObject(initd)) {
+            throw new Error("expected initd to be a dictionary");
+        }
+
+        modeld = _.defaults(modeld, initd);
     }
 
     // run when ready
@@ -164,6 +173,7 @@ Things.prototype._discover_binding = function (modeld, binding) {
 
     // initialize the bridge for this binding
     var initd = _.defaults({}, modeld, binding.initd);
+    console.log("INITD", initd, binding.initd);
 
     var bridge_exemplar = new binding.bridge(initd);
     self._bridge_exemplars.push(bridge_exemplar);

@@ -148,15 +148,15 @@ IOT.prototype.things = function (model_code) {
  *  Connect to Things. Return a Thing Array
  *  of things thus discovered
  */
-IOT.prototype.connect = function (modeld) {
-    return this._things.connect(modeld);
+IOT.prototype.connect = function (modeld, initd) {
+    return this._things.connect(modeld, initd);
 };
 
 /**
  *  Connect to Things.
  */
-IOT.prototype.discover = function (modeld) {
-    this._things.discover(modeld);
+IOT.prototype.discover = function (modeld, initd) {
+    this._things.discover(modeld, initd);
     return this;
 };
 
@@ -232,9 +232,24 @@ exports.model = require('./model');
 exports.make_model = exports.model.make_model;
 exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;
+exports._ = _;
 exports.cfg = cfg;
-exports.upnp = null;
-exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
+exports.bunyan = bunyan;
+exports.unirest = require('unirest');
+
+// UPnP is a function because it doesn't ship with 'iotdb'
+var iotdb_upnp;
+exports.upnp = function() {
+    if (!iotdb_upnp) {
+        iotdb_upnp = require('iotdb-upnp');
+    }
+
+    return iotdb_upnp;
+};
+
+var bridge_wrapper = require('./bridge_wrapper')
+exports.bridge_wrapper = bridge_wrapper.bridge_wrapper;
+exports.make_wrap = bridge_wrapper.make_wrap;
 
 var keystore = require('./keystore');
 exports.keystore = keystore.keystore;
@@ -243,7 +258,6 @@ exports.Keystore = keystore.Keystore;
 var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
-
 
 /**
  *  Singleton

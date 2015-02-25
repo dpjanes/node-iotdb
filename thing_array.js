@@ -151,17 +151,18 @@ ThingArray.prototype.push = function (thing, paramd) {
     }
 
     /*
-     *  Do persistent commands. Always within a transaction
+     *  Do persistent commands. 
+     *  [Always within a transaction] - not right now
      */
     if ((self._persistds != null) && (self._persistds.length > 0)) {
-        thing.start();
+        // thing.start();
 
         for (var pi in self._persistds) {
             var pd = self._persistds[pi];
             pd.f.apply(thing, Array.prototype.slice.call(pd.av));
         }
 
-        thing.end();
+        // thing.end();
     }
 
     return self;
