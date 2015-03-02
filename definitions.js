@@ -167,6 +167,7 @@ attribute.sensor.boolean.chemical = iotdb.make_boolean(':sensor.chemical');
 attribute.sensor.boolean.chemical.co2 = iotdb.make_boolean(':sensor.chemical.carbon-dioxide');
 attribute.sensor.boolean.chemical.co = iotdb.make_boolean(':sensor.chemical.carbon-monoxide');
 attribute.sensor.boolean.contact = iotdb.make_boolean(':sensor.contact');
+attribute.sensor.boolean.connected = iotdb.make_boolean(':sensor.connected');
 attribute.sensor.boolean.motion = iotdb.make_boolean(':sensor.motion');
 attribute.sensor.boolean.open = iotdb.make_boolean(':sensor.open');
 attribute.sensor.boolean.presence = iotdb.make_boolean(':sensor.presence');
