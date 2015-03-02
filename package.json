@@ -1,21 +1,15 @@
 {
     "author": "David P. Janes <davidjanes@iotdb.org> (https://iotdb.org)", 
-    "bin": {
-        "iotdb": "./bin/iotdb", 
-        "iotdb-control": "./bin/iotdb"
-    }, 
     "bugs": {
         "url": "https://github.com/dpjanes/node-iotdb/issues"
     }, 
     "dependencies": {
-        "bunyan": "~1.3.3", 
+        "bunyan": "~1.3.4", 
         "iotdb-timers": ">=0.0.9", 
-        "minimist": "~1.1.0", 
         "node-uuid": "~1.4.2", 
         "prompt": "~0.2.14", 
-        "underscore": "~1.7.0", 
-        "unirest": "~0.4.0", 
-        "xml2js": "~0.4.5"
+        "underscore": "~1.8.2", 
+        "unirest": "~0.4.0"
     }, 
     "description": "IOTDB.org", 
     "devDependencies": {
@@ -51,5 +45,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.5.0"
+    "version": "0.5.2"
 }

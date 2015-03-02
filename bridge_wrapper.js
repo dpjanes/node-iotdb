@@ -112,7 +112,7 @@ exports.bridge_wrapper = function (binding, initd) {
  *  Finds a Model by name in a list of bindings,
  *  then wraps it
  */
-exports.make_wrap = function(name, bindings, initd) {
+exports.make_wrap = function (name, bindings, initd) {
     var model_code = _.identifier_to_dash_case(name);
     for (var bi in bindings) {
         var binding = bindings[bi];

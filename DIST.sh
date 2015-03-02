@@ -35,15 +35,14 @@ then
         fi
         mkdir "${NPM_IOTDB_DST}" || exit 1
 
-        update-package || exit 1
+        update-package --increment-version || exit 1
 
         tar cf - \
             --exclude "xx*" \
             --exclude "yy*" \
             README.md \
             LICENSE.txt \
-            *.js *.json \
-            libs/*js helpers/*js drivers/*js stores/*js drivers/libs/*.js bin/data/* bin/iotdb |
+            *.js *.json helpers/*js |
         ( cd "${NPM_IOTDB_DST}" && tar xvf - )
 
         ## cp dist/*.* "${NPM_IOTDB_DST}" || exit 1

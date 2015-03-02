@@ -501,9 +501,11 @@ Model.prototype.update = function (updated, paramd) {
 Model.prototype.start = function (paramd) {
     var self = this;
 
+    /*
     if (self._transaction) {
         throw new Error("Model.start: cannot nest start/end transactions");
     }
+    */
 
     self._transaction = _.defaults(paramd, {
         notify: false,
@@ -515,6 +517,8 @@ Model.prototype.start = function (paramd) {
         _validated: {},
         _pushd: {},
     });
+    self._transactions = self._transactions || [];
+    self._transactions.push(self._transaction);
 
     return self;
 };
@@ -556,7 +560,11 @@ Model.prototype.end = function () {
             self._do_pushes(self._transaction._pushd);
         }
 
-        self._transaction = null;
+        if (self._transactions.length) {
+            self._transaction = self._transactions.pop();
+        } else {
+            self._transaction = null;
+        }
     }
 
     return self;

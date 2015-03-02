@@ -280,12 +280,22 @@ ModelMaker.prototype.attribute = function (attribute) {
 
 // reading
 ModelMaker.prototype.i = function (code, attribute) {
-    return this.attribute(_.deepCopy(attribute).code(code).reading());
+    return this.attribute(
+        _.deepCopy(attribute)
+            .code(code)
+            .name(code)
+            .reading()
+    );
 };
 
 // control
 ModelMaker.prototype.o = function (code, attribute) {
-    return this.attribute(_.deepCopy(attribute).code(code).control());
+    return this.attribute(
+        _.deepCopy(attribute)
+            .code(code)
+            .name(code)
+            .control()
+    );
 };
 
 // reading & control
@@ -303,6 +313,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         this.attribute(
             _.deepCopy(attribute)
             .code(in_code)
+            .name(in_code)
             .reading()
             .control()
         );
@@ -310,9 +321,10 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         this.attribute(
             _.deepCopy(attribute)
             .code(in_code)
+            .name(in_code)
             .reading()
         );
-        this.make_attribute_control(in_code, out_code);
+        this.make_attribute_control(in_code, out_code).name(out_code);
     }
 
     return this;
@@ -632,6 +644,7 @@ ModelMaker.prototype.make = function () {
 
         this.callbacksd = {};
         self._transaction = null;
+        self._transactions = [];
 
         for (var acode in this.attributed) {
             var attribute = this.attributed[acode];

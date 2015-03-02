@@ -173,7 +173,6 @@ Things.prototype._discover_binding = function (modeld, binding) {
 
     // initialize the bridge for this binding
     var initd = _.defaults({}, modeld, binding.initd);
-    console.log("INITD", initd, binding.initd);
 
     var bridge_exemplar = new binding.bridge(initd);
     self._bridge_exemplars.push(bridge_exemplar);
@@ -263,7 +262,9 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
  *  will just callback;
  */
 Things.prototype.when_ready = function (callback) {
-    callback();
+    process.nextTick(function () {
+        callback();
+    });
 };
 
 /*

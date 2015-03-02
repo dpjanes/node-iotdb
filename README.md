@@ -2,6 +2,8 @@ Node-IOTDB
 =
 The Internet of Things Database
 
+**THIS IS BEING OVERHAULED: BACK 2015-03**
+
 IOTDB provides an open way of describing Things, Sensors ... 
 Internet of Things devices ... semantically.
 

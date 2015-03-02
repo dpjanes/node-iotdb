@@ -103,6 +103,10 @@ Modules.prototype._load_bridges = function () {
     }
 };
 
+Modules.prototype.module = function (module_name) {
+    return this._moduled[module_name];
+};
+
 Modules.prototype.bridges = function () {
     var self = this;
 

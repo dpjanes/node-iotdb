@@ -235,19 +235,8 @@ exports.helpers = _;
 exports._ = _;
 exports.cfg = cfg;
 exports.bunyan = bunyan;
-exports.unirest = require('unirest');
 
-// UPnP is a function because it doesn't ship with 'iotdb'
-var iotdb_upnp;
-exports.upnp = function() {
-    if (!iotdb_upnp) {
-        iotdb_upnp = require('iotdb-upnp');
-    }
-
-    return iotdb_upnp;
-};
-
-var bridge_wrapper = require('./bridge_wrapper')
+var bridge_wrapper = require('./bridge_wrapper');
 exports.bridge_wrapper = bridge_wrapper.bridge_wrapper;
 exports.make_wrap = bridge_wrapper.make_wrap;
 
@@ -258,6 +247,18 @@ exports.Keystore = keystore.Keystore;
 var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
+exports.module = function(name) {
+    var m = modules.modules().module(name);
+    if (m) {
+        return m;
+    }
+
+    if (name === 'bunyan') {
+        return bunyan;
+    }
+
+    return require(name);
+};
 
 /**
  *  Singleton

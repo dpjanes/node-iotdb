@@ -104,7 +104,7 @@ ThingArray.prototype.push = function (thing, paramd) {
             method: "push",
             thing: thing,
         }, "attempt to push a non-Thing on a ThingArray");
-        process.exit(1);
+        throw new Error("attempt to push a non-Thing on a ThingArray");
     }
 
     /*
@@ -151,18 +151,18 @@ ThingArray.prototype.push = function (thing, paramd) {
     }
 
     /*
-     *  Do persistent commands. 
+     *  Do persistent commands.
      *  [Always within a transaction] - not right now
      */
     if ((self._persistds != null) && (self._persistds.length > 0)) {
-        // thing.start();
+        thing.start();
 
         for (var pi in self._persistds) {
             var pd = self._persistds[pi];
             pd.f.apply(thing, Array.prototype.slice.call(pd.av));
         }
 
-        // thing.end();
+        thing.end();
     }
 
     return self;
@@ -541,8 +541,14 @@ ThingArray.prototype.tag = function () {
  *
  *  @return {this}
  */
-ThingArray.prototype.on = function () {
+ThingArray.prototype.on = function (what, callback) {
     var self = this;
+
+    if (what === "thing") {
+        self.on_thing(callback);
+        return self;
+    }
+
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.on.apply(item, Array.prototype.slice.call(arguments));
