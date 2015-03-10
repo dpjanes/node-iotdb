@@ -166,8 +166,13 @@ Model.prototype.get_code = function () {
 /**
  *  State is now constructed on the fly
  */
-Model.prototype.state = function () {
+Model.prototype.state = function (paramd) {
     var self = this;
+
+    paramd = _.defaults(paramd, {
+        istate: true,
+        ostate: true,
+    });
 
     var state = {};
     var attributes = self.attributes();
@@ -176,9 +181,9 @@ Model.prototype.state = function () {
         var attribute_code = attribute.get_code();
 
         var attribute_value = null;
-        if (attribute._ivalue != null) {
+        if (paramd.istate && (attribute._ivalue != null)) {
             attribute_value = attribute._ivalue;
-        } else if (attribute._ovalue != null) {
+        } else if (paramd.ostate && (attribute._ovalue != null)) {
             attribute_value = attribute._ovalue;
         } else {}
 
@@ -363,10 +368,10 @@ Model.prototype.get = function (find_key) {
     }
 
     if (rd.attribute) {
-        if (attribute._ivalue != null) {
-            return attribute._ivalue;
-        } else if (attribute._ovalue != null) {
-            return attribute._ovalue;
+        if (rd.attribute._ivalue !== null) {
+            return rd.attribute._ivalue;
+        } else if (rd.attribute._ovalue !== null) {
+            return rd.attribute._ovalue;
         } else {
             return null;
         }
@@ -403,6 +408,7 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
+
     var transaction = _.defaults(self._transaction, {
         force: false,
         push: true,
@@ -432,10 +438,10 @@ Model.prototype.set = function (find_key, new_value) {
 
     var attribute = rd.attribute;
     var attribute_key = attribute.get_code();
-    var attribute_value_old = transaction.push ? attribute._ivalue : attribute._ovalue;
+    var attribute_value_old = transaction.push ? attribute._ovalue : attribute._ivalue;
     var attribute_value_new = transaction.validate ? self._validate(attribute, new_value) : new_value;
 
-    if (transaction.force && (attribute_value_old === attribute_value_new)) {
+    if (!transaction.force && (attribute_value_old === attribute_value_new)) {
         return self;
     }
 
@@ -466,6 +472,7 @@ Model.prototype.update = function (updated, paramd) {
         self.set(key, updated[key]);
     }
     self.end();
+
 
     return self;
 };
@@ -507,6 +514,7 @@ Model.prototype.start = function (paramd) {
     }
     */
 
+    
     self._transaction = _.defaults(paramd, {
         notify: false,
         validate: true,
@@ -560,8 +568,9 @@ Model.prototype.end = function () {
             self._do_pushes(self._transaction._pushd);
         }
 
+        self._transactions.pop();
         if (self._transactions.length) {
-            self._transaction = self._transactions.pop();
+            self._transaction = self._transactions[self._transactions.length - 1];
         } else {
             self._transaction = null;
         }

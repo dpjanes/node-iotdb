@@ -60,13 +60,13 @@ attribute.number.fahrenheit = iotdb.make_number(":temperature")
 attribute.number.temperature.kelvin = iotdb.make_number(":temperature")
     .unit("iot-unit:temperature.metric.kelvin");
 
-attribute.percent = iotdb.make_percent(":value")
-attribute.percent.volume = iotdb.make_percent(":volume")
-attribute.percent.brightness = iotdb.make_percent(":brightness")
+attribute.number.percent = iotdb.make_percent(":value")
+attribute.number.percent.volume = iotdb.make_percent(":volume")
+attribute.number.percent.brightness = iotdb.make_percent(":brightness")
 
-attribute.unit = iotdb.make_unit(":value");
-attribute.unit.volume = iotdb.make_unit(":volume");
-attribute.unit.brightness = iotdb.make_unit(":brightness");
+attribute.number.unit = iotdb.make_unit(":value");
+attribute.number.unit.volume = iotdb.make_unit(":volume");
+attribute.number.unit.brightness = iotdb.make_unit(":brightness");
 
 /* strings */
 attribute.string = iotdb.make_string(":value");

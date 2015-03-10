@@ -110,7 +110,7 @@ Meta.prototype.set = function (key, value) {
 Meta.prototype.update = function (ind, paramd) {
     var self = this;
 
-    console.trace();
+    // console.trace();
     paramd = _.defaults(paramd, {
         emit: true,
     });

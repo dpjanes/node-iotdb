@@ -643,13 +643,14 @@ ModelMaker.prototype.make = function () {
         }
 
         this.callbacksd = {};
-        self._transaction = null;
-        self._transactions = [];
+        this._transaction = null;
+        this._transactions = [];
 
         for (var acode in this.attributed) {
             var attribute = this.attributed[acode];
             attribute._ivalue = null;
             attribute._ovalue = null;
+            attribute.XXX = 1111;
         }
     };
 
