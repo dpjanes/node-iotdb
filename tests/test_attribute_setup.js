@@ -104,7 +104,7 @@ describe('test_attribute_setup', function(){
         var d = { 
             '@type': 'https://iotdb.org/pub/iot#Attribute',
             '@id': '#temperature_f',
-            'https://iotdb.org/pub/iot#name': 'value',
+            'http://schema.org/name': 'value',
             'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#temperature',
             'https://iotdb.org/pub/iot#role': 'https://iotdb.org/pub/iot-attribute#role-reading',
             'https://iotdb.org/pub/iot#unit': 'https://iotdb.org/pub/iot-unit#temperature.si.fahrenheit',
@@ -133,7 +133,7 @@ describe('test_attribute_setup', function(){
         var d = { '@type': 'https://iotdb.org/pub/iot#Attribute',
           'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#value',
           '@id': '#value',
-          'https://iotdb.org/pub/iot#name': 'value',
+          'http://schema.org/name': 'value',
           'https://iotdb.org/pub/iot#11': 'https://iotdb.org/pub/iot#a',
           'https://iotdb.org/pub/iot#12': 'iot_b',
           iot_13: 'https://iotdb.org/pub/iot#c',
@@ -174,7 +174,7 @@ describe('test_attribute_setup', function(){
             var d = {
                 '@type': 'https://iotdb.org/pub/iot#Attribute',
                 '@id': '#value',
-                'https://iotdb.org/pub/iot#name': 'value',
+                'http://schema.org/name': 'value',
                 'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#on',
                 'https://iotdb.org/pub/iot#role': [
                     'https://iotdb.org/pub/iot-attribute#role-reading',
@@ -193,7 +193,7 @@ describe('test_attribute_setup', function(){
                 '@type': 'https://iotdb.org/pub/iot#Attribute',
                 '@id': '#value',
                 'https://iotdb.org/pub/iot#purpose': 'https://iotdb.org/pub/iot-attribute#value',
-                'https://iotdb.org/pub/iot#name': 'value',
+                'http://schema.org/name': 'value',
                 'https://iotdb.org/pub/iot#20': [ 'a', 'b' ]
             }
             var a = attribute.make("value")

@@ -50,7 +50,7 @@ Meta.prototype.state = function () {
 
     var metad = {};
     metad[_.ld.expand('iot:thing')] = self.thing.thing_id();
-    metad[_.ld.expand('iot:name')] = self.thing.name;
+    metad[_.ld.expand('schema:name')] = self.thing.name;
 
     if (self.thing.bridge_instance) {
         _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));

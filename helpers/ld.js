@@ -161,6 +161,11 @@ var _ld_compact = function (v, paramd) {
             }
             
             var ovvalue = ovd[ovkey];
+            if (ovkey === "@context") {
+                nvd[ovkey] = ovvalue;
+                continue
+            }
+
             var nvvalue = _ld_compact(ovvalue, paramd);
             if (nvvalue !== undefined) {
                 var nvkey = _ld_compact(ovkey, paramd);

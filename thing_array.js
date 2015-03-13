@@ -716,7 +716,7 @@ ThingArray.prototype._filter_test = function (d, thing) {
 
             continue;
         } else if (dpredicate === "_name") {
-            var name = meta.get('iot:name');
+            var name = meta.get('schema:name');
             if (name !== dobject) {
                 return false;
             }

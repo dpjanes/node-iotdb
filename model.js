@@ -38,7 +38,7 @@ var logger = bunyan.createLogger({
 
 /* --- constants --- */
 var VERBOSE = true;
-var iot_name = _.ld.expand("iot:name");
+var iot_name = _.ld.expand("schema:name");
 var iot_role = _.ld.expand("iot:role");
 var iot_role_reading = _.ld.expand("iot-attribute:role-reading");
 var iot_role_control = _.ld.expand("iot-attribute:role-control");
@@ -231,6 +231,10 @@ Model.prototype.jsonld = function (paramd) {
     paramd.path = (paramd.path !== undefined) ? paramd.path : "";
 
     var rd = {};
+    var nss = {
+        "iot": true,
+        "schema": true,
+    };
 
     if (paramd.context) {
         var cd = {};
@@ -249,10 +253,10 @@ Model.prototype.jsonld = function (paramd) {
     rd["@type"] = _.ld.expand("iot:Model");
 
     if (self.name) {
-        rd[_.ld.expand("iot:name")] = self.name;
+        rd[_.ld.expand("schema:name")] = self.name;
     }
     if (self.description) {
-        rd[_.ld.expand("iot:description")] = self.description;
+        rd[_.ld.expand("schema:description")] = self.description;
     }
     if (self.help) {
         rd[_.ld.expand("iot:help")] = self.help;
@@ -266,7 +270,7 @@ Model.prototype.jsonld = function (paramd) {
     for (var ax in attributes) {
         var attribute = attributes[ax];
         var ad = {};
-        // ad[_.ld.expand('iot:name')] = attribute.get_code()
+        // ad[_.ld.expand('schema:name')] = attribute.get_code()
         ads.push(ad);
 
         for (key in attribute) {
@@ -276,23 +280,13 @@ Model.prototype.jsonld = function (paramd) {
 
             value = attribute[key];
             if (value === undefined) {
-                continue;
-            }
-
-            if (_.isFunction(value)) {
-                if (key === "__validator") {
-                    value = value.toString();
-                } else {
-                    continue;
-                }
-            }
-
-            if (key === "__validator") {
-                ad[_.ld.expand("iot-iotdb:iotdb-attribute-validator")] = value;
+            } else if (_.isFunction(value)) {
+            } else if (key.match(/^_/)) {
             } else if (key === "@id") {
                 ad[key] = "#" + paramd.path + value.substring(1);
             } else {
                 ad[key] = value;
+                nss[key.replace(/:.*$/,'')] = true;
             }
         }
     }
@@ -300,42 +294,14 @@ Model.prototype.jsonld = function (paramd) {
         rd[_.ld.expand("iot:attribute")] = ads;
     }
 
-    // initializers
-    var ids = [];
-    for (var ix in self.initializers) {
-        var initializer = self.initializers[ix];
-        var ind = {};
-        var any = false;
-
-        for (key in initializer) {
-            if (!initializer.hasOwnProperty(key)) {
-                continue;
-            }
-
-            value = initializer[key];
-            if (value === undefined) {
-                continue;
-            } else if (_.isFunction(value)) {
-                continue;
-            }
-
-            if (key === "__validator") {} else if (key === "@id") {} else {
-                ind[key] = value;
-                any = true;
+    cd = rd["@context"];
+    if (cd) {
+        for (var nkey in nss) {
+            var ns = _.ld.namespace[nkey];
+            if (ns) {
+                cd[nkey] = ns;
             }
         }
-
-        if (any) {
-            ids.push(ind);
-        }
-    }
-    if (ids.length > 0) {
-        rd[_.ld.expand("iot:initializer")] = ids;
-    }
-
-
-    if (self.__validator) {
-        rd[_.ld.expand("iot-iotdb:model-validator")] = self.__validator.toString();
     }
 
     return rd;
@@ -994,7 +960,7 @@ Model.prototype._find = function (find_key, paramd) {
             for (var match_key in find_key) {
                 /*
                  *  Somewhat hacky - we always ignore '@'
-                 *  values and we ignore iot:name (because
+                 *  values and we ignore schema:name (because
                  *  iotdb.make_attribute always adds a name)
                  */
                 if (match_key === iot_name) {

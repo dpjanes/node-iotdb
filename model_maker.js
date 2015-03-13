@@ -125,7 +125,7 @@ ModelMaker.prototype.code = function (_code) {
 };
 
 /**
- *  Define the {@link https://iotdb.org/pub/iot.html#name iot:name}
+ *  Define the {@link https://iotdb.org/pub/iot.html#name schema:name}
  *  of this attribute. Name can only be set once
  *
  *  @param {string} value
@@ -269,6 +269,15 @@ ModelMaker.prototype.attribute = function (attribute) {
                 self.__attributes.splice(ai, 1);
                 break;
             }
+        }
+    }
+
+    /* do not copy nested values */
+    attribute = _.deepCopy(attribute);
+    for (var akey in attribute) {
+        var avalue = attribute[akey];
+        if (_.isObject(avalue)) {
+            delete attribute[akey];
         }
     }
 
@@ -650,7 +659,6 @@ ModelMaker.prototype.make = function () {
             var attribute = this.attributed[acode];
             attribute._ivalue = null;
             attribute._ovalue = null;
-            attribute.XXX = 1111;
         }
     };
 

@@ -193,7 +193,7 @@ Attribute.prototype.control = function () {
 
 
 /**
- *  Define the {@link https://iotdb.org/pub/iot.html#name iot:name}
+ *  Define the {@link https://iotdb.org/pub/iot.html#name schema:name}
  *  of this attribute. Name can only be set once
  *
  *  @param {string} value
@@ -203,13 +203,13 @@ Attribute.prototype.control = function () {
  *  this
  */
 Attribute.prototype.name = function (_value) {
-    return this.property_value(_.ld.expand('iot:name'), _value, {
+    return this.property_value(_.ld.expand('schema:name'), _value, {
         array: false
     });
 };
 
 /**
- *  Define the {@link https://iotdb.org/pub/iot.html#description iot:description}
+ *  Define the {@link https://iotdb.org/pub/iot.html#description schema:description}
  *  of this attribute.
  *
  *  @param {string} value
@@ -219,7 +219,7 @@ Attribute.prototype.name = function (_value) {
  *  this
  */
 Attribute.prototype.description = function (_value) {
-    return this.property_value(_.ld.expand('iot:description'), _value);
+    return this.property_value(_.ld.expand('schema:description'), _value);
 };
 
 /**
