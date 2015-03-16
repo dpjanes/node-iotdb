@@ -147,6 +147,7 @@ Things.prototype.discover = function (modeld, initd) {
  */
 Things.prototype._discover = function (modeld) {
     var self = this;
+    var any = false;
 
     var bindings = modules().bindings();
     for (var bi in bindings) {
@@ -156,7 +157,16 @@ Things.prototype._discover = function (modeld) {
         }
 
         self._discover_binding(modeld, binding);
+        any = true;
     };
+
+    if (!any) {
+        logger.error({
+            method: "_discover",
+            modeld: modeld,
+            cause: "maybe this Model or it's binding are not added to IOTDB yet?",
+        }, "did not find any matching Models");
+    }
 };
 
 /**
