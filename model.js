@@ -239,9 +239,7 @@ Model.prototype.jsonld = function (paramd) {
     if (paramd.context) {
         var cd = {};
         cd["@base"] = paramd.base;
-        if (paramd.include_state) {
-            cd["@vocab"] = paramd.base + "#";
-        }
+        cd["@vocab"] = paramd.base + "#";
         rd["@context"] = cd;
         rd["@id"] = "";
     } else if (paramd.path.length > 0) {
@@ -292,6 +290,7 @@ Model.prototype.jsonld = function (paramd) {
     }
     if (ads.length > 0) {
         rd[_.ld.expand("iot:attribute")] = ads;
+        nss["iot-attribute"] = true;
     }
 
     cd = rd["@context"];
