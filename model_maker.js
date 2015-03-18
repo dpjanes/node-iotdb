@@ -605,8 +605,8 @@ ModelMaker.prototype.make = function () {
         this.driver_instance = (paramd.driver_instance !== undefined) ? paramd.driver_instance : undefined;
         this.initd = (paramd.initd !== undefined) ? paramd.initd : {};
 
-
-        this.code = self.__code;
+        /* note how the code can be changed by setting "Model.code = <something>"!!! */
+        this.code = new_thing.code || self.__code;
         this.Model = new_thing;
 
         this.__emitter = new events.EventEmitter();
