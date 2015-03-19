@@ -130,6 +130,39 @@ Modules.prototype.bindings = function () {
     if (self._bindings === undefined) {
         self._bindings = [];
 
+        var _setup_binding = function(binding) {
+            if (!binding) {
+                return;
+            } else if (!binding.bridge) {
+                return;
+            } else if (!binding.model) {
+                return;
+            }
+
+            if (binding.model_code === undefined) {
+                binding.model_code = (new binding.model()).code;
+            } else {
+                /* morph the model's code -- see model_maker */
+                binding.model_code = _.identifier_to_dash_case(binding.model_code);
+                binding.model = _.deepCopy(binding.model);
+                binding.model.code = binding.model_code;
+
+                /*
+                 *  An alternate way of doing above - for future reference
+                var old_model = binding.model;
+                var new_model = function() {
+                    old_model.call(this);
+                    this.code = binding.model_code;
+                }
+                new_model.prototype = new old_model();
+
+                binding.model = new_model;
+                */
+            }
+
+            self._bindings.push(binding);
+        };
+
         for (var module_name in self._moduled) {
             var module = self._moduled[module_name];
             if (!module.bindings) {
@@ -137,25 +170,7 @@ Modules.prototype.bindings = function () {
             }
 
             for (var bi in module.bindings) {
-                var binding = module.bindings[bi];
-                if (!binding) {
-                    continue;
-                } else if (!binding.bridge) {
-                    continue;
-                } else if (!binding.model) {
-                    continue;
-                }
-
-                if (binding.model_code === undefined) {
-                    binding.model_code = (new binding.model()).code;
-                } else {
-                    /* morph the model's code -- see model_maker */
-                    binding.model_code = _.identifier_to_dash_case(binding.model_code);
-                    binding.model = _.deepCopy(binding.model);
-                    binding.model.code = binding.model_code;
-                }
-
-                self._bindings.push(binding);
+                _setup_binding(module.bindings[bi]);
             }
         }
     }

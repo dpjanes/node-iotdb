@@ -54,6 +54,10 @@ Meta.prototype.state = function () {
 
     if (self.thing.bridge_instance) {
         _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));
+
+        if (!self.thing.bridge_instance.reachable()) {
+            metad[_.ld.expand('iot:reachable')] = false;
+        }
     }
     _.extend(metad, self._updated);
 

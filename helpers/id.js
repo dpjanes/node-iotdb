@@ -49,7 +49,8 @@ var _thing_urn_unique_hash = function() {
     }
 
     var hasher = crypto.createHash('md5');
-    hasher.update(arguments[ai - 1]);
+    console.log("HERE:YYY", arguments[arguments.length - 1]);
+    hasher.update(arguments[arguments.length - 1]);
     parts.push(hasher.digest("hex"));
 
     return parts.join(":");

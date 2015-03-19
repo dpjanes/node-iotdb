@@ -96,7 +96,6 @@ var ModelMaker = function (_code) {
     this.driver_identityd = null;
     this.attributed = {};
     this.__attributes = [];
-    this.initializers = [];
     this.__code = (_code !== undefined) ? _.identifier_to_dash_case(_code) : null;
 
     this.__name = null;
@@ -337,26 +336,6 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
     }
 
     return this;
-};
-
-/**
- *  XXX - not finished
- *
- *  @param {Attribute} attribute
- *  The attribute to add. You should use
- *  'attribute.make_attribute' to make these
- *
- *  @return {this}
- */
-ModelMaker.prototype.initializer = function (attribute) {
-    var self = this;
-
-    delete attribute[_.ld.expand("iot:purpose")];
-    attribute['@type'] = _.ld.expand("iot:initializer");
-
-    self.initializers.push(attribute);
-
-    return self;
 };
 
 /**
@@ -644,13 +623,6 @@ ModelMaker.prototype.make = function () {
             this.attributed[out_key] = out_attribute;
         }
 
-        this.initializers = [];
-        for (var ii in self.initializers) {
-            var initializer = self.initializers[ii];
-
-            this.initializers.push(_.deepCopy(initializer));
-        }
-
         this.callbacksd = {};
         this._transaction = null;
         this._transactions = [];
@@ -667,22 +639,5 @@ ModelMaker.prototype.make = function () {
 
     return new_thing;
 };
-
-/**
- *  Make the special "Generic" model
- */
-/*
-ModelMaker.prototype.make_generic = function () {
-    var generic = require("./generic");
-    this.__code = "generic";
-    var model = this.make();
-
-    var __make = model.prototype.__make;
-    model.prototype = new generic.Generic();
-    model.prototype.__make = __make;
-
-    return model;
-};
-*/
 
 exports.ModelMaker = ModelMaker;
