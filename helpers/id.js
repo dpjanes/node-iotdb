@@ -27,13 +27,17 @@
 var crypto = require('crypto');
 var _ = require("../helpers");
 
+var _safe = function(component) {
+    return encodeURIComponent(component).replace('%', '$');
+}
+
 /**
  *  Unique thing
  */
 var _thing_urn_unique = function() {
     var parts = [ "urn", "iotdb", "thing" ];
     for (var ai in arguments) {
-        parts.push(encodeURIComponent(arguments[ai]));
+        parts.push(_safe(arguments[ai]));
     }
 
     return parts.join(":");
@@ -45,11 +49,10 @@ var _thing_urn_unique = function() {
 var _thing_urn_unique_hash = function() {
     var parts = [ "urn", "iotdb", "thing" ];
     for (var ai = 0; ai < arguments.length - 1; ai++) {
-        parts.push(encodeURIComponent(arguments[ai]));
+        parts.push(_safe(arguments[ai]));
     }
 
     var hasher = crypto.createHash('md5');
-    console.log("HERE:YYY", arguments[arguments.length - 1]);
     hasher.update(arguments[arguments.length - 1]);
     parts.push(hasher.digest("hex"));
 
@@ -65,7 +68,7 @@ var _thing_urn_network = function() {
 
     var parts = [ "urn", "iotdb", "thing" ];
     for (var ai in arguments) {
-        parts.push(encodeURIComponent(arguments[ai]));
+        parts.push(_safe(arguments[ai]));
         hasher.update("" + arguments[ai]);
     }
 
@@ -83,7 +86,7 @@ var _thing_urn_machine = function() {
 
     var parts = [ "urn", "iotdb", "thing" ];
     for (var ai in arguments) {
-        parts.push(encodeURIComponent(arguments[ai]));
+        parts.push(_safe(arguments[ai]));
         hasher.update("" + arguments[ai]);
     }
 
