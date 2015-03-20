@@ -237,6 +237,9 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
         }
     }
 
+    // keep the binding with the Bridge 
+    bridge_instance.binding = binding;
+
     // now make a model 
     var model_instance = new binding.model();
     model_instance.bind_bridge(bridge_instance);

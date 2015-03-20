@@ -758,12 +758,27 @@ Model.prototype._do_pushes = function (attributed) {
         return;
     }
 
+    var mapping = self.bridge_instance.binding.mapping;
     var pushd = {};
 
     for (var key in attributed) {
         var attribute = attributed[key];
         var attribute_code = attribute.get_code();
         var attribute_value = attribute._ovalue;
+
+        // mappings can be attached to bindings to make enumerations better
+        if (mapping !== undefined) {
+            var md = mapping[attribute_code];
+            if (md !== undefined) {
+                var v = md[attribute_value];
+                if (v === undefined) {
+                    v = md[_.ld.compact(attribute_value)];
+                }
+                if (v !== undefined) {
+                    attribute_value = v;
+                }
+            }
+        }
 
         _.d.set(pushd, attribute_code, attribute_value);
     }
@@ -1115,8 +1130,31 @@ Model.prototype.bind_bridge = function (bridge_instance) {
 
     self.bridge_instance = bridge_instance;
     if (self.bridge_instance) {
+        var mapping = self.bridge_instance.binding.mapping;
         self.bridge_instance.pulled = function (pulld) {
             if (pulld) {
+                // mappings can be attached to bindings to make enumerations better
+                if (mapping !== undefined) {
+                    for (var attribute_code in pulld) {
+                        var md = mapping[attribute_code];
+                        if (md === undefined) {
+                            continue;
+                        }
+
+                        // reverse lookup in dictionary
+                        var attribute_value = pulld[attribute_code];
+                        var cattribute_value = _.ld.compact(attribute_value);
+
+                        for (var mkey in md) {
+                            var mvalue = md[mkey];
+                            if ((mvalue === attribute_value) || (mvalue === cattribute_value)) {
+                                pulld[attribute_code] = mkey;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 self.update(pulld, {
                     notify: true,
                     push: false,

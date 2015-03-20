@@ -275,7 +275,7 @@ ModelMaker.prototype.attribute = function (attribute) {
     attribute = _.deepCopy(attribute);
     for (var akey in attribute) {
         var avalue = attribute[akey];
-        if (_.isObject(avalue)) {
+        if (!_.isArray(avalue) && _.isObject(avalue)) {
             delete attribute[akey];
         }
     }

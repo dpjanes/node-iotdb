@@ -263,7 +263,7 @@ Attribute.prototype.property = function (key_iri, value_iri, paramd) {
  *  The property predicate IRI
  *
  *  @param {*} value
- *  This value. Should be a simple type
+ *  This value. Should be a simple type or an Array
  *
  *  @return {this}
  *  this
@@ -372,7 +372,11 @@ Attribute.prototype.unit_multiplier = function (multiplier) {
  *  this
  */
 Attribute.prototype.enumeration = function (values) {
-    return this.property_value(_.ld.expand("iot:enumeration"), values);
+    var key_iri = _.ld.expand("iot:enumeration");
+    
+    _.ld.extend(this, key_iri, values);
+
+    return this;
 };
 
 /**

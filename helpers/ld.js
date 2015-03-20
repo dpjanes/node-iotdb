@@ -124,6 +124,9 @@ var _ld_add = function (d, key, value) {
 };
 
 var _ld_extend = function (d, key, values) {
+    if (!_.isArray(values)) {
+        values = [ values ];
+    }
     for (var vi in values) {
         var value = values[vi];
         _ld_add(d, key, value);
