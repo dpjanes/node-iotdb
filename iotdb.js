@@ -9,7 +9,7 @@
  *
  *  This is also the 'main' for the package
  *
- *  Copyright [2013-2014] [David P. Janes]
+ *  Copyright [2013-2015] [David P. Janes]
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
