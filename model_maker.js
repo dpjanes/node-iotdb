@@ -631,6 +631,8 @@ ModelMaker.prototype.make = function () {
             var attribute = this.attributed[acode];
             attribute._ivalue = null;
             attribute._ovalue = null;
+            attribute._ichanged = false;
+            attribute._ochanged = false;
         }
     };
 

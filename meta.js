@@ -105,6 +105,8 @@ Meta.prototype.set = function (key, value) {
         self._updated[key] = value;
         self.thing.meta_changed();
     }
+
+    self._updated["@timestamp"] = (new Date()).toISOString();
 };
 
 /**
@@ -114,9 +116,9 @@ Meta.prototype.set = function (key, value) {
 Meta.prototype.update = function (ind, paramd) {
     var self = this;
 
-    // console.trace();
     paramd = _.defaults(paramd, {
         emit: true,
+        timestamp: false,
     });
 
     ind = _.ld.expand(ind);
@@ -136,6 +138,10 @@ Meta.prototype.update = function (ind, paramd) {
 
         self._updated[in_key] = in_value;
         changed = true;
+    }
+
+    if (changed && paramd.timestamp) {
+        self._updated["@timestamp"] = (new Date()).toISOString();
     }
 
     if (changed) {

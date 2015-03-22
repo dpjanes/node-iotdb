@@ -254,7 +254,9 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
 
         // replace the bridge for the existing thing and we're done
         thing.bind_bridge(bridge_instance);
-        thing.pulled();
+
+        // this forces a metadata update
+        bridge_instance.pulled();
         return;
     }
 

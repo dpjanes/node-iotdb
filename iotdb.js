@@ -244,6 +244,9 @@ var keystore = require('./keystore');
 exports.keystore = keystore.keystore;
 exports.Keystore = keystore.Keystore;
 
+var transporter = require('./transporter');
+exports.transport = transporter.transport;
+
 var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;

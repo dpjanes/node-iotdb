@@ -373,7 +373,6 @@ Model.prototype.get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
-
     var transaction = _.defaults(self._transaction, {
         force: false,
         push: true,
@@ -411,10 +410,12 @@ Model.prototype.set = function (find_key, new_value) {
     }
 
     if (transaction.push) {
+        attribute._ochanged = true;
         attribute._ovalue = attribute_value_new;
         self._do_push(attribute, false);
         self._do_notify(attribute, false);
     } else {
+        attribute._ichanged = true;
         attribute._ivalue = attribute_value_new;
         self._do_notify(attribute, false);
     }
@@ -528,6 +529,7 @@ Model.prototype.end = function () {
         if (self._transaction.notify) {
             self._do_notifies(self._transaction._notifyd);
         }
+        self._do_notifies2(self._transaction._notifyd);
 
         if (self._transaction.push) {
             self._do_pushes(self._transaction._pushd);
@@ -568,7 +570,7 @@ Model.prototype.on = function (find_key, callback) {
     var callbacks = null;
 
     /* HORRIBLE. */
-    if ((find_key === "state") || (find_key === "meta")) {
+    if ((find_key === "state") || (find_key === "meta") || (find_key === "istate") || (find_key === "ostate")) {
         self.__emitter.on(find_key, function (a, b, c) {
             callback(self, a, b, c); /* LAZY */
         });
@@ -831,6 +833,7 @@ Model.prototype._do_notify = function (attribute, immediate) {
         attributed[attribute.get_code()] = attribute;
 
         self._do_notifies(attributed);
+        self._do_notifies2(attributed);
     } else {
         self._transaction._notifyd[attribute.get_code()] = attribute;
     }
@@ -879,6 +882,32 @@ Model.prototype._do_notifies = function (attributed) {
     // levels of hackdom here
     if (any) {
         this.__emitter.emit(EVENT_THING_CHANGED, self);
+    }
+};
+
+/**
+ *  This does istate/ostate notifications
+ */
+Model.prototype._do_notifies2 = function (attributed) {
+    var self = this;
+
+    var ichanged = false;
+    var ochanged = false;
+
+    for (var attribute_key in attributed) {
+        var attribute = attributed[attribute_key];
+        ichanged |= attribute._ichanged;
+        ochanged |= attribute._ochanged;
+
+        attribute._ichanged = false;
+        attribute._ochanged = false;
+    }
+
+    if (ichanged) {
+        self.__emitter.emit("istate", self);
+    }
+    if (ochanged) {
+        self.__emitter.emit("ostate", self);
     }
 };
 
