@@ -68,15 +68,11 @@ Things.prototype.things = function (model_code) {
     });
 
     var _add = function (thing) {
-        // console.log("HERE:FOUND", thing.thing_id(), thing.code, _.isModel(thing));
         if (!thing.reachable()) {} else if (!model_code) {
-            // console.log("HERE:F.1");
             things.push(thing);
         } else if (model_code === thing.code) {
-            // console.log("HERE:F.2");
             things.push(thing);
         } else {
-            // console.log("HERE:F.3", thing.code, model_code);
         }
     };
 

@@ -42,7 +42,8 @@ then
             --exclude "yy*" \
             README.md \
             LICENSE.txt \
-            *.js *.json helpers/*js |
+            *.js *.json helpers/*js \
+            |
         ( cd "${NPM_IOTDB_DST}" && tar xvf - )
 
         ## cp dist/*.* "${NPM_IOTDB_DST}" || exit 1
