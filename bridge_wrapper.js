@@ -42,11 +42,11 @@ var logger = bunyan.createLogger({
  *  but sometimes this is helpful, especially if
  *  you just want to use the moduels stand-alone
  */
-var BridgeWrapper = function (binding, initd, use_model) {
+var BridgeWrapper = function (binding, initd) {
     var self = this;
     events.EventEmitter.call(self);
 
-    initd = _.defaults(initd, binding.initd, initd, {});
+    initd = _.defaults(initd, binding.initd, {});
     var connectd = _.defaults(binding.connectd, {});
 
     var bridge_exemplar = new binding.bridge(initd);
@@ -65,6 +65,9 @@ var BridgeWrapper = function (binding, initd, use_model) {
                 return;
             }
         }
+
+        /* to bring along data stored here */
+        bridge_instance.binding = binding;
 
         /* now make a model */
         var model_instance = new binding.model();

@@ -235,6 +235,9 @@ exports.helpers = _;
 exports._ = _;
 exports.cfg = cfg;
 exports.bunyan = bunyan;
+exports.logger = function() {
+    return bunyan.createLogger.apply(bunyan.createLogger, arguments);
+};
 
 var bridge_wrapper = require('./bridge_wrapper');
 exports.bridge_wrapper = bridge_wrapper.bridge_wrapper;

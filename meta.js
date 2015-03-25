@@ -112,16 +112,43 @@ Meta.prototype.set = function (key, value) {
 /**
  *  Update the metadata. Return 'true' if there's
  *  a change.
+ *
+ *  paramd.set_timestamp: anything changed, set the timestamp
+ *  paramd.check_timestamp: see timestamp-conflict below
+ *
+ *  Timestamp-conflict:
+ *  1) if neither has a timestamp, the 'ind' wins
+ *  2) if one has a timestamp, that one wins
+ *  3) if both have a timestamp, only update if 'ind'
+ *     is later than the current value
  */
 Meta.prototype.update = function (ind, paramd) {
     var self = this;
+    var in_timestamp = ind["@timestamp"];
 
     paramd = _.defaults(paramd, {
         emit: true,
-        timestamp: false,
+        set_timestamp: false,
+        check_timestamp: false,
     });
 
     ind = _.ld.expand(ind);
+    
+    if (paramd.check_timestamp) {
+        var meta_timestamp = self._updated["@timestamp"];
+
+        if (!in_timestamp && !meta_timestamp) {
+            // good
+        } else if (in_timestamp && !meta_timestamp) {
+            // good
+        } else if (!in_timestamp && meta_timestamp) {
+            // ignore
+            return;
+        } else if (in_timestamp <= meta_timestamp) {
+            // ignore
+            return;
+        }
+    }
 
     var state = self.state();
     var changed = false;
@@ -140,8 +167,12 @@ Meta.prototype.update = function (ind, paramd) {
         changed = true;
     }
 
-    if (changed && paramd.timestamp) {
-        self._updated["@timestamp"] = (new Date()).toISOString();
+    if (changed && paramd.set_timestamp) {
+        if (in_timestamp) {
+            self._updated["@timestamp"] = in_timestamp;
+        } else {
+            self._updated["@timestamp"] = self._make_timestamp();
+        }
     }
 
     if (changed) {
@@ -160,6 +191,10 @@ Meta.prototype.update = function (ind, paramd) {
  */
 Meta.prototype.updates = function () {
     return this._updated;
+};
+
+Meta.prototype._make_timestamp = function () {
+    return (new Date()).toISOString();
 };
 
 exports.Meta = Meta;

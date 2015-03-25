@@ -54,6 +54,13 @@ var Modules = function (paramd) {
 
 util.inherits(Modules, events.EventEmitter);
 
+/**
+ *  Return all the Modules that have been registered
+ */
+Modules.prototype.modules = function () {
+    return _.values(this._moduled);
+};
+
 Modules.prototype._load = function () {
     var self = this;
 
