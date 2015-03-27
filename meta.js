@@ -126,6 +126,10 @@ Meta.prototype.update = function (ind, paramd) {
     var self = this;
     var in_timestamp = ind["@timestamp"];
 
+    if (!_.isObject(ind)) {
+        throw new Error("not an object");
+    }
+
     paramd = _.defaults(paramd, {
         emit: true,
         set_timestamp: false,

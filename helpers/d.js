@@ -77,7 +77,70 @@ var set = function(keystored, key, value) {
     d[lastkey] = value;
 };
 
+/*
+ *  Apply a function to keys and values of a dictionary
+ */
+var transform = function(o, paramd) {
+    paramd = _.defaults(paramd, {
+        key: function(key) {
+            return key;
+        },
+        value: function(value) {
+            return value;
+        },
+        filter: function(value) {
+            return (value !== undefined);
+        },
+    });
+
+    if (paramd.pre) {
+        o = paramd.pre(o);
+    }
+
+    o = _transform(o, paramd);
+
+    if (paramd.post) {
+        o = paramd.post(o);
+    }
+
+    return o;
+}
+
+var _transform = function(v, paramd) {
+    if (_.isArray(v)) {
+        var ovs = v;
+        var nvs = [];
+        for (var ovx in ovs) {
+            var ov = ovs[ovx];
+            var nv = _transform(ov, paramd);
+            if (paramd.filter(nv)) {
+                nvs.push(nv);
+            }
+        }
+        return nvs;
+    } else if ((v !== null) && _.isObject(v)) {
+        var ovd = v;
+        var nvd = {};
+        for (var ovkey in ovd) {
+            var nvkey = paramd.key(ovkey, paramd);
+            if (nvkey === undefined) {
+                continue;
+            }
+
+            var ovvalue = ovd[ovkey];
+            var nvvalue = _transform(ovvalue, paramd);
+            if (paramd.filter(nvvalue)) {
+                nvd[nvkey] = nvvalue;
+            }
+        }
+        return nvd;
+    } else {
+        return paramd.value(v);
+    }
+}
+
 exports.d = {
     get: get,
     set: set,
+    transform: transform,
 };

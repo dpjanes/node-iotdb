@@ -405,6 +405,12 @@ Model.prototype.set = function (find_key, new_value) {
     var attribute_value_old = transaction.push ? attribute._ovalue : attribute._ivalue;
     var attribute_value_new = transaction.validate ? self._validate(attribute, new_value) : new_value;
 
+    /*
+    console.log("ICHANGED.1", 
+        attribute._ivalue, attribute_value_new,
+        transaction.force,
+        (attribute_value_old === attribute_value_new));
+     */
     if (!transaction.force && (attribute_value_old === attribute_value_new)) {
         return self;
     }
@@ -415,6 +421,7 @@ Model.prototype.set = function (find_key, new_value) {
         self._do_push(attribute, false);
         self._do_notify(attribute, false);
     } else {
+        // console.log("ICHANGED.2", attribute._ivalue, attribute_value_new);
         attribute._ichanged = true;
         attribute._ivalue = attribute_value_new;
         self._do_notify(attribute, false);
@@ -485,7 +492,7 @@ Model.prototype.start = function (paramd) {
         notify: false,
         validate: true,
         push: true,
-        force: true,
+        force: false,
 
         _notifyd: {},
         _validated: {},
