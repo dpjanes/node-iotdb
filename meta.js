@@ -116,11 +116,7 @@ Meta.prototype.set = function (key, value) {
  *  paramd.set_timestamp: anything changed, set the timestamp
  *  paramd.check_timestamp: see timestamp-conflict below
  *
- *  Timestamp-conflict:
- *  1) if neither has a timestamp, the 'ind' wins
- *  2) if one has a timestamp, that one wins
- *  3) if both have a timestamp, only update if 'ind'
- *     is later than the current value
+ *  Timestamp-conflict - see helpers/d.js
  */
 Meta.prototype.update = function (ind, paramd) {
     var self = this;
@@ -138,20 +134,8 @@ Meta.prototype.update = function (ind, paramd) {
 
     ind = _.ld.expand(ind);
     
-    if (paramd.check_timestamp) {
-        var meta_timestamp = self._updated["@timestamp"];
-
-        if (!in_timestamp && !meta_timestamp) {
-            // good
-        } else if (in_timestamp && !meta_timestamp) {
-            // good
-        } else if (!in_timestamp && meta_timestamp) {
-            // ignore
-            return;
-        } else if (in_timestamp <= meta_timestamp) {
-            // ignore
-            return;
-        }
+    if (paramd.check_timestamp && !_.d.check_timestamp(self._updated, ind)) {
+        return;
     }
 
     var state = self.state();
