@@ -243,29 +243,31 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
     // is already being tracked? is it reachable if it is ?
     var thing_id = model_instance.thing_id();
     var thing = self._thingd[thing_id];
-    if (thing) {
-        if (thing.reachable()) {
-            return;
-        }
 
-        // replace the bridge for the existing thing and we're done
+    if (!thing) {
+        // add the new thing
+        thing = model_instance;
+        self._thingd[thing_id] = thing;
+
+        // bring it into play
+        var connectd = _.defaults(binding.connectd, {});
+        bridge_instance.connect(connectd)
+
+        // tell the world
+        self.emit("thing", thing);
+    } else if (thing.reachable()) {
+        return;
+    } else {
+        // replace the bridge for the existing thing 
         thing.bind_bridge(bridge_instance);
+
+        // bring it into play
+        var connectd = _.defaults(binding.connectd, {});
+        bridge_instance.connect(connectd)
 
         // this forces a metadata update
         bridge_instance.pulled();
-        return;
     }
-
-    // a new thing
-    thing = model_instance;
-    self._thingd[thing_id] = thing;
-
-    // bring it into play
-    var connectd = _.defaults(binding.connectd, {});
-    bridge_instance.connect(connectd)
-
-    // tell the world
-    self.emit("thing", thing);
 };
 
 /**
