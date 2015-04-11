@@ -1211,8 +1211,54 @@ Model.prototype.bind_bridge = function (bridge_instance) {
     return self;
 };
 
+var make_model_from_jsonld = function(jsonld) {
+    jsonld = _.ld.compact(d);
+
+    if (jsonld["@type"] !== "iot:Model") {
+        return null;
+    }
+
+    var base_url = jsonld["@context"]["@base"];
+    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '')
+
+    var mmaker = iotdb.make_model(base_name)
+
+    var ads = jsonld["iot:attribute"];
+    for (var ai in ads) {
+        var ad = ads[ai];
+        var a_type = ad["@type"]
+        if (a_type !== "iot:Attribute") {
+            continue;
+        }
+
+        var amaker = new attribute.Attribute();
+
+        var a_id = ad["@id"];
+        var a_code = a_id.replace(/^.*#/, '')
+        amaker.code(a_code);
+        
+        for (var akey in ad) {
+            var avalue = ad[akey];
+
+            if (akey === "@id") {
+            } else if (akey === "@type") {
+            } else if (akey.indexOf(':') === -1) {
+            } else {
+                amaker.property_value(akey, avalue);
+            }
+        }
+
+        amaker.make();
+        mmaker.attribute(amaker);
+    }
+
+    return mmaker.make();
+}
+
+
 /*
  *  API
  */
 exports.Model = Model;
 exports.make_model = make_model;
+exports.make_model_from_jsonld = make_model_from_jsonld;

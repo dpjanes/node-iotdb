@@ -230,6 +230,7 @@ for (var key in exports.definitions.attribute) {
 
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;
+exports.make_model_from_jsonld = exports.model.make_model_from_jsonld;
 exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;
 exports._ = _;

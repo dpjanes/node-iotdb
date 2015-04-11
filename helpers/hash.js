@@ -26,6 +26,8 @@
 
 var _ = require("../helpers");
 
+var crypto = require('crypto');
+
 var _hash = function(algorithm, av) {
     var hasher = crypto.createHash(algorithm);
     for (var ai in av) {
