@@ -33,6 +33,7 @@ var modules = [
     require('./helpers/ld'),
     require('./helpers/id'),
     require('./helpers/d'),
+    require('./helpers/hash'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
@@ -45,7 +46,7 @@ exports.Color = require("./helpers/color").Color;
 exports.temperature = require("./helpers/temperature").temperature;
 
 exports.http = {};
-exports.http.parse_link = require("./helpers/parse_link");
+exports.http.parse_link = require("./helpers/parse_link").parse_link;
 
 var _queued = {};
 exports.Queue = require('./queue').FIFOQueue;
@@ -1674,6 +1675,7 @@ exports.hash_dictionary = function (d, ignores) {
 };
 
 /**
+ *  PERFER hash.md5
  */
 exports.md5_hash = function () {
     var hasher = crypto.createHash('md5');

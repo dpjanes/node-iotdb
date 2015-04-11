@@ -47,6 +47,10 @@ attribute.integer.percent = iotdb.make_integer(":value")
     .minimum(0)
     .maximum(100)
     .unit("iot-unit:math.fraction.percent");
+attribute.integer.percent.volume = iotdb.make_integer(":volume")
+    .minimum(0)
+    .maximum(100)
+    .unit("iot-unit:math.fraction.percent");
 attribute.integer.channel = iotdb.make_integer(":value")
     .minimum(1);
 

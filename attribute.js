@@ -882,6 +882,19 @@ exports.make = function (purpose, code, name) {
 };
 
 /**
+ *  Make an "instantaneous" Attribute. 
+ *
+ *  @param {string} purpose
+ *  See {@link make}
+ *
+ *  @return {Attribute}
+ *  a new attribute
+ */
+exports.make_null = function (purpose, code, name) {
+    return exports.make(purpose, code, name).property("iot:type", "iot:null");
+};
+
+/**
  *  Make an Attribute that expects a <code>boolean<code> as a value.
  *
  *  @param {string} purpose
