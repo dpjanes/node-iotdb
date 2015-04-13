@@ -129,7 +129,14 @@ var model_urn = function(jsonld) {
  *  mainly to the hostname
  */
 var user_urn = function(user_url) {
-    var user_url = url.format(url.parse(user_url))
+    var userp = url.parse(user_url);
+    if ((userp.protocol === "http:") && (userp.port === '80')) {
+        userp.host = userp.hostname;
+    } else if ((userp.protocol === "https:") && (userp.port === '443')) {
+        userp.host = userp.hostname;
+    }
+
+    var user_url = url.format(userp);
     var user_hash = _.hash.md5(user_url);
 
     return "urn:iotdb:user:" + user_hash;
