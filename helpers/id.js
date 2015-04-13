@@ -122,9 +122,22 @@ var model_urn = function(jsonld) {
     return model_urn;
 };
 
+/**
+ *  Make a canonical ID for a User.
+ *  A user is simply identified by a URL.
+ *  We do some _minor_ canonicalization,
+ *  mainly to the hostname
+ */
+var user_urn = function(user_url) {
+    var user_url = url.format(url.parse(user_url))
+    var user_hash = _.hash.md5(user_url);
+
+    return "urn:iotdb:user:" + user_hash;
+};
 
 exports.id = {
     model_urn: model_urn,
+    user_urn: user_urn,
     thing_urn: {
         unique: _thing_urn_unique,
         unique_hash: _thing_urn_unique_hash,

@@ -153,7 +153,7 @@ var bind = function(master_transport, slave_transport, paramd) {
     if (paramd.update) {
         master_transport.updated(function(_id, _band, _value) {
             if (paramd.bands.indexOf(_band) === -1) {
-                continue;
+                return;
             }
             slave_transport.update(_id, _band, _value);
         })
@@ -163,7 +163,7 @@ var bind = function(master_transport, slave_transport, paramd) {
     if (paramd.updated) {
         slave_transport.updated(function(_id, _band, _value) {
             if (paramd.bands.indexOf(_band) === -1) {
-                continue;
+                return;
             }
             master_transport.update(_id, _band, _value);
         })
