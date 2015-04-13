@@ -249,7 +249,7 @@ exports.keystore = keystore.keystore;
 exports.Keystore = keystore.Keystore;
 
 var transporter = require('./transporter');
-exports.transport = transporter.transport;
+exports.transporter = transporter;
 
 var modules = require('./modules');
 exports.modules = modules.modules;

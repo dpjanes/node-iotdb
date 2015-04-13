@@ -152,9 +152,12 @@ var bind = function(master_transport, slave_transport, paramd) {
     // updates to the src update the dst
     if (paramd.update) {
         master_transport.updated(function(_id, _band, _value) {
+            console.log("HERE:A.1", _id, _band);
             if (paramd.bands.indexOf(_band) === -1) {
+                console.log("HERE:A.2", _id, _band);
                 return;
             }
+            console.log("HERE:A.3", _id, _band);
             slave_transport.update(_id, _band, _value);
         })
     }

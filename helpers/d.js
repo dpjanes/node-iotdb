@@ -145,7 +145,7 @@ var _transform = function(v, paramd) {
  *  Return null if it shouldn't because of a type problem
  *
  *  Timestamp-conflict:
- *  1) if neither has a timestamp, the 'od' wins
+ *  1) if neither has a timestamp, the 'nd' wins
  *  2) if one has a timestamp, that one wins
  *  3) if both have a timestamp, only update if 'nd'
  *     is later than the current value
