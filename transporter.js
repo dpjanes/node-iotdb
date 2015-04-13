@@ -138,6 +138,48 @@ var transport = function(transport, things, paramd) {
 };
 
 /**
+ */
+var bind = function(master_transport, slave_transport, paramd) {
+    paramd = _.defaults(paramd, {
+        verbose: false,
+        bands: [ "istate", "ostate", "model", "meta" ],
+        update: true,
+        updated: false, // N.B.
+        get: true,
+        list: true,
+    });
+
+    // updates to the src update the dst
+    if (paramd.update) {
+        master_transport.updated(function(_id, _band, _value) {
+            if (paramd.bands.indexOf(_band) === -1) {
+                continue;
+            }
+            slave_transport.update(_id, _band, _value);
+        })
+    }
+
+    // updates to the src update the dst
+    if (paramd.updated) {
+        slave_transport.updated(function(_id, _band, _value) {
+            if (paramd.bands.indexOf(_band) === -1) {
+                continue;
+            }
+            master_transport.update(_id, _band, _value);
+        })
+    }
+
+    if (paramd.get) {
+        slave_transport.get = master_transport.get;
+    }
+
+    if (paramd.list) {
+        slave_transport.list = master_transport.list;
+    }
+};
+
+/**
  *  API
  */
 exports.transport = transport;
+exports.bind = bind;

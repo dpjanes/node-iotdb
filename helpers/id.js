@@ -25,8 +25,12 @@
 "use strict";
 
 var crypto = require('crypto');
+var path = require('path');
+var url = require('url');
+
 var canonical_json = require('canonical-json')
 var _ = require("../helpers");
+
 
 var _safe = function(component) {
     return encodeURIComponent(component).replace('%', '$');
@@ -100,20 +104,20 @@ var _thing_urn_machine = function() {
  *  Make a canonical ID for a Model
  */
 var model_urn = function(jsonld) {
-    src_jsonld = _.deepCopy(jsonld);
+    var src_jsonld = _.deepCopy(jsonld);
 
-    base_url = src_jsonld["@context"]["@base"];
-    base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '')
+    var base_url = src_jsonld["@context"]["@base"];
+    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '')
 
     src_jsonld["@context"]["@base"] = "";
     src_jsonld["@context"]["@vocab"] = "";
 
     src_jsonld = _.ld.compact(src_jsonld);
 
-    canonical_jsonld = canonical_json(jsonld)
+    var canonical_jsonld = canonical_json(jsonld)
 
-    canonical_hash = _.hash.md5(canonical_jsonld);
-    model_urn = "urn:iotdb:model:" + canonical_hash + ":" + base_name;
+    var canonical_hash = _.hash.md5(canonical_jsonld);
+    var model_urn = "urn:iotdb:model:" + canonical_hash + ":" + base_name;
 
     return model_urn;
 };
