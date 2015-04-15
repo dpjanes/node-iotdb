@@ -34,6 +34,7 @@ var modules = [
     require('./helpers/id'),
     require('./helpers/d'),
     require('./helpers/hash'),
+    require('./helpers/is'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
@@ -2153,7 +2154,7 @@ exports.isThingArray = function (o) {
         return false
     } else if (o === null) {
         return false
-    } else if (o._instanceof_ThingArray) {
+    } else if (o._isThingArray) {
         return true
     } else {
         return false

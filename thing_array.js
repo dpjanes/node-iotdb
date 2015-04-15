@@ -84,7 +84,7 @@ var ThingArray = function (paramd) {
 
 ThingArray.prototype = new Array(); // jshint ignore:line
 util.inherits(ThingArray, events.EventEmitter);
-ThingArray.prototype._instanceof_ThingArray = true;
+ThingArray.prototype._isThingArray = true;
 
 /**
  */

@@ -587,6 +587,8 @@ ModelMaker.prototype.make = function () {
         /* note how the code can be changed by setting "Model.code = <something>"!!! */
         this.code = new_thing.code || self.__code;
         this.Model = new_thing;
+        this._isThing = true;
+        this._isModel = undefined;
 
         this.__emitter = new events.EventEmitter();
         this.__emitter.setMaxListeners(0);
@@ -638,6 +640,8 @@ ModelMaker.prototype.make = function () {
 
     new_thing.prototype = new model.Model();
     new_thing.prototype.__make = new_thing;
+
+    new_thing._isModel = true;
 
     return new_thing;
 };
