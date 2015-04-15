@@ -2148,34 +2148,6 @@ var _format = function (template, valueds) {
 };
 
 /**
- */
-exports.isThingArray = function (o) {
-    if (o === undefined) {
-        return false
-    } else if (o === null) {
-        return false
-    } else if (o._isThingArray) {
-        return true
-    } else {
-        return false
-    }
-};
-
-/**
- */
-exports.isModel = function (o) {
-    if (o === undefined) {
-        return false
-    } else if (o === null) {
-        return false
-    } else if (o.Model) {
-        return true
-    } else {
-        return false
-    }
-};
-
-/**
  *  Try to figure out our IP address
  */
 exports.ipv4 = function () {

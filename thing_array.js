@@ -98,7 +98,7 @@ ThingArray.prototype.first = function () {
 ThingArray.prototype.push = function (thing, paramd) {
     var self = this;
 
-    if (!_.isModel(thing)) {
+    if (!_.is.Thing(thing)) {
         console.trace();
         logger.fatal({
             method: "push",
@@ -265,7 +265,7 @@ ThingArray.prototype.contains = function (thing) {
 
     if (!thing) {
         return false;
-    } else if (_.isModel(thing)) {
+    } else if (_.is.Thing(thing)) {
         return false;
     } else {
         return thing[self.array_id] = self;
