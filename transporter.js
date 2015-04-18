@@ -109,8 +109,11 @@ Transport.prototype.added = function(paramd, callback) {
  *  @param {string} id
  *  The ID of the Record
  *
- *  @param {string} band
- *  The band of the Record
+ *  @param {string|null} band
+ *  The band of the Record. If null, a dictionary
+ *  should be returned with information
+ *  about the item. In particular, key "bands"
+ *  with an array of available bands
  *
  *  @param {Transport~get_callback} callback
  */
@@ -377,9 +380,11 @@ var bind = function(primary_transport, secondary_transport, paramd) {
         })
     }
 
-    // updates to the src update the dst
+    // updates to the dst update the src
     if (_go(paramd.updated)) {
+        console.log("HERE:X.1");
         secondary_transport.updated(function(updated_id, updated_band, updated_value) {
+            console.log("HERE:X.2", updated_band);
             if (paramd.updated.indexOf(updated_band) === -1) {
                 return;
             }
@@ -391,7 +396,7 @@ var bind = function(primary_transport, secondary_transport, paramd) {
     if (_go(paramd.get)) {
         var _secondary_get = secondary_transport.get;
         secondary_transport.get = function(get_id, get_band, get_callback) {
-            if (paramd.get.indexOf(get_band) === -1) {
+            if (get_band && paramd.get.indexOf(get_band) === -1) {
                 return _secondary_get(get_id, get_band, get_callback);
             } else {
                 return primary_transport.get(get_id, get_band, get_callback);
@@ -401,12 +406,16 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
     // …
     if (_go(paramd.list)) {
-        secondary_transport.list = primary_transport.list;
+        secondary_transport.list = function(callback) {
+            primary_transport.list(callback);
+        }
     }
 
     // …
     if (_go(paramd.added)) {
-        secondary_transport.added = primary_transport.added;
+        secondary_transport.added = function(callback) {
+            primary_transport.added(callback);
+        }
     }
 
     // copy

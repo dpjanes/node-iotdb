@@ -2187,6 +2187,15 @@ exports.uid = function (len) {
     return buf.join('');
 };
 
+/**
+ *  Return a timestamp in the standard format.
+ *  Which just happens to be the JavaScript 
+ *  ISOString format.
+ */
+exports.timestamp = function() {
+    return (new Date()).toISOString();
+};
+
 
 var oneofd = {};
 exports.oneof = function (module) {
