@@ -24,6 +24,8 @@
 
 var _ = require('./helpers');
 
+var path = require('path');
+
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
@@ -89,6 +91,9 @@ Transport.prototype.list = function(paramd, callback) {
     throw new Error("Not Implemented");
 };
 
+Transport.prototype._validate_list = function(paramd, callback) {
+};
+
 /**
  *  Trigger the callback whenever a Record is added.
  *
@@ -101,6 +106,9 @@ Transport.prototype.added = function(paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
+};
+
+Transport.prototype._validate_added = function(paramd, callback) {
 };
 
 /**
@@ -117,10 +125,19 @@ Transport.prototype.added = function(paramd, callback) {
  *
  *  @param {Transport~get_callback} callback
  */
-Transport.prototype.get = function(id, band, callback) {
+Transport.prototype.get = function(paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
+};
+
+Transport.prototype._validate_get = function(paramd, callback) {
+    if (!paramd.id) {
+        throw new Error("get: 'paramd.id' is required");
+    }
+    if (!paramd.band) {
+        throw new Error("get: 'paramd.band' is required");
+    }
 };
 
 /**
@@ -136,11 +153,23 @@ Transport.prototype.get = function(id, band, callback) {
  *
  *  @param {dictionary|undefined|null} value
  *  The Record.
+ *
+ *  @param {Transport~get_callback|undefined} callback
+ *  Optional callback
  */
-Transport.prototype.update = function(id, band, value) {
+Transport.prototype.update = function(paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
+};
+
+Transport.prototype._validate_update = function(paramd, callback) {
+    if (!paramd.id) {
+        throw new Error("update: 'paramd.id' is required");
+    }
+    if (!paramd.band) {
+        throw new Error("update: 'paramd.band' is required");
+    }
 };
 
 /**
@@ -157,10 +186,17 @@ Transport.prototype.update = function(id, band, value) {
  *
  *  @param {Transport~get_callback} callback
  */
-Transport.prototype.updated = function(id, band, callback) {
+Transport.prototype.updated = function(paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
+};
+
+Transport.prototype._validate_updated = function(paramd, callback) {
+    _.defaults(paramd, {
+        id: null,
+        band: null,
+    });
 };
 
 /**
@@ -171,10 +207,16 @@ Transport.prototype.updated = function(id, band, callback) {
  *  @param {string} id
  *  The ID of the Record
  */
-Transport.prototype.remove = function(id) {
+Transport.prototype.remove = function(paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
+};
+
+Transport.prototype._validate_remove = function(paramd, callback) {
+    if (!paramd.id) {
+        throw new Error("remove: 'paramd.id' is required");
+    }
 };
 
 /* --- helper functions --- */
@@ -372,32 +414,32 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
     // updates to the src update the dst
     if (_go(paramd.update)) {
-        primary_transport.updated(function(_id, _band, _value) {
-            if (paramd.update.indexOf(_band) === -1) {
+        primary_transport.updated(function(ud) {
+            if (paramd.update.indexOf(ud.band) === -1) {
                 return;
             }
-            secondary_transport.update(_id, _band, _value);
+
+            secondary_transport.update(ud);
         })
     }
 
     // updates to the dst update the src
     if (_go(paramd.updated)) {
-        console.log("HERE:X.1");
-        secondary_transport.updated(function(updated_id, updated_band, updated_value) {
-            console.log("HERE:X.2", updated_band);
-            if (paramd.updated.indexOf(updated_band) === -1) {
+        secondary_transport.updated(function(ud) {
+            if (paramd.updated.indexOf(ud.band) === -1) {
                 return;
             }
-            primary_transport.update(updated_id, updated_band, updated_value);
+
+            primary_transport.update(ud);
         })
     }
 
     // …
     if (_go(paramd.get)) {
         var _secondary_get = secondary_transport.get;
-        secondary_transport.get = function(get_id, get_band, get_callback) {
-            if (get_band && paramd.get.indexOf(get_band) === -1) {
-                return _secondary_get(get_id, get_band, get_callback);
+        secondary_transport.get = function(gd, callback) {
+            if (paramd.get.indexOf(gd.band) === -1) {
+                return _secondary_get(gd, callback);
             } else {
                 return primary_transport.get(get_id, get_band, get_callback);
             }
@@ -406,57 +448,119 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
     // …
     if (_go(paramd.list)) {
-        secondary_transport.list = function(callback) {
-            primary_transport.list(callback);
+        secondary_transport.list = function(list_paramd, callback) {
+            primary_transport.list(list_paramd, callback);
         }
     }
 
     // …
     if (_go(paramd.added)) {
-        secondary_transport.added = function(callback) {
-            primary_transport.added(callback);
+        secondary_transport.added = function(added_paramd, callback) {
+            primary_transport.added(added_paramd, callback);
         }
     }
 
     // copy
     if (_go(paramd.copy)) {
-        var copy_callback = function(get_id, get_band, get_value) {
-            if (get_value === undefined) {
-                return;
-            } else if (get_value === null) {
+        var copy_callback = function(d) {
+            if ((d.value === undefined) || (d.value === null)) {
                 return;
             }
 
-            secondary_transport.update(get_id, get_band, get_value);
+            secondary_transport.update(d);
         };
 
-        var list_callback = function(list_id, list_value) {
-            if (list_id === null) {
+        var list_callback = function(d) {
+            if (d === null) {
                 return;
             }
 
             for (bi in paramd.copy) {
                 var copy_band = paramd.copy[bi];
-                if (paramd.copy.indexOf(copy_band) === -1) {
-                    continue;
-                }
 
-                if (list_value === undefined) {
-                    primary_transport.get(list_id, copy_band, copy_callback);
-                } else if (list_value === null) {
-                    // does not exist
-                } else {
-                    copy_callback(list_id, copy_band, list_value);
-                }
-
+                primary_transport.get({
+                    id: d.id,
+                    band: copy_band,
+                }, copy_callback);
             }
         };
 
         primary_transport.added(list_callback);
         primary_transport.list(list_callback);
     }
-
 };
+
+/**
+ */
+var channel = function(paramd, id, band) {
+    var self = this;
+
+    paramd = _.defaults(paramd, {
+        prefix: "",
+        encode: function(s) { return s },
+    });
+
+    var channel = paramd.prefix;
+    if (id) {
+        channel = path.join(channel, paramd.encode(id));
+
+        if (band && !paramd.flat_band) {
+            channel = path.join(channel, paramd.encode(band));
+        }
+    }
+
+    return channel;
+};
+
+/**
+ */
+var unchannel = function(paramd, path) {
+    paramd = _.defaults(paramd, {
+        prefix: "",
+        decode: function(s) { return s },
+        dot_id: false,
+        dot_band: false,
+    });
+
+    var subpath = path.substring(paramd.prefix.length);
+    subpath = subpath.replace(/^\/*/, '');
+    subpath = subpath.replace(/\/*$/, '');
+    subpath = subpath.replace(/\/+/g, '/');
+
+    var parts = subpath.split("/");
+    parts = _.map(parts, paramd.decode);
+
+    if (parts.length === 1) {
+        var id = parts[0];
+        if (!paramd.dot_id && id.match(/^[.]/)) {
+            return;
+        }
+
+        if (paramd.flat_band) {
+            return [ id, paramd.flat_band, ];
+        } else {
+            return [ id, ".", ];
+        }
+    } else if (parts.length === 2) {
+        var id = parts[0];
+        if (!paramd.dot_id && id.match(/^[.]/)) {
+            return;
+        }
+
+        var band = parts[1];
+        if (!paramd.dot_band, band.match(/^[.]/)) {
+            return;
+        }
+
+        if (paramd.flat_band) {
+            return [ id, paramd.flat_band, ];
+        } else {
+            return [ id, band, ];
+        }
+    } else {
+        return;
+    }
+}
 
 /**
  *  API
@@ -464,3 +568,5 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 exports.Transport = Transport;
 exports.transport = transport;
 exports.bind = bind;
+exports.unchannel = unchannel;
+exports.channel = channel;
