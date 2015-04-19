@@ -477,6 +477,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
         update: true,
         updated: false, // N.B.
         get: true,
+        about: true,
         list: true,
         added: true,
         copy: true,
@@ -500,6 +501,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
     _normalize("update");
     _normalize("updated");
     _normalize("get");
+    _normalize("about");
     _normalize("list");
     _normalize("added");
     _normalize("copy");
@@ -531,24 +533,36 @@ var bind = function (primary_transport, secondary_transport, paramd) {
         var _secondary_get = secondary_transport.get;
         secondary_transport.get = function (gd, callback) {
             if (paramd.get.indexOf(gd.band) === -1) {
-                return _secondary_get(gd, callback);
+                callback({
+                    id: gd.id,
+                    band: gd.band,
+                    value: null,
+                    error: new Error("No such band"),
+                });
             } else {
-                return primary_transport.get(get_id, get_band, get_callback);
+                return primary_transport.get(gd, callback);
             }
         };
     }
 
     // …
+    if (_go(paramd.about)) {
+        secondary_transport.about = function () {
+            primary_transport.about.apply(primary_transport, Array.prototype.slice.call(arguments));
+        }
+    }
+
+    // …
     if (_go(paramd.list)) {
-        secondary_transport.list = function (list_paramd, callback) {
-            primary_transport.list(list_paramd, callback);
+        secondary_transport.list = function () {
+            primary_transport.list.apply(primary_transport, Array.prototype.slice.call(arguments));
         }
     }
 
     // …
     if (_go(paramd.added)) {
-        secondary_transport.added = function (added_paramd, callback) {
-            primary_transport.added(added_paramd, callback);
+        secondary_transport.added = function () {
+            primary_transport.list.added(primary_transport, Array.prototype.slice.call(arguments));
         }
     }
 
@@ -563,7 +577,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
         };
 
         var list_callback = function (d) {
-            if (d === null) {
+            if (d.end) {
                 return;
             }
 
@@ -585,7 +599,15 @@ var bind = function (primary_transport, secondary_transport, paramd) {
 /**
  */
 var channel = function (paramd, id, band) {
-    var self = this;
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("channel: 'paramd' must be a Dictionary");
+    }
+    if ((id !== undefined) && !_.isString(id)) {
+        throw new Error("channel: 'id' must be a String or undefined");
+    }
+    if ((band !== undefined) && !_.isString(band)) {
+        throw new Error("channel: 'band' must be a String or undefined");
+    }
 
     paramd = _.defaults(paramd, {
         prefix: "",
@@ -609,6 +631,13 @@ var channel = function (paramd, id, band) {
 /**
  */
 var unchannel = function (paramd, path) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("unchannel: 'paramd' must be a Dictionary");
+    }
+    if (!_.isString(path)) {
+        throw new Error("unchannel: 'path' must be a String");
+    }
+
     paramd = _.defaults(paramd, {
         prefix: "",
         decode: function (s) {
@@ -656,7 +685,7 @@ var unchannel = function (paramd, path) {
     } else {
         return;
     }
-}
+};
 
 /**
  *  API
