@@ -28,13 +28,13 @@ var crypto = require('crypto');
 var path = require('path');
 var url = require('url');
 
-var canonical_json = require('canonical-json')
+var canonical_json = require('canonical-json');
 var _ = require("../helpers");
 
 
 var _safe = function(component) {
     return encodeURIComponent(component).replace('%', '$');
-}
+};
 
 /**
  *  Unique thing
@@ -107,14 +107,14 @@ var model_urn = function(jsonld) {
     var src_jsonld = _.deepCopy(jsonld);
 
     var base_url = src_jsonld["@context"]["@base"];
-    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '')
+    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '');
 
     src_jsonld["@context"]["@base"] = "";
     src_jsonld["@context"]["@vocab"] = "";
 
     src_jsonld = _.ld.compact(src_jsonld);
 
-    var canonical_jsonld = canonical_json(jsonld)
+    var canonical_jsonld = canonical_json(jsonld);
 
     var canonical_hash = _.hash.md5(canonical_jsonld);
     var model_urn = "urn:iotdb:model:" + canonical_hash + ":" + base_name;
@@ -136,10 +136,9 @@ var user_urn = function(user_url) {
         userp.host = userp.hostname;
     }
 
-    var user_url = url.format(userp);
-    var user_hash = _.hash.md5(user_url);
+    user_url = url.format(userp);
 
-    return "urn:iotdb:user:" + user_hash;
+    return "urn:iotdb:user:" + _.hash.md5(user_url);
 };
 
 exports.id = {

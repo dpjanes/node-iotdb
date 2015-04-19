@@ -23,6 +23,8 @@
 "use strict";
 
 var assert = require("assert");
+var url = require("url");
+var path = require("path");
 
 var _ = require("./helpers");
 var attribute = require("./attribute");
@@ -224,6 +226,7 @@ Model.prototype.jsonld = function (paramd) {
     var self = this;
     var key;
     var value;
+    var cd;
 
     paramd = (paramd !== undefined) ? paramd : {};
     paramd.base = (paramd.base !== undefined) ? paramd.base : ("file:///" + self.code + "");
@@ -237,7 +240,7 @@ Model.prototype.jsonld = function (paramd) {
     };
 
     if (paramd.context) {
-        var cd = {};
+        cd = {};
         cd["@base"] = paramd.base;
         cd["@vocab"] = paramd.base + "#";
         rd["@context"] = cd;
@@ -277,14 +280,11 @@ Model.prototype.jsonld = function (paramd) {
             }
 
             value = attribute[key];
-            if (value === undefined) {
-            } else if (_.isFunction(value)) {
-            } else if (key.match(/^_/)) {
-            } else if (key === "@id") {
+            if (value === undefined) {} else if (_.isFunction(value)) {} else if (key.match(/^_/)) {} else if (key === "@id") {
                 ad[key] = "#" + paramd.path + value.substring(1);
             } else {
                 ad[key] = value;
-                nss[key.replace(/:.*$/,'')] = true;
+                nss[key.replace(/:.*$/, '')] = true;
             }
         }
     }
@@ -487,7 +487,7 @@ Model.prototype.start = function (paramd) {
     }
     */
 
-    
+
     self._transaction = _.defaults(paramd, {
         notify: false,
         validate: true,
@@ -864,10 +864,9 @@ Model.prototype._do_notifies = function (attributed) {
     var self = this;
     var any = false;
 
-    for (var attribute_key in attributed) {
+    var _do_notifies_attribute = function (attribute) {
         any = true;
 
-        var attribute = attributed[attribute_key];
         var attribute_value = null;
         if (attribute._ivalue != null) {
             attribute_value = attribute._ivalue;
@@ -884,6 +883,10 @@ Model.prototype._do_notifies = function (attributed) {
                 callback(self, attribute, attribute_value);
             });
         }
+    };
+
+    for (var attribute_key in attributed) {
+        _do_notifies_attribute(attributed[attribute_key]);
     }
 
     // levels of hackdom here
@@ -1211,22 +1214,22 @@ Model.prototype.bind_bridge = function (bridge_instance) {
     return self;
 };
 
-var make_model_from_jsonld = function(jsonld) {
-    jsonld = _.ld.compact(d);
+var make_model_from_jsonld = function (d) {
+    var jsonld = _.ld.compact(d);
 
     if (jsonld["@type"] !== "iot:Model") {
         return null;
     }
 
     var base_url = jsonld["@context"]["@base"];
-    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '')
+    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '');
 
-    var mmaker = iotdb.make_model(base_name)
+    var mmaker = iotdb.make_model(base_name);
 
     var ads = jsonld["iot:attribute"];
     for (var ai in ads) {
         var ad = ads[ai];
-        var a_type = ad["@type"]
+        var a_type = ad["@type"];
         if (a_type !== "iot:Attribute") {
             continue;
         }
@@ -1234,16 +1237,13 @@ var make_model_from_jsonld = function(jsonld) {
         var amaker = new attribute.Attribute();
 
         var a_id = ad["@id"];
-        var a_code = a_id.replace(/^.*#/, '')
+        var a_code = a_id.replace(/^.*#/, '');
         amaker.code(a_code);
-        
+
         for (var akey in ad) {
             var avalue = ad[akey];
 
-            if (akey === "@id") {
-            } else if (akey === "@type") {
-            } else if (akey.indexOf(':') === -1) {
-            } else {
+            if (akey === "@id") {} else if (akey === "@type") {} else if (akey.indexOf(':') === -1) {} else {
                 amaker.property_value(akey, avalue);
             }
         }
@@ -1253,7 +1253,7 @@ var make_model_from_jsonld = function(jsonld) {
     }
 
     return mmaker.make();
-}
+};
 
 
 /*

@@ -32,11 +32,11 @@ var _hash = function(algorithm, av) {
     var hasher = crypto.createHash(algorithm);
     for (var ai in av) {
         var a = av[ai];
-        hasher.update("" + a)
+        hasher.update("" + a);
     }
 
-    return hasher.digest("hex")
-}
+    return hasher.digest("hex");
+};
 
 var md5 = function () {
     return _hash('md5', arguments);
@@ -56,9 +56,6 @@ var sha512 = function () {
 
 var md5 = function () {
     return _hash('md5', arguments);
-    return _hash('sha1', arguments);
-    return _hash('sha256', arguments);
-    return _hash('sha512', arguments);
 };
 
 exports.hash = {

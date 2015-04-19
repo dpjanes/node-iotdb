@@ -290,9 +290,9 @@ ModelMaker.prototype.attribute = function (attribute) {
 ModelMaker.prototype.i = function (code, attribute) {
     return this.attribute(
         _.deepCopy(attribute)
-            .code(code)
-            .name(code)
-            .reading()
+        .code(code)
+        .name(code)
+        .reading()
     );
 };
 
@@ -300,9 +300,9 @@ ModelMaker.prototype.i = function (code, attribute) {
 ModelMaker.prototype.o = function (code, attribute) {
     return this.attribute(
         _.deepCopy(attribute)
-            .code(code)
-            .name(code)
-            .control()
+        .code(code)
+        .name(code)
+        .control()
     );
 };
 

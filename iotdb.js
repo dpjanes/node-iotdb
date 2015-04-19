@@ -236,7 +236,7 @@ exports.helpers = _;
 exports._ = _;
 exports.cfg = cfg;
 exports.bunyan = bunyan;
-exports.logger = function() {
+exports.logger = function () {
     return bunyan.createLogger.apply(bunyan.createLogger, arguments);
 };
 
@@ -254,7 +254,7 @@ exports.transporter = transporter;
 var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
-exports.module = function(name) {
+exports.module = function (name) {
     var m = modules.modules().module(name);
     if (m) {
         return m;

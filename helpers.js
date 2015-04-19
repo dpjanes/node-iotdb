@@ -2192,7 +2192,7 @@ exports.uid = function (len) {
  *  Which just happens to be the JavaScript 
  *  ISOString format.
  */
-exports.timestamp = function() {
+exports.timestamp = function () {
     return (new Date()).toISOString();
 };
 

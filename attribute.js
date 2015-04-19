@@ -373,7 +373,7 @@ Attribute.prototype.unit_multiplier = function (multiplier) {
  */
 Attribute.prototype.enumeration = function (values) {
     var key_iri = _.ld.expand("iot:enumeration");
-    
+
     _.ld.extend(this, key_iri, values);
 
     return this;

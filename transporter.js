@@ -82,16 +82,25 @@ Transport.prototype._isTransport = true;
  *  The callback is called one at a time with the
  *  ID of the Record, 
  *  then null when there are no further values.
- *  <p>
+ *
+ *  @param {dictionary|undefined} paramd
+ *  Optional parameters
+ *
  *  @param {Transport~list_callback} callback
  */
-Transport.prototype.list = function(paramd, callback) {
+Transport.prototype.list = function (paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
 };
 
-Transport.prototype._validate_list = function(paramd, callback) {
+Transport.prototype._validate_list = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("list: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback)) {
+        throw new Error("list: 'callback' must be a Function");
+    }
 };
 
 /**
@@ -102,13 +111,48 @@ Transport.prototype._validate_list = function(paramd, callback) {
  *
  *  @param {Transport~list_callback} callback
  */
-Transport.prototype.added = function(paramd, callback) {
+Transport.prototype.added = function (paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
 };
 
-Transport.prototype._validate_added = function(paramd, callback) {
+Transport.prototype._validate_added = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("added: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback)) {
+        throw new Error("added: 'callback' must be a Function");
+    }
+};
+
+/**
+ *  Tell about an ID (particularly: does it exists, what bands are available)
+ *
+ *  @param {string} id
+ *  The ID of the Record
+ *
+ *  @param {Transport~about_callback} callback
+ */
+Transport.prototype.about = function (paramd, callback) {
+    var self = this;
+
+    throw new Error("Not Implemented");
+};
+
+Transport.prototype._validate_about = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("about: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback)) {
+        throw new Error("about: 'callback' must be a Function");
+    }
+    if (!paramd.id) {
+        throw new Error("about: 'paramd.id' is required");
+    }
+    if (!_.isString(paramd.id)) {
+        throw new Error("about: 'paramd.id' must be a string");
+    }
 };
 
 /**
@@ -125,18 +169,30 @@ Transport.prototype._validate_added = function(paramd, callback) {
  *
  *  @param {Transport~get_callback} callback
  */
-Transport.prototype.get = function(paramd, callback) {
+Transport.prototype.get = function (paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
 };
 
-Transport.prototype._validate_get = function(paramd, callback) {
+Transport.prototype._validate_get = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("get: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback)) {
+        throw new Error("get: 'callback' must be a Function");
+    }
     if (!paramd.id) {
         throw new Error("get: 'paramd.id' is required");
     }
+    if (!_.isString(paramd.id)) {
+        throw new Error("get: 'paramd.id' must be a string");
+    }
     if (!paramd.band) {
         throw new Error("get: 'paramd.band' is required");
+    }
+    if (!_.isString(paramd.band)) {
+        throw new Error("get: 'paramd.band' must be a string");
     }
 };
 
@@ -157,18 +213,30 @@ Transport.prototype._validate_get = function(paramd, callback) {
  *  @param {Transport~get_callback|undefined} callback
  *  Optional callback
  */
-Transport.prototype.update = function(paramd, callback) {
+Transport.prototype.update = function (paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
 };
 
-Transport.prototype._validate_update = function(paramd, callback) {
+Transport.prototype._validate_update = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("update: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback) && (callback !== undefined)) {
+        throw new Error("update: 'callback' must be a Function or undefined");
+    }
     if (!paramd.id) {
         throw new Error("update: 'paramd.id' is required");
     }
+    if (!_.isString(paramd.id)) {
+        throw new Error("update: 'paramd.id' must be a string");
+    }
     if (!paramd.band) {
         throw new Error("update: 'paramd.band' is required");
+    }
+    if (!_.isString(paramd.band)) {
+        throw new Error("update: 'paramd.band' must be a string");
     }
 };
 
@@ -186,13 +254,19 @@ Transport.prototype._validate_update = function(paramd, callback) {
  *
  *  @param {Transport~get_callback} callback
  */
-Transport.prototype.updated = function(paramd, callback) {
+Transport.prototype.updated = function (paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
 };
 
-Transport.prototype._validate_updated = function(paramd, callback) {
+Transport.prototype._validate_updated = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("updated: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback)) {
+        throw new Error("updated: 'callback' must be a Function");
+    }
     _.defaults(paramd, {
         id: null,
         band: null,
@@ -207,13 +281,19 @@ Transport.prototype._validate_updated = function(paramd, callback) {
  *  @param {string} id
  *  The ID of the Record
  */
-Transport.prototype.remove = function(paramd, callback) {
+Transport.prototype.remove = function (paramd, callback) {
     var self = this;
 
     throw new Error("Not Implemented");
 };
 
-Transport.prototype._validate_remove = function(paramd, callback) {
+Transport.prototype._validate_remove = function (paramd, callback) {
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("remove: 'paramd' must be a Dictionary");
+    }
+    if (!_.isFunction(callback) && (callback !== undefined)) {
+        throw new Error("remove: 'callback' must be a Function or undefined");
+    }
     if (!paramd.id) {
         throw new Error("remove: 'paramd.id' is required");
     }
@@ -223,7 +303,7 @@ Transport.prototype._validate_remove = function(paramd, callback) {
 /**
  *  Transport changes to Things to the transp
  */
-var transport = function(transport, things, paramd) {
+var transport = function (transport, things, paramd) {
     paramd = _.defaults(paramd, {
         verbose: false,
         send: true,
@@ -234,7 +314,7 @@ var transport = function(transport, things, paramd) {
         model: true,
     });
 
-    things.on_thing(function(thing) {
+    things.on_thing(function (thing) {
         var thing_id = thing.thing_id();
         var meta = thing.meta();
 
@@ -246,8 +326,8 @@ var transport = function(transport, things, paramd) {
          *  This is necessary because 'updated' has no requirement
          *  to actual send data
          */
-        var _monitor = function(monitor_band, get, callback) {
-            var _receive = function(id, band, d) {
+        var _monitor = function (monitor_band, get, callback) {
+            var _receive = function (id, band, d) {
                 if (d === undefined) {
                     /* shouldn't happen */
                     return;
@@ -263,7 +343,7 @@ var transport = function(transport, things, paramd) {
                 transport.get(thing_id, monitor_band, _receive);
             }
 
-            transport.updated(thing_id, monitor_band, function(id, band, d) {
+            transport.updated(thing_id, monitor_band, function (id, band, d) {
                 if (d === undefined) {
                     transport.get(thing_id, band, _receive);
                 } else {
@@ -274,12 +354,12 @@ var transport = function(transport, things, paramd) {
 
         if (paramd.meta) {
             if (paramd.send) {
-                thing.on("meta", function() {
+                thing.on("meta", function () {
                     transport.update(thing_id, "meta", _.ld.compact(meta.updates()));
                 });
             }
             if (paramd.receive) {
-                _monitor("meta", true, function(d) {
+                _monitor("meta", true, function (d) {
                     meta.update(d, {
                         set_timestamp: true,
                         check_timestamp: true,
@@ -290,13 +370,19 @@ var transport = function(transport, things, paramd) {
 
         if (paramd.ostate) {
             if (paramd.send) {
-                transport.update(thing_id, "ostate", thing.state({ ostate: true, istate: false }));
-                thing.on("ostate", function() {
-                    ostate_transporter.update(thing_id, "ostate", thing.state({ ostate: true, istate: false }));
+                transport.update(thing_id, "ostate", thing.state({
+                    ostate: true,
+                    istate: false
+                }));
+                thing.on("ostate", function () {
+                    ostate_transporter.update(thing_id, "ostate", thing.state({
+                        ostate: true,
+                        istate: false
+                    }));
                 });
             }
             if (paramd.receive) {
-                _monitor("ostate", false, function(d) {
+                _monitor("ostate", false, function (d) {
                     thing.update(d, {
                         notify: true,
                         push: true,
@@ -307,13 +393,19 @@ var transport = function(transport, things, paramd) {
 
         if (paramd.istate) {
             if (paramd.send) {
-                transport.update(thing_id, "istate", thing.state({ istate: true, ostate: false }));
-                thing.on("istate", function() {
-                    transport.update(thing_id, "istate", thing.state({ istate: true, ostate: false }));
+                transport.update(thing_id, "istate", thing.state({
+                    istate: true,
+                    ostate: false
+                }));
+                thing.on("istate", function () {
+                    transport.update(thing_id, "istate", thing.state({
+                        istate: true,
+                        ostate: false
+                    }));
                 });
             }
             if (paramd.receive) {
-                _monitor("istate", false, function(d) {
+                _monitor("istate", false, function (d) {
                     // console.log("ISTATE-IN", thing_id, d);
                     thing.update(d, {
                         notify: false,
@@ -375,13 +467,13 @@ var transport = function(transport, things, paramd) {
  *  secondary_transport.
  *  By default <code>true</code>.
  */
-var bind = function(primary_transport, secondary_transport, paramd) {
+var bind = function (primary_transport, secondary_transport, paramd) {
     var bi;
     var band;
 
     paramd = _.defaults(paramd, {
         verbose: false,
-        bands: [ "istate", "ostate", "model", "meta" ],
+        bands: ["istate", "ostate", "model", "meta"],
         update: true,
         updated: false, // N.B.
         get: true,
@@ -390,11 +482,11 @@ var bind = function(primary_transport, secondary_transport, paramd) {
         copy: true,
     });
 
-    var _go = function(value) {
+    var _go = function (value) {
         return value !== [];
     };
 
-    var _normalize = function(key) {
+    var _normalize = function (key) {
         var value = paramd[key];
         if (value === true) {
             paramd[key] = paramd.bands;
@@ -414,7 +506,7 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
     // updates to the src update the dst
     if (_go(paramd.update)) {
-        primary_transport.updated(function(ud) {
+        primary_transport.updated(function (ud) {
             if (paramd.update.indexOf(ud.band) === -1) {
                 return;
             }
@@ -425,7 +517,7 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
     // updates to the dst update the src
     if (_go(paramd.updated)) {
-        secondary_transport.updated(function(ud) {
+        secondary_transport.updated(function (ud) {
             if (paramd.updated.indexOf(ud.band) === -1) {
                 return;
             }
@@ -437,7 +529,7 @@ var bind = function(primary_transport, secondary_transport, paramd) {
     // …
     if (_go(paramd.get)) {
         var _secondary_get = secondary_transport.get;
-        secondary_transport.get = function(gd, callback) {
+        secondary_transport.get = function (gd, callback) {
             if (paramd.get.indexOf(gd.band) === -1) {
                 return _secondary_get(gd, callback);
             } else {
@@ -448,21 +540,21 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
     // …
     if (_go(paramd.list)) {
-        secondary_transport.list = function(list_paramd, callback) {
+        secondary_transport.list = function (list_paramd, callback) {
             primary_transport.list(list_paramd, callback);
         }
     }
 
     // …
     if (_go(paramd.added)) {
-        secondary_transport.added = function(added_paramd, callback) {
+        secondary_transport.added = function (added_paramd, callback) {
             primary_transport.added(added_paramd, callback);
         }
     }
 
     // copy
     if (_go(paramd.copy)) {
-        var copy_callback = function(d) {
+        var copy_callback = function (d) {
             if ((d.value === undefined) || (d.value === null)) {
                 return;
             }
@@ -470,7 +562,7 @@ var bind = function(primary_transport, secondary_transport, paramd) {
             secondary_transport.update(d);
         };
 
-        var list_callback = function(d) {
+        var list_callback = function (d) {
             if (d === null) {
                 return;
             }
@@ -492,12 +584,14 @@ var bind = function(primary_transport, secondary_transport, paramd) {
 
 /**
  */
-var channel = function(paramd, id, band) {
+var channel = function (paramd, id, band) {
     var self = this;
 
     paramd = _.defaults(paramd, {
         prefix: "",
-        encode: function(s) { return s },
+        encode: function (s) {
+            return s
+        },
     });
 
     var channel = paramd.prefix;
@@ -514,10 +608,12 @@ var channel = function(paramd, id, band) {
 
 /**
  */
-var unchannel = function(paramd, path) {
+var unchannel = function (paramd, path) {
     paramd = _.defaults(paramd, {
         prefix: "",
-        decode: function(s) { return s },
+        decode: function (s) {
+            return s
+        },
         dot_id: false,
         dot_band: false,
     });
@@ -537,9 +633,9 @@ var unchannel = function(paramd, path) {
         }
 
         if (paramd.flat_band) {
-            return [ id, paramd.flat_band, ];
+            return [id, paramd.flat_band, ];
         } else {
-            return [ id, ".", ];
+            return [id, ".", ];
         }
     } else if (parts.length === 2) {
         var id = parts[0];
@@ -553,9 +649,9 @@ var unchannel = function(paramd, path) {
         }
 
         if (paramd.flat_band) {
-            return [ id, paramd.flat_band, ];
+            return [id, paramd.flat_band, ];
         } else {
-            return [ id, band, ];
+            return [id, band, ];
         }
     } else {
         return;

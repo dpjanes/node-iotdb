@@ -91,6 +91,60 @@ exports.cfg_find = function (envd, paths, name, paramd) {
 
     var results = [];
 
+    var _list_files = function (path, callback) {
+        var is_recursive = path.match(/[\/][\/]$/);
+        var files = node_fs.readdirSync(path);
+        files.sort();
+
+        for (var fi in files) {
+            var file = files[fi];
+            if ((file === ".") || (file === "..")) {
+                continue;
+            } else if (!paramd.dotfiles && (file.substring(0, 1) === ".")) {
+                continue;
+            }
+
+            var subpath = node_path.join(path, file);
+            var subpath_stbuf = node_fs.statSync(subpath);
+            if (subpath_stbuf.isFile()) {
+                if (callback(subpath, file)) {
+                    break;
+                }
+            } else if (is_recursive && subpath_stbuf.isDirectory()) {
+                if (_list_files(subpath + "//", callback)) {
+                    break;
+                }
+            }
+        }
+    };
+
+    var _find_path_list = function (path) {
+        try {
+            _list_files(path, function (subpath, file) {
+                if ((name === null) || (name === undefined)) {
+                    results.push(subpath);
+                } else if (file.match(name)) {
+                    results.push(subpath);
+                }
+
+                if (results.length && paramd.max && (results.length >= paramd.max)) {
+                    return true;
+                }
+            });
+        } catch (x) {
+            logger.error(x, {
+                method: "cfg_find"
+            }, "unexpected exception");
+        }
+    };
+
+    var _find_path_name = function (path) {
+        var filepath = node_path.join(path, name);
+        if (node_fs.existsSync(filepath)) {
+            results.push(filepath);
+        }
+    };
+
     for (var pi in paths) {
         var path = paths[pi];
 
@@ -98,8 +152,8 @@ exports.cfg_find = function (envd, paths, name, paramd) {
             path = exports.cfg_expand(envd, path);
         }
 
-        // ignore non-directories
         try {
+            // ignore non-directories
             var stbuf = node_fs.statSync(path);
             if (!stbuf.isDirectory()) {
                 continue;
@@ -109,55 +163,9 @@ exports.cfg_find = function (envd, paths, name, paramd) {
         }
 
         if ((name === null) || (name === undefined) || _.isRegExp(name)) {
-            var list_files = function (path, callback) {
-                var is_recursive = path.match(/[\/][\/]$/);
-                var files = node_fs.readdirSync(path);
-                files.sort();
-
-                for (var fi in files) {
-                    var file = files[fi];
-                    if ((file === ".") || (file === "..")) {
-                        continue;
-                    } else if (!paramd.dotfiles && (file.substring(0, 1) === ".")) {
-                        continue;
-                    }
-
-                    var subpath = node_path.join(path, file);
-                    var subpath_stbuf = node_fs.statSync(subpath);
-                    if (subpath_stbuf.isFile()) {
-                        if (callback(subpath, file)) {
-                            break;
-                        }
-                    } else if (is_recursive && subpath_stbuf.isDirectory()) {
-                        if (list_files(subpath + "//", callback)) {
-                            break;
-                        }
-                    }
-                }
-            };
-
-            try {
-                list_files(path, function (subpath, file) {
-                    if ((name === null) || (name === undefined)) {
-                        results.push(subpath);
-                    } else if (file.match(name)) {
-                        results.push(subpath);
-                    }
-
-                    if (results.length && paramd.max && (results.length >= paramd.max)) {
-                        return true;
-                    }
-                });
-            } catch (x) {
-                logger.error(x, {
-                    method: "cfg_find"
-                }, "unexpected exception");
-            }
+            _find_path_list(path);
         } else {
-            var filepath = node_path.join(path, name);
-            if (node_fs.existsSync(filepath)) {
-                results.push(filepath);
-            }
+            _find_path_name(path);
         }
 
         if (results.length && paramd.max && (results.length >= paramd.max)) {

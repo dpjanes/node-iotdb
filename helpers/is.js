@@ -50,10 +50,29 @@ var isThing = function (o) {
     return o && o._isThing;
 };
 
+/**
+ */
+var isDictionary = function(o) {
+    if (_.isArray(o)) {
+        return false;
+    } else if (_.isFunction(o)) {
+        return false;
+    } else if (o === null) {
+        return false;
+    } else if (!_.isObject(o)) {
+        return false;
+    } else if (o.constructor === Object) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 exports.is = {
     Thing: isThing,
     Model: isModel,
     ThingArray: isThingArray,
     Transport: isTransport,
     Transporter: isTransport,
+    Dictionary: isDictionary,
 };

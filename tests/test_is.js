@@ -89,4 +89,22 @@ describe('test_is:', function() {
         assert.ok(!_.is.Transport([ "a", ]));
         assert.ok(!_.is.Transport({ "a": "n" }));
     });
+    it('Dictionary', function() {
+        assert.ok(!_.is.Dictionary(testModel));
+        assert.ok(!_.is.Dictionary(testThing));
+        assert.ok(!_.is.Dictionary(testThingArray0));
+        assert.ok(!_.is.Dictionary(testThingArray1));
+        assert.ok(!_.is.Dictionary(testTransport));
+        /*
+        */
+
+        assert.ok(!_.is.Dictionary(null));
+        assert.ok(!_.is.Dictionary(undefined));
+        assert.ok(!_.is.Dictionary(0));
+        assert.ok(!_.is.Dictionary(1));
+        assert.ok(!_.is.Dictionary(""));
+        assert.ok(!_.is.Dictionary("string"));
+        assert.ok(!_.is.Dictionary([ "a", ]));
+        assert.ok(_.is.Dictionary({ "a": "n" }));
+    });
 })

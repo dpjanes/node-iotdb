@@ -137,7 +137,7 @@ Modules.prototype.bindings = function () {
     if (self._bindings === undefined) {
         self._bindings = [];
 
-        var _setup_binding = function(binding) {
+        var _setup_binding = function (binding) {
             if (!binding) {
                 return;
             } else if (!binding.bridge) {
@@ -158,10 +158,10 @@ Modules.prototype.bindings = function () {
 
                 /*
                  *  An alternate way of doing above - for future reference
-                */
+                 */
                 binding.model_code = _.identifier_to_dash_case(binding.model_code);
                 var old_model = binding.model;
-                var new_model = function() {
+                var new_model = function () {
                     old_model.call(this);
                     this.code = binding.model_code;
                 }

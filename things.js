@@ -72,8 +72,7 @@ Things.prototype.things = function (model_code) {
             things.push(thing);
         } else if (model_code === thing.code) {
             things.push(thing);
-        } else {
-        }
+        } else {}
     };
 
     // new things

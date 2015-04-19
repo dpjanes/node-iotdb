@@ -133,7 +133,7 @@ Meta.prototype.update = function (ind, paramd) {
     });
 
     ind = _.ld.expand(ind);
-    
+
     if (paramd.check_timestamp && !_.d.check_timestamp(self._updated, ind)) {
         return;
     }
