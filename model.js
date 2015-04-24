@@ -165,6 +165,25 @@ Model.prototype.get_code = function () {
 };
 
 /**
+ */
+Model.prototype.name = function () {
+    return this.__name;
+};
+
+
+/**
+ */
+Model.prototype.description = function () {
+    return this.__description;
+};
+
+/**
+ */
+Model.prototype.help = function () {
+    return this.__help;
+};
+
+/**
  *  State is now constructed on the fly
  */
 Model.prototype.state = function (paramd) {
@@ -252,17 +271,20 @@ Model.prototype.jsonld = function (paramd) {
 
     rd["@type"] = _.ld.expand("iot:Model");
 
-    if (self.name) {
-        rd[_.ld.expand("schema:name")] = self.name;
-    }
-    if (self.description) {
-        rd[_.ld.expand("schema:description")] = self.description;
-    }
-    if (self.help) {
-        rd[_.ld.expand("iot:help")] = self.help;
+    var name = self.name();
+    if (!_.is.Empty(name)) {
+        rd[_.ld.expand("schema:name")] = name;
     }
 
-    if (paramd.include_state) {}
+    var description = self.description();
+    if (!_.is.Empty(description)) {
+        rd[_.ld.expand("schema:description")] = description;
+    }
+
+    var help = self.help();
+    if (!_.is.Empty(help)) {
+        rd[_.ld.expand("iot:help")] = help;
+    }
 
     // attributes
     var ads = [];
