@@ -280,7 +280,7 @@ Model.prototype.jsonld = function (paramd) {
             }
 
             value = attribute[key];
-            if (value === undefined) {} else if (_.isFunction(value)) {} else if (key.match(/^_/)) {} else if (key === "@id") {
+            if (value === undefined) {} else if (_.is.Function(value)) {} else if (key.match(/^_/)) {} else if (key === "@id") {
                 ad[key] = "#" + paramd.path + value.substring(1);
             } else {
                 ad[key] = value;
@@ -642,7 +642,7 @@ Model.prototype.on = function (find_key, callback) {
 Model.prototype.on_change = function (callback) {
     var self = this;
 
-    assert.ok(_.isFunction(callback));
+    assert.ok(_.is.Function(callback));
 
     self.__emitter.on(EVENT_THING_CHANGED, function (thing) {
         callback(self, []);
@@ -657,7 +657,7 @@ Model.prototype.on_change = function (callback) {
 Model.prototype.on_meta = function (callback) {
     var self = this;
 
-    assert.ok(_.isFunction(callback));
+    assert.ok(_.is.Function(callback));
 
     self.__emitter.on(EVENT_META_CHANGED, function (thing) {
         if (iotdb.shutting_down()) {
@@ -1024,8 +1024,8 @@ Model.prototype._find = function (find_key, paramd) {
 
                 var match_value = find_key[match_key];
                 var attribute_value = attribute[match_key];
-                if (_.isArray(attribute_value)) {
-                    if (_.isArray(match_value)) {
+                if (_.is.Array(attribute_value)) {
+                    if (_.is.Array(match_value)) {
                         for (var mvi in match_value) {
                             var mv = match_value[mvi];
                             if (attribute_value.indexOf(mv) === -1) {
@@ -1126,7 +1126,7 @@ Model.prototype.meta = function () {
 Model.prototype.tag = function (tag) {
     var self = this;
 
-    assert.ok(_.isString(tag));
+    assert.ok(_.is.String(tag));
 
     _.ld.add(self.initd, "tag", tag);
 };

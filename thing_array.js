@@ -700,22 +700,7 @@ ThingArray.prototype._filter_test = function (d, thing) {
 
     for (var dpredicate in d) {
         var dobject = d[dpredicate];
-        if (dpredicate === "_location") {
-            dpredicate = _.ld.expand("iot:place-location");
-        } else if (dpredicate === "_room") {
-            dpredicate = _.ld.expand("iot:place-room");
-        } else if (dpredicate === "_floor") {
-            dpredicate = _.ld.expand("iot:place-floor");
-        } else if (dpredicate === "_driver") {
-            var driver_got = thing.identity().driver;
-            var driver_want = dobject;
-
-            if (driver_got !== driver_want) {
-                return false;
-            }
-
-            continue;
-        } else if (dpredicate === "_name") {
+        if (dpredicate === "_name") {
             var name = meta.get('schema:name');
             if (name !== dobject) {
                 return false;
@@ -739,7 +724,7 @@ ThingArray.prototype._filter_test = function (d, thing) {
         var value = meta.get(dpredicate);
         if (value === undefined) {
             return false;
-        } else if (_.isArray(value)) {
+        } else if (_.is.Array(value)) {
             return value.indexOf(dobject) > -1;
         } else {
             return value === dobject;
@@ -919,7 +904,7 @@ ThingArray.prototype.with_model = function (model) {
 ThingArray.prototype.apply = function (paramd, f) {
     var self = this;
 
-    if (_.isFunction(paramd)) {
+    if (_.is.Function(paramd)) {
         f = paramd;
         paramd = {};
     }

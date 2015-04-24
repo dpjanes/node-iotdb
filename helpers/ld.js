@@ -52,7 +52,7 @@ var _ld_set = function (d, key, value) {
     var existing = d[key];
     if (existing === undefined) {
         d[key] = value;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         existing.push(value);
     } else {
         d[key] = [existing, value];
@@ -63,7 +63,7 @@ var _ld_get_first = function (d, key, otherwise) {
     var existing = d[key];
     if (existing === undefined) {
         return otherwise;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         return existing[0];
     } else {
         return existing;
@@ -74,7 +74,7 @@ var _ld_get_list = function (d, key, otherwise) {
     var existing = d[key];
     if (existing === undefined) {
         return otherwise;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         return existing;
     } else {
         return [existing];
@@ -85,7 +85,7 @@ var _ld_contains = function (d, key, value) {
     var existing = d[key];
     if (existing === undefined) {
         return false;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         return existing.indexOf(value) > -1;
     } else {
         return existing === value;
@@ -96,7 +96,7 @@ var _ld_remove = function (d, key, value) {
     var existing = d[key];
     if (existing === undefined) {
         return;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         var x = existing.indexOf(value);
         if (x > -1) {
             existing.splice(x, 1);
@@ -112,7 +112,7 @@ var _ld_add = function (d, key, value) {
     var existing = d[key];
     if (existing === undefined) {
         d[key] = value;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         if (existing.indexOf(value) === -1) {
             existing.push(value);
         }
@@ -124,7 +124,7 @@ var _ld_add = function (d, key, value) {
 };
 
 var _ld_extend = function (d, key, values) {
-    if (!_.isArray(values)) {
+    if (!_.is.Array(values)) {
         values = [ values ];
     }
     for (var vi in values) {
@@ -144,7 +144,7 @@ var _ld_compact = function (v, paramd) {
         scrub: false,   // only with ':' in key
     });
 
-    if (_.isArray(v)) {
+    if (_.is.Array(v)) {
         var ovs = v;
         var nvs = [];
         for (var ovx in ovs) {
@@ -155,7 +155,7 @@ var _ld_compact = function (v, paramd) {
             }
         }
         return nvs;
-    } else if (_.isObject(v)) {
+    } else if (_.is.Object(v)) {
         var ovd = v;
         var nvd = {};
         for (var ovkey in ovd) {
@@ -176,7 +176,7 @@ var _ld_compact = function (v, paramd) {
             }
         }
         return nvd;
-    } else if (_.isString(v)) {
+    } else if (_.is.String(v)) {
         for (var ns in _namespace) {
             var prefix = _namespace[ns];
             if (v.substring(0, prefix.length) !== prefix) {
@@ -190,11 +190,11 @@ var _ld_compact = function (v, paramd) {
     } else {
         if (!paramd.json) {
             return v;
-        } else if (_.isNumber(v)) {
+        } else if (_.is.Number(v)) {
             return v;
-        } else if (_.isInteger(v)) {
+        } else if (_.is.Integer(v)) {
             return v;
-        } else if (_.isBoolean(v)) {
+        } else if (_.is.Boolean(v)) {
             return v;
         } else if (_.isNull(v)) {
             return v;
@@ -211,7 +211,7 @@ var _ld_compact = function (v, paramd) {
  *  be recursive
  */
 var _ld_expand = function (v, paramd) {
-    if (!_.isObject(paramd)) {
+    if (!_.is.Object(paramd)) {
         paramd = { otherwise: paramd };
     }
 
@@ -221,7 +221,7 @@ var _ld_expand = function (v, paramd) {
         scrub: false,   // only with ':' in key
     });
 
-    if (_.isArray(v)) {
+    if (_.is.Array(v)) {
         var ovs = v;
         var nvs = [];
         for (var ovx in ovs) {
@@ -232,7 +232,7 @@ var _ld_expand = function (v, paramd) {
             }
         }
         return nvs;
-    } else if ((v !== null) && _.isObject(v)) {
+    } else if ((v !== null) && _.is.Object(v)) {
         var ovd = v;
         var nvd = {};
         for (var ovkey in ovd) {
@@ -248,15 +248,13 @@ var _ld_expand = function (v, paramd) {
             }
         }
         return nvd;
-    } else if (_.isString(v)) {
+    } else if (_.is.String(v)) {
         var match = v.match(/([-a-z0-9_]+):(.*)/);
         if (match === null) {
             if ((paramd.otherwise !== undefined) && (paramd.otherwise !== null)) {
                 v = v.replace(/^:/, '');
-                if (_.isString(paramd.otherwise)) {
+                if (_.is.String(paramd.otherwise)) {
                     return _ld_expand(paramd.otherwise) + v;
-                } else if (_.isFunction(paramd.otherwise)) {
-                    return paramd.otherwise(v);
                 } else {
                     return v;
                 }
@@ -275,11 +273,11 @@ var _ld_expand = function (v, paramd) {
     } else {
         if (!paramd.json) {
             return v;
-        } else if (_.isNumber(v)) {
+        } else if (_.is.Number(v)) {
             return v;
-        } else if (_.isInteger(v)) {
+        } else if (_.is.Integer(v)) {
             return v;
-        } else if (_.isBoolean(v)) {
+        } else if (_.is.Boolean(v)) {
             return v;
         } else if (_.isNull(v)) {
             return paramd.otherwise;

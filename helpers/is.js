@@ -24,6 +24,8 @@
 
 "use strict";
 
+var node_url = require('url');
+
 var _ = require("../helpers");
 
 /**
@@ -53,13 +55,13 @@ var isThing = function (o) {
 /**
  */
 var isDictionary = function(o) {
-    if (_.isArray(o)) {
+    if (_.is.Array(o)) {
         return false;
-    } else if (_.isFunction(o)) {
+    } else if (_.is.Function(o)) {
         return false;
     } else if (o === null) {
         return false;
-    } else if (!_.isObject(o)) {
+    } else if (!_.is.Object(o)) {
         return false;
     } else if (o.constructor === Object) {
         return true;
@@ -68,11 +70,87 @@ var isDictionary = function(o) {
     }
 };
 
+// Is a given value a boolean?
+var isBoolean = function (obj) {
+    return obj === true || obj === false || toString.call(obj) == '[object Boolean]';
+};
+
+// Is a given value equal to null?
+var isNull = function (obj) {
+    return obj === null;
+};
+
+// Is a given variable undefined?
+var isUndefined = function (obj) {
+    return obj === void 0;
+};
+
+var isAbsoluteURL = function (o) {
+    if (typeof o !== 'string') return;
+    var u = node_url.parse(o);
+    if (!u) return false;
+    if (!u.protocol) return false;
+    return u.protocol.length > 0;
+};
+
+var isString = function (o) {
+    return typeof o === 'string';
+};
+
+var isObject = function (o) {
+    return typeof o === 'object';
+};
+
+var isBoolean = function (o) {
+    return typeof o === 'boolean';
+};
+
+var isFunction = function (o) {
+    return typeof o === 'function';
+};
+
+var isNumber = function (o) {
+    return typeof o === 'number';
+};
+
+var isInteger = function (o) {
+    return typeof o === 'number' && ((o % 1) === 0);
+};
+
+var isDate = function (o) {
+    return o instanceof Date;
+};
+
+var isRegExp = function (o) {
+    return o instanceof RegExp;
+};
+
+var isObject = function (obj) {
+    return _.underscore.isObject(obj);
+};
+
 exports.is = {
+    // IOTDB classes
     Thing: isThing,
     Model: isModel,
     ThingArray: isThingArray,
     Transport: isTransport,
     Transporter: isTransport,
+
+    // useful helpers
     Dictionary: isDictionary,
+	AbsoluteURL: isAbsoluteURL,
+
+    // Javascript classes and types
+	Array: Array.isArray,
+	Boolean: isBoolean,
+	Date: isDate,
+	Function: isFunction,
+	Integer: isInteger,
+	Null: isNull,
+	Number: isNumber,
+	Object: isObject,
+	RegExp: isRegExp,
+	String: isString,
+	Undefined: isUndefined,
 };

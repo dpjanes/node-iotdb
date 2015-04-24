@@ -122,8 +122,8 @@ Meta.prototype.update = function (ind, paramd) {
     var self = this;
     var in_timestamp = ind["@timestamp"];
 
-    if (!_.isObject(ind)) {
-        throw new Error("not an object");
+    if (!_.is.Dictionary(ind)) {
+        throw new Error("not an Dictionary");
     }
 
     paramd = _.defaults(paramd, {

@@ -275,7 +275,7 @@ ModelMaker.prototype.attribute = function (attribute) {
     attribute = _.deepCopy(attribute);
     for (var akey in attribute) {
         var avalue = attribute[akey];
-        if (!_.isArray(avalue) && _.isObject(avalue)) {
+        if (!_.is.Array(avalue) && _.is.Object(avalue) && !_.is.Function(avalue)) {
             delete attribute[akey];
         }
     }
@@ -368,8 +368,8 @@ ModelMaker.prototype.link_control_reading = function (control_attribute_code, re
 ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, control_attribute_code) {
     var self = this;
 
-    assert.ok(_.isString(reading_attribute_code));
-    assert.ok(_.isString(control_attribute_code));
+    assert.ok(_.is.String(reading_attribute_code));
+    assert.ok(_.is.String(control_attribute_code));
 
     var reading_attribute = self.attributed[reading_attribute_code];
     if (!reading_attribute) {
@@ -396,8 +396,8 @@ ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, 
 ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, reading_attribute_code) {
     var self = this;
 
-    assert.ok(_.isString(control_attribute_code));
-    assert.ok(_.isString(reading_attribute_code));
+    assert.ok(_.is.String(control_attribute_code));
+    assert.ok(_.is.String(reading_attribute_code));
 
     var control_attribute = self.attributed[control_attribute_code];
     if (!control_attribute) {

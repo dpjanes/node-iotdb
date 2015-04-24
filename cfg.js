@@ -85,7 +85,7 @@ exports.cfg_find = function (envd, paths, name, paramd) {
         dotfiles: false
     });
 
-    if (_.isString(paths)) {
+    if (_.is.String(paths)) {
         paths = paths.split(node_path.delimiter);
     }
 
@@ -254,7 +254,7 @@ exports.cfg_load_json = function (filenames, callback) {
 exports.cfg_load_file = function (filenames, encoding, callback) {
     var first_doc = null;
 
-    if (_.isFunction(encoding)) {
+    if (_.is.Function(encoding)) {
         callback = encoding;
         encoding = "utf-8";
     }
@@ -378,7 +378,7 @@ exports.cfg_envd = function (envd) {
 
     for (var key in process.env) {
         var value = process.env[key];
-        if (!envd[key] && _.isString(value)) {
+        if (!envd[key] && _.is.String(value)) {
             envd[key] = value;
         }
     }

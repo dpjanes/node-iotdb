@@ -40,7 +40,7 @@ var get = function(keystored, key, otherwise) {
         var subd = d[subkey];
         if (subd === undefined) {
             return otherwise;
-        } else if (_.isObject(subd)) {
+        } else if (_.is.Object(subd)) {
             d = subd;
         } else {
             return otherwise;
@@ -66,7 +66,7 @@ var set = function(keystored, key, value) {
     for (var ski = 0; ski < subkeys.length - 1; ski++) {
         var subkey = subkeys[ski];
         var subd = d[subkey];
-        if (!_.isObject(subd)) {
+        if (!_.is.Object(subd)) {
             subd = {};
             d[subkey] = subd;
         }
@@ -94,7 +94,7 @@ var transform = function(o, paramd) {
     });
 
     var _transform = function(v, paramd) {
-        if (_.isArray(v)) {
+        if (_.is.Array(v)) {
             var ovs = v;
             var nvs = [];
             for (var ovx in ovs) {
@@ -105,7 +105,7 @@ var transform = function(o, paramd) {
                 }
             }
             return nvs;
-        } else if ((v !== null) && _.isObject(v)) {
+        } else if ((v !== null) && _.is.Object(v)) {
             var ovd = v;
             var nvd = {};
             for (var ovkey in ovd) {
@@ -152,10 +152,10 @@ var transform = function(o, paramd) {
  *     is later than the current value
  */
 var check_timestamp = function(od, nd, paramd)  {
-    if ((od === null) || !_.isObject(od)) {
+    if ((od === null) || !_.is.Object(od)) {
         return null;
     }
-    if ((nd === null) || !_.isObject(nd)) {
+    if ((nd === null) || !_.is.Object(nd)) {
         return null;
     }
 

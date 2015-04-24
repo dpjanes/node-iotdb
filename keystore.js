@@ -155,7 +155,7 @@ Keystore.prototype.save = function (key, value, paramd) {
 
     // if value is a function, we call it with the current value to get a new value
     // this allows "in-place" updating of a particular value
-    if (_.isFunction(value)) {
+    if (_.is.Function(value)) {
         value = value(_.d.get(d, key));
     }
 

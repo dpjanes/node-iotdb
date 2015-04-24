@@ -280,7 +280,7 @@ Attribute.prototype.property_value = function (key_iri, value, paramd) {
     var existing = self[key_iri];
     if ((existing === undefined) || !paramd.array) {
         self[key_iri] = value;
-    } else if (_.isArray(existing)) {
+    } else if (_.is.Array(existing)) {
         if (existing.indexOf(value) === -1) {
             existing.push(value);
         }
@@ -308,9 +308,7 @@ Attribute.prototype.property_value = function (key_iri, value, paramd) {
  *  @return {this}
  */
 Attribute.prototype.unit = function (unit_iri) {
-    return this.property_value(_.ld.expand("iot:unit"), _.ld.expand(unit_iri, function (v) {
-        return _.ld.expand("iot-unit:" + v);
-    }));
+    return this.property_value(_.ld.expand("iot:unit"), _.ld.expand(unit_iri, "iot-unit:"));
 };
 
 /**
@@ -418,9 +416,7 @@ Attribute.prototype.active = function (f) {
  *  @return {this}
  */
 Attribute.prototype.type = function (format_iri) {
-    return this.property_value(_.ld.expand("iot:type"), _.ld.expand(format_iri, function (v) {
-        return _.ld.expand("iot:" + v);
-    }));
+    return this.property_value(_.ld.expand("iot:type"), _.ld.expand(format_iri, "iot:"));
 };
 
 /**
@@ -435,9 +431,7 @@ Attribute.prototype.type = function (format_iri) {
  *  @return {this}
  */
 Attribute.prototype.format = function (format_iri) {
-    return this.property_value(_.ld.expand("iot:format"), _.ld.expand(format_iri, function (v) {
-        return _.ld.expand("iot:" + v);
-    }));
+    return this.property_value(_.ld.expand("iot:format"), _.ld.expand(format_iri, "iot:"));
 };
 
 /**
@@ -540,13 +534,13 @@ Attribute.prototype.validate = function (paramd) {
 
     var iot_types = _.ld.list(self, iot_js_type, []);
 
-    if (_.isDate(paramd.value)) {
+    if (_.is.Date(paramd.value)) {
         paramd.value = paramd.value.toISOString();
     }
 
     paramd.value = self._convert(paramd.value, iot_types);
 
-    if (_.isNumber(paramd.value)) {
+    if (_.is.Number(paramd.value)) {
         paramd.value = self._bounded(
             paramd.value,
             _.ld.first(self, iot_js_minimum),
@@ -554,7 +548,7 @@ Attribute.prototype.validate = function (paramd) {
         );
     }
 
-    if (_.isString(paramd.value)) {
+    if (_.is.String(paramd.value)) {
         var iot_formats = _.ld.list(self, iot_js_format, []);
         if (iot_formats.length > 0) {
             var formatted_value = self._format(paramd.value, iot_formats, paramd);
@@ -715,13 +709,13 @@ Attribute.prototype._convert = function (value, types) {
     var self = this;
     if (value === undefined) {
         return self._default(value, types);
-    } else if (_.isBoolean(value)) {
+    } else if (_.is.Boolean(value)) {
         return self._convert_boolean(value, types);
-    } else if (_.isInteger(value)) {
+    } else if (_.is.Integer(value)) {
         return self._convert_integer(value, types);
-    } else if (_.isNumber(value)) {
+    } else if (_.is.Number(value)) {
         return self._convert_number(value, types);
-    } else if (_.isString(value)) {
+    } else if (_.is.String(value)) {
         return self._convert_string(value, types);
     } else {
         return value;
@@ -866,7 +860,7 @@ exports.Attribute = Attribute;
  *  a new attribute
  */
 exports.make = function (purpose, code, name) {
-    assert.ok(_.isString(purpose));
+    assert.ok(_.is.String(purpose));
     // code = (code === undefined) ? purpose : code
     code = code === undefined ? purpose.replace(/^.*[.]/, '') : code;
     name = name === undefined ? code.replace(/^:+/, '') : name;

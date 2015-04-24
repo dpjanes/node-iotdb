@@ -98,7 +98,7 @@ Transport.prototype._validate_list = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("list: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback)) {
+    if (!_.is.Function(callback)) {
         throw new Error("list: 'callback' must be a Function");
     }
 };
@@ -121,7 +121,7 @@ Transport.prototype._validate_added = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("added: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback)) {
+    if (!_.is.Function(callback)) {
         throw new Error("added: 'callback' must be a Function");
     }
 };
@@ -144,13 +144,13 @@ Transport.prototype._validate_about = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("about: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback)) {
+    if (!_.is.Function(callback)) {
         throw new Error("about: 'callback' must be a Function");
     }
     if (!paramd.id) {
         throw new Error("about: 'paramd.id' is required");
     }
-    if (!_.isString(paramd.id)) {
+    if (!_.is.String(paramd.id)) {
         throw new Error("about: 'paramd.id' must be a string");
     }
 };
@@ -179,19 +179,19 @@ Transport.prototype._validate_get = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("get: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback)) {
+    if (!_.is.Function(callback)) {
         throw new Error("get: 'callback' must be a Function");
     }
     if (!paramd.id) {
         throw new Error("get: 'paramd.id' is required");
     }
-    if (!_.isString(paramd.id)) {
+    if (!_.is.String(paramd.id)) {
         throw new Error("get: 'paramd.id' must be a string");
     }
     if (!paramd.band) {
         throw new Error("get: 'paramd.band' is required");
     }
-    if (!_.isString(paramd.band)) {
+    if (!_.is.String(paramd.band)) {
         throw new Error("get: 'paramd.band' must be a string");
     }
 };
@@ -223,19 +223,19 @@ Transport.prototype._validate_update = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("update: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback) && (callback !== undefined)) {
+    if (!_.is.Function(callback) && (callback !== undefined)) {
         throw new Error("update: 'callback' must be a Function or undefined");
     }
     if (!paramd.id) {
         throw new Error("update: 'paramd.id' is required");
     }
-    if (!_.isString(paramd.id)) {
+    if (!_.is.String(paramd.id)) {
         throw new Error("update: 'paramd.id' must be a string");
     }
     if (!paramd.band) {
         throw new Error("update: 'paramd.band' is required");
     }
-    if (!_.isString(paramd.band)) {
+    if (!_.is.String(paramd.band)) {
         throw new Error("update: 'paramd.band' must be a string");
     }
 };
@@ -264,7 +264,7 @@ Transport.prototype._validate_updated = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("updated: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback)) {
+    if (!_.is.Function(callback)) {
         throw new Error("updated: 'callback' must be a Function");
     }
     _.defaults(paramd, {
@@ -291,7 +291,7 @@ Transport.prototype._validate_remove = function (paramd, callback) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("remove: 'paramd' must be a Dictionary");
     }
-    if (!_.isFunction(callback) && (callback !== undefined)) {
+    if (!_.is.Function(callback) && (callback !== undefined)) {
         throw new Error("remove: 'callback' must be a Function or undefined");
     }
     if (!paramd.id) {
@@ -493,7 +493,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
             paramd[key] = paramd.bands;
         } else if (value === false) {
             paramd[key] = [];
-        } else if (!_.isArray(value)) {
+        } else if (!_.is.Array(value)) {
             throw new Error("bad value - expected Array or Boolean: key=" + key + " value=" + value);
         }
     };
@@ -602,10 +602,10 @@ var channel = function (paramd, id, band) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("channel: 'paramd' must be a Dictionary");
     }
-    if ((id !== undefined) && !_.isString(id)) {
+    if ((id !== undefined) && !_.is.String(id)) {
         throw new Error("channel: 'id' must be a String or undefined");
     }
-    if ((band !== undefined) && !_.isString(band)) {
+    if ((band !== undefined) && !_.is.String(band)) {
         throw new Error("channel: 'band' must be a String or undefined");
     }
 
@@ -634,7 +634,7 @@ var unchannel = function (paramd, path) {
     if (!_.is.Dictionary(paramd)) {
         throw new Error("unchannel: 'paramd' must be a Dictionary");
     }
-    if (!_.isString(path)) {
+    if (!_.is.String(path)) {
         throw new Error("unchannel: 'path' must be a String");
     }
 

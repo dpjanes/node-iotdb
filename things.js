@@ -105,12 +105,12 @@ Things.prototype.discover = function (modeld, initd) {
     // validate arguments
     if (!modeld) {
         modeld = {};
-    } else if (_.isString(modeld)) {
+    } else if (_.is.String(modeld)) {
         modeld = {
             model_code: _.identifier_to_dash_case(modeld)
         };
-    } else if (_.isObject(modeld)) {
-        if (!_.isString(modeld.model_code)) {
+    } else if (_.is.Object(modeld)) {
+        if (!_.is.String(modeld.model_code)) {
             throw new Error("expected *.model_code to be a string");
         }
 
@@ -122,7 +122,7 @@ Things.prototype.discover = function (modeld, initd) {
 
     // optional second dictionary
     if (initd !== undefined) {
-        if (!_.isObject(initd)) {
+        if (!_.is.Object(initd)) {
             throw new Error("expected initd to be a dictionary");
         }
 
@@ -294,7 +294,7 @@ Things.prototype.disconnect = function () {
         }
 
         var wait = bridge_exemplar.disconnect();
-        if (_.isNumber(wait)) {
+        if (_.is.Number(wait)) {
             max_wait = Math.max(wait, max_wait);
         }
     }
@@ -307,7 +307,7 @@ Things.prototype.disconnect = function () {
         }
 
         var wait = thing.disconnect();
-        if (_.isNumber(wait)) {
+        if (_.is.Number(wait)) {
             max_wait = Math.max(wait, max_wait);
         }
     }
