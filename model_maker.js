@@ -87,7 +87,6 @@ var HueLight = model.make_model('HueLight')
  *  @constructor
  */
 var ModelMaker = function (_code) {
-    this.__validator = null;
     this.attributed = {};
     this.__attributes = [];
     this.__code = (_code !== undefined) ? _.identifier_to_dash_case(_code) : null;
@@ -210,8 +209,6 @@ ModelMaker.prototype.inherit = function (inherit_class) {
     inherit.__attributes.map(function (attribute) {
         self.attribute(attribute);
     });
-
-    this.__validator = inherit.__validator;
 
     return self;
 };
@@ -393,30 +390,6 @@ ModelMaker.prototype.vector = function (attribute_codes) {
 };
 
 /**
- *  Define a function that will validate the entire
- *  model after modifications have been made.
- *
- *  @param {function} validator
- *  A function that takes the following parameters:
- *  <ul>
- *  <li>paramd.attributed - a dictionary of the attributes
- *     that werechanged</li>
- *  <li>thingd - the current values of the model</li>
- *  <li>thingd - an empty dictionary that can be used
- *      to return new values</li>
- *  </ul>
- *
- *  @return {this}
- */
-ModelMaker.prototype.validator = function (validator) {
-    var self = this;
-
-    self.__validator = validator;
-
-    return self;
-};
-
-/**
  *  The last function you MUST to call when creating
  *  a new model. It will actually create the new class
  *  for you and set up all the required variables.
@@ -460,7 +433,6 @@ ModelMaker.prototype.make = function () {
         this.__push_keys = [];
         this.__parent_thing = null;
         this.__is_thing = true;
-        this.__validator = self.__validator;
         this.__facets = self.__facets;
 
         this.__attributes = [];
@@ -469,7 +441,6 @@ ModelMaker.prototype.make = function () {
             var in_attribute = self.__attributes[ai];
 
             var out_attribute = _.deepCopy(in_attribute);
-            out_attribute.__validator = in_attribute.__validator;
             var out_key = out_attribute.get_code();
 
             this.__attributes.push(out_attribute);
