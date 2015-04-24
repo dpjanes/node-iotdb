@@ -14,6 +14,7 @@ var assert = require("assert")
 var _ = require("../helpers")
 
 /* --- tests --- */
+/*
 describe('test_helpers_identity:', function(){
   describe('identity', function(){
     it('overlap simple', function(){
@@ -178,3 +179,4 @@ describe('test_helpers_identity:', function(){
     });
   });
 })
+ */

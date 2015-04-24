@@ -423,6 +423,7 @@ exports.choose = function (vs) {
 /**
  *  Copy all keys that start with "api_"
  */
+/*
 exports.copy_api = function (fromd, tod) {
     var keys = exports.keys(fromd);
     for (var ki in keys) {
@@ -432,10 +433,12 @@ exports.copy_api = function (fromd, tod) {
         }
     }
 };
+ */
 
 /**
  *  This reliably returns an MD5 hex hash of a _simple_ dictionary
  */
+/*
 exports.hash_dictionary = function (d, ignores) {
     ignores = ignores ? ignores : [];
 
@@ -459,10 +462,12 @@ exports.hash_dictionary = function (d, ignores) {
 
     return hasher.digest("hex")
 };
+*/
 
 /**
  *  PERFER hash.md5
  */
+/*
 exports.md5_hash = function () {
     var hasher = crypto.createHash('md5');
     for (var ai in arguments) {
@@ -472,6 +477,7 @@ exports.md5_hash = function () {
 
     return hasher.digest("hex")
 };
+*/
 
 /**
  *  Adds the "thing_id" key to the dictionary, which
@@ -482,10 +488,12 @@ exports.md5_hash = function () {
  *  @param {dictionary} identityd
  *  A simple dictionary of values the comprise the identity
  */
+/*
 exports.thing_id = function (identityd) {
     var hash = exports.hash_dictionary(identityd, ["thing_id", ]);
     identityd["thing_id"] = "urn:iotdb:device:" + hash;
 };
+*/
 
 /**
  *  Test if the identities "overlap". This is determined by:
@@ -498,6 +506,7 @@ exports.thing_id = function (identityd) {
  *  <li>!isArray(supervalue) && !isArray(subvalue) : subvalue must === supervalue
  *  </ul>
  */
+/*
 exports.identity_overlap = function (superd, subd) {
     var subkeys = exports.keys(subd);
     for (var skx in subkeys) {
@@ -536,6 +545,7 @@ exports.identity_overlap = function (superd, subd) {
 
     return true;
 };
+*/
 
 var _identifier_to_parts = function (identifier) {
     if (!exports.isString(identifier)) {
@@ -679,6 +689,7 @@ exports.smart_extend = function (od) {
  *  Remove any loops in the hierarchy
  *  This isn't really working yet - something wrong in the array part
  */
+/*
 exports.scrub_circular = function (value, parents) {
     if (parents === undefined) {
         parents = [];
@@ -740,6 +751,7 @@ exports.scrub_circular = function (value, parents) {
         return undefined;
     }
 };
+*/
 
 /**
  *  Get a 'code' (like a model_code) from a URL. Basically
