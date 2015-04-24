@@ -129,10 +129,15 @@ var Attribute = function () {
 Attribute.prototype.code = function (code) {
     var self = this;
 
+    self._validate_code(code);
+
     code = code.replace(/^:/, '');
 
     self['@id'] = '#' + code;
     return self;
+};
+
+Attribute.prototype._validate_code = function (code) {
 };
 
 /**
@@ -172,9 +177,18 @@ Attribute.prototype.get_code = function () {
  *  this
  */
 Attribute.prototype.purpose = function (purpose_iri) {
-    return this.property('iot:purpose', _.ld.expand(purpose_iri, 'iot-attribute:'), {
-        array: false
-    });
+    var self = this;
+    
+    purpose_iri = _.ld.expand(purpose_iri, 'iot-attribute:');
+    self._validate_purpose(purpose_iri);
+
+    return self.property('iot:purpose', purpose_iri, { array: false });
+};
+
+Attribute.prototype._validate_purpose = function (purpose_iri) {
+    if (!_.is.AbsoluteURL(purpose_iri)) {
+        throw new Error("Attribute.purpose: purpose_iri must expand to a IRI, not: " + purpose_iri);
+    }
 };
 
 /**
@@ -203,9 +217,18 @@ Attribute.prototype.control = function () {
  *  this
  */
 Attribute.prototype.name = function (_value) {
+    var self = this;
+    self._validate_name(_value);
+
     return this.property_value(_.ld.expand('schema:name'), _value, {
         array: false
     });
+};
+
+Attribute.prototype._validate_name = function (_value) {
+    if (!_.is.String(_value)) {
+        throw new Error("Attribute.name: must be a String");
+    }
 };
 
 /**
@@ -219,7 +242,17 @@ Attribute.prototype.name = function (_value) {
  *  this
  */
 Attribute.prototype.description = function (_value) {
-    return this.property_value(_.ld.expand('schema:description'), _value);
+    var self = this;
+
+    self._validate_description(_value);
+
+    return self.property_value(_.ld.expand('schema:description'), _value);
+};
+
+Attribute.prototype._validate_description = function (_value) {
+    if (!_.is.String(_value)) {
+        throw new Error("Attribute.description: must be a String");
+    }
 };
 
 /**
@@ -233,7 +266,17 @@ Attribute.prototype.description = function (_value) {
  *  this
  */
 Attribute.prototype.help = function (_value) {
-    return this.property_value(_.ld.expand('iot:help'), _value);
+    var self = this;
+    
+    self._validate_help(_value);
+
+    return self.property_value(_.ld.expand('iot:help'), _value);
+};
+
+Attribute.prototype._validate_help = function (_value) {
+    if (!_.is.String(_value)) {
+        throw new Error("Attribute.help: must be a String");
+    }
 };
 
 /**
@@ -252,7 +295,20 @@ Attribute.prototype.help = function (_value) {
  *  this
  */
 Attribute.prototype.property = function (key_iri, value_iri, paramd) {
-    return this.property_value(_.ld.expand(key_iri), _.ld.expand(value_iri), paramd);
+    var self = this;
+
+    key_iri = _.ld.expand(key_iri);
+    value_iri = _.ld.expand(value_iri);
+
+    self._validate_property(key_iri, value_iri, paramd);
+
+    return self.property_value(key_iri, value_iri, paramd);
+};
+
+Attribute.prototype._validate_property = function (key_iri, value_iri, paramd) {
+    if (!_.is.AbsoluteURL(key_iri)) {
+        throw new Error("Attribute.property: key_iri must expand to a IRI, not: " + key_iri);
+    }
 };
 
 /**
@@ -276,6 +332,7 @@ Attribute.prototype.property_value = function (key_iri, value, paramd) {
     });
 
     key_iri = _.ld.expand(key_iri);
+    self._validate_property_value(key_iri, value, paramd);
 
     var existing = self[key_iri];
     if ((existing === undefined) || !paramd.array) {
@@ -293,6 +350,12 @@ Attribute.prototype.property_value = function (key_iri, value, paramd) {
     return self;
 };
 
+Attribute.prototype._validate_property_value = function (key_iri, value, paramd) {
+    if (!_.is.AbsoluteURL(key_iri)) {
+        throw new Error("Attribute.property_value: key_iri must expand to a IRI, not: " + key_iri);
+    }
+};
+
 /**
  *  Specify the "iot:unit" of this attribute. For example,
  *  <code>iot-unit:temperature.imperial.fahrenheit</code>
@@ -308,7 +371,18 @@ Attribute.prototype.property_value = function (key_iri, value, paramd) {
  *  @return {this}
  */
 Attribute.prototype.unit = function (unit_iri) {
-    return this.property_value(_.ld.expand("iot:unit"), _.ld.expand(unit_iri, "iot-unit:"));
+    var self = this;
+
+    unit_iri = _.ld.expand(unit_iri, "iot-unit:");
+    self._validate_unit(unit_iri);
+
+    return self.property_value(_.ld.expand("iot:unit"), unit_iri);
+};
+
+Attribute.prototype._validate_unit = function (unit_iri) {
+    if (!_.is.AbsoluteURL(unit_iri)) {
+        throw new Error("Attribute.unit: key_iri must expand to a IRI, not: " + unit_iri);
+    }
 };
 
 /**
@@ -320,7 +394,18 @@ Attribute.prototype.unit = function (unit_iri) {
  *  @return {this}
  */
 Attribute.prototype.measuring = function (iri) {
-    return this.property_value(_.ld.expand("iot:measuring"), _.ld.expand(iri));
+    var self = this;
+
+    iri = _.ld.expand(iri);
+    self._validate_measuring(iri);
+
+    return self.property_value(_.ld.expand("iot:measuring"), iri);
+};
+
+Attribute.prototype._validate_measuring = function (iri) {
+    if (!_.is.AbsoluteURL(iri)) {
+        throw new Error("Attribute.measuring: key_iri must expand to a IRI, not: " + iri);
+    }
 };
 
 /**
@@ -328,8 +413,19 @@ Attribute.prototype.measuring = function (iri) {
  *  of places past the decimal point that count
  */
 Attribute.prototype.arithmetic_precision = function (places) {
-    return this
-        .property_value(_.ld.expand("iot:arithmetic-precision"), places);
+    var self = this;
+
+    self._validate_arithmetic_precision(places);
+
+    return self.property_value(_.ld.expand("iot:arithmetic-precision"), places);
+};
+
+Attribute.prototype._validate_arithmetic_precision = function (places) {
+    if (!_.is.Integer(places)) {
+        throw new Error("Attribute.arithmetic_precision: places must be an integer, not: " + places);
+    } else if (places < 0) {
+        throw new Error("Attribute.arithmetic_precision: places must be 0 or greater, not: " + places);
+    }
 };
 
 /**
@@ -342,8 +438,17 @@ Attribute.prototype.arithmetic_precision = function (places) {
  *
  */
 Attribute.prototype.vector = function (name) {
-    return this
-        .property_value(_.ld.expand("iot:vector"), name);
+    var self = this;
+
+    self._validate_vector(name);
+
+    return self.property_value(_.ld.expand("iot:vector"), name);
+};
+
+Attribute.prototype._validate_vector = function (name) {
+    if (!_.is.String(name)) {
+        throw new Error("Attribute.vector: name must be a String, not: " + name);
+    }
 };
 
 /**
@@ -370,38 +475,21 @@ Attribute.prototype.unit_multiplier = function (multiplier) {
  *  this
  */
 Attribute.prototype.enumeration = function (values) {
+    var self = this;
+
+    self._validate_enumeration(names);
+
     var key_iri = _.ld.expand("iot:enumeration");
 
-    _.ld.extend(this, key_iri, values);
+    _.ld.extend(self, key_iri, values);
 
-    return this;
+    return self;
 };
 
-/**
- *  For future use
- *
- *  @param {string} iri
- *
- *  @return {this}
- *  this
- */
-Attribute.prototype.monitoring = function (iri) {
-    return this;
-};
-
-/**
- *  A function that determines whether, given the current
- *  state of the Model it is in, it is in-use. These lets us,
- *  e.g. switch between different value ranges when changing
- *  the band of a Radio from AM to FM
- *
- *  @param {function} f
- *
- *  @return {this}
- */
-Attribute.prototype.active = function (f) {
-    this.__active = f;
-    return this;
+Attribute.prototype._validate_enumeration = function (values) {
+    if (!_.is.Array(values)) {
+        throw new Error("Attribute.enumeration: values must be an Array, not: " + values);
+    }
 };
 
 /**
@@ -415,8 +503,19 @@ Attribute.prototype.active = function (f) {
  *
  *  @return {this}
  */
-Attribute.prototype.type = function (format_iri) {
-    return this.property_value(_.ld.expand("iot:type"), _.ld.expand(format_iri, "iot:"));
+Attribute.prototype.type = function (type_iri) {
+    var self = this;
+
+    type_iri = _.ld.expand(type_iri, "iot:");
+    self._validate_type(type_iri);
+
+    return self.property_value(_.ld.expand("iot:type"), type_iri);
+};
+
+Attribute.prototype._validate_type = function (type_iri) {
+    if (!_.is.AbsoluteURL(type_iri)) {
+        throw new Error("Attribute.type: type_iri must expand to a IRI, not: " + type_iri);
+    }
 };
 
 /**
@@ -431,7 +530,18 @@ Attribute.prototype.type = function (format_iri) {
  *  @return {this}
  */
 Attribute.prototype.format = function (format_iri) {
-    return this.property_value(_.ld.expand("iot:format"), _.ld.expand(format_iri, "iot:"));
+    var self = this;
+
+    format_iri = _.ld.expand(format_iri, "iot:");
+    self._validate_format(format_iri);
+
+    return self.property_value(_.ld.expand("iot:format"), format_iri);
+};
+
+Attribute.prototype._validate_format = function (format_iri) {
+    if (!_.is.AbsoluteURL(format_iri)) {
+        throw new Error("Attribute.type: format_iri must expand to a IRI, not: " + format_iri);
+    }
 };
 
 /**
@@ -443,7 +553,17 @@ Attribute.prototype.format = function (format_iri) {
  *  @return {this}
  */
 Attribute.prototype.minimum = function (value) {
-    return this.property_value(iot_js_minimum, value);
+    var self = this;
+
+    self._validate_minimum(value);
+
+    return self.property_value(iot_js_minimum, value);
+};
+
+Attribute.prototype._validate_minimum = function (value) {
+    if (!_.is.Integer(value)) {
+        throw new Error("Attribute.minimum: minimum must be an integer, not: " + value);
+    }
 };
 
 /**
@@ -455,7 +575,17 @@ Attribute.prototype.minimum = function (value) {
  *  @return {this}
  */
 Attribute.prototype.maximum = function (value) {
-    return this.property_value(iot_js_maximum, value);
+    var self = this;
+
+    self._validate_maximum(value);
+
+    return self.property_value(iot_js_maximum, value);
+};
+
+Attribute.prototype._validate_maximum = function (value) {
+    if (!_.is.Integer(value)) {
+        throw new Error("Attribute.maximum: maximum must be an integer, not: " + value);
+    }
 };
 
 /**
@@ -475,27 +605,6 @@ Attribute.prototype.read_only = function () {
  */
 Attribute.prototype.make = function () {
     return this;
-};
-
-/**
- *  Set a validation function, for use
- *  in {@link Attribute#validate Attribute.validate}.
- *  After this attribute does all it's validation,
- *  this function will be called and you can do your
- *  own thing. Note that the return value is used
- *  "as-is" (as a long as it's not undefined).
- *
- *  @param {function} f
- *  A function that takes the same <code>paramd</code>
- *  as {@link Attribute#validate Attribute.validate}.
- *
- *  @return {this}
- */
-Attribute.prototype.validator = function (f) {
-    var self = this;
-
-    self.__validator = f;
-    return self;
 };
 
 /* --- use interface --- */
@@ -565,10 +674,6 @@ Attribute.prototype.validate = function (paramd) {
                 paramd.value = formatted_value;
             }
         }
-    }
-
-    if (self.__validator) {
-        self.__validator(paramd);
     }
 };
 

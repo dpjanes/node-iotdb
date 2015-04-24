@@ -136,8 +136,6 @@ describe('test_attribute_setup', function(){
           'http://schema.org/name': 'value',
           'https://iotdb.org/pub/iot#11': 'https://iotdb.org/pub/iot#a',
           'https://iotdb.org/pub/iot#12': 'iot_b',
-          iot_13: 'https://iotdb.org/pub/iot#c',
-          iot_14: 'iot_d',
           'https://iotdb.org/pub/iot#20': 'https://iotdb.org/pub/iot#a',
           'https://iotdb.org/pub/iot#21': 'a',
           'https://iotdb.org/pub/iot#22': 2,
@@ -152,8 +150,6 @@ describe('test_attribute_setup', function(){
         var a = attribute.make("value")
             .property("iot:11", "iot:a")
             .property("iot:12", "iot_b")
-            .property("iot_13", "iot:c")
-            .property("iot_14", "iot_d")
 
             .property("iot:20", "iot:a")
             .property("iot:21", "a")
