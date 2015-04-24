@@ -1,8 +1,0 @@
-{
-    "load_drivers": true,
-    "load_models": true,
-    "load_things": true,
-    "iotdb_device_get": true,
-    "iotdb_device_create": true,
-    "discover": true
-}
