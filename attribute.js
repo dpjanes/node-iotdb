@@ -785,7 +785,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
 Attribute.prototype._format_rgb = function (value, otherwise) {
     value = value.toUpperCase();
     if (!value.match(/^#[0-9A-F]{6}/)) {
-        return _.color_to_hex(value, otherwise);
+        return _.color.color_to_hex(value, otherwise);
     }
 
     return value;
