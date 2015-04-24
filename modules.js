@@ -85,6 +85,7 @@ Modules.prototype._load_master = function () {
                 module_name: module_name,
                 module_folder: module_folder,
                 cause: "likely the module being imported is not set up correctly",
+                exception: x,
             }, "unexpected exception loading module");
             continue
         }

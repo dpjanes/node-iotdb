@@ -319,6 +319,8 @@ Model.prototype.jsonld = function (paramd) {
 Model.prototype.get = function (find_key) {
     var self = this;
 
+    self._validate_get(find_key);
+
     var rd = self._find(find_key, {
         get: true
     });
@@ -350,6 +352,12 @@ Model.prototype.get = function (find_key) {
     }
 };
 
+Model.prototype._validate_get = function (find_key) {
+    if (!_.is.FindKey(find_key)) {
+        throw new Error("Model.get: 'find_key' must be a String or a Dictionary");
+    }
+};
+
 /**
  *  Set a value.
  *
@@ -371,6 +379,8 @@ Model.prototype.get = function (find_key) {
  */
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
+
+    self._validate_set(find_key, new_value);
 
     var transaction = _.defaults(self._transaction, {
         force: false,
@@ -429,6 +439,15 @@ Model.prototype.set = function (find_key, new_value) {
     return self;
 };
 
+Model.prototype._validate_set = function (find_key, new_value) {
+    if (!_.is.FindKey(find_key)) {
+        throw new Error("Model.set: 'find_key' must be a String or a Dictionary");
+    }
+    if (new_value === undefined) {
+        throw new Error("Model.set: 'new_value' must not be undefined");
+    }
+};
+
 /**
  *  Set many values at once, using a dictionary
  */
@@ -439,16 +458,25 @@ Model.prototype.update = function (updated, paramd) {
         notify: true
     });
 
+    self._validate_update(updated, paramd);
+
     self.start(paramd);
     for (var key in updated) {
         self.set(key, updated[key]);
     }
     self.end();
 
-
     return self;
 };
 
+Model.prototype._validate_update = function (updated, paramd) {
+    if (!_.is.Dictionary(updated)) {
+        throw new Error("Model.update: 'find_key' must be a Dictionary");
+    }
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("Model.update: 'paramd' must be a Dictionary");
+    }
+};
 
 /**
  *  Start a transaction. No validation, notification
@@ -478,13 +506,6 @@ Model.prototype.update = function (updated, paramd) {
  */
 Model.prototype.start = function (paramd) {
     var self = this;
-
-    /*
-    if (self._transaction) {
-        throw new Error("Model.start: cannot nest start/end transactions");
-    }
-    */
-
 
     self._transaction = _.defaults(paramd, {
         notify: false,
@@ -574,6 +595,8 @@ Model.prototype.on = function (find_key, callback) {
     var attribute_key = null;
     var callbacks = null;
 
+    self._validate_on(find_key, callback);
+
     /* HORRIBLE. */
     if ((find_key === "state") || (find_key === "meta") || (find_key === "istate") || (find_key === "ostate")) {
         self.__emitter.on(find_key, function (a, b, c) {
@@ -628,6 +651,15 @@ Model.prototype.on = function (find_key, callback) {
     }
 };
 
+Model.prototype._validate_on = function (find_key, callback) {
+    if (!_.is.FindKey(find_key)) {
+        throw new Error("Model.on: 'find_key' must be a String or a Dictionary");
+    }
+    if (!_.is.Function(callback)) {
+        throw new Error("Model.on: 'callback' must be a function");
+    }
+};
+
 /**
  *  Register for changes to this Thing. The change callback
  *  is triggered at the of a update transaction.
@@ -640,7 +672,7 @@ Model.prototype.on = function (find_key, callback) {
 Model.prototype.on_change = function (callback) {
     var self = this;
 
-    assert.ok(_.is.Function(callback));
+    self._validate_on_change(callback);
 
     self.__emitter.on(EVENT_THING_CHANGED, function (thing) {
         callback(self, []);
@@ -649,13 +681,19 @@ Model.prototype.on_change = function (callback) {
     return self;
 };
 
+Model.prototype._validate_on_change = function (callback) {
+    if (!_.is.Function(callback)) {
+        throw new Error("Model.on_change: 'callback' must be a function");
+    }
+};
+
 /**
  *  On metadata change (including reachablity)
  */
 Model.prototype.on_meta = function (callback) {
     var self = this;
 
-    assert.ok(_.is.Function(callback));
+    self._validate_on_meta(callback);
 
     self.__emitter.on(EVENT_META_CHANGED, function (thing) {
         if (iotdb.shutting_down()) {
@@ -666,6 +704,12 @@ Model.prototype.on_meta = function (callback) {
     });
 
     return self;
+};
+
+Model.prototype._validate_on_meta = function (callback) {
+    if (!_.is.Function(callback)) {
+        throw new Error("Model.on_meta: 'callback' must be a function");
+    }
 };
 
 /*
@@ -1245,7 +1289,6 @@ var make_model_from_jsonld = function (d) {
 
     return mmaker.make();
 };
-
 
 /*
  *  API

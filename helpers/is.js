@@ -53,11 +53,17 @@ var isThing = function (o) {
 };
 
 /**
- *  XXX - not finished! Need to start making
- *  Bridges subclass
+ *  XXX - not finished! Need to start making Bridges subclass
  */
 var isBridgeInstance = function (o) {
     return _.isObject(o);
+};
+
+/**
+ *  Used in set/get/on
+ */
+var isFindKey = function (o) {
+    return _.is.String(o) || _.is.Dictionary(o);
 };
 
 /**
@@ -146,6 +152,9 @@ exports.is = {
     Transport: isTransport,
     Transporter: isTransport,
     BridgeInstance: isBridgeInstance,
+
+    // IOTDB special
+    FindKey: isFindKey,
 
     // useful helpers
     Dictionary: isDictionary,
