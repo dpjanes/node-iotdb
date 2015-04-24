@@ -394,9 +394,9 @@ ModelMaker.prototype.make = function () {
 
         this.initd = (paramd.initd !== undefined) ? paramd.initd : {};
 
-        /* note how the code can be changed by setting "Model.code = <something>"!!! */
-        this.code = new_thing.code || self.__code;
         this.Model = new_thing;
+        // note how the code can be changed by setting "Model.code = <something>"!!! 
+        this.__code = new_thing.code || self.__code;
         this._isThing = true;
         this._isModel = undefined;
         this._thing_id = null;
@@ -422,7 +422,7 @@ ModelMaker.prototype.make = function () {
             this.__attributed[out_key] = out_attribute;
         }
 
-        this.callbacksd = {};
+        this.__callbacksd = {};
         this._transaction = null;
         this._transactions = [];
 

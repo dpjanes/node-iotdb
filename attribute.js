@@ -477,7 +477,7 @@ Attribute.prototype.unit_multiplier = function (multiplier) {
 Attribute.prototype.enumeration = function (values) {
     var self = this;
 
-    self._validate_enumeration(names);
+    self._validate_enumeration(values);
 
     var key_iri = _.ld.expand("iot:enumeration");
 

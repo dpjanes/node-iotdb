@@ -124,7 +124,7 @@ exports.make_wrap = function (name, bindings, initd) {
         }
 
         var model = new binding.model();
-        if (model_code !== model.code) {
+        if (model_code !== model.code()) {
             continue;
         }
 

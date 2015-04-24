@@ -55,14 +55,14 @@ describe('test_thing_model_code:', function(){
             .code('AModel')
             .make();
         var a = new AModel();
-        assert.strictEqual("a-model", a.code);
+        assert.strictEqual("a-model", a.code());
     });
     it('code-case', function(){
         var AModel = model.make_model()
             .code('aModel')
             .make();
         var a = new AModel();
-        assert.strictEqual("a-model", a.code);
+        assert.strictEqual("a-model", a.code());
     });
     it('code-case', function(){
         assert.throws(function() {

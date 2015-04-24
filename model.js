@@ -161,7 +161,13 @@ Model.prototype.isa = function (classf) {
 /**
  */
 Model.prototype.get_code = function () {
-    return this.code;
+    return this.__code;
+};
+
+/**
+ */
+Model.prototype.code = function () {
+    return this.__code;
 };
 
 /**
@@ -169,7 +175,6 @@ Model.prototype.get_code = function () {
 Model.prototype.name = function () {
     return this.__name;
 };
-
 
 /**
  */
@@ -247,7 +252,7 @@ Model.prototype.jsonld = function (paramd) {
     var cd;
 
     paramd = (paramd !== undefined) ? paramd : {};
-    paramd.base = (paramd.base !== undefined) ? paramd.base : ("file:///" + self.code + "");
+    paramd.base = (paramd.base !== undefined) ? paramd.base : ("file:///" + self.code() + "");
     paramd.context = (paramd.context !== undefined) ? paramd.context : true;
     paramd.path = (paramd.path !== undefined) ? paramd.path : "";
 
@@ -417,7 +422,7 @@ Model.prototype.set = function (find_key, new_value) {
         logger.warn({
             method: "set",
             find_key: find_key,
-            model_code: self.code,
+            model_code: self.code(),
             cause: "likely programmer error"
         }, "attribute not found");
         return self;
@@ -630,9 +635,9 @@ Model.prototype.on = function (find_key, callback) {
     if (find_key === null) {
         attribute_key = null;
 
-        callbacks = self.callbacksd[attribute_key];
+        callbacks = self.__callbacksd[attribute_key];
         if (callbacks === undefined) {
-            self.callbacksd[attribute_key] = callbacks = [];
+            self.__callbacksd[attribute_key] = callbacks = [];
         }
 
         callbacks.push(callback);
@@ -655,9 +660,9 @@ Model.prototype.on = function (find_key, callback) {
     if (rd.attribute) {
         attribute_key = rd.attribute.get_code();
 
-        callbacks = rd.thing.callbacksd[attribute_key];
+        callbacks = rd.thing.__callbacksd[attribute_key];
         if (callbacks === undefined) {
-            rd.thing.callbacksd[attribute_key] = callbacks = [];
+            rd.thing.__callbacksd[attribute_key] = callbacks = [];
         }
 
         callbacks.push(callback);
@@ -919,9 +924,9 @@ Model.prototype._do_notifies = function (attributed) {
             attribute_value = attribute._ovalue;
         }
 
-        var callbacks = self.callbacksd[attribute_key];
+        var callbacks = self.__callbacksd[attribute_key];
         if (callbacks === undefined) {
-            callbacks = self.callbacksd[null];
+            callbacks = self.__callbacksd[null];
         }
         if (callbacks) {
             callbacks.map(function (callback) {
@@ -1257,7 +1262,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
             }
         };
 
-        self._thing_id = self.bridge_instance.meta()["iot:thing"] + ":" + self.code;
+        self._thing_id = self.bridge_instance.meta()["iot:thing"] + ":" + self.code();
     }
 
     self.meta_changed();
