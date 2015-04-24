@@ -882,12 +882,6 @@ ThingArray.prototype.with_facet = function (facet) {
     });
 };
 
-ThingArray.prototype.with_driver = function (driver) {
-    return this.filter({
-        "_driver": _.ld.expand(driver, "iot-driver:")
-    });
-};
-
 ThingArray.prototype.with_model = function (model) {
     var iot = require('./iotdb').iot();
 

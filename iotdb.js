@@ -47,7 +47,7 @@ var _ = require('./helpers');
 var _shutting_down = false;
 
 /**
- *  Manage things, drivers and connections to the
+ *  Manage things, bridges and connections to the
  *  {@link https://iotdb.org/ IOTDB.org} running
  *  in a NodeJS application.
  *

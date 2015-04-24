@@ -537,26 +537,6 @@ exports.identity_overlap = function (superd, subd) {
     return true;
 };
 
-/**
- *  This provides a shorthand for when you need
- *  to create a dictionary with only "driver"
- *  as a key.
- */
-exports.identity_expand = function (d) {
-    if (!d) {
-        return d;
-    } else if (exports.isString(d)) {
-        return {
-            "driver": exports.ld.expand(d, "iot-driver:")
-        };
-    } else {
-        if (d.driver) {
-            d.driver = exports.ld.expand(d.driver, "iot-driver:")
-        }
-        return d;
-    }
-};
-
 var _identifier_to_parts = function (identifier) {
     if (!exports.isString(identifier)) {
         throw new Error("identitfier_to_*: expected a String");

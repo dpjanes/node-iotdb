@@ -23,7 +23,6 @@ module.exports = function (grunt) {
                 src: [
                     'attribute.js',
                     'cfg.js',
-                    'driver.js',
                     'iotdb.js',
                     'meta.js',
                     'model.js',
@@ -55,8 +54,6 @@ module.exports = function (grunt) {
         jsbeautifier: {
             files: [
                 '*.js',
-                'drivers/*.js',
-                'drivers/libs/*.js',
                 'libs/*.js',
                 'stores/*.js',
                 'transmogrifiers/*.js',

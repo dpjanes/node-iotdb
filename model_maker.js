@@ -62,7 +62,6 @@ var VERBOSE = true;
  *
  *  <pre>
 var HueLight = model.make_model('HueLight')
-    .driver_identity("iot-driver:hue")
     .attribute(attribute.make_boolean("on"))
     .attribute(
         attribute.make_string("color")
@@ -73,7 +72,6 @@ var HueLight = model.make_model('HueLight')
  *  <p>
  *  This definition says:
  *  <ul>
- *  <li>The driver is called <code>iot-driver:hue</code>
  *  <li>It can be turned on and off (using <code>on</code>)
  *  <li>The color can be changed (using <code>color</code>)
  *  </ul>
@@ -90,10 +88,6 @@ var HueLight = model.make_model('HueLight')
  */
 var ModelMaker = function (_code) {
     this.__validator = null;
-    this.__driver_setup = null;
-    this.__driver_in = null;
-    this.__driver_out = null;
-    this.driver_identityd = null;
     this.attributed = {};
     this.__attributes = [];
     this.__code = (_code !== undefined) ? _.identifier_to_dash_case(_code) : null;
@@ -194,32 +188,6 @@ ModelMaker.prototype.facet = function (_value) {
     }
 
     return this;
-};
-
-
-/**
- *  Define the {@link Driver#identity Driver.identity}
- *  for this Model. When a Driver finds an actual devices
- *  and need a Thing to describe it, it basically goes out
- *  and looks at all the Things and sees if it has a
- *  driver_identity to match.
- *
- *  @param {string|dictionary} d
- *  If a string, we make a dictionary
- *  <code>{ "driver" : @{link expand}(d) }</code>
- *  <p>
- *  If a dictionary, all the things in the dictionary must match.
- *  Normally all the values must be strings. However, if the value
- *  is an Array, any one of the values matching is sufficient.
- *
- *  @return {this}
- */
-ModelMaker.prototype.driver_identity = function (identity) {
-    var self = this;
-
-    self.driver_identityd = _.identity_expand(identity);
-
-    return self;
 };
 
 
@@ -449,112 +417,6 @@ ModelMaker.prototype.validator = function (validator) {
 };
 
 /**
- *  Return an object that is passed to the {@link Driver}
- *  in the function {@link Driver#setup setup} as
- *  <code>param.initd</code>.
- *
- *  <p>
- *  XXX documentation fix needed!
- *  </p>
- *
- *  <p>
- *  The meaning the return value is entirely
- *  defined by the {@link Driver}.
- *
- *  @return {dictionary}
- *  A dictionary that makes sense to the Driver
- */
-ModelMaker.prototype.driver_setup = function (driver_setup) {
-    var self = this;
-
-    self.__driver_setup = driver_setup;
-
-    return self;
-};
-
-/**
- *  Define a function that translates between the
- *  Driver's state and what the Thing's.
- *
- *  @param {ModelMaker~driver_in_function} driver_in
- *  The function that does this.
- *
- *  @return {this}
- */
-ModelMaker.prototype.driver_in = function (driver_in) {
-    var self = this;
-
-    self.__driver_in = driver_in;
-
-    return self;
-};
-
-/**
- *  This function translates from the Driver's state to the Thing's.
- *  See {@link ModelMaker#driver_in ModelMaker.driver_in} and
- *  {@link Thing#driver_in Model.driver_in}
- *
- *  @param {dictionary} paramd
- *  @param {dictionary} paramd.initd
- *  An invariant dictionary, passed in when
- *  the Thing is created.
- *
- *  @param {dictionary} paramd.attributed
- *  Attributes that have been changed
- *
- *  @param {dictionary} paramd.driverd
- *  This is the native state of the driver
- *
- *  @param {dictionary} paramd.thingd
- *  This is the state we want to get to, in this
- *  {@link Thing}'s terminology. I.e. all the keys
- *  in this should be the keys of the {@link Thing}.
- *  This is passed as an empty dictionary which
- *  the callback should modify
- *
- *  @param {dictionary} paramd.lib
- *  Our standard library of helper functions
- *
- *  @callback ModelMaker~driver_in_function
- **/
-
-/**
- *  Define a function that translates between the
- *  Thing's state and what the Driver's
- *
- *  @param {ModelMaker~driver_out_function} driver_out
- *
- *  @return {this}
- */
-ModelMaker.prototype.driver_out = function (driver_out) {
-    var self = this;
-
-    self.__driver_out = driver_out;
-
-    return self;
-};
-
-/**
- *  This function translates from the Thing's state to the Driver's.
- *  See {@link ModelMaker#driver_out ModelMaker.driver_out} and
- *  {@link Thing#driver_out Model.driver_out}
- *
- *  @callback ModelMaker~driver_out_function
- *  @param paramd {object}
- *  @param paramd.driverd {object}
- *  This is the state we want to get to, in this
- *  {@link Driver}'s terminology.
- *
- *  @param paramd.thingd {object}
- *  Typically the complete state of this Model.
- *
- *  @param paramd.attributed
- *  These are the attributes that were modified.
- *  Implementers of this function may want to pay
- *  attention to this so they do not push too much data.
- **/
-
-/**
  *  The last function you MUST to call when creating
  *  a new model. It will actually create the new class
  *  for you and set up all the required variables.
@@ -566,7 +428,7 @@ ModelMaker.prototype.driver_out = function (driver_out) {
  *  The initial value for the state of this object is null,
  *  meaning it hasn't been set. Originally we gave these
  *  reasonable default values but this stops requests from
- *  being propagated to the drivers
+ *  being propagated to the Bridge
  *
  *  @return {function}
  *  the class function for the Thing
@@ -581,7 +443,6 @@ ModelMaker.prototype.make = function () {
     var new_thing = function (paramd) {
         paramd = paramd !== undefined ? paramd : {};
 
-        this.driver_instance = (paramd.driver_instance !== undefined) ? paramd.driver_instance : undefined;
         this.initd = (paramd.initd !== undefined) ? paramd.initd : {};
 
         /* note how the code can be changed by setting "Model.code = <something>"!!! */
@@ -600,17 +461,7 @@ ModelMaker.prototype.make = function () {
         this.__parent_thing = null;
         this.__is_thing = true;
         this.__validator = self.__validator;
-        this.__driver_setup = self.__driver_setup;
-        this.__driver_in = self.__driver_in;
-        this.__driver_out = self.__driver_out;
         this.__facets = self.__facets;
-        if (paramd.driver_identity !== undefined) {
-            this.driver_identityd = _.identity_expand(paramd.driver_identity);
-        } else if (paramd.driver !== undefined) {
-            this.driver_identityd = _.identity_expand(paramd.driver);
-        } else {
-            this.driver_identityd = _.deepCopy(self.driver_identityd);
-        }
 
         this.__attributes = [];
         this.attributed = {};

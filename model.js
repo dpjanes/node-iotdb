@@ -128,7 +128,6 @@ var Model = function () {};
  *  options are optional.
  *
  *  @param {dictionary} paramd
- *  The driver for this thing.
  *
  *  @param {*} paramd.api_*
  *  All keys that start with api_* have their
@@ -467,12 +466,11 @@ Model.prototype.update = function (updated, paramd) {
  *  Default false
  *
  *  @param {boolean} paramd.validate
- *  If true, validate changes. This may be false when
- *  the driver is setting values.
+ *  If true, validate changes. 
  *  Default false
  *
  *  @param {boolean} paramd.push
- *  If true, push changes to the driver.
+ *  If true, push changes to the Bridge.
  *  Default true
  *
  *  @return
@@ -523,7 +521,7 @@ Model.prototype.start = function (paramd) {
  *  <ol>
  *  <li>{@link Thing#end Model.end} is called on all submodels
  *  <li>{@link Thing#_do_notifies notification} (if paramd.notify is true)
- *  <li>{@link Thing#_do_pushes driver} push (if paramd.push is true)
+ *  <li>{@link Thing#_do_pushes} push (if paramd.push is true)
  *  </ol>
  *
  *  @return
@@ -723,7 +721,7 @@ Model.prototype.pull = function () {
 /* --- internals --- */
 /**
  *  Push this updated attribute's value
- *  across the driver to make the change
+ *  across the Bridge to make the change
  *  actually happen.
  *
  *  If there is a no stack or immediate is
