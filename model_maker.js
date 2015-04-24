@@ -89,7 +89,7 @@ var HueLight = model.make_model('HueLight')
 var ModelMaker = function (_code) {
     this.__attributed = {};
     this.__attributes = [];
-    this.__code = (_code !== undefined) ? _.identifier_to_dash_case(_code) : null;
+    this.__code = (_code !== undefined) ? _.id.to_dash_case(_code) : null;
 
     this.__name = null;
     this.__description = null;
@@ -103,7 +103,7 @@ var ModelMaker = function (_code) {
  *  {@link IOTDB object})
  *
  *  @param {string} _code
- *  The code. The function {@link helpers#identifier_to_dash_case} is
+ *  The code. The function {@link helpers#id.to_dash_case} is
  *  <b>always</b> called on the code
  *
  *  @return {this}
@@ -111,7 +111,7 @@ var ModelMaker = function (_code) {
 ModelMaker.prototype.code = function (_code) {
     var self = this;
 
-    self.__code = _.identifier_to_dash_case(_code);
+    self.__code = _.id.to_dash_case(_code);
 
     return self;
 };

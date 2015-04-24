@@ -107,7 +107,7 @@ Things.prototype.discover = function (modeld, initd) {
         modeld = {};
     } else if (_.is.String(modeld)) {
         modeld = {
-            model_code: _.identifier_to_dash_case(modeld)
+            model_code: _.id.to_dash_case(modeld)
         };
     } else if (_.is.Object(modeld)) {
         if (!_.is.String(modeld.model_code)) {
@@ -115,7 +115,7 @@ Things.prototype.discover = function (modeld, initd) {
         }
 
         modeld = _.deepCopy(modeld);
-        modeld.model_code = _.identifier_to_dash_case(modeld.model_code);
+        modeld.model_code = _.id.to_dash_case(modeld.model_code);
     } else {
         throw new Error("expected undefined|null|string|dictionary");
     }

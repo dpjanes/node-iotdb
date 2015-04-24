@@ -151,7 +151,7 @@ Modules.prototype.bindings = function () {
                 binding.model_code = (new binding.model()).code();
             } else {
                 /* morph the model's code -- see model_maker */
-                binding.model_code = _.identifier_to_dash_case(binding.model_code);
+                binding.model_code = _.id.to_dash_case(binding.model_code);
                 var old_model = binding.model;
                 var new_model = function () {
                     old_model.call(this);

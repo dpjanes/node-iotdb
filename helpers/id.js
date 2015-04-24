@@ -141,6 +141,84 @@ var user_urn = function(user_url) {
     return "urn:iotdb:user:" + _.hash.md5(user_url);
 };
 
+var _identifier_to_parts = function (identifier) {
+    if (!_.is.String(identifier)) {
+        throw new Error("identitfier_to_*: expected a String");
+    } else if (!identifier.match(/^[A-Za-z]/)) {
+        throw new Error("identitfier_to_*: must start with a letter");
+    } else if (identifier.match(/[^-_A-Za-z0-9]/)) {
+        throw new Error("identitfier_to_*: must contain only letters, numbers, underscores and dashes")
+    }
+
+    var splits = identifier;
+    var splits = splits.replace(/([-_])/g, ' ')
+    var splits = splits.replace(/([A-Z]+)([A-Z][^A-Z0-9]|$)/g, ' $1 $2')
+    var splits = splits.replace(/([A-Z]+)([^A-Z])/g, ' $1$2')
+    var splits = splits.toLowerCase()
+
+    var parts = []
+    splits.split(" ").map(function (part) {
+        if (part) parts.push(part);
+    })
+
+    return parts;
+};
+
+/**
+ *  Convert any string identifier to 'CamelCase'
+ *
+ *  @param {string} identifier
+ *  Any identifier (in CamelCase, dash-case, or underscore_case)
+ *
+ *  @return {string}
+ *  CamelCase version of the identifier
+ */
+var identifier_to_camel_case = function (identifier) {
+    var parts = [];
+    _identifier_to_parts(identifier).map(function (part) {
+        parts.push(part.substring(0, 1).toUpperCase() + part.substring(1));
+    });
+
+    return parts.join("");
+};
+
+/**
+ *  Convert any string identifier to 'dash-case'
+ *
+ *  @param {string} identifier
+ *  Any identifier (in CamelCase, dash-case, or underscore_case)
+ *
+ *  @return {string}
+ *  dash-case version of the identifier
+ */
+var identifier_to_dash_case = function (identifier) {
+    return _identifier_to_parts(identifier).join("-");
+};
+
+/**
+ *  Convert any string identifier to 'underscore_case'
+ *
+ *  @param {string} identifier
+ *  Any identifier (in CamelCase, dash-case, or underscore_case)
+ *
+ *  @return {string}
+ *  underscore_case version of the identifier
+ */
+var identifier_to_underscore_case = function (identifier) {
+    return _identifier_to_parts(identifier).join("_");
+};
+
+/**
+ *  Return a pretty safe string from an identifier
+ */
+var slugify = function (identifier) {
+    identifier = identifier.toLowerCase()
+    identifier = identifier.replace(/[^a-z0-9]/g, '_')
+    identifier = identifier.replace(/_+/g, '_')
+
+    return identifier
+};
+
 exports.id = {
     model_urn: model_urn,
     user_urn: user_urn,
@@ -150,4 +228,8 @@ exports.id = {
         network_unique: _thing_urn_network,
         machine_unique: _thing_urn_machine,
     },
+    to_camel_case: identifier_to_camel_case,
+    to_dash_case: identifier_to_dash_case,
+    to_underscore_case: identifier_to_underscore_case,
+    slugify: slugify,
 };

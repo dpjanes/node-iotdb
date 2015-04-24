@@ -47,7 +47,7 @@ describe('test_helpers_identifier:', function(){
           ];
         var gots = []
         for (var ii in inputs) {
-            gots.push(_.identifier_to_camel_case(inputs[ii]))
+            gots.push(_.id.to_camel_case(inputs[ii]))
         }
         assert.ok(_.equals(expects, gots))
     });
@@ -68,7 +68,7 @@ describe('test_helpers_identifier:', function(){
           ];
         var gots = []
         for (var ii in inputs) {
-            gots.push(_.identifier_to_underscore_case(inputs[ii]))
+            gots.push(_.id.to_underscore_case(inputs[ii]))
         }
         assert.ok(_.equals(expects, gots))
     });
@@ -89,7 +89,7 @@ describe('test_helpers_identifier:', function(){
           ];
         var gots = []
         for (var ii in inputs) {
-            gots.push(_.identifier_to_dash_case(inputs[ii]))
+            gots.push(_.id.to_dash_case(inputs[ii]))
         }
         assert.ok(_.equals(expects, gots))
 
@@ -120,9 +120,9 @@ describe('test_helpers_identifier:', function(){
             {}
         ]
         var fs = [
-            _.identifier_to_camel_case,
-            _.identifier_to_underscore_case,
-            _.identifier_to_dash_case
+            _.id.to_camel_case,
+            _.id.to_underscore_case,
+            _.id.to_dash_case
         ]
         for (var fi in fs) {
             var f = fs[fi];
