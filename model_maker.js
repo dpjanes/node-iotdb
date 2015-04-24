@@ -87,7 +87,7 @@ var HueLight = model.make_model('HueLight')
  *  @constructor
  */
 var ModelMaker = function (_code) {
-    this.attributed = {};
+    this.__attributed = {};
     this.__attributes = [];
     this.__code = (_code !== undefined) ? _.identifier_to_dash_case(_code) : null;
 
@@ -202,7 +202,7 @@ ModelMaker.prototype.attribute = function (attribute) {
     var self = this;
 
     var code = attribute.get_code();
-    var oa = self.attributed[code];
+    var oa = self.__attributed[code];
     if (oa !== undefined) {
         for (var ai = 0; ai < self.__attributes.length; ai++) {
             if (self.__attributes[ai] === oa) {
@@ -221,7 +221,7 @@ ModelMaker.prototype.attribute = function (attribute) {
         }
     }
 
-    self.attributed[code] = attribute;
+    self.__attributed[code] = attribute;
     self.__attributes.push(attribute);
 
     return self;
@@ -286,13 +286,13 @@ ModelMaker.prototype.link_control_reading = function (control_attribute_code, re
     var self = this;
 
     reading_attribute_code = reading_attribute_code.replace(/^:/, '');
-    var reading_attribute = self.attributed[reading_attribute_code];
+    var reading_attribute = self.__attributed[reading_attribute_code];
     if (!reading_attribute) {
         throw "# value attribute not found: " + reading_attribute_code;
     }
 
     control_attribute_code = control_attribute_code.replace(/^:/, '');
-    var control_attribute = self.attributed[control_attribute_code];
+    var control_attribute = self.__attributed[control_attribute_code];
     if (!control_attribute) {
         throw "# value attribute not found: " + reading_attribute_code;
     }
@@ -312,7 +312,7 @@ ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, 
     assert.ok(_.is.String(reading_attribute_code));
     assert.ok(_.is.String(control_attribute_code));
 
-    var reading_attribute = self.attributed[reading_attribute_code];
+    var reading_attribute = self.__attributed[reading_attribute_code];
     if (!reading_attribute) {
         throw "# value attribute not found: " + reading_attribute_code;
     }
@@ -323,7 +323,7 @@ ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, 
     _.ld.remove(control_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-attribute:role-reading"));
     control_attribute.control();
 
-    self.attributed[control_attribute_code] = control_attribute;
+    self.__attributed[control_attribute_code] = control_attribute;
     self.__attributes.push(control_attribute);
 
     self.link_control_reading(control_attribute_code, reading_attribute_code);
@@ -340,7 +340,7 @@ ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, 
     assert.ok(_.is.String(control_attribute_code));
     assert.ok(_.is.String(reading_attribute_code));
 
-    var control_attribute = self.attributed[control_attribute_code];
+    var control_attribute = self.__attributed[control_attribute_code];
     if (!control_attribute) {
         throw "# control attribute not found: " + control_attribute_code;
     }
@@ -351,7 +351,7 @@ ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, 
     _.ld.remove(reading_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-attribute:role-control"));
     reading_attribute.reading();
 
-    self.attributed[reading_attribute_code] = reading_attribute;
+    self.__attributed[reading_attribute_code] = reading_attribute;
     self.__attributes.push(reading_attribute);
 
     self.link_control_reading(control_attribute_code, reading_attribute_code);
@@ -411,7 +411,7 @@ ModelMaker.prototype.make = function () {
         this.__facets = self.__facets;
 
         this.__attributes = [];
-        this.attributed = {};
+        this.__attributed = {};
         for (var ai in self.__attributes) {
             var in_attribute = self.__attributes[ai];
 
@@ -419,15 +419,15 @@ ModelMaker.prototype.make = function () {
             var out_key = out_attribute.get_code();
 
             this.__attributes.push(out_attribute);
-            this.attributed[out_key] = out_attribute;
+            this.__attributed[out_key] = out_attribute;
         }
 
         this.callbacksd = {};
         this._transaction = null;
         this._transactions = [];
 
-        for (var acode in this.attributed) {
-            var attribute = this.attributed[acode];
+        for (var acode in this.__attributed) {
+            var attribute = this.__attributed[acode];
             attribute._ivalue = null;
             attribute._ovalue = null;
             attribute._ichanged = false;

@@ -1022,7 +1022,7 @@ Model.prototype._find = function (find_key, paramd) {
         on: false,
     });
 
-    if (typeof find_key === "string") {
+    if (_.is.String(find_key)) {
         var subkeys = find_key.replace(/\/+/, "").split("/");
         var thing = self;
 
@@ -1039,7 +1039,7 @@ Model.prototype._find = function (find_key, paramd) {
             return thing._find(d, paramd);
         }
 
-        attribute = thing.attributed[last_key];
+        attribute = thing.__attributed[last_key];
         if (attribute !== undefined) {
             return {
                 thing: thing,
