@@ -506,14 +506,30 @@ Model.prototype._validate_set = function (find_key, new_value) {
 /**
  *  Set many values at once, using a dictionary
  */
-Model.prototype.update = function (updated, paramd) {
+Model.prototype.update = function (band, updated, paramd) {
     var self = this;
 
-    paramd = _.defaults(paramd, {
-        notify: true
-    });
+    if (band === "istate") {
+        paramd = _.defaults(paramd, {
+            notify: true,
+            push: false,
+            validate: false,
+        });
+    } else if (band === "ostate") {
+        paramd = _.defaults(paramd, {
+            notify: true,
+            push: true,
+            validate: true,
+        });
+    } else if (band === "meta") {
+        return;
+    } else if (band === "model") {
+        return;
+    } else {
+        return;
+    }
 
-    self._validate_update(updated, paramd);
+    self._validate_update(band, updated, paramd);
 
     self.start(paramd);
     for (var key in updated) {
@@ -524,12 +540,15 @@ Model.prototype.update = function (updated, paramd) {
     return self;
 };
 
-Model.prototype._validate_update = function (updated, paramd) {
+Model.prototype._validate_update = function (band, updated, paramd) {
+    if (!_.is.String(band)) {
+        throw new Error("Model.band: 'band' must be a String, not: " + band);
+    }
     if (!_.is.Dictionary(updated)) {
-        throw new Error("Model.update: 'find_key' must be a Dictionary");
+        throw new Error("Model.update: 'find_key' must be a Dictionary, not: " + updated);
     }
     if (!_.is.Dictionary(paramd)) {
-        throw new Error("Model.update: 'paramd' must be a Dictionary");
+        throw new Error("Model.update: 'paramd' must be a Dictionary, not: " + paramd);
     }
 };
 
@@ -1280,11 +1299,14 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                     }
                 }
 
+                self.update("istate", pulld);
+                /*
                 self.update(pulld, {
                     notify: true,
                     push: false,
                     force: false,
                 });
+                */
             } else {
                 self.meta_changed();
             }
