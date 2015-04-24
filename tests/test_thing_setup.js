@@ -40,22 +40,22 @@ describe('test_thing_setup:', function(){
         var T = model.make_model('T')
             .make();
         var t = new T();
-        assert.ok(_.equals({}, t.state()))
+        assert.ok(_.equals({}, t.state("ostate")))
     });
     it('single attribute setup', function(){
         var T = model.make_model('T')
             .attribute(attribute.make_boolean('on').control())
             .make();
         var t = new T();
-        assert.ok(_.equals({ on: null }, t.state()))
+        assert.ok(_.equals({ on: null }, t.state("ostate")))
         t.set('on', true);
-        assert.ok(_.equals({ on: true }, t.state()))
+        assert.ok(_.equals({ on: true }, t.state("ostate")))
         t.set('on', false);
-        assert.ok(_.equals({ on: false }, t.state()))
+        assert.ok(_.equals({ on: false }, t.state("ostate")))
         t.set('on', 10);
-        assert.ok(_.equals({ on: true }, t.state()))
+        assert.ok(_.equals({ on: true }, t.state("ostate")))
         t.set('on', 0);
-        assert.ok(_.equals({ on: false }, t.state()))
+        assert.ok(_.equals({ on: false }, t.state("ostate")))
     });
     it('multiple attribute setup', function(){
         var T = model.make_model('T')
@@ -63,18 +63,18 @@ describe('test_thing_setup:', function(){
             .attribute(attribute.make_number('intensity').control())
             .make();
         var t = new T();
-        assert.ok(_.equals({ on: null, intensity: null }, t.state()))
+        assert.ok(_.equals({ on: null, intensity: null }, t.state("ostate")))
         t.set('on', true);
-        assert.ok(_.equals({ on: true, intensity: null }, t.state()))
+        assert.ok(_.equals({ on: true, intensity: null }, t.state("ostate")))
         t.set('on', false);
-        assert.ok(_.equals({ on: false, intensity: null }, t.state()))
+        assert.ok(_.equals({ on: false, intensity: null }, t.state("ostate")))
         t.set('on', 10);
-        assert.ok(_.equals({ on: true, intensity: null }, t.state()))
+        assert.ok(_.equals({ on: true, intensity: null }, t.state("ostate")))
         t.set('on', 0);
-        assert.ok(_.equals({ on: false, intensity: null }, t.state()))
+        assert.ok(_.equals({ on: false, intensity: null }, t.state("ostate")))
         t.set('intensity', 10);
-        assert.ok(_.equals({ on: false, intensity: 10 }, t.state()))
+        assert.ok(_.equals({ on: false, intensity: 10 }, t.state("ostate")))
         t.set('intensity', 1);
-        assert.ok(_.equals({ on: false, intensity: 1 }, t.state()))
+        assert.ok(_.equals({ on: false, intensity: 1 }, t.state("ostate")))
     });
 })

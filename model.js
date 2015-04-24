@@ -202,9 +202,7 @@ Model.prototype.state = function (band) {
         for (var ai in attributes) {
             var attribute = attributes[ai];
 
-            if (attribute._ivalue != null) {
-                _.d.set(state, attribute.code(), attribute._ivalue);
-            }
+            _.d.set(state, attribute.code(), attribute._ivalue);
         }
 
         return state;
@@ -214,9 +212,7 @@ Model.prototype.state = function (band) {
         for (var ai in attributes) {
             var attribute = attributes[ai];
 
-            if (attribute._ovalue != null) {
-                _.d.set(state, attribute.code(), attribute._ovalue);
-            }
+            _.d.set(state, attribute.code(), attribute._ovalue);
         }
 
         return state;
@@ -469,6 +465,9 @@ Model.prototype.set = function (find_key, new_value) {
     var attribute_key = attribute.code();
     var attribute_value_old = transaction.push ? attribute._ovalue : attribute._ivalue;
     var attribute_value_new = transaction.validate ? self._validate(attribute, new_value) : new_value;
+    if (attribute_value_new === undefined) {
+        attribute_value_new = attribute_value_old;
+    }
 
     /*
     console.log("ICHANGED.1", 

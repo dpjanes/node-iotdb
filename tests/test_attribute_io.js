@@ -40,10 +40,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), null);
 
         /* state */
-        assert.ok(_.equals({ value: null }, m.state()))
-        assert.ok(_.equals({ value: null }, m.state({ istate: true, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: false, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: true, ostate: false })))
+        assert.ok(_.equals({ value: null }, m.state("ostate")));
+        assert.ok(_.equals({ value: null }, m.state("istate")));
     });
     it('set vs. underlying', function(){
         var m = new BooleanModel();
@@ -59,10 +57,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), true);
 
         /* state */
-        assert.ok(_.equals({ value: true }, m.state()))
-        assert.ok(_.equals({ value: true }, m.state({ istate: true, ostate: true })))
-        assert.ok(_.equals({ value: true }, m.state({ istate: false, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: true, ostate: false })))
+        assert.ok(_.equals({ value: true }, m.state("ostate")));
+        assert.ok(_.equals({ value: null }, m.state("istate")));
     });
     it('set/push=true vs. underlying', function(){
         var m = new BooleanModel();
@@ -79,10 +75,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), true);
 
         /* state */
-        assert.ok(_.equals({ value: true }, m.state()))
-        assert.ok(_.equals({ value: true }, m.state({ istate: true, ostate: true })))
-        assert.ok(_.equals({ value: true }, m.state({ istate: false, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: true, ostate: false })))
+        assert.ok(_.equals({ value: true }, m.state("ostate")));
+        assert.ok(_.equals({ value: null }, m.state("istate")));
     });
     it('set/push=false vs. underlying', function(){
         var m = new BooleanModel();
@@ -99,10 +93,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), true);
 
         /* state */
-        assert.ok(_.equals({ value: true }, m.state()))
-        assert.ok(_.equals({ value: true }, m.state({ istate: true, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: false, ostate: true })))
-        assert.ok(_.equals({ value: true }, m.state({ istate: true, ostate: false })))
+        assert.ok(_.equals({ value: true }, m.state("istate")))
+        assert.ok(_.equals({ value: null }, m.state("ostate")))
     });
   });
   describe('integer', function(){
@@ -119,10 +111,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), null);
 
         /* state */
-        assert.ok(_.equals({ value: null }, m.state()))
-        assert.ok(_.equals({ value: null }, m.state({ istate: true, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: false, ostate: true })))
-        assert.ok(_.equals({ value: null }, m.state({ istate: true, ostate: false })))
+        assert.ok(_.equals({ value: null }, m.state("ostate")));
+        assert.ok(_.equals({ value: null }, m.state("istate")));
     });
     it('multivalue - ivalue and ovalue priority', function(){
         var m = new IntegerModel();
@@ -137,10 +127,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), 2);
 
         /* state */
-        assert.ok(_.equals({ value: 2 }, m.state()))
-        assert.ok(_.equals({ value: 2 }, m.state({ istate: true, ostate: true })))
-        assert.ok(_.equals({ value: 1 }, m.state({ istate: false, ostate: true })))
-        assert.ok(_.equals({ value: 2 }, m.state({ istate: true, ostate: false })))
+        assert.ok(_.equals({ value: 2 }, m.state("istate")));
+        assert.ok(_.equals({ value: 1 }, m.state("ostate")));
     });
   });
 })

@@ -80,21 +80,21 @@ describe('test_attribute_format:', function(){
             )
             .make();
         var t = new T();
-        assert.ok(t.state()['when'] === null)
+        assert.ok(t.state("ostate")['when'] === null)
 
         t.set('when', "2014-02-14T05:00:00.000Z")
-        assert.ok(t.state()['when'] === "2014-02-14T05:00:00.000Z")
+        assert.ok(t.state("ostate")['when'] === "2014-02-14T05:00:00.000Z")
 
         var d = new Date(2014, 2, 14, 5, 0, 0, 0)
         t.set('when', d)
-        assert.ok(t.state()['when'] === d.toISOString())
+        assert.ok(t.state("ostate")['when'] === d.toISOString())
 
         t.set('when', null)
-        assert.ok(t.state()['when'] === null)
+        assert.ok(t.state("ostate")['when'] === null)
 
         var d = new Date()
         t.set('when', d)
-        assert.ok(t.state()['when'] === d.toISOString())
+        assert.ok(t.state("ostate")['when'] === d.toISOString())
     });
     
   })
