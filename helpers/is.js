@@ -78,26 +78,27 @@ var isDictionary = function(o) {
     }
 };
 
-// Is a given value a boolean?
-var isBoolean = function (obj) {
-    return obj === true || obj === false || toString.call(obj) == '[object Boolean]';
-};
-
-// Is a given value equal to null?
 var isNull = function (obj) {
     return obj === null;
 };
 
-// Is a given variable undefined?
 var isUndefined = function (obj) {
     return obj === void 0;
 };
 
 var isAbsoluteURL = function (o) {
-    if (typeof o !== 'string') return;
+    if (typeof o !== 'string') {
+        return false;
+    }
+
     var u = node_url.parse(o);
-    if (!u) return false;
-    if (!u.protocol) return false;
+    if (!u) {
+        return false;
+    }
+    if (!u.protocol) {
+        return false;
+    }
+
     return u.protocol.length > 0;
 };
 
