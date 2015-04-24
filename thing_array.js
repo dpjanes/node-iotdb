@@ -623,7 +623,7 @@ ThingArray.prototype.metas = function (paramd) {
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
-        metas.push(item.meta().state());
+        metas.push(item.state("meta"));
     }
 
     return metas;

@@ -303,6 +303,7 @@ Transport.prototype._validate_remove = function (paramd, callback) {
 /**
  *  Transport changes to Things to the transp
  */
+/*
 var transport = function (transport, things, paramd) {
     paramd = _.defaults(paramd, {
         verbose: false,
@@ -322,17 +323,14 @@ var transport = function (transport, things, paramd) {
             transport.update(thing_id, "model", _.ld.compact(thing.jsonld()));
         }
 
-        /*
-         *  This is necessary because 'updated' has no requirement
-         *  to actual send data
-         */
+        // This is necessary because 'updated' has no requirement to actual send data
         var _monitor = function (monitor_band, get, callback) {
             var _receive = function (id, band, d) {
                 if (d === undefined) {
-                    /* shouldn't happen */
+                    // shouldn't happen 
                     return;
                 } else if (d === null) {
-                    /* no value */
+                    // no value 
                     return;
                 }
 
@@ -370,15 +368,9 @@ var transport = function (transport, things, paramd) {
 
         if (paramd.ostate) {
             if (paramd.send) {
-                transport.update(thing_id, "ostate", thing.state({
-                    ostate: true,
-                    istate: false
-                }));
+                transport.update(thing_id, "ostate", thing.state(("ostate"));
                 thing.on("ostate", function () {
-                    ostate_transporter.update(thing_id, "ostate", thing.state({
-                        ostate: true,
-                        istate: false
-                    }));
+                    ostate_transporter.update(thing_id, "ostate", thing.state("ostate"));
                 });
             }
             if (paramd.receive) {
@@ -393,20 +385,13 @@ var transport = function (transport, things, paramd) {
 
         if (paramd.istate) {
             if (paramd.send) {
-                transport.update(thing_id, "istate", thing.state({
-                    istate: true,
-                    ostate: false
-                }));
+                transport.update(thing_id, "istate", thing.state("istate"));
                 thing.on("istate", function () {
-                    transport.update(thing_id, "istate", thing.state({
-                        istate: true,
-                        ostate: false
-                    }));
+                    transport.update(thing_id, "istate", thing.state("istate"));
                 });
             }
             if (paramd.receive) {
                 _monitor("istate", false, function (d) {
-                    // console.log("ISTATE-IN", thing_id, d);
                     thing.update(d, {
                         notify: false,
                         push: false,
@@ -418,6 +403,7 @@ var transport = function (transport, things, paramd) {
     });
 
 };
+ */
 
 /**
  *  Make one Transport control another.
@@ -691,7 +677,7 @@ var unchannel = function (paramd, path) {
  *  API
  */
 exports.Transport = Transport;
-exports.transport = transport;
+// exports.transport = transport;
 exports.bind = bind;
 exports.unchannel = unchannel;
 exports.channel = channel;

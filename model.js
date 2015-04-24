@@ -183,34 +183,61 @@ Model.prototype.help = function () {
 };
 
 /**
- *  State is now constructed on the fly
+ *  0.6
+ *  - now takes an argument and will return one
+ *    of istate/ostate/meta/model to be more
+ *    compatible with Transporters
+ *
+ *  0.5
+ *  - state is constructed on the fly
  */
-Model.prototype.state = function (paramd) {
+Model.prototype.state = function (band) {
     var self = this;
 
-    paramd = _.defaults(paramd, {
-        istate: true,
-        ostate: true,
-    });
+    self._validate_state(band);
 
-    var state = {};
-    var attributes = self.attributes();
-    for (var ai in attributes) {
-        var attribute = attributes[ai];
-        var attribute_code = attribute.code();
+    if (band === "istate") {
+        var state = {};
+        var attributes = self.attributes();
+        for (var ai in attributes) {
+            var attribute = attributes[ai];
 
-        var attribute_value = null;
-        if (paramd.istate && (attribute._ivalue != null)) {
-            attribute_value = attribute._ivalue;
-        } else if (paramd.ostate && (attribute._ovalue != null)) {
-            attribute_value = attribute._ovalue;
-        } else {}
+            if (attribute._ivalue != null) {
+                _.d.set(state, attribute.code(), attribute._ivalue);
+            }
+        }
 
-        _.d.set(state, attribute_code, attribute_value);
+        return state;
+    } else if (band === "ostate") {
+        var state = {};
+        var attributes = self.attributes();
+        for (var ai in attributes) {
+            var attribute = attributes[ai];
+
+            if (attribute._ovalue != null) {
+                _.d.set(state, attribute.code(), attribute._ovalue);
+            }
+        }
+
+        return state;
+    } else if (band === "meta") {
+        return  _.ld.compact(self.meta().state());
+    } else if (band === "model") {
+        return  _.ld.compact(self.jsonld());
+    } else {
+        logger.warn({
+            method: "get",
+            band: band,
+        }, "band is usually istate/ostate/model/meta");
+        return null;
     }
-
-    return state;
 };
+
+Model.prototype._validate_state = function (band) {
+    if (!_.is.String(band)) {
+        throw new Error("Model.state: 'band' must be a String, not: " + band);
+    }
+}
 
 /**
  */
@@ -224,6 +251,14 @@ Model.prototype.attributes = function () {
  */
 Model.prototype.has_tag = function (tag) {
     return _.ld.contains(this.initd, "tag", tag);
+};
+
+Model.prototype._validate_has_tag = function (tag) {
+    var self = this;
+
+    if (!_.is.String(tag)) {
+        throw new Error("Model.has_tag: 'tag' must be a String, not: " + tag);
+    }
 };
 
 /**
