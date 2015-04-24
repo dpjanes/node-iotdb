@@ -160,12 +160,6 @@ Model.prototype.isa = function (classf) {
 
 /**
  */
-Model.prototype.get_code = function () {
-    return this.__code;
-};
-
-/**
- */
 Model.prototype.code = function () {
     return this.__code;
 };
@@ -203,7 +197,7 @@ Model.prototype.state = function (paramd) {
     var attributes = self.attributes();
     for (var ai in attributes) {
         var attribute = attributes[ai];
-        var attribute_code = attribute.get_code();
+        var attribute_code = attribute.code();
 
         var attribute_value = null;
         if (paramd.istate && (attribute._ivalue != null)) {
@@ -297,7 +291,7 @@ Model.prototype.jsonld = function (paramd) {
     for (var ax in attributes) {
         var attribute = attributes[ax];
         var ad = {};
-        // ad[_.ld.expand('schema:name')] = attribute.get_code()
+        // ad[_.ld.expand('schema:name')] = attribute.code()
         ads.push(ad);
 
         for (key in attribute) {
@@ -437,7 +431,7 @@ Model.prototype.set = function (find_key, new_value) {
     }
 
     var attribute = rd.attribute;
-    var attribute_key = attribute.get_code();
+    var attribute_key = attribute.code();
     var attribute_value_old = transaction.push ? attribute._ovalue : attribute._ivalue;
     var attribute_value_new = transaction.validate ? self._validate(attribute, new_value) : new_value;
 
@@ -658,7 +652,7 @@ Model.prototype.on = function (find_key, callback) {
     }
 
     if (rd.attribute) {
-        attribute_key = rd.attribute.get_code();
+        attribute_key = rd.attribute.code();
 
         callbacks = rd.thing.__callbacksd[attribute_key];
         if (callbacks === undefined) {
@@ -793,11 +787,11 @@ Model.prototype._do_push = function (attribute, immediate) {
 
     if (!self._transaction || immediate) {
         var attributed = {};
-        attributed[attribute.get_code()] = attribute;
+        attributed[attribute.code()] = attribute;
 
         self._do_pushes(attributed);
     } else {
-        self._transaction._pushd[attribute.get_code()] = attribute;
+        self._transaction._pushd[attribute.code()] = attribute;
     }
 
 };
@@ -822,7 +816,7 @@ Model.prototype._do_pushes = function (attributed) {
 
     for (var key in attributed) {
         var attribute = attributed[key];
-        var attribute_code = attribute.get_code();
+        var attribute_code = attribute.code();
         var attribute_value = attribute._ovalue;
 
         // mappings can be attached to bindings to make enumerations better
@@ -859,7 +853,7 @@ Model.prototype._validate = function (attribute, new_value) {
 
     var paramd = {
         value: new_value,
-        code: attribute.get_code(),
+        code: attribute.code(),
     };
 
     attribute.validate(paramd);
@@ -887,12 +881,12 @@ Model.prototype._do_notify = function (attribute, immediate) {
 
     if (!self._transaction || immediate) {
         var attributed = {};
-        attributed[attribute.get_code()] = attribute;
+        attributed[attribute.code()] = attribute;
 
         self._do_notifies(attributed);
         self._do_notifies2(attributed);
     } else {
-        self._transaction._notifyd[attribute.get_code()] = attribute;
+        self._transaction._notifyd[attribute.code()] = attribute;
     }
 };
 

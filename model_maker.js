@@ -201,7 +201,7 @@ ModelMaker.prototype.facet = function (_value) {
 ModelMaker.prototype.attribute = function (attribute) {
     var self = this;
 
-    var code = attribute.get_code();
+    var code = attribute.code();
     var oa = self.__attributed[code];
     if (oa !== undefined) {
         for (var ai = 0; ai < self.__attributes.length; ai++) {
@@ -416,7 +416,7 @@ ModelMaker.prototype.make = function () {
             var in_attribute = self.__attributes[ai];
 
             var out_attribute = _.deepCopy(in_attribute);
-            var out_key = out_attribute.get_code();
+            var out_key = out_attribute.code();
 
             this.__attributes.push(out_attribute);
             this.__attributed[out_key] = out_attribute;

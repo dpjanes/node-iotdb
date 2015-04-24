@@ -120,6 +120,12 @@ var Attribute = function () {
  *  no slashes in it. This is stored
  *  in <code>@id</code> as <code>#<i>code</i></code>
  *
+ *  <p>
+ *  IF NO ARGUMENTS:
+ *  Return the 'code' of this Attribute. The code
+ *  is used to store values in a dictionary
+ *  in the {@link Thing}.
+ *
  *  @param {string} code
  *  The code
  *
@@ -129,26 +135,15 @@ var Attribute = function () {
 Attribute.prototype.code = function (code) {
     var self = this;
 
-    self._validate_code(code);
-
-    code = code.replace(/^:/, '');
-
-    self['@id'] = '#' + code;
-    return self;
+    if (arguments.length === 0) {
+        return self._get_code();
+    } else {
+        return self._set_code(code);
+    }
 };
 
-Attribute.prototype._validate_code = function (code) {
-};
 
-/**
- *  Return the 'code' of this Attribute. The code
- *  is used to store values in a dictionary
- *  in the {@link Thing}.
- *
- *  @return {string}
- *  The code
- */
-Attribute.prototype.get_code = function () {
+Attribute.prototype._get_code = function () {
     var self = this;
 
     var code = self['@id'];
@@ -160,6 +155,23 @@ Attribute.prototype.get_code = function () {
     }
 
     return undefined;
+};
+
+Attribute.prototype._set_code = function (code) {
+    var self = this;
+
+    self._validate_code(code);
+
+    code = code.replace(/^:/, '');
+
+    self['@id'] = '#' + code;
+    return self;
+};
+
+Attribute.prototype._validate_code = function (code) {
+    if (!_.is.String(code)) {
+        throw new Error("Attribute.code: code must be a String, not: " + code);
+    }
 };
 
 /**
