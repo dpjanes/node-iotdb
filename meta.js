@@ -147,7 +147,7 @@ Meta.prototype.update = function (ind, paramd) {
         var in_value = ind[in_key];
 
         var old_value = state[in_key];
-        if (_.isEqual(in_value, old_value)) {
+        if (_.is.Equal(in_value, old_value)) {
             continue;
         }
 

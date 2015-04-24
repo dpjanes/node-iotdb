@@ -162,7 +162,7 @@ exports.cfg_find = function (envd, paths, name, paramd) {
             continue;
         }
 
-        if ((name === null) || (name === undefined) || _.isRegExp(name)) {
+        if ((name === null) || (name === undefined) || _.is.RegExp(name)) {
             _find_path_list(path);
         } else {
             _find_path_name(path);

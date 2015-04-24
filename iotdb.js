@@ -186,7 +186,7 @@ IOT.prototype.meta_save = function (t) {
         }
 
         var meta = thing.meta();
-        if (_.isEmpty(meta.updated)) {
+        if (_.is.Empty(meta.updated)) {
             return;
         }
 

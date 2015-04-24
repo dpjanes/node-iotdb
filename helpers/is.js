@@ -141,6 +141,10 @@ exports.is = {
     Dictionary: isDictionary,
 	AbsoluteURL: isAbsoluteURL,
 
+    // consistency
+	Empty: _.underscore.isEmpty,
+	Equal: _.underscore.isEqual,
+
     // Javascript classes and types
 	Array: Array.isArray,
 	Boolean: isBoolean,
