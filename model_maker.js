@@ -189,30 +189,6 @@ ModelMaker.prototype.facet = function (_value) {
     return this;
 };
 
-
-/**
- *  Copy over all the the attributes and subthings from an
- *  instance of '_inherit'. It's something like a superclass
- *  but we're basically duck typing : the
- *  final model will have superclass=@{link Thing}
- *
- *  @param {function} _inherit
- *  Inherit all the attributes and subthings from this class.
- *  Don't pass an Object, pass the class function.
- *
- *  @return {this}
- */
-ModelMaker.prototype.inherit = function (inherit_class) {
-    var self = this;
-
-    var inherit = new inherit_class();
-    inherit.__attributes.map(function (attribute) {
-        self.attribute(attribute);
-    });
-
-    return self;
-};
-
 /**
  *  Add a new {@link Attribute} to the {@link Thing} being made.
  *
