@@ -188,8 +188,10 @@ FIFOQueue.prototype.run = function () {
     } catch (x) {
         logger.error({
             method: "run",
-            name: self.name
+            name: self.name,
+            exception: x,
         }, "exception running qitem - finishing just in case");
+        console.trace();
 
         self.finished(qitem);
     }
