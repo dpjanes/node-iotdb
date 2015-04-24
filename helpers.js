@@ -211,23 +211,6 @@ exports.equals = function (a, b) {
 };
 
 /**
- *  Return true iff everything in subd is in superd
- */
-exports.d_contains_d = function (superd, subd) {
-    var subkeys = exports.keys(subd);
-    for (var sx in subkeys) {
-        var subkey = subkeys[sx];
-        var subvalue = subd[subkey];
-        var supervalue = superd[subkey];
-        if (subvalue !== supervalue) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
-/**
 exports.flatten_arguments = function (a) {
     var rs = [];
 

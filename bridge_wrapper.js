@@ -56,7 +56,7 @@ var BridgeWrapper = function (binding, initd) {
         if (binding && binding.matchd) {
             var bridge_meta = _.ld.compact(bridge_instance.meta());
             var binding_meta = _.ld.compact(binding.matchd);
-            if (!_.d_contains_d(bridge_meta, binding_meta)) {
+            if (!_.d.is.superset(bridge_meta, binding_meta)) {
                 if (bridge_exemplar.ignore) {
                     bridge_exemplar.ignore(bridge_instance);
                 }

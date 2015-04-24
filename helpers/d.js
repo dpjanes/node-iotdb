@@ -179,9 +179,35 @@ var check_timestamp = function(od, nd, paramd)  {
     }
 };
 
+/**
+ *  Return true iff everything in subd is in superd
+ */
+var d_contains_d = function (superd, subd) {
+    var subkeys = _.keys(subd);
+    for (var sx in subkeys) {
+        var subkey = subkeys[sx];
+        var subvalue = subd[subkey];
+        var supervalue = superd[subkey];
+        if (subvalue !== supervalue) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
 exports.d = {
     get: get,
     set: set,
     transform: transform,
     check_timestamp: check_timestamp,
+
+    is: {
+        superset: function(a, b) {
+            return d_contains_d(a, b);
+        },
+        subset: function(a, b) {
+            return d_contains_d(b, a);
+        },
+    }
 };
