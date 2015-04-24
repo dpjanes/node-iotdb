@@ -53,6 +53,14 @@ var isThing = function (o) {
 };
 
 /**
+ *  XXX - not finished! Need to start making
+ *  Bridges subclass
+ */
+var isBridgeInstance = function (o) {
+    return _.isObject(o);
+};
+
+/**
  */
 var isDictionary = function(o) {
     if (_.is.Array(o)) {
@@ -136,6 +144,7 @@ exports.is = {
     ThingArray: isThingArray,
     Transport: isTransport,
     Transporter: isTransport,
+    BridgeInstance: isBridgeInstance,
 
     // useful helpers
     Dictionary: isDictionary,

@@ -502,17 +502,6 @@ ThingArray.prototype.pull = function () {
 
     self._persist_command(model.Model.prototype.pull, arguments);
 
-    /*
-     *  Apply to new things
-     *  XXX - why isn't this using _persist_command
-    var persist = this._persistds !== null
-    if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
-            item.pull.apply(item, Array.prototype.slice.call(arguments));
-        })
-    }
-     */
-
     return self;
 };
 
@@ -556,16 +545,6 @@ ThingArray.prototype.on = function (what, callback) {
 
     self._persist_command(model.Model.prototype.on, arguments);
 
-    /*
-     *  Apply to new things
-    var persist = this._persistds !== null
-    if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
-            item.on.apply(item, Array.prototype.slice.call(arguments));
-        })
-    }
-     */
-
     return self;
 };
 
@@ -585,16 +564,6 @@ ThingArray.prototype.on_change = function () {
     }
 
     self._persist_command(model.Model.prototype.on_change, arguments);
-
-    /*
-     *  Apply to new things
-    var persist = this._persistds !== null
-    if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function(item) {
-            item.on_change.apply(item, Array.prototype.slice.call(av));
-        })
-    }
-     */
 
     return self;
 };

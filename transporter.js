@@ -186,13 +186,13 @@ Transport.prototype._validate_get = function (paramd, callback) {
         throw new Error("get: 'paramd.id' is required");
     }
     if (!_.is.String(paramd.id)) {
-        throw new Error("get: 'paramd.id' must be a string");
+        throw new Error("get: 'paramd.id' must be a string, not: " + paramd.id);
     }
     if (!paramd.band) {
         throw new Error("get: 'paramd.band' is required");
     }
     if (!_.is.String(paramd.band)) {
-        throw new Error("get: 'paramd.band' must be a string");
+        throw new Error("get: 'paramd.band' must be a string, not: " + paramd.band);
     }
 };
 

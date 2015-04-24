@@ -399,6 +399,7 @@ ModelMaker.prototype.make = function () {
         this.Model = new_thing;
         this._isThing = true;
         this._isModel = undefined;
+        this._thing_id = null;
 
         this.__emitter = new events.EventEmitter();
         this.__emitter.setMaxListeners(0);
@@ -407,8 +408,6 @@ ModelMaker.prototype.make = function () {
         this.help = self.__help;
         this.__scratchd = {};
         this.__push_keys = [];
-        this.__parent_thing = null;
-        this.__is_thing = true;
         this.__facets = self.__facets;
 
         this.__attributes = [];

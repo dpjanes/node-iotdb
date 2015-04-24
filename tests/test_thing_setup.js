@@ -40,7 +40,6 @@ describe('test_thing_setup:', function(){
         var T = model.make_model('T')
             .make();
         var t = new T();
-        assert.ok(t.__is_thing)
         assert.ok(_.equals({}, t.state()))
     });
     it('single attribute setup', function(){

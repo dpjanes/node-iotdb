@@ -679,27 +679,8 @@ Model.prototype.meta_changed = function () {
     this.__emitter.emit(EVENT_META_CHANGED, true);
 };
 
-/**
- *  @return {dictionary}
- *  An idenitity object
- */
-Model.prototype.identity = function (kitchen_sink) {
-    var self = this;
-
-    if (self._identityd) {
-        return self._identityd;
-    }
-
-    return null;
-};
-
 Model.prototype.thing_id = function () {
-    var id = this.identity();
-    if (id) {
-        return id.thing_id;
-    }
-
-    return null;
+    return this._thing_id;
 };
 
 /**
@@ -1129,6 +1110,12 @@ Model.prototype.tag = function (tag) {
     _.ld.add(self.initd, "tag", tag);
 };
 
+Model.prototype._validate_tag = function (tag) {
+    if (!_.is.String(tag)) {
+        throw new Error("Model.tag: 'tag' must be a String");
+    }
+};
+
 /**
  */
 Model.prototype.reachable = function () {
@@ -1164,6 +1151,8 @@ Model.prototype.disconnect = function () {
  */
 Model.prototype.bind_bridge = function (bridge_instance) {
     var self = this;
+
+    self._validate_bind_bridge(bridge_instance);
 
     self.bridge_instance = bridge_instance;
     if (self.bridge_instance) {
@@ -1202,14 +1191,18 @@ Model.prototype.bind_bridge = function (bridge_instance) {
             }
         };
 
-        self._identityd = {
-            thing_id: self.bridge_instance.meta()["iot:thing"] + ":" + self.code,
-        };
+        self._thing_id = self.bridge_instance.meta()["iot:thing"] + ":" + self.code;
     }
 
     self.meta_changed();
 
     return self;
+};
+
+Model.prototype._validate_bind_bridge = function (bridge_instance) {
+    if (!_.is.BridgeInstance(bridge_instance)) {
+        throw new Error("Model.bind_bridge: 'bridge_instance' must be a Bridge");
+    }
 };
 
 var make_model_from_jsonld = function (d) {
