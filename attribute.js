@@ -190,11 +190,13 @@ Attribute.prototype._validate_code = function (code) {
  */
 Attribute.prototype.purpose = function (purpose_iri) {
     var self = this;
-    
+
     purpose_iri = _.ld.expand(purpose_iri, 'iot-attribute:');
     self._validate_purpose(purpose_iri);
 
-    return self.property('iot:purpose', purpose_iri, { array: false });
+    return self.property('iot:purpose', purpose_iri, {
+        array: false
+    });
 };
 
 Attribute.prototype._validate_purpose = function (purpose_iri) {
@@ -279,7 +281,7 @@ Attribute.prototype._validate_description = function (_value) {
  */
 Attribute.prototype.help = function (_value) {
     var self = this;
-    
+
     self._validate_help(_value);
 
     return self.property_value(_.ld.expand('iot:help'), _value);

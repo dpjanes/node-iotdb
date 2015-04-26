@@ -27,6 +27,8 @@
  *  limitations under the License.
  */
 
+"use strict";
+
 var Color = function (value) {
     var self = this;
 
@@ -413,7 +415,7 @@ var colord = {
     "yellowgreen": "#9acd32"
 };
 
-color_to_hex = function (name, otherwise) {
+var color_to_hex = function (name, otherwise) {
     name = name.toLowerCase();
 
     var hex = colord[name];

@@ -147,19 +147,21 @@ var _identifier_to_parts = function (identifier) {
     } else if (!identifier.match(/^[A-Za-z]/)) {
         throw new Error("identitfier_to_*: must start with a letter");
     } else if (identifier.match(/[^-_A-Za-z0-9]/)) {
-        throw new Error("identitfier_to_*: must contain only letters, numbers, underscores and dashes")
+        throw new Error("identitfier_to_*: must contain only letters, numbers, underscores and dashes");
     }
 
     var splits = identifier;
-    var splits = splits.replace(/([-_])/g, ' ')
-    var splits = splits.replace(/([A-Z]+)([A-Z][^A-Z0-9]|$)/g, ' $1 $2')
-    var splits = splits.replace(/([A-Z]+)([^A-Z])/g, ' $1$2')
-    var splits = splits.toLowerCase()
+    splits = splits.replace(/([-_])/g, ' ');
+    splits = splits.replace(/([A-Z]+)([A-Z][^A-Z0-9]|$)/g, ' $1 $2');
+    splits = splits.replace(/([A-Z]+)([^A-Z])/g, ' $1$2');
+    splits = splits.toLowerCase();
 
-    var parts = []
+    var parts = [];
     splits.split(" ").map(function (part) {
-        if (part) parts.push(part);
-    })
+        if (part && part.length) {
+            parts.push(part);
+        }
+    });
 
     return parts;
 };
@@ -212,11 +214,11 @@ var identifier_to_underscore_case = function (identifier) {
  *  Return a pretty safe string from an identifier
  */
 var slugify = function (identifier) {
-    identifier = identifier.toLowerCase()
-    identifier = identifier.replace(/[^a-z0-9]/g, '_')
-    identifier = identifier.replace(/_+/g, '_')
+    identifier = identifier.toLowerCase();
+    identifier = identifier.replace(/[^a-z0-9]/g, '_');
+    identifier = identifier.replace(/_+/g, '_');
 
-    return identifier
+    return identifier;
 };
 
 exports.id = {
@@ -233,3 +235,4 @@ exports.id = {
     to_underscore_case: identifier_to_underscore_case,
     slugify: slugify,
 };
+

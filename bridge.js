@@ -47,11 +47,11 @@ var Bridge = function () {
     self.initd = {};
     self.native = null;
     self.connectd = {
-        data_in: function(paramd) {
+        data_in: function (paramd) {
             _.extend(paramd.cookd, paramd.rawd);
         },
 
-        data_out: function(paramd) {
+        data_out: function (paramd) {
             _.extend(paramd.rawd, paramd.cookd);
         },
     };

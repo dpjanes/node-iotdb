@@ -197,29 +197,13 @@ Model.prototype.state = function (band) {
     self._validate_state(band);
 
     if (band === "istate") {
-        var state = {};
-        var attributes = self.attributes();
-        for (var ai in attributes) {
-            var attribute = attributes[ai];
-
-            _.d.set(state, attribute.code(), attribute._ivalue);
-        }
-
-        return state;
+        return self._state_istate();
     } else if (band === "ostate") {
-        var state = {};
-        var attributes = self.attributes();
-        for (var ai in attributes) {
-            var attribute = attributes[ai];
-
-            _.d.set(state, attribute.code(), attribute._ovalue);
-        }
-
-        return state;
+        return self._state_ostate();
     } else if (band === "meta") {
-        return  _.ld.compact(self.meta().state());
+        return self._state_meta();
     } else if (band === "model") {
-        return  _.ld.compact(self.jsonld());
+        return self._state_model();
     } else {
         logger.warn({
             method: "get",
@@ -229,11 +213,53 @@ Model.prototype.state = function (band) {
     }
 };
 
+Model.prototype._state_istate = function () {
+    var self = this;
+
+    var state = {};
+    var attributes = self.attributes();
+    for (var ai in attributes) {
+        var attribute = attributes[ai];
+
+        _.d.set(state, attribute.code(), attribute._ivalue);
+    }
+
+    return state;
+};
+
+Model.prototype._state_ostate = function () {
+    var self = this;
+
+    var state = {};
+    var attributes = self.attributes();
+    for (var ai in attributes) {
+        var attribute = attributes[ai];
+
+        _.d.set(state, attribute.code(), attribute._ovalue);
+    }
+
+    return state;
+};
+
+Model.prototype._state_meta = function () {
+    var self = this;
+
+    return _.ld.compact(self.meta().state());
+};
+
+Model.prototype._state_model = function () {
+    var self = this;
+
+    return _.ld.compact(self.jsonld());
+};
+
 Model.prototype._validate_state = function (band) {
+    var self = this;
+
     if (!_.is.String(band)) {
         throw new Error("Model.state: 'band' must be a String, not: " + band);
     }
-}
+};
 
 /**
  */
