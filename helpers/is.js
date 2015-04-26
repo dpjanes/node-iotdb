@@ -55,8 +55,8 @@ var isThing = function (o) {
 /**
  *  XXX - not finished! Need to start making Bridges subclass
  */
-var isBridgeInstance = function (o) {
-    return _.isObject(o);
+var isBridge = function (o) {
+    return o && o._isBridge;
 };
 
 /**
@@ -151,7 +151,7 @@ exports.is = {
     ThingArray: isThingArray,
     Transport: isTransport,
     Transporter: isTransport,
-    BridgeInstance: isBridgeInstance,
+    Bridge: isBridge,
 
     // IOTDB special
     FindKey: isFindKey,

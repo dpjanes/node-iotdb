@@ -509,6 +509,10 @@ Model.prototype._validate_set = function (find_key, new_value) {
 Model.prototype.update = function (band, updated, paramd) {
     var self = this;
 
+    paramd = _.defaults(paramd, {});
+
+    self._validate_update(band, updated, paramd);
+
     if (band === "istate") {
         paramd = _.defaults(paramd, {
             notify: true,
@@ -528,8 +532,6 @@ Model.prototype.update = function (band, updated, paramd) {
     } else {
         return;
     }
-
-    self._validate_update(band, updated, paramd);
 
     self.start(paramd);
     for (var key in updated) {
@@ -887,6 +889,9 @@ Model.prototype._do_pushes = function (attributed) {
         }
 
         _.d.set(pushd, attribute_code, attribute_value);
+
+        // 2015-04-24: pushing now clears, huge change
+        attribute._ovalue = null;
     }
 
     self.bridge_instance.push(pushd);
@@ -1321,8 +1326,8 @@ Model.prototype.bind_bridge = function (bridge_instance) {
 };
 
 Model.prototype._validate_bind_bridge = function (bridge_instance) {
-    if (!_.is.BridgeInstance(bridge_instance)) {
-        throw new Error("Model.bind_bridge: 'bridge_instance' must be a Bridge");
+    if (!_.is.Bridge(bridge_instance)) {
+        throw new Error("Model.bind_bridge: 'bridge_instance' must be a Bridge, not: " + bridge_instance);
     }
 };
 

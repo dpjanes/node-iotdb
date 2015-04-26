@@ -307,7 +307,7 @@ exports.dump_things = function (iot, things) {
 
         console.log("")
         console.log("  thing#:", ti + 1);
-        console.log("  name:", thing.code);
+        console.log("  name:", thing.code());
         console.log("  thing_id:", thing.thing_id());
 
         if (thing.initd.tag) {

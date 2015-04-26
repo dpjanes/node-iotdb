@@ -99,7 +99,6 @@ ThingArray.prototype.push = function (thing, paramd) {
     var self = this;
 
     if (!_.is.Thing(thing)) {
-        console.trace();
         logger.fatal({
             method: "push",
             thing: thing,
@@ -676,7 +675,7 @@ ThingArray.prototype._filter_test = function (d, thing) {
             }
             continue;
         } else if (dpredicate === "_code") {
-            if (thing.code !== dobject) {
+            if (thing.code() !== dobject) {
                 return false;
             }
             continue;
@@ -778,8 +777,6 @@ ThingArray.prototype.filter = function (d) {
                 is_updated = true;
             }
 
-            // console.log("HERE:filter.1.3", self.array_id, self.length)
-
             /*
              *  notify downstream - note that we always do this because
              *  even though this list may not have changed, filters
@@ -793,9 +790,7 @@ ThingArray.prototype.filter = function (d) {
          *  above with { emit_pushed: false } we stop this from being
          *  unnecessarily being called
          */
-        // console.log("HERE:filter.EVENT_THING_PUSHED.0", self.array_id, self.length)
         events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
-            // console.log("HERE:filter.EVENT_THING_PUSHED.1", self.array_id, self.length)
             self.things_changed();
         });
     }

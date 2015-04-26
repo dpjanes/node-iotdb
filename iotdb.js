@@ -240,6 +240,9 @@ exports.logger = function () {
     return bunyan.createLogger.apply(bunyan.createLogger, arguments);
 };
 
+var bridge = require('./bridge');
+exports.Bridge = bridge.Bridge;
+
 var bridge_wrapper = require('./bridge_wrapper');
 exports.bridge_wrapper = bridge_wrapper.bridge_wrapper;
 exports.make_wrap = bridge_wrapper.make_wrap;
