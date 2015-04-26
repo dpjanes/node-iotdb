@@ -458,6 +458,18 @@ Model.prototype._validate_get = function (find_key) {
 Model.prototype.set = function (find_key, new_value) {
     var self = this;
 
+    // too common to allow exceptions to be thrown, but don't like it
+    if (new_value === undefined) {
+        console.trace();
+        logger.warn({
+            method: "Model.set",
+            find_key: find_key,
+            new_value: new_value,
+            cause: "possibly a driver issue",
+        }, "new_value should not be undefined");
+        return;
+    }
+
     self._validate_set(find_key, new_value);
 
     var transaction = _.defaults(self._transaction, {
