@@ -99,7 +99,7 @@ Bridge.prototype.connect = function (connectd) {
     logger.error({
         method: "connect",
         cause: "likely subclass is not finished",
-        bridge: self.name(),
+        bridge: this.name(),
     }, "not implemented");
 };
 
@@ -133,7 +133,7 @@ Bridge.prototype.push = function (pushd) {
     logger.error({
         method: "push",
         cause: "likely subclass is not finished",
-        bridge: self.name(),
+        bridge: this.name(),
     }, "not implemented");
 };
 
@@ -153,7 +153,7 @@ Bridge.prototype.pull = function () {
     logger.error({
         method: "pull",
         cause: "likely subclass is not finished",
-        bridge: self.name(),
+        bridge: this.name(),
     }, "not implemented");
 };
 
@@ -178,7 +178,7 @@ Bridge.prototype.meta = function () {
     logger.error({
         method: "meta",
         cause: "likely subclass is not finished",
-        bridge: self.name(),
+        bridge: this.name(),
     }, "not implemented");
     return {};
 };

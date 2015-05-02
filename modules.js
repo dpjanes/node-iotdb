@@ -106,6 +106,7 @@ Modules.prototype._load_bridges = function () {
         var module = self._moduled[module_name];
         if (module.Bridge) {
             module.Bridge.module_name = module_name;
+            module.Bridge.bridge_name = _.id.to_dash_case((new module.Bridge()).name());
             self._bridges.push(module.Bridge);
         }
     }
@@ -183,8 +184,6 @@ Modules.prototype.bindings = function () {
 Modules.prototype._load_setup = function () {
     var self = this;
     var iotdb = require('./iotdb');
-
-    self._bridges = [];
 
     for (var module_name in self._moduled) {
         var module = self._moduled[module_name];
