@@ -151,8 +151,10 @@ Things.prototype._discover = function (modeld) {
 
     if (modeld.bridge && modeld.model_code) {
         self._discover_bridge(modeld);
+    } else if (modeld.model_code) {
+        self._discover_model(modeld);
     } else {
-        self._discover_normal(modeld);
+        self._discover_all(modeld);
     }
 };
 
@@ -219,15 +221,14 @@ Things.prototype._discover_bridge = function (modeld) {
 };
 
 /**
- *  Normal discovery, where the binding is specified in the Bridge
  */
-Things.prototype._discover_normal = function (modeld) {
+Things.prototype._discover_model = function (modeld) {
     var self = this;
 
     var bindings = modules().bindings();
     for (var bi in bindings) {
         var binding = bindings[bi];
-        if (modeld.model_code && (modeld.model_code !== binding.model_code)) {
+        if (modeld.model_code !== binding.model_code) {
             continue;
         }
 
@@ -240,6 +241,22 @@ Things.prototype._discover_normal = function (modeld) {
         modeld: modeld,
         cause: "maybe this Model or it's binding are not added to IOTDB yet?",
     }, "did not find any matching Models");
+};
+
+/**
+ */
+Things.prototype._discover_all = function (modeld) {
+    var self = this;
+
+    var bindings = modules().bindings();
+    for (var bi in bindings) {
+        var binding = bindings[bi];
+        if (binding.discover === false) {
+            continue;
+        }
+
+        self._discover_binding(modeld, binding);
+    };
 };
 
 /**
