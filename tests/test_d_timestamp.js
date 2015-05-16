@@ -26,7 +26,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), true);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), true);
     });
     it('timestamps: old:TS_OLD, new:no -> false', function() {
         var od = {
@@ -37,7 +37,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), false);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), false);
     });
     it('timestamps: old:no, new:TS_NEW -> true', function() {
         var od = {
@@ -48,7 +48,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), true);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), true);
     });
     it('timestamps: old:TS_OLD, new:TS_NEW -> true', function() {
         var od = {
@@ -60,7 +60,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), true);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), true);
     });
     it('timestamps: old:TS_NEW, new:TS_OLD -> false', function() {
         var od = {
@@ -72,7 +72,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), false);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), false);
     });
     it('timestamps: old:TS_NEW, new:TS_OLD -> true WITH renamed key', function() {
         var od = {
@@ -84,7 +84,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd, { key: '__timestamp' }), true);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd, { key: '__timestamp' }), true);
     });
     it('timestamps: old:TS_NEW, new:TS_OLD -> true USING renamed key', function() {
         var od = {
@@ -96,7 +96,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd, { key: '__timestamp' }), false);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd, { key: '__timestamp' }), false);
     });
     it('timestamps: old:WRONG, new:TS_OLD -> null', function() {
         var od = "wrong";
@@ -105,7 +105,7 @@ describe('test_d_timestamp:', function(){
             key: 'newd',
         };
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), null);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), null);
     });
     it('timestamps: old:TS_OLD, new:wrong -> null', function() {
         var od = {
@@ -114,12 +114,12 @@ describe('test_d_timestamp:', function(){
         };
         var nd = "wrong";
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), null);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), null);
     });
     it('timestamps: old:wrong, new:wrong -> null', function() {
         var od = 123;
         var nd = "wrong";
 
-        assert.strictEqual(_.d.check_timestamp(od, nd), null);
+        assert.strictEqual(_.timestamp.check.dictionary(od, nd), null);
     });
 })

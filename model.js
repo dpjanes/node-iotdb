@@ -552,18 +552,31 @@ Model.prototype.update = function (band, updated, paramd) {
     self._validate_update(band, updated, paramd);
 
     if (band === "istate") {
+        if (!_.d.check_timestamps(self._timestamp, updated["@timestamp"])) {
+            return;
+        }
+
         paramd = _.defaults(paramd, {
             notify: true,
             push: false,
             validate: false,
         });
     } else if (band === "ostate") {
+        /*
+        if (!_.d.check_timestamps(self._timestamp, updated["@timestamp"])) {
+            return;
+        }
+         */
+
         paramd = _.defaults(paramd, {
             notify: true,
             push: true,
             validate: true,
         });
     } else if (band === "meta") {
+        self.meta().update(updated, {
+            check_timestamp: true,
+        });
         return;
     } else if (band === "model") {
         return;
@@ -571,8 +584,12 @@ Model.prototype.update = function (band, updated, paramd) {
         return;
     }
 
+    self._timestamp = updated["@timestamp"] || _.timestamp.make();
     self.start(paramd);
     for (var key in updated) {
+        if (key === "@timestamp") {
+            continue;
+        }
         self.set(key, updated[key]);
     }
     self.end();
@@ -930,6 +947,7 @@ Model.prototype._do_pushes = function (attributed) {
 
         // 2015-04-24: pushing now clears, huge change
         attribute._ovalue = null;
+        attribute._ochanged = true;
     }
 
     self.bridge_instance.push(pushd);
@@ -1342,6 +1360,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                     }
                 }
 
+                pulld["@timestamp"] = _.timestamp.make();
                 self.update("istate", pulld);
                 /*
                 self.update(pulld, {

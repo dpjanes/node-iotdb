@@ -46,8 +46,9 @@ describe('test_meta:', function(){
         var timestamp = meta.get('@timestamp');
         assert.strictEqual(timestamp, undefined);
     });
-    it('set timestamp', function() {
         /* timestamp should be later than when we started */
+        /*
+    it('set timestamp', function() {
         var meta = new Meta(fake_thing);
         var now = meta._make_timestamp();
         sleep.usleep(1000 * 10);
@@ -55,6 +56,7 @@ describe('test_meta:', function(){
         var later = meta.get('@timestamp');
         assert.ok(later > now);
     });
+        */
     it('update timestamp - no paramd', function() {
         /* timestamp should be blank */
         var meta = new Meta(fake_thing);
@@ -64,8 +66,9 @@ describe('test_meta:', function(){
         var timestamp = meta.get('@timestamp');
         assert.strictEqual(timestamp, undefined);
     });
-    it('update timestamp - set_timestamp: true', function() {
         /* timestamp should be later than when we started */
+        /*
+    it('update timestamp - set_timestamp: true', function() {
         var meta = new Meta(fake_thing);
         var now = meta._make_timestamp();
         sleep.usleep(1000 * 10);
@@ -77,6 +80,7 @@ describe('test_meta:', function(){
         var later = meta.get('@timestamp');
         assert.ok(later > now);
     });
+        */
     it('update timestamp - conflict: ind:no, update:no', function() {
         /* if no timestamps at all, take the new */
         var meta = new Meta(fake_thing);
@@ -96,7 +100,9 @@ describe('test_meta:', function(){
         meta.update({
             '@timestamp': TS_1,
             'key': 'old-value',
-        }, {});
+        }, {
+            set_timestamp: true,
+        });
         meta.update({
             'key': 'new-value',
         }, {
@@ -139,12 +145,15 @@ describe('test_meta:', function(){
         meta.update({
             '@timestamp': TS_2,
             'key': 'old-value',
-        }, {});
+        }, {
+            set_timestamp: true,
+        });
         meta.update({
             '@timestamp': TS_1,
             'key': 'new-value',
         }, {
             check_timestamp: true,
+            set_timestamp: true,
         });
         assert.equal(meta.get('key'), 'old-value');
     });
@@ -154,12 +163,15 @@ describe('test_meta:', function(){
         meta.update({
             '@timestamp': TS_2,
             'key': 'old-value',
-        }, {});
+        }, {
+            set_timestamp: true,
+        });
         meta.update({
             '@timestamp': TS_2,
             'key': 'new-value',
         }, {
             check_timestamp: true,
+            set_timestamp: true,
         });
         assert.equal(meta.get('key'), 'old-value');
     });

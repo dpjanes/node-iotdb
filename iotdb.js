@@ -26,8 +26,6 @@
 
 "use strict";
 
-var timers = require('timers');
-
 var events = require('events');
 var util = require('util');
 var path = require('path');

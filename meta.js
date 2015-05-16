@@ -31,6 +31,8 @@ var logger = bunyan.createLogger({
     module: 'meta',
 });
 
+var iot_reachable = _.ld.expand('iot:reachable');
+
 /**
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
@@ -54,13 +56,17 @@ Meta.prototype.state = function () {
 
     if (self.thing.bridge_instance) {
         _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));
-
-        if (!self.thing.bridge_instance.reachable()) {
-            metad[_.ld.expand('iot:reachable')] = false;
-        }
     }
+
     _.extend(metad, self._updated);
 
+    if (self.thing.bridge_instance) {
+        var reachable = self.thing.bridge_instance.reachable() ? true : false;
+        if (reachable !== metad[iot_reachable]) {
+            metad["@timestamp"] = _.timestamp.make();
+            metad[iot_reachable] = reachable;
+        }
+    }
     return metad;
 };
 
@@ -100,13 +106,16 @@ Meta.prototype.set = function (key, value) {
     var self = this;
 
     key = _.ld.expand(key);
+    if (key === iot_reachable) {
+        return;
+    }
 
     if (self._updated[key] !== value) {
         self._updated[key] = value;
         self.thing.meta_changed();
     }
 
-    self._updated["@timestamp"] = (new Date()).toISOString();
+    self._updated["@timestamp"] = _.timestamp.make();
 };
 
 /**
@@ -134,7 +143,7 @@ Meta.prototype.update = function (ind, paramd) {
 
     ind = _.ld.expand(ind);
 
-    if (paramd.check_timestamp && !_.d.check_timestamp(self._updated, ind)) {
+    if (paramd.check_timestamp && !_.timestamp.check.dictionary(self._updated, ind)) {
         return;
     }
 
@@ -144,6 +153,12 @@ Meta.prototype.update = function (ind, paramd) {
     var in_keys = _.keys(ind);
     for (var ki in in_keys) {
         var in_key = in_keys[ki];
+        if (in_key === iot_reachable) {
+            continue;
+        } else if (in_key === "@timestamp") {
+            continue;
+        }
+
         var in_value = ind[in_key];
 
         var old_value = state[in_key];
@@ -159,7 +174,7 @@ Meta.prototype.update = function (ind, paramd) {
         if (in_timestamp) {
             self._updated["@timestamp"] = in_timestamp;
         } else {
-            self._updated["@timestamp"] = self._make_timestamp();
+            self._updated["@timestamp"] = _.timestamp.make();
         }
     }
 
@@ -179,10 +194,6 @@ Meta.prototype.update = function (ind, paramd) {
  */
 Meta.prototype.updates = function () {
     return this._updated;
-};
-
-Meta.prototype._make_timestamp = function () {
-    return (new Date()).toISOString();
 };
 
 exports.Meta = Meta;

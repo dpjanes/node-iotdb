@@ -34,9 +34,14 @@ var logger = bunyan.createLogger({
 
 /* --- callbacks --- */
 /**
- *  @param {string|null} id
+ *  @param {dictionary} d
+ *  @param {string|null} d.id
  *  The ID of the Record. 
- *  When null, no more records will be called back.
+ *
+ *  @param {string|null} d.end
+ *  When "true" no more records will be sent.
+ *  When this is true, there _will not_
+ *  be a "id" value
  *
  *  @callback Transport~list_callback
  */
@@ -80,8 +85,9 @@ Transport.prototype._isTransport = true;
  *  List all the IDs associated with this Transport.
  *  <p>
  *  The callback is called one at a time with the
- *  ID of the Record, 
- *  then null when there are no further values.
+ *  dictionary containing the ID of the Record. 
+ *  When there are no more records a dictionary with
+ *  "end" being true will be sent
  *
  *  @param {dictionary|undefined} paramd
  *  Optional parameters

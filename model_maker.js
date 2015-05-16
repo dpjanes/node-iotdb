@@ -410,6 +410,7 @@ ModelMaker.prototype.make = function () {
         this.__push_keys = [];
         this.__facets = self.__facets;
 
+        this._timestamp = null;
         this.__attributes = [];
         this.__attributed = {};
         for (var ai in self.__attributes) {

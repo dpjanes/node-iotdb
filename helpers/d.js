@@ -141,45 +141,6 @@ var transform = function(o, paramd) {
 };
 
 /**
- *  Return true if 'nd' should used
- *  Return false if it shouldn't
- *  Return null if it shouldn't because of a type problem
- *
- *  Timestamp-conflict:
- *  1) if neither has a timestamp, the 'nd' wins
- *  2) if one has a timestamp, that one wins
- *  3) if both have a timestamp, only update if 'nd'
- *     is later than the current value
- */
-var check_timestamp = function(od, nd, paramd)  {
-    if ((od === null) || !_.is.Object(od)) {
-        return null;
-    }
-    if ((nd === null) || !_.is.Object(nd)) {
-        return null;
-    }
-
-    paramd = _.defaults(paramd, {
-        key: '@timestamp'
-    });
-
-    var ntimestamp = nd[paramd.key];
-    var otimestamp = od[paramd.key];
-
-    if (!ntimestamp && !otimestamp) {
-        return true;
-    } else if (ntimestamp && !otimestamp) {
-        return true;
-    } else if (!ntimestamp && otimestamp) {
-        return false;
-    } else if (ntimestamp <= otimestamp) {
-        return false;
-    } else {
-        return true;
-    }
-};
-
-/**
  *  Return true iff everything in subd is in superd
  */
 var d_contains_d = function (superd, subd) {
@@ -200,7 +161,6 @@ exports.d = {
     get: get,
     set: set,
     transform: transform,
-    check_timestamp: check_timestamp,
 
     is: {
         superset: function(a, b) {
