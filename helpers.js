@@ -39,6 +39,7 @@ var modules = [
     require('./helpers/is'),
     require('./helpers/color'),
     require('./helpers/timestamp'),
+    require('./helpers/error'),
 ];
 for (var mi in modules) {
     var module = modules[mi];

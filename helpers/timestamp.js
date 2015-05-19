@@ -104,15 +104,14 @@ var add_timestamp = function(d, paramd)  {
  */
 var update_timestamp = function(d, paramd)  {
     paramd = _.defaults(paramd, {
-        key: '@timestamp'
+        key: '@timestamp',
+        timestamp: timestamp(),
     });
-
-    var now = timestamp();
 
     if ((d === null) || !_.is.Object(d)) {
         return false;
-    } else if (check_values(d[paramd.key], now)) {
-        d[paramd.key] = now;
+    } else if (check_values(d[paramd.key], paramd.timestamp)) {
+        d[paramd.key] = paramd.timestamp;
         return true;
     } else {
         return false;

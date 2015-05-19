@@ -552,7 +552,7 @@ Model.prototype.update = function (band, updated, paramd) {
     self._validate_update(band, updated, paramd);
 
     if (band === "istate") {
-        if (!_.d.check_timestamps(self._timestamp, updated["@timestamp"])) {
+        if (!_.timestamp.check.values(self._timestamp, updated["@timestamp"])) {
             return;
         }
 
