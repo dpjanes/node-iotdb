@@ -365,6 +365,8 @@ ModelMaker.prototype.vector = function (attribute_codes) {
     return this;
 };
 
+var aid = 0;
+
 /**
  *  The last function you MUST to call when creating
  *  a new model. It will actually create the new class
@@ -410,30 +412,32 @@ ModelMaker.prototype.make = function () {
         this.__push_keys = [];
         this.__facets = self.__facets;
 
-        this._timestamp = null;
+        this.__callbacksd = {};
+        this._transaction = null;
+        this._transactions = [];
+
         this.__attributes = [];
         this.__attributed = {};
         for (var ai in self.__attributes) {
             var in_attribute = self.__attributes[ai];
 
             var out_attribute = _.deepCopy(in_attribute);
-            var out_key = out_attribute.code();
+            out_attribute._aid = aid++;
+            out_attribute._ivalue = null;
+            out_attribute._ichanged = false;
+            out_attribute._ovalue = null;
+            out_attribute._ochanged = false;
 
             this.__attributes.push(out_attribute);
-            this.__attributed[out_key] = out_attribute;
+            this.__attributed[out_attribute.code()] = out_attribute;
         }
 
-        this.__callbacksd = {};
-        this._transaction = null;
-        this._transactions = [];
+        this._ichanged = false;
+        this._itimestamp = null;
 
-        for (var acode in this.__attributed) {
-            var attribute = this.__attributed[acode];
-            attribute._ivalue = null;
-            attribute._ovalue = null;
-            attribute._ichanged = false;
-            attribute._ochanged = false;
-        }
+        this._pushes = 0;
+        this._ochanged = false;
+        this._otimestamp = null;
     };
 
     new_thing.prototype = new model.Model();

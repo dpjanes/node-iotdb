@@ -43,18 +43,19 @@ describe('test_thing_set:', function(){
         var t = new T();
         assert.ok(_.equals({ on: null, intensity: null }, t.state("ostate")))
         t.set('on', true);
-        assert.ok(_.equals({ on: true, intensity: null }, t.state("ostate")))
+        assert.ok(_.d.is.subset({ on: true, intensity: null }, t.state("ostate")))
         t.set('on', false);
-        assert.ok(_.equals({ on: false, intensity: null }, t.state("ostate")))
+        assert.ok(_.d.is.subset({ on: false, intensity: null }, t.state("ostate")))
         t.set('on', 10);
-        assert.ok(_.equals({ on: true, intensity: null }, t.state("ostate")))
+        assert.ok(_.d.is.subset({ on: true, intensity: null }, t.state("ostate")))
         t.set('on', 0);
-        assert.ok(_.equals({ on: false, intensity: null }, t.state("ostate")))
+        assert.ok(_.d.is.subset({ on: false, intensity: null }, t.state("ostate")))
         t.set('intensity', 10);
-        assert.ok(_.equals({ on: false, intensity: 10 }, t.state("ostate")))
+        assert.ok(_.d.is.subset({ on: false, intensity: 10 }, t.state("ostate")))
         t.set('intensity', 1);
-        assert.ok(_.equals({ on: false, intensity: 1 }, t.state("ostate")))
+        assert.ok(_.d.is.subset({ on: false, intensity: 1 }, t.state("ostate")))
     });
+    /* NO MORE TRANSACTIONS
     it('transaction - no validation', function(){
         var T = model.make_model('T')
             .attribute(attribute.make_boolean('on').control())
@@ -69,6 +70,8 @@ describe('test_thing_set:', function(){
         t.end()
         assert.ok(_.equals({ on: 1}, t.state("ostate")))
     });
+    */
+    /* NO MORE TRANSACTIONS
     it('transaction - force validation', function(){
         var T = model.make_model('T')
             .attribute(attribute.make_boolean('on').control())
@@ -83,6 +86,7 @@ describe('test_thing_set:', function(){
         t.end()
         assert.ok(_.equals({ on: true}, t.state("ostate")))
     });
+    */
     it('set - semantic', function(){
         var T = model.make_model('T')
             .attribute(

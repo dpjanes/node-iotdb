@@ -57,45 +57,49 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), true);
 
         /* state */
-        assert.ok(_.equals({ value: true }, m.state("ostate")));
-        assert.ok(_.equals({ value: null }, m.state("istate")));
+        assert.ok(_.d.is.subset({ value: true }, m.state("ostate")));
+        assert.ok(_.d.is.subset({ value: null }, m.state("istate")));
     });
+    /* NO MORE TRANSACTIONS
     it('set/push=true vs. underlying', function(){
         var m = new BooleanModel();
         var as = m.attributes();
         var a = as[0];
 
-        /* changes ovalue */
+        // changes ovalue 
         m.start({ push: true }).set("value", true).end();
 
         assert.strictEqual(a._ivalue, null);
         assert.strictEqual(a._ovalue, true);
 
-        /* get - returns ivalue or ovalue */
+        // get - returns ivalue or ovalue 
         assert.strictEqual(m.get("value"), true);
 
-        /* state */
+        // state 
         assert.ok(_.equals({ value: true }, m.state("ostate")));
         assert.ok(_.equals({ value: null }, m.state("istate")));
     });
+    */
+    /* NO MORE TRANSACTIONS
     it('set/push=false vs. underlying', function(){
         var m = new BooleanModel();
         var as = m.attributes();
         var a = as[0];
 
-        /* changes ivalue */
+        // changes ivalue
         m.start({ push: false }).set("value", true).end();
 
         assert.strictEqual(a._ivalue, true);
         assert.strictEqual(a._ovalue, null);
 
-        /* get - returns ivalue or ovalue */
+        // get - returns ivalue or ovalue
         assert.strictEqual(m.get("value"), true);
 
-        /* state */
+        // state 
         assert.ok(_.equals({ value: true }, m.state("istate")))
         assert.ok(_.equals({ value: null }, m.state("ostate")))
     });
+    */
   });
   describe('integer', function(){
     it('multivalue - initial underlying', function(){
@@ -114,6 +118,7 @@ describe('test_attribute_io:', function(){
         assert.ok(_.equals({ value: null }, m.state("ostate")));
         assert.ok(_.equals({ value: null }, m.state("istate")));
     });
+    /* NO MORE TRANSACTIONS
     it('multivalue - ivalue and ovalue priority', function(){
         var m = new IntegerModel();
         var as = m.attributes();
@@ -123,12 +128,13 @@ describe('test_attribute_io:', function(){
         m.start({ push: true }).set("value", 1).end();
         m.start({ push: false }).set("value", 2).end();
 
-        /* get - returns ivalue before ovalue */
+        // get - returns ivalue before ovalue 
         assert.strictEqual(m.get("value"), 2);
 
-        /* state */
+        // state
         assert.ok(_.equals({ value: 2 }, m.state("istate")));
         assert.ok(_.equals({ value: 1 }, m.state("ostate")));
     });
+    */
   });
 })

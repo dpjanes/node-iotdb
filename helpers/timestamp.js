@@ -28,6 +28,50 @@
 var _ = require("../helpers");
 
 /**
+ *  Return a timestamp in the standard format.
+ *  Which just happens to be the JavaScript 
+ *  ISOString format.
+ */
+var timestamp = function () {
+    return (new Date()).toISOString();
+};
+
+/**
+ *  Return a timestamp in the standard format.
+ *  If the new timestamp <= the argument,
+ *  _advance_ the argument by a millisecond
+ *  and use that
+ */
+var advance = function (reference) {
+    var now = timestamp();
+    if (!reference || (reference < now)) {
+        return now;
+    }
+
+    var rdate = new Date(reference);
+    rdate.setMilliseconds(rdate.getMilliseconds() + 1);
+
+    return rdate.toISOString();
+};
+
+/**
+ *  As below, but directly with the timestamp strings
+ */
+var check_values = function(otimestamp, ntimestamp) {
+    if (!ntimestamp && !otimestamp) {
+        return true;
+    } else if (ntimestamp && !otimestamp) {
+        return true;
+    } else if (!ntimestamp && otimestamp) {
+        return false;
+    } else if (ntimestamp <= otimestamp) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
+/**
  *  Return true if 'nd' should used
  *  Return false if it shouldn't
  *  Return null if it shouldn't because of a type problem
@@ -53,24 +97,7 @@ var check_dictionary = function(od, nd, paramd)  {
     var ntimestamp = nd[paramd.key];
     var otimestamp = od[paramd.key];
 
-    return check_values(otimestamp, ntimestamp)
-};
-
-/**
- *  As above, but directly with the timestamp strings
- */
-var check_values = function(otimestamp, ntimestamp) {
-    if (!ntimestamp && !otimestamp) {
-        return true;
-    } else if (ntimestamp && !otimestamp) {
-        return true;
-    } else if (!ntimestamp && otimestamp) {
-        return false;
-    } else if (ntimestamp <= otimestamp) {
-        return false;
-    } else {
-        return true;
-    }
+    return check_values(otimestamp, ntimestamp);
 };
 
 /**
@@ -118,17 +145,9 @@ var update_timestamp = function(d, paramd)  {
     }
 };
 
-/**
- *  Return a timestamp in the standard format.
- *  Which just happens to be the JavaScript 
- *  ISOString format.
- */
-var timestamp = function () {
-    return (new Date()).toISOString();
-};
-
 exports.timestamp = {
     make: timestamp,
+    advance: advance,
     add: add_timestamp,
     update: update_timestamp,
     check: {

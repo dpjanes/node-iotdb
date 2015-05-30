@@ -154,14 +154,14 @@ ThingArray.prototype.push = function (thing, paramd) {
      *  [Always within a transaction] - not right now
      */
     if ((self._persistds != null) && (self._persistds.length > 0)) {
-        thing.start();
+        // thing.start();
 
         for (var pi in self._persistds) {
             var pd = self._persistds[pi];
             pd.f.apply(thing, Array.prototype.slice.call(pd.av));
         }
 
-        thing.end();
+        // thing.end();
     }
 
     return self;
@@ -269,45 +269,6 @@ ThingArray.prototype.contains = function (thing) {
     } else {
         return thing[self.array_id] = self;
     }
-};
-
-
-/**
- *  Call {@link Thing#start Model.start} on
- *  every item in the ThingArray.
- *
- *  @return {this}
- */
-ThingArray.prototype.start = function () {
-    var self = this;
-
-    self.transaction_depth++;
-
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.start.apply(item, Array.prototype.slice.call(arguments));
-    }
-
-    return self;
-};
-
-/**
- *  Call {@link Thing#end Model.end} on
- *  every item in the ThingArray.
- *
- *  @return {this}
- */
-ThingArray.prototype.end = function () {
-    var self = this;
-
-    self.transaction_depth--;
-    assert.ok(self.transaction_depth >= 0);
-
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.end.apply(item, Array.prototype.slice.call(arguments));
-    }
-    return self;
 };
 
 var _merger = function (srcs, out_items) {

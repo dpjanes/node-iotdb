@@ -26,7 +26,7 @@ var _ = require("../helpers");
 
 var message = function(error, otherwise) {
     if (error && error.message) {
-        return error.message
+        return error.message;
     } else if (_.is.String(message)) {
         return message;
     } else if (otherwise) {

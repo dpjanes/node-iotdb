@@ -691,6 +691,22 @@ Attribute.prototype.validate = function (paramd) {
     }
 };
 
+/**
+ *  Validate a value
+ */
+Attribute.prototype.validate_value = function (value) {
+    var self = this;
+
+    var paramd = {
+        value: value,
+        code: self.code(),
+    };
+
+    self.validate(paramd);
+
+    return paramd.value;
+};
+
 /* --- internal validation --- */
 Attribute.prototype._format = function (value, formats, paramd) {
     var self = this;

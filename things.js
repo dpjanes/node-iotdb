@@ -68,7 +68,10 @@ Things.prototype.things = function (model_code) {
     });
 
     var _add = function (thing) {
-        if (!thing.reachable()) {} else if (!model_code) {
+        if (!thing.reachable()) {
+            // not sure if this is a good idea
+            things.push(thing);
+        } else if (!model_code) {
             things.push(thing);
         } else if (model_code === thing.code()) {
             things.push(thing);

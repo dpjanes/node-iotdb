@@ -224,6 +224,10 @@ Model.prototype._state_istate = function () {
         _.d.set(state, attribute.code(), attribute._ivalue);
     }
 
+    if (self._itimestamp) {
+        _.d.set(state, "@timestamp", self._itimestamp);
+    }
+
     return state;
 };
 
@@ -236,6 +240,10 @@ Model.prototype._state_ostate = function () {
         var attribute = attributes[ai];
 
         _.d.set(state, attribute.code(), attribute._ovalue);
+    }
+
+    if (self._otimestamp) {
+        _.d.set(state, "@timestamp", self._otimestamp);
     }
 
     return state;
@@ -437,6 +445,382 @@ Model.prototype._validate_get = function (find_key) {
 };
 
 /**
+ */
+Model.prototype.update = function (band, updated, paramd) {
+    var self = this;
+
+    paramd = _.defaults(paramd, {});
+
+    self._validate_update(band, updated, paramd);
+
+    if (band === "istate") {
+        self._update_istate(band, updated, paramd);
+    } else if (band === "ostate") {
+        self._update_ostate(band, updated, paramd);
+    } else if (band === "meta") {
+        self._update_meta(band, updated, paramd);
+    }
+
+    return self;
+};
+
+Model.prototype._validate_update = function (band, updated, paramd) {
+    if (!_.is.String(band)) {
+        throw new Error("Model.band: 'band' must be a String, not: " + band);
+    }
+    if (!_.is.Dictionary(updated)) {
+        throw new Error("Model.update: 'find_key' must be a Dictionary, not: " + updated);
+    }
+    if (!_.is.Dictionary(paramd)) {
+        throw new Error("Model.update: 'paramd' must be a Dictionary, not: " + paramd);
+    }
+};
+
+/**
+ *  "istate" is the Input STATE, the 'actual' state 
+ *  of Thing as far as we know
+ */
+Model.prototype._update_istate = function (band, updated, paramd) {
+    var self = this;
+
+    paramd = _.defaults(paramd, {
+        check_timestamp: true,
+        set_timestamp: true,
+        notify: true,
+        validate: false,
+    });
+
+    if (paramd.check_timestamp && !_.timestamp.check.values(self._itimestamp, updated["@timestamp"])) {
+        return;
+    }
+
+    // go through each update and see if it actually updates the attribute
+    var changed_attributes = [];
+
+    for (var attribute_code in updated) {
+        var attribute_value = updated[attribute_code];
+        if (attribute_value === undefined) {
+            continue;
+        }
+
+        var attribute = self.__attributed[attribute_code];
+        if (!attribute) {
+            if (attribute_code !== "@timestamp") {
+                logger.warn({
+                    method: "_update_istate",
+                    attribute_code: attribute_code,
+                    model_code: self.code(),
+                    cause: "likely programmer error"
+                }, "attribute not found");
+            }
+
+            continue;
+        }
+
+        if (paramd.validate) {
+            attribute_value = attribute.validate_value(attribute_value);
+            if (attribute_value === undefined) {
+                continue;
+            }
+        }
+
+
+        if (attribute._ivalue === attribute_value) {
+            continue;
+        }
+
+        attribute._ivalue = attribute_value;
+        attribute._ichanged = true;
+
+        changed_attributes.push(attribute);
+    }
+
+    if (_.isEmpty(changed_attributes)) {
+        return;
+    }
+
+    // it has changed - let's update the timestamp 
+    if (paramd.set_timestamp) {
+        if (updated["@timestamp"]) {
+            self._itimestamp = updated["@timestamp"];
+        } else {
+            self._itimestamp = _.timestamp.make();
+        }
+    }
+
+    if (process.notify) {
+        // callbacks for individual attributes -- callbacks happen nextTick 
+        changed_attributes.map(function (attribute) {
+            var callbacks = self.__callbacksd[attribute.code()];
+            if (!callbacks) {
+                return;
+            }
+
+            callbacks.map(function (callback) {
+                process.nextTick(function () {
+                    callback(self, attribute, attribute._ivalue);
+                });
+            });
+        });
+
+        // callbacks for _state_ -- callbacks happen nextTick 
+        process.nextTick(function () {
+            self.__emitter.emit("state", self);
+        });
+    }
+
+    // callbacks for _istate_ -- callbacks happen nextTick 
+    process.nextTick(function () {
+        self.__emitter.emit("istate", self);
+    });
+
+    // clear
+    changed_attributes.map(function (attribute) {
+        attribute._ichanged = false;
+    });
+};
+
+/**
+ *  "ostate" is the Output STATE, the state we'd 
+ *  like the Thing to become.
+ */
+Model.prototype._update_ostate = function (band, updated, paramd) {
+    var self = this;
+
+    paramd = _.defaults(paramd, {
+        check_timestamp: true,
+        set_timestamp: true,
+        notify: true,
+        validate: true,
+        force: false,
+    });
+
+    if (paramd.check_timestamp && !_.timestamp.check.values(self._otimestamp, updated["@timestamp"])) {
+        return;
+    }
+
+    // go through each update and see if it actually updates the attribute
+    var changed_attributes = [];
+    var push_attributes = [];
+
+    for (var attribute_code in updated) {
+        var attribute_value = updated[attribute_code];
+        if (attribute_value === undefined) {
+            continue;
+        }
+
+        var attribute = self.__attributed[attribute_code];
+        if (!attribute) {
+            if (attribute_code !== "@timestamp") {
+                logger.warn({
+                    method: "_update_ostate",
+                    attribute_code: attribute_code,
+                    model_code: self.code(),
+                    cause: "likely programmer error"
+                }, "attribute not found");
+            }
+
+            continue;
+        }
+
+        if (paramd.validate) {
+            attribute_value = attribute.validate_value(attribute_value);
+            if (attribute_value === undefined) {
+                continue;
+            }
+        }
+
+        if (attribute._ovalue === attribute_value) {
+            if (paramd.force) {
+                push_attributes.push(attribute);
+            }
+
+            continue;
+        }
+
+        attribute._ovalue = attribute_value;
+        attribute._ochanged = true;
+
+        changed_attributes.push(attribute);
+        push_attributes.push(attribute);
+    }
+
+    if (!_.isEmpty(push_attributes)) {
+        self._push_attributes(push_attributes);
+    }
+
+    // notifications - all happen nextTick
+    if (!_.isEmpty(changed_attributes)) {
+        // it has changed - let's update the timestamp 
+        if (paramd.set_timestamp) {
+            if (updated["@timestamp"]) {
+                self._otimestamp = updated["@timestamp"];
+            } else {
+                self._otimestamp = _.timestamp.make();
+            }
+        }
+
+        if (paramd.notify) {
+            // callbacks for individual attributes
+            changed_attributes.map(function (attribute) {
+                var callbacks = self.__callbacksd[attribute.code()];
+                if (!callbacks) {
+                    return;
+                }
+
+                callbacks.map(function (callback) {
+                    process.nextTick(function () {
+                        callback(self, attribute, attribute._ovalue);
+                    });
+                });
+            });
+
+            // callbacks for _state_
+            process.nextTick(function () {
+                self.__emitter.emit("state", self);
+            });
+        }
+
+        // callbacks for _ostate_ 
+        process.nextTick(function () {
+            self.__emitter.emit("ostate", self);
+        });
+    }
+
+    // clear
+    changed_attributes.map(function (attribute) {
+        attribute._ochanged = false;
+    });
+};
+
+/**
+ *  Send values from this object to the Bridge
+ *
+ *  @return
+ *  self
+ *
+ *  @protected
+ */
+Model.prototype._push_attributes = function (attributes) {
+    var self = this;
+
+    if (!self.bridge_instance) {
+        logger.error({
+            method: "_push_attributes",
+        }, "no bridge_instance - doing nothing");
+
+        self._clear_ostate();
+        return;
+    }
+
+    if (!self.bridge_instance.reachable()) {
+        logger.error({
+            method: "_push_attributes",
+        }, "bridge_instance is not reachable - doing nothing");
+
+        self._clear_ostate();
+        return;
+    }
+
+    var pushd = {};
+
+    // mappings can be attached to bindings to make enumerations work better
+    var mapping = self.bridge_instance.binding.mapping;
+
+    attributes.map(function (attribute) {
+        var attribute_code = attribute.code();
+        var attribute_value = attribute._ovalue;
+
+        if (mapping !== undefined) {
+            var md = mapping[attribute_code];
+            if (md !== undefined) {
+                var v = md[attribute_value];
+                if (v === undefined) {
+                    v = md[_.ld.compact(attribute_value)];
+                }
+                if (v !== undefined) {
+                    attribute_value = v;
+                }
+            }
+        }
+
+        _.d.set(pushd, attribute_code, attribute_value);
+    });
+
+    // nothing to do?
+    if (_.isEmpty(pushd)) {
+        return;
+    }
+
+    // do the push - on the nextTick
+    process.nextTick(function () {
+        if (!self.bridge_instance) {
+            return;
+        }
+
+        self._pushes++;
+
+        try {
+            self.bridge_instance.push(pushd, function (error) {
+                if (error) {
+                    logger.error({
+                        error: _.error.message(error),
+                        cause: "likely in the Bridge",
+                    }, "unexpected error pushing");
+                }
+
+                if (--self._pushes === 0) {
+                    self._clear_ostate();
+                }
+            });
+        } catch (x) {
+            logger.error({
+                exception: x,
+                cause: "likely in the Bridge",
+            }, "unexpected exception pushing");
+
+            if (--self._pushes === 0) {
+                self._clear_ostate();
+            }
+        }
+
+        if (self._pushes < 0) {
+            throw new Error("pushes decremeneted below 0!!!");
+        }
+    });
+};
+
+Model.prototype._clear_ostate = function () {
+    var self = this;
+
+    var changed = false;
+
+    self.__attributes.map(function (attribute) {
+        if ((attribute._ovalue === null) && !attribute._ochanged) {
+            return;
+        }
+
+        attribute._ochanged = false;
+        attribute._ovalue = null;
+
+        changed = true;
+    });
+
+    if (changed) {
+        self._otimestamp = _.timestamp.advance(self._otimestamp);
+        self.__emitter.emit("ostate", self);
+    }
+};
+
+Model.prototype._update_meta = function (band, updated, paramd) {
+    var self = this;
+
+    self.meta().update(updated, {
+        check_timestamp: paramd.check_timestamp,
+    });
+};
+
+/**
  *  Set a value.
  *
  *  <p>
@@ -465,22 +849,18 @@ Model.prototype.set = function (find_key, new_value) {
             method: "Model.set",
             find_key: find_key,
             new_value: new_value,
-            cause: "possibly a driver issue",
+            cause: "usually a programmer error",
         }, "new_value should not be undefined");
         return;
     }
 
     self._validate_set(find_key, new_value);
 
-    var transaction = _.defaults(self._transaction, {
-        force: false,
-        push: true,
-        validate: true,
-    });
-
+    // convert the attribute to an attribute code here
     var rd = self._find(find_key, {
         set: true
     });
+
     if (rd === undefined) {
         logger.warn({
             method: "set",
@@ -490,46 +870,17 @@ Model.prototype.set = function (find_key, new_value) {
         }, "attribute not found");
         return self;
     } else if (!rd.attribute) {
-        logger.error({
-            method: "set",
-            find_key: find_key,
-            cause: "Node-IOTDB programming error"
-        }, "impossible state");
-
-        throw new Error("# Model.get: internal error: impossible state for: " + find_key);
+        throw new Error("Model.set: internal error: impossible state for: " + find_key);
     }
 
-    var attribute = rd.attribute;
-    var attribute_key = attribute.code();
-    var attribute_value_old = transaction.push ? attribute._ovalue : attribute._ivalue;
-    var attribute_value_new = transaction.validate ? self._validate(attribute, new_value) : new_value;
-    if (attribute_value_new === undefined) {
-        attribute_value_new = attribute_value_old;
-    }
+    // just handoff to "update"
+    var updated = {};
+    updated[rd.attribute.code()] = new_value;
+    updated["@timestamp"] = _.timestamp.make();
 
-    /*
-    console.log("ICHANGED.1", 
-        attribute._ivalue, attribute_value_new,
-        transaction.force,
-        (attribute_value_old === attribute_value_new));
-     */
-    if (!transaction.force && (attribute_value_old === attribute_value_new)) {
-        return self;
-    }
-
-    if (transaction.push) {
-        attribute._ochanged = true;
-        attribute._ovalue = attribute_value_new;
-        self._do_push(attribute, false);
-        self._do_notify(attribute, false);
-    } else {
-        // console.log("ICHANGED.2", attribute._ivalue, attribute_value_new);
-        attribute._ichanged = true;
-        attribute._ivalue = attribute_value_new;
-        self._do_notify(attribute, false);
-    }
-
-    return self;
+    self.update("ostate", updated, {
+        check_timestamp: false,
+    });
 };
 
 Model.prototype._validate_set = function (find_key, new_value) {
@@ -539,168 +890,6 @@ Model.prototype._validate_set = function (find_key, new_value) {
     if (new_value === undefined) {
         throw new Error("Model.set: 'new_value' must not be undefined");
     }
-};
-
-/**
- *  Set many values at once, using a dictionary
- */
-Model.prototype.update = function (band, updated, paramd) {
-    var self = this;
-
-    paramd = _.defaults(paramd, {});
-
-    self._validate_update(band, updated, paramd);
-
-    if (band === "istate") {
-        if (!_.timestamp.check.values(self._timestamp, updated["@timestamp"])) {
-            return;
-        }
-
-        paramd = _.defaults(paramd, {
-            notify: true,
-            push: false,
-            validate: false,
-        });
-    } else if (band === "ostate") {
-        /*
-        if (!_.d.check_timestamps(self._timestamp, updated["@timestamp"])) {
-            return;
-        }
-         */
-
-        paramd = _.defaults(paramd, {
-            notify: true,
-            push: true,
-            validate: true,
-        });
-    } else if (band === "meta") {
-        self.meta().update(updated, {
-            check_timestamp: true,
-        });
-        return;
-    } else if (band === "model") {
-        return;
-    } else {
-        return;
-    }
-
-    self._timestamp = updated["@timestamp"] || _.timestamp.make();
-    self.start(paramd);
-    for (var key in updated) {
-        if (key === "@timestamp") {
-            continue;
-        }
-        self.set(key, updated[key]);
-    }
-    self.end();
-
-    return self;
-};
-
-Model.prototype._validate_update = function (band, updated, paramd) {
-    if (!_.is.String(band)) {
-        throw new Error("Model.band: 'band' must be a String, not: " + band);
-    }
-    if (!_.is.Dictionary(updated)) {
-        throw new Error("Model.update: 'find_key' must be a Dictionary, not: " + updated);
-    }
-    if (!_.is.Dictionary(paramd)) {
-        throw new Error("Model.update: 'paramd' must be a Dictionary, not: " + paramd);
-    }
-};
-
-/**
- *  Start a transaction. No validation, notification
- *  or pushes caused by {@link Thing#set Model.set} will
- *  happen until {@link Thing#end Model.end} is called.
- *
- *  <p>
- *  Transactions may be nested but nothing is "inherited"
- *  from the wrapping transaction.
- *  </p>
- *
- *  @param {boolean} paramd.notify
- *  If true, send notifications. Typically when a user
- *  sets their own values they leave this off.
- *  Default false
- *
- *  @param {boolean} paramd.validate
- *  If true, validate changes. 
- *  Default false
- *
- *  @param {boolean} paramd.push
- *  If true, push changes to the Bridge.
- *  Default true
- *
- *  @return
- *  this
- */
-Model.prototype.start = function (paramd) {
-    var self = this;
-
-    self._transaction = _.defaults(paramd, {
-        notify: false,
-        validate: true,
-        push: true,
-        force: false,
-
-        _notifyd: {},
-        _validated: {},
-        _pushd: {},
-    });
-    self._transactions = self._transactions || [];
-    self._transactions.push(self._transaction);
-
-    return self;
-};
-
-/**
- *  End a transaction.
- *  Pending pushes/notification/validation
- *  caused by {@link Thing#set Model.set}
- *  will be done.
- *  There must be a corresponding {@link Thing#start Model.start}
- *  called earlier. (<code>paramd</code> is set in the start).
- *
- *  <p>
- *  Transactions may be nested but nothing is "inherited"
- *  from the wrapping transaction.
- *  </p>
- *
- *  <p>
- *  Order of updating
- *  </p>
- *  <ol>
- *  <li>{@link Thing#end Model.end} is called on all submodels
- *  <li>{@link Thing#_do_notifies notification} (if paramd.notify is true)
- *  <li>{@link Thing#_do_pushes} push (if paramd.push is true)
- *  </ol>
- *
- *  @return
- *  this
- */
-Model.prototype.end = function () {
-    var self = this;
-
-    if (self._transaction) {
-        if (self._transaction.notify) {
-            self._do_notifies(self._transaction._notifyd);
-        }
-        self._do_notifies2(self._transaction._notifyd);
-
-        if (self._transaction.push) {
-            self._do_pushes(self._transaction._pushd);
-        }
-
-        self._transactions.pop();
-        if (self._transactions.length) {
-            self._transaction = self._transactions[self._transactions.length - 1];
-        } else {
-            self._transaction = null;
-        }
-    }
-
-    return self;
 };
 
 /**
@@ -753,7 +942,6 @@ Model.prototype.on = function (find_key, callback) {
         on: true
     });
     if (rd === undefined) {
-        // console.log("# Model.on: error: attribute '" + find_key + "' not found");
         logger.error({
             method: "on",
             find_key: find_key
@@ -907,75 +1095,6 @@ Model.prototype._do_push = function (attribute, immediate) {
 };
 
 /**
- *  Send values from this object to the Bridge
- *
- *  @return
- *  self
- *
- *  @protected
- */
-Model.prototype._do_pushes = function (attributed) {
-    var self = this;
-
-    if (!self.bridge_instance) {
-        return;
-    }
-
-    var mapping = self.bridge_instance.binding.mapping;
-    var pushd = {};
-
-    for (var key in attributed) {
-        var attribute = attributed[key];
-        var attribute_code = attribute.code();
-        var attribute_value = attribute._ovalue;
-
-        // mappings can be attached to bindings to make enumerations better
-        if (mapping !== undefined) {
-            var md = mapping[attribute_code];
-            if (md !== undefined) {
-                var v = md[attribute_value];
-                if (v === undefined) {
-                    v = md[_.ld.compact(attribute_value)];
-                }
-                if (v !== undefined) {
-                    attribute_value = v;
-                }
-            }
-        }
-
-        _.d.set(pushd, attribute_code, attribute_value);
-
-        // 2015-04-24: pushing now clears, huge change
-        attribute._ovalue = null;
-        attribute._ochanged = true;
-    }
-
-    self.bridge_instance.push(pushd);
-};
-
-/**
- *  Validate this updated attribute. Attribute
- *  should be rewritten to make this redundant
- *
- *  @param attributes
- *  The {@link Attribute} to validate
- *
- *  @protected
- */
-Model.prototype._validate = function (attribute, new_value) {
-    var self = this;
-
-    var paramd = {
-        value: new_value,
-        code: attribute.code(),
-    };
-
-    attribute.validate(paramd);
-
-    return paramd.value;
-};
-
-/**
  *  Notify listened of this updated attribute.
  *
  *  If there is a no stack or immediate is
@@ -998,7 +1117,9 @@ Model.prototype._do_notify = function (attribute, immediate) {
         attributed[attribute.code()] = attribute;
 
         self._do_notifies(attributed);
-        self._do_notifies2(attributed);
+        self._do_notifies_istate(attributed);
+        self._do_notifies_ostate(attributed);
+        self._do_notifies_send();
     } else {
         self._transaction._notifyd[attribute.code()] = attribute;
     }
@@ -1056,25 +1177,47 @@ Model.prototype._do_notifies = function (attributed) {
 /**
  *  This does istate/ostate notifications
  */
-Model.prototype._do_notifies2 = function (attributed) {
+Model.prototype._do_notifies_istate = function (attributed) {
     var self = this;
 
-    var ichanged = false;
-    var ochanged = false;
 
     for (var attribute_key in attributed) {
         var attribute = attributed[attribute_key];
-        ichanged |= attribute._ichanged;
-        ochanged |= attribute._ochanged;
+
+        self._ichanged |= attribute._ichanged;
 
         attribute._ichanged = false;
+    }
+};
+
+Model.prototype._do_notifies_ostate = function (attributed) {
+    var self = this;
+
+    // console.log("DPJ._do_notifies_ostate: START CHECK NOTIFIES");
+
+    for (var attribute_key in attributed) {
+        var attribute = attributed[attribute_key];
+
+        self._ochanged |= attribute._ochanged;
+
+        // if (attribute._ochanged) { console.log("HERE:DPJ: OSTATE CHANGED", self._thing_id, attribute_key, attribute._ovalue); }
+
         attribute._ochanged = false;
     }
 
-    if (ichanged) {
+    // console.log("DPJ._do_notifies_ostate: END CHECK NOTIFIES");
+};
+
+Model.prototype._do_notifies_send = function () {
+    var self = this;
+
+    if (self._ichanged) {
+        self._ichanged = false;
         self.__emitter.emit("istate", self);
     }
-    if (ochanged) {
+
+    if (self._ochanged) {
+        self._ochanged = false;
         self.__emitter.emit("ostate", self);
     }
 };
@@ -1360,15 +1503,11 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                     }
                 }
 
-                pulld["@timestamp"] = _.timestamp.make();
+                if (!pulld["@timestamp"]) {
+                    pulld["@timestamp"] = _.timestamp.make();
+                }
+
                 self.update("istate", pulld);
-                /*
-                self.update(pulld, {
-                    notify: true,
-                    push: false,
-                    force: false,
-                });
-                */
             } else {
                 self.meta_changed();
             }

@@ -87,7 +87,12 @@ FIFOQueue.prototype.add = function (qitem) {
 
     if (qitem.id !== undefined) {
         for (var qi in self.qitems) {
-            if (self.qitems[qi].id === qitem.id) {
+            var xq = self.qitems[qi];
+            if (xq.id === qitem.id) {
+                if (xq.coda) {
+                    xq.coda();
+                }
+                
                 self.qitems.splice(qi, 1, qitem);
                 found = true;
                 break;
@@ -139,12 +144,17 @@ FIFOQueue.prototype.resume = function () {
  *  @param {dictionary} qitem
  *  See {@link FIFOQueue#add add}
  */
-FIFOQueue.prototype.finished = function (qitem) {
+FIFOQueue.prototype.finished = function (qitem, coda_argument) {
     var self = this;
 
     var found = false;
     for (var qi in self.qurrents) {
-        if (self.qurrents[qi].__qid === qitem.__qid) {
+        var xq = self.qurrents[qi];
+        if (xq.__qid === qitem.__qid) {
+            if (xq.coda) {
+                xq.coda(coda_argument);
+            }
+
             self.qurrents.splice(qi, 1);
             found = true;
             break;
@@ -193,7 +203,7 @@ FIFOQueue.prototype.run = function () {
             stack: x.stack,
         }, "exception running qitem - finishing just in case");
 
-        self.finished(qitem);
+        self.finished(qitem, x);
     }
 };
 
