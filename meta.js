@@ -44,6 +44,8 @@ var Meta = function (thing) {
     self._updated = {};
 };
 
+var machine_id;
+
 /**
  *  Return the metadata
  */
@@ -67,6 +69,9 @@ Meta.prototype.state = function () {
             metad[iot_reachable] = reachable;
         }
     }
+
+    _.extend(metad, require('iotdb').controller_meta());
+
     return metad;
 };
 

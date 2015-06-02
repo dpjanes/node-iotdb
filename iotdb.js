@@ -269,6 +269,30 @@ exports.module = function (name) {
 };
 
 /**
+ *  Metadata related to this controller & session
+ */
+var iot_controller_machine = _.ld.expand('iot:controller.machine-id');
+var iot_controller_session = _.ld.expand('iot:controller.session-timestamp');
+
+var controller_machine;
+var controller_session = _.timestamp.make();
+
+exports.controller_meta = function() {
+    var metad = {};
+
+    metad[iot_controller_session] = controller_session;
+
+    if (controller_machine === undefined) {
+        controller_machine = iotdb.keystore().get("/machine_id", null);
+    }
+    if (controller_machine) {
+        metad[iot_controller_machine] = controller_machine
+    }
+
+    return metad;
+};
+
+/**
  *  Singleton
  */
 exports.instance = null;
