@@ -1403,15 +1403,26 @@ Model.prototype.transmogrify = function (transmogrifier) {
     return transmogrifier.transmogrify(this);
 };
 
+
+var metad = {}
+
 /**
  *  Return an object to access and
  *  manipulate the Metadata.
+ *  <p>
+ *  Eventually we'll remove the Meta object,
+ *  which is causing more trouble than 
+ *  it's worth.
  */
 Model.prototype.meta = function () {
     var self = this;
 
     if (self.__meta_thing === undefined) {
-        self.__meta_thing = new meta_thing.Meta(self);
+        self.__meta_thing = metad[self._thing_id];
+        if (!self._meta_thing) {
+            self.__meta_thing = new meta_thing.Meta(self);
+            metad[self._thing_id] = self.__meta_thing;
+        }
     }
 
     return self.__meta_thing;
@@ -1468,11 +1479,14 @@ Model.prototype.disconnect = function () {
     return wait;
 };
 
+var reachabled = {};
+
 /**
  *  Note it's OK if we're already bound - this will just replace it
  */
 Model.prototype.bind_bridge = function (bridge_instance) {
     var self = this;
+    var is_reachable = bridge_instance.reachable() ? true : false;
 
     self._validate_bind_bridge(bridge_instance);
 
@@ -1509,13 +1523,22 @@ Model.prototype.bind_bridge = function (bridge_instance) {
 
                 self.update("istate", pulld);
             } else {
-                self.meta_changed();
+                // note the doesn't account for other meta changes sigh - real hack, fix
+                if (reachabled[self._thing_id] !== is_reachable) {
+                    console.log("WAS", reachabled[self._thing_id], "IS", is_reachable);
+                    reachabled[self._thing_id] = is_reachable;
+
+                    self.meta()._updated["@timestamp"] = _.timestamp.make()
+
+                    self.meta_changed();
+                }
             }
         };
 
         self._thing_id = self.bridge_instance.meta()["iot:thing"] + ":" + self.code();
     }
 
+    reachabled[self._thing_id] = is_reachable;
     self.meta_changed();
 
     return self;

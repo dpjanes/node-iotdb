@@ -57,19 +57,16 @@ Meta.prototype.state = function () {
     metad[_.ld.expand('schema:name')] = self.thing.name;
 
     if (self.thing.bridge_instance) {
+        // bridge metadata
         _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));
+
+        // bridge reachable
+        metad[iot_reachable] = self.thing.bridge_instance.reachable() ? true : false;
+    } else {
+        metad[iot_reachable] = false;
     }
 
     _.extend(metad, self._updated);
-
-    if (self.thing.bridge_instance) {
-        var reachable = self.thing.bridge_instance.reachable() ? true : false;
-        if (reachable !== metad[iot_reachable]) {
-            metad["@timestamp"] = _.timestamp.make();
-            metad[iot_reachable] = reachable;
-        }
-    }
-
     _.extend(metad, require('iotdb').controller_meta());
 
     return metad;
@@ -100,6 +97,7 @@ Meta.prototype.get = function (key, otherwise) {
 
 /**
  *  Set a metavalue
+ *  XXX - consider just making this call 'update'
  *
  *  @param {string} key
  *  An IRI or expandable string

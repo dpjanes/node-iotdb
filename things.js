@@ -353,6 +353,10 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
         // tell the world
         self.emit("thing", thing);
     } else if (thing.reachable()) {
+        // don't replace reachable things
+        return;
+    } else if (!bridge_instance.reachable()) {
+        // don't replace with an unreachable thing
         return;
     } else {
         // replace the bridge for the existing thing 

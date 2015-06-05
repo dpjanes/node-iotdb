@@ -438,6 +438,8 @@ ModelMaker.prototype.make = function () {
         this._pushes = 0;
         this._ochanged = false;
         this._otimestamp = null;
+
+        this._reachable = true;
     };
 
     new_thing.prototype = new model.Model();
