@@ -162,6 +162,7 @@ IOT.prototype.discover = function (modeld, initd) {
  *  Persist all changes to metadata.
  *  <p>
  *  Tons of work needed here
+ *  XXX - deletable?
  */
 IOT.prototype.meta_save = function (t) {
     var self = this;
@@ -205,6 +206,48 @@ IOT.prototype.meta_save = function (t) {
         for (var thing_id in self.thing_instanced) {
             _persist(self.thing_instanced[thing_id]);
         }
+    }
+};
+
+/**
+ *  Kind of an arbitrary key / values store.
+ *  This is both a setter and getter.
+ *  This class doesn't use it but it's very
+ *  handy for clients.
+ */
+IOT.prototype.data = function (key, d) {
+    var self = this;
+
+    if (self.datadsd === undefined) {
+        self.datadsd = {};
+    }
+
+    if (d === undefined) {
+        return self.datadsd[key];
+    } else if (_.isObject(d)) {
+        var datads = self.datadsd[key];
+        if (datads === undefined) {
+            datads = self.datadsd[key] = [];
+        }
+
+        var found = false;
+        if (d.id !== undefined) {
+            for (var di in datads) {
+                if (datads[di].id === d.id) {
+                    datads.splice(di, 1, d);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            datads.push(d);
+        }
+
+        return self;
+    } else {
+        throw new Error("IOT.data: the value must always be an object");
     }
 };
 
@@ -277,7 +320,7 @@ var iot_controller_session = _.ld.expand('iot:controller.session-timestamp');
 var controller_machine;
 var controller_session = _.timestamp.make();
 
-exports.controller_meta = function() {
+exports.controller_meta = function () {
     var metad = {};
 
     metad[iot_controller_session] = controller_session;
@@ -286,11 +329,45 @@ exports.controller_meta = function() {
         controller_machine = exports.keystore().get("/machine_id", null);
     }
     if (controller_machine) {
-        metad[iot_controller_machine] = controller_machine
+        metad[iot_controller_machine] = controller_machine;
     }
 
     return metad;
 };
+
+/**
+ *  Really HomeStar related, but having them in 
+ *  IOTDB makes debugging projects a lot easier
+ */
+var _group_default = "My Cookbook";
+var _cookbook_name = _group_default;
+var _cookbook_id;
+
+var recipe = function (initd) {
+    if (_cookbook_name) {
+        initd.group = _cookbook_name;
+    }
+    if (_cookbook_id) {
+        initd.cookbook_id = _cookbook_id;
+    }
+
+    exports.iot().data("recipe", initd);
+};
+
+var cookbook = function (cookbook_name, cookbook_id) {
+    if (cookbook_name) {
+        _cookbook_name = cookbook_name;
+    } else {
+        _cookbook_name = _group_default;
+    }
+
+    if (cookbook_id) {
+        _cookbook_id = cookbook_id;
+    }
+};
+
+exports.recipe = recipe;
+exports.cookbook = cookbook;
 
 /**
  *  Singleton

@@ -69,6 +69,7 @@ describe('test_attribute_rgb:', function(){
             .make();
 
         var a = new AModel();
+        a._clear_ostate = function() {};
         a.set('rgb', 'A')
         assert.strictEqual(a.state("ostate").rgb, null)
 
@@ -87,6 +88,7 @@ describe('test_attribute_rgb:', function(){
             .make();
 
         var a = new AModel();
+        a._clear_ostate = function() {};
         a.set('rgb', '#000000')
         assert.strictEqual(a.state("ostate").rgb, "#000000")
 
@@ -105,6 +107,7 @@ describe('test_attribute_rgb:', function(){
             .make();
 
         var a = new AModel();
+        a._clear_ostate = function() {};
         a.set('rgb', 'red')
         assert.strictEqual(a.state("ostate").rgb, "#FF0000")
 

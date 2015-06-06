@@ -92,7 +92,7 @@ FIFOQueue.prototype.add = function (qitem) {
                 if (xq.coda) {
                     xq.coda();
                 }
-                
+
                 self.qitems.splice(qi, 1, qitem);
                 found = true;
                 break;

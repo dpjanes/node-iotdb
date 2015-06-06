@@ -40,11 +40,12 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), null);
 
         /* state */
-        assert.ok(_.equals({ value: null }, m.state("ostate")));
-        assert.ok(_.equals({ value: null }, m.state("istate")));
+        assert.ok(_.d.is.subset({ value: null }, m.state("ostate")));
+        assert.ok(_.d.is.subset({ value: null }, m.state("istate")));
     });
     it('set vs. underlying', function(){
         var m = new BooleanModel();
+        m._clear_ostate = function() {};
         var as = m.attributes();
         var a = as[0];
 

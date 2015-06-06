@@ -47,6 +47,7 @@ describe('test_thing_setup:', function(){
             .attribute(attribute.make_boolean('on').control())
             .make();
         var t = new T();
+        t._clear_ostate = function() {};
         assert.ok(_.d.is.subset({ on: null }, t.state("ostate")))
         t.set('on', true);
         assert.ok(_.d.is.subset({ on: true }, t.state("ostate")))
@@ -63,6 +64,7 @@ describe('test_thing_setup:', function(){
             .attribute(attribute.make_number('intensity').control())
             .make();
         var t = new T();
+        t._clear_ostate = function() {};
         assert.ok(_.d.is.subset({ on: null, intensity: null }, t.state("ostate")))
         t.set('on', true);
         assert.ok(_.d.is.subset({ on: true, intensity: null }, t.state("ostate")))

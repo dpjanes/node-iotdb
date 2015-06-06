@@ -80,6 +80,7 @@ describe('test_attribute_format:', function(){
             )
             .make();
         var t = new T();
+        t._clear_ostate = function() {};
         assert.ok(t.state("ostate")['when'] === null)
 
         t.set('when', "2014-02-14T05:00:00.000Z")

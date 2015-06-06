@@ -1404,7 +1404,7 @@ Model.prototype.transmogrify = function (transmogrifier) {
 };
 
 
-var metad = {}
+var metad = {};
 
 /**
  *  Return an object to access and
@@ -1528,7 +1528,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                     console.log("WAS", reachabled[self._thing_id], "IS", is_reachable);
                     reachabled[self._thing_id] = is_reachable;
 
-                    self.meta()._updated["@timestamp"] = _.timestamp.make()
+                    self.meta()._updated["@timestamp"] = _.timestamp.make();
 
                     self.meta_changed();
                 }

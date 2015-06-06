@@ -41,6 +41,7 @@ describe('test_thing_set:', function(){
             )
             .make();
         var t = new T();
+        t._clear_ostate = function() {};
         assert.ok(_.equals({ on: null, intensity: null }, t.state("ostate")))
         t.set('on', true);
         assert.ok(_.d.is.subset({ on: true, intensity: null }, t.state("ostate")))
@@ -96,6 +97,7 @@ describe('test_thing_set:', function(){
             )
             .make();
         var t = new T();
+        t._clear_ostate = function() {};
 
         assert.strictEqual(null, t.state("ostate")['powered'])
         assert.ok(isNaN(t.state("ostate")['on']))
