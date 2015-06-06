@@ -283,7 +283,7 @@ exports.controller_meta = function() {
     metad[iot_controller_session] = controller_session;
 
     if (controller_machine === undefined) {
-        controller_machine = iotdb.keystore().get("/machine_id", null);
+        controller_machine = exports.keystore().get("/machine_id", null);
     }
     if (controller_machine) {
         metad[iot_controller_machine] = controller_machine
