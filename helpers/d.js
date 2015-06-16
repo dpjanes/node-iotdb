@@ -157,10 +157,39 @@ var d_contains_d = function (superd, subd) {
     return true;
 };
 
+/**
+ *  Like extend, except dictionaries get merged.
+ *  This also only uses JSON-like params, functions
+ *  are not copied
+ */
+var smart_extend = function (od) {
+    _.each(Array.prototype.slice.call(arguments, 1), function (xd) {
+        if (!_.isObject(xd)) {
+            return;
+        }
+
+        for (var key in xd) {
+            var xvalue = xd[key]
+            var ovalue = od[key]
+
+            if ((ovalue === null) || (ovalue === undefined)) {
+                od[key] = _.deepCopy(xvalue);
+            } else if (_.isObject(ovalue) && _.isObject(xvalue)) {
+                smart_extend(ovalue, xvalue)
+            } else if (xvalue === undefined) {} else if (_.isFunction(xvalue)) {} else if (_.isNaN(xvalue)) {} else {
+                od[key] = xvalue
+            }
+        }
+    })
+
+    return od;
+};
+
 exports.d = {
     get: get,
     set: set,
     transform: transform,
+    smart_extend: smart_extend,
 
     is: {
         superset: function(a, b) {

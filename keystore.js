@@ -93,7 +93,7 @@ Keystore.prototype._load = function () {
                 exception: paramd.exception,
             }, "error loading JSON keystore.json");
         } else {
-            _.smart_extend(self.d, paramd.doc);
+            _.d.smart_extend(self.d, paramd.doc);
         }
 
         if (++count === 0) {

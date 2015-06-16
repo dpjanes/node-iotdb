@@ -506,12 +506,14 @@ Model.prototype._update_istate = function (band, updated, paramd) {
         var attribute = self.__attributed[attribute_code];
         if (!attribute) {
             if (attribute_code !== "@timestamp") {
+                /*
                 logger.warn({
                     method: "_update_istate",
                     attribute_code: attribute_code,
                     model_code: self.code(),
                     cause: "likely programmer error"
                 }, "attribute not found");
+                */
             }
 
             continue;
@@ -548,7 +550,7 @@ Model.prototype._update_istate = function (band, updated, paramd) {
         }
     }
 
-    if (process.notify) {
+    if (paramd.notify) {
         // callbacks for individual attributes -- callbacks happen nextTick 
         changed_attributes.map(function (attribute) {
             var callbacks = self.__callbacksd[attribute.code()];
