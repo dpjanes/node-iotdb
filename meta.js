@@ -60,6 +60,12 @@ Meta.prototype.state = function () {
         // bridge metadata
         _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));
 
+
+        // binding metadata
+        if (self.thing.bridge_instance.binding && self.thing.bridge_instance.binding.metad) {
+            _.extend(metad, _.ld.expand(self.thing.bridge_instance.binding.metad));
+        }
+
         // bridge reachable
         metad[iot_reachable] = self.thing.bridge_instance.reachable() ? true : false;
     } else {

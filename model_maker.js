@@ -229,20 +229,24 @@ ModelMaker.prototype.attribute = function (attribute) {
 
 // reading
 ModelMaker.prototype.i = function (code, attribute) {
+    var name = _.ld.first(attribute, 'http://schema.org/name')
+
     return this.attribute(
         _.deepCopy(attribute)
         .code(code)
-        .name(code)
+        .name(name || code)
         .reading()
     );
 };
 
 // control
 ModelMaker.prototype.o = function (code, attribute) {
+    var name = _.ld.first(attribute, 'http://schema.org/name')
+
     return this.attribute(
         _.deepCopy(attribute)
         .code(code)
-        .name(code)
+        .name(name || code)
         .control()
     );
 };
@@ -258,11 +262,13 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         in_code = out_code;
     }
 
+    var name = _.ld.first(attribute, 'http://schema.org/name')
+
     if (out_code === in_code) {
         this.attribute(
             _.deepCopy(attribute)
             .code(in_code)
-            .name(in_code)
+            .name(name || in_code)
             .reading()
             .control()
         );
@@ -270,10 +276,10 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         this.attribute(
             _.deepCopy(attribute)
             .code(in_code)
-            .name(in_code)
+            .name(name || in_code)
             .reading()
         );
-        this.make_attribute_control(in_code, out_code).name(out_code);
+        this.make_attribute_control(in_code, out_code).name(name || out_code);
     }
 
     return this;

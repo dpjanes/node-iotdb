@@ -53,6 +53,11 @@ attribute.integer.percent.volume = iotdb.make_integer(":volume")
     .unit("iot-unit:math.fraction.percent");
 attribute.integer.channel = iotdb.make_integer(":value")
     .minimum(1);
+attribute.integer.temperature = iotdb.make_integer(":temperature");
+attribute.integer.temperature.celsius = iotdb.make_integer(":temperature")
+    .unit("iot-unit:temperature.metric.celsius");
+attribute.integer.fahrenheit = iotdb.make_integer(":temperature")
+    .unit("iot-unit:temperature.imperial.fahrenheit");
 
 /* numbers */
 attribute.number = iotdb.make_number(":value");
