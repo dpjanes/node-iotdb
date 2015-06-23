@@ -361,6 +361,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
     paramd = _.defaults(paramd, {
         verbose: false,
         bands: ["istate", "ostate", "model", "meta"],
+        user: null,
         update: true,
         updated: false, // N.B.
         get: true,
@@ -395,7 +396,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
 
     // updates to the src update the dst
     if (_go(paramd.update)) {
-        primary_transport.updated(function (ud) {
+        primary_transport.updated({ user: paramd.user }, function (ud) {
             if (paramd.update.indexOf(ud.band) === -1) {
                 return;
             }
@@ -404,7 +405,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
         })
     }
 
-    // updates to the dst update the src
+    // updates to the dst update the src - note no user!
     if (_go(paramd.updated)) {
         secondary_transport.updated(function (ud) {
             if (paramd.updated.indexOf(ud.band) === -1) {
@@ -418,11 +419,13 @@ var bind = function (primary_transport, secondary_transport, paramd) {
     // …
     if (_go(paramd.get)) {
         var _secondary_get = secondary_transport.get;
+
         secondary_transport.get = function (gd, callback) {
             if (paramd.get.indexOf(gd.band) === -1) {
                 callback({
                     id: gd.id,
                     band: gd.band,
+                    user: gd.user,
                     value: null,
                     error: new Error("No such band"),
                 });
@@ -441,8 +444,18 @@ var bind = function (primary_transport, secondary_transport, paramd) {
 
     // …
     if (_go(paramd.list)) {
-        secondary_transport.list = function () {
-            primary_transport.list.apply(primary_transport, Array.prototype.slice.call(arguments));
+        secondary_transport.list = function (paramd, callback) {
+            if (arguments.length === 1) {
+                callback = paramd;
+                paramd = {};
+            }
+
+            primary_transport.list(paramd, function(resultd) {
+                // console.log("X.2", paramd);
+                callback(resultd);
+            });
+
+            // primary_transport.list.apply(primary_transport, Array.prototype.slice.call(arguments));
         }
     }
 
@@ -474,6 +487,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
                 primary_transport.get({
                     id: d.id,
                     band: copy_band,
+                    user: d.user,
                 }, copy_callback);
             }
         };

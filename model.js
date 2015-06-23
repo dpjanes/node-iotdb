@@ -1497,6 +1497,8 @@ Model.prototype.bind_bridge = function (bridge_instance) {
         var mapping = self.bridge_instance.binding.mapping;
         self.bridge_instance.pulled = function (pulld) {
             if (pulld) {
+                pulld = _.deepCopy(pulld);
+
                 // mappings can be attached to bindings to make enumerations better
                 if (mapping !== undefined) {
                     for (var attribute_code in pulld) {
