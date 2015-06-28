@@ -37,6 +37,9 @@ var iot_js_integer = _.ld.expand("iot:integer");
 var iot_js_number = _.ld.expand("iot:number");
 var iot_js_string = _.ld.expand("iot:string");
 
+var iot_js_set = _.ld.expand("iot:set");
+var iot_js_list = _.ld.expand("iot:list");
+
 var iot_js_type = _.ld.expand("iot:type");
 
 var iot_js_minimum = _.ld.expand("iot:minimum");
@@ -697,14 +700,60 @@ Attribute.prototype.validate = function (paramd) {
 Attribute.prototype.validate_value = function (value) {
     var self = this;
 
-    var paramd = {
-        value: value,
-        code: self.code(),
-    };
+    var iot_types = _.ld.list(self, iot_js_type, []);
+    var is_set = iot_types.indexOf(iot_js_set) > -1;
+    var is_list = iot_types.indexOf(iot_js_list) > -1;
 
-    self.validate(paramd);
+    if (is_set || is_list) {
+        if ((value === null) || (value === undefined)) {
+            value = [];
+        } else if (!_.is.Array(value)) {
+            value = [ value ]
+        } else if (is_set) {
+            var vs = [];
+            for (var vi in value) {
+                var v = value[vi];
+                if (vs.indexOf(v) === -1) {
+                    vs.push(v);
+                }
+            }
+            value = vs;
+        }
 
-    return paramd.value;
+        var ns = [];
+        for (var vi in value) {
+            var paramd = {
+                value: value[vi],
+                code: self.code(),
+            };
+
+            self.validate(paramd);
+
+            if (paramd.value !== undefined) {
+                ns.push(paramd.value);
+            }
+        }
+
+        return ns;
+    } else {
+        if (_.is.Array(value)) {
+            if (value.length) {
+                value = value[0];
+            } else {
+                value = null;
+            }
+        }
+
+        var paramd = {
+            value: value,
+            code: self.code(),
+        };
+
+        self.validate(paramd);
+
+        return paramd.value;
+    }
+
 };
 
 /* --- internal validation --- */
@@ -1091,6 +1140,18 @@ exports.make_percent = function (purpose, code, name) {
  */
 exports.make_string = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:string");
+};
+
+exports.make_string_set = function (purpose, code, name) {
+    return exports
+        .make(purpose, code, name)
+        .property("iot:type", [ "iot:string", "iot:set" ])
+};
+
+exports.make_string_list = function (purpose, code, name) {
+    return exports
+        .make(purpose, code, name)
+        .property("iot:type", [ "iot:string", "iot:list" ])
 };
 
 exports.make_iri = function (purpose, code, name) {
