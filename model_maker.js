@@ -227,6 +227,29 @@ ModelMaker.prototype.attribute = function (attribute) {
     return self;
 };
 
+/*
+ *  Action
+ */
+ModelMaker.prototype.action = function (purpose, xd) {
+    var self = this;
+
+    purpose = _.ld.compact(purpose);
+
+    var code = purpose.replace(/^.*:/, '');
+    var name = _.ld.first(attribute, 'http://schema.org/name') || code;
+
+    var ad = attribute.make(purpose, code, name)
+        .control()
+        .type(":null");
+    if (xd) {
+        _.extend(ad, xd);
+    }
+
+    this.attribute(ad);
+
+    return self;
+};
+
 // reading
 ModelMaker.prototype.i = function (code, attribute) {
     var name = _.ld.first(attribute, 'http://schema.org/name')
