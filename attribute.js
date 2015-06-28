@@ -374,6 +374,24 @@ Attribute.prototype._validate_property_value = function (key_iri, value, paramd)
 };
 
 /**
+ *  Make this a List
+ */
+Attribute.prototype.list = function() {
+    var self = this;
+    self.property_value("iot:type", _.ld.expand("iot:list"));
+    return self;
+}
+
+/**
+ *  Make this a Set
+ */
+Attribute.prototype.set = function() {
+    var self = this;
+    self.property_value("iot:type", _.ld.expand("iot:set"));
+    return self;
+}
+
+/**
  *  Specify the "iot:unit" of this attribute. For example,
  *  <code>iot-unit:temperature.imperial.fahrenheit</code>
  *  or <code>iot-unit:length.si.metre</code>.
@@ -709,6 +727,7 @@ Attribute.prototype.validate_value = function (value) {
             value = [];
         } else if (!_.is.Array(value)) {
             value = [ value ]
+        /*
         } else if (is_set) {
             var vs = [];
             for (var vi in value) {
@@ -718,6 +737,7 @@ Attribute.prototype.validate_value = function (value) {
                 }
             }
             value = vs;
+            */
         }
 
         var ns = [];
@@ -730,7 +750,9 @@ Attribute.prototype.validate_value = function (value) {
             self.validate(paramd);
 
             if (paramd.value !== undefined) {
-                ns.push(paramd.value);
+                if (!is_set || (ns.indexOf(paramd.value) === -1)) {
+                    ns.push(paramd.value);
+                }
             }
         }
 
@@ -1140,18 +1162,6 @@ exports.make_percent = function (purpose, code, name) {
  */
 exports.make_string = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:string");
-};
-
-exports.make_string_set = function (purpose, code, name) {
-    return exports
-        .make(purpose, code, name)
-        .property("iot:type", [ "iot:string", "iot:set" ])
-};
-
-exports.make_string_list = function (purpose, code, name) {
-    return exports
-        .make(purpose, code, name)
-        .property("iot:type", [ "iot:string", "iot:list" ])
 };
 
 exports.make_iri = function (purpose, code, name) {
