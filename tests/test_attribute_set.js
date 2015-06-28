@@ -90,64 +90,54 @@ describe('test_attribute_rgb:', function(){
         assert.ok(_.isEqual(x, [ now_iso, ]))
     });
   });
-  /*
   describe('model', function(){
-    it('bad RGB - no otherwise', function(){
+    it('Model string/set', function(){
         var AModel = model.make_model('A')
             .attribute(
-                attribute.make_string('rgb').reading()
-                    .format("color")
+                attribute
+                    .make_string('value')
+                    .set()
             )
             .make();
 
         var a = new AModel();
         a._clear_ostate = function() {};
-        a.set('rgb', 'A')
-        assert.strictEqual(a.state("ostate").rgb, null)
 
-        a.set('rgb', '')
-        assert.strictEqual(a.state("ostate").rgb, null)
+        a.set('value', null)
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, []))
 
-        a.set('rgb', 'FF')
-        assert.strictEqual(a.state("ostate").rgb, null)
+        a.set('value', "")
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "" ]))
+
+        a.set('value', "a")
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "a" ]))
+
+        a.set('value', 1)
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "1" ]))
+
+        a.set('value', [ 1 ])
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "1" ]))
+
+        a.set('value', [ 1, 3, 5 ])
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "1", "3", "5" ]))
+
+        a.set('value', [ "1", 3, "5", 1 ])
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "1", "3", "5", ]))
+
+        a.set('value', [ "1 3 5" ])
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "1 3 5" ]))
+
+        a.set('value', "1 3 5")
+        var x = a.state("ostate").value;
+        assert.ok(_.isEqual(x, [ "1 3 5" ]))
     });
-    it('good RGB', function(){
-        var AModel = model.make_model('A')
-            .attribute(
-                attribute.make_string('rgb').reading()
-                    .format("color")
-            )
-            .make();
-
-        var a = new AModel();
-        a._clear_ostate = function() {};
-        a.set('rgb', '#000000')
-        assert.strictEqual(a.state("ostate").rgb, "#000000")
-
-        a.set('rgb', '#FF00FF')
-        assert.strictEqual(a.state("ostate").rgb, "#FF00FF")
-
-        a.set('rgb', '#FFFFFF')
-        assert.strictEqual(a.state("ostate").rgb, "#FFFFFF")
-    });
-    it('good color', function(){
-        var AModel = model.make_model('A')
-            .attribute(
-                attribute.make_string('rgb').reading()
-                    .format("color")
-            )
-            .make();
-
-        var a = new AModel();
-        a._clear_ostate = function() {};
-        a.set('rgb', 'red')
-        assert.strictEqual(a.state("ostate").rgb, "#FF0000")
-
-        a.set('rgb', 'green')
-        assert.strictEqual(a.state("ostate").rgb, "#008000")
-
-        a.set('rgb', 'blue')
-        assert.strictEqual(a.state("ostate").rgb, "#0000FF")
-    });
-    */
+  });
 })
