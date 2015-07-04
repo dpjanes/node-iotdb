@@ -396,23 +396,23 @@ var bind = function (primary_transport, secondary_transport, paramd) {
 
     // updates to the src update the dst
     if (_go(paramd.update)) {
-        primary_transport.updated({ user: paramd.user }, function (ud) {
+        primary_transport.updated({ user: paramd.user }, function (ud, callback) {
             if (paramd.update.indexOf(ud.band) === -1) {
                 return;
             }
 
-            secondary_transport.update(ud);
+            secondary_transport.update(ud, callback);
         })
     }
 
     // updates to the dst update the src - note no user!
     if (_go(paramd.updated)) {
-        secondary_transport.updated(function (ud) {
+        secondary_transport.updated(function (ud, callback) {
             if (paramd.updated.indexOf(ud.band) === -1) {
                 return;
             }
 
-            primary_transport.update(ud);
+            primary_transport.update(ud, callback);
         })
     }
 

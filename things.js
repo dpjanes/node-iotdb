@@ -338,6 +338,7 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
     var thing_id = model_instance.thing_id();
     var thing = self._thingd[thing_id];
 
+
     if (!thing) {
         // add the new thing
         thing = model_instance;
