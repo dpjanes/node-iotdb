@@ -376,20 +376,20 @@ Attribute.prototype._validate_property_value = function (key_iri, value, paramd)
 /**
  *  Make this a List
  */
-Attribute.prototype.list = function() {
+Attribute.prototype.list = function () {
     var self = this;
     self.property_value("iot:type", _.ld.expand("iot:list"));
     return self;
-}
+};
 
 /**
  *  Make this a Set
  */
-Attribute.prototype.set = function() {
+Attribute.prototype.set = function () {
     var self = this;
     self.property_value("iot:type", _.ld.expand("iot:set"));
     return self;
-}
+};
 
 /**
  *  Specify the "iot:unit" of this attribute. For example,
@@ -717,6 +717,7 @@ Attribute.prototype.validate = function (paramd) {
  */
 Attribute.prototype.validate_value = function (value) {
     var self = this;
+    var paramd;
 
     var iot_types = _.ld.list(self, iot_js_type, []);
     var is_set = iot_types.indexOf(iot_js_set) > -1;
@@ -726,23 +727,23 @@ Attribute.prototype.validate_value = function (value) {
         if ((value === null) || (value === undefined)) {
             value = [];
         } else if (!_.is.Array(value)) {
-            value = [ value ]
-        /*
-        } else if (is_set) {
-            var vs = [];
-            for (var vi in value) {
-                var v = value[vi];
-                if (vs.indexOf(v) === -1) {
-                    vs.push(v);
+            value = [value];
+            /*
+            } else if (is_set) {
+                var vs = [];
+                for (var vi in value) {
+                    var v = value[vi];
+                    if (vs.indexOf(v) === -1) {
+                        vs.push(v);
+                    }
                 }
-            }
-            value = vs;
-            */
+                value = vs;
+                */
         }
 
         var ns = [];
         for (var vi in value) {
-            var paramd = {
+            paramd = {
                 value: value[vi],
                 code: self.code(),
             };
@@ -766,7 +767,7 @@ Attribute.prototype.validate_value = function (value) {
             }
         }
 
-        var paramd = {
+        paramd = {
             value: value,
             code: self.code(),
         };

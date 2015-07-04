@@ -169,18 +169,18 @@ var smart_extend = function (od) {
         }
 
         for (var key in xd) {
-            var xvalue = xd[key]
-            var ovalue = od[key]
+            var xvalue = xd[key];
+            var ovalue = od[key];
 
             if ((ovalue === null) || (ovalue === undefined)) {
                 od[key] = _.deepCopy(xvalue);
             } else if (_.isObject(ovalue) && _.isObject(xvalue)) {
-                smart_extend(ovalue, xvalue)
+                smart_extend(ovalue, xvalue);
             } else if (xvalue === undefined) {} else if (_.isFunction(xvalue)) {} else if (_.isNaN(xvalue)) {} else {
-                od[key] = xvalue
+                od[key] = xvalue;
             }
         }
-    })
+    });
 
     return od;
 };

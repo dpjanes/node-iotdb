@@ -252,7 +252,7 @@ ModelMaker.prototype.action = function (purpose, xd) {
 
 // reading
 ModelMaker.prototype.i = function (code, attribute) {
-    var name = _.ld.first(attribute, 'http://schema.org/name')
+    var name = _.ld.first(attribute, 'http://schema.org/name');
 
     return this.attribute(
         _.deepCopy(attribute)
@@ -264,7 +264,7 @@ ModelMaker.prototype.i = function (code, attribute) {
 
 // control
 ModelMaker.prototype.o = function (code, attribute) {
-    var name = _.ld.first(attribute, 'http://schema.org/name')
+    var name = _.ld.first(attribute, 'http://schema.org/name');
 
     return this.attribute(
         _.deepCopy(attribute)
@@ -285,7 +285,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         in_code = out_code;
     }
 
-    var name = _.ld.first(attribute, 'http://schema.org/name')
+    var name = _.ld.first(attribute, 'http://schema.org/name');
 
     if (out_code === in_code) {
         this.attribute(

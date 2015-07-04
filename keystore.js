@@ -130,10 +130,11 @@ Keystore.prototype.save = function (key, value, paramd) {
     var self = this;
 
     key = self._normalize_key(key);
-    paramd = _.defaults({
+    paramd = _.defaults(paramd, {
         global: false,
         filename: null,
         set: true,
+        mkdirs: false,
     });
 
     var filename;
@@ -163,11 +164,11 @@ Keystore.prototype.save = function (key, value, paramd) {
     _.d.set(d, key, value);
 
     // save - XXX does not deal with recursion yet
-    if (self.paramd.mkdirs) {
+    if (paramd.mkdirs) {
         var dirname = path.dirname(filename)
-        if (!fs.isDirSync(dirname)) {
-            fs.makedirSync(dirname);
-        }
+        try {
+            fs.mkdirSync(dirname);
+        } catch (x) {}
     }
     fs.writeFileSync(filename, JSON.stringify(d, null, 2));
 

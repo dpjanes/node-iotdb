@@ -382,13 +382,13 @@ exports.iot = function (paramd) {
     return exports.instance;
 };
 
-exports.connect = function() {
+exports.connect = function () {
     var iot = exports.iot();
 
     return iot.connect.apply(iot, Array.prototype.slice.call(arguments));
 };
 
-exports.things = function() {
+exports.things = function () {
     var iot = exports.iot();
 
     return iot.things.apply(iot, Array.prototype.slice.call(arguments));

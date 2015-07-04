@@ -396,7 +396,9 @@ var bind = function (primary_transport, secondary_transport, paramd) {
 
     // updates to the src update the dst
     if (_go(paramd.update)) {
-        primary_transport.updated({ user: paramd.user }, function (ud, callback) {
+        primary_transport.updated({
+            user: paramd.user
+        }, function (ud, callback) {
             if (paramd.update.indexOf(ud.band) === -1) {
                 return;
             }
@@ -450,7 +452,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
                 paramd = {};
             }
 
-            primary_transport.list(paramd, function(resultd) {
+            primary_transport.list(paramd, function (resultd) {
                 // console.log("X.2", paramd);
                 callback(resultd);
             });
