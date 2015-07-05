@@ -60,6 +60,10 @@ var _ld_set = function (d, key, value) {
 };
 
 var _ld_get_first = function (d, key, otherwise) {
+    if (!d) {
+        return otherwise;
+    }
+
     var existing = d[key];
     if (existing === undefined) {
         return otherwise;
@@ -71,6 +75,10 @@ var _ld_get_first = function (d, key, otherwise) {
 };
 
 var _ld_get_list = function (d, key, otherwise) {
+    if (!d) {
+        return otherwise;
+    }
+
     var existing = d[key];
     if (existing === undefined) {
         return otherwise;

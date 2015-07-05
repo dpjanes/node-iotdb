@@ -108,11 +108,14 @@ IOT.prototype._exit_cleanup = function (paramd, err) {
     var self = this;
 
     _shutting_down = true;
-    logger.info({
-        method: "_exit_cleanup",
-        paramd: paramd,
-        err: err
-    }, "start");
+
+    if (!((err === 0) && (paramd.from === "exit"))) {
+        logger.info({
+            method: "_exit_cleanup",
+            paramd: paramd,
+            err: err
+        }, "start");
+    }
 
     var time_wait = 0;
     if (paramd.cleanup) {
