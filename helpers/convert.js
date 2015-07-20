@@ -138,7 +138,7 @@ var add = function(paramd) {
 /**
  *  API
  */
-exports.convert {
+exports.convert = {
     convert: convert,
     add: add,
 };
