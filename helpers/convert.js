@@ -118,7 +118,7 @@ var convert = function(paramd) {
         var source = "" + paramd.original;
         var dotx = source.indexOf('.')
         if (dotx !== -1) {
-            p = source.length - p + 1;
+            p = source.length - dotx - 1;
         }
 
         return parseFloat(paramd.value.toFixed(Math.max(p, 3)));
