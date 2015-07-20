@@ -40,6 +40,7 @@ var modules = [
     require('./helpers/color'),
     require('./helpers/timestamp'),
     require('./helpers/error'),
+    require('./helpers/convert'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
