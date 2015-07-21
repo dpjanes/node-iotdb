@@ -55,6 +55,20 @@ var conversions = [
             return paramd.value - 273.15;
         },
     },
+    {
+        from: 'iot-unit:math.fraction.percent',
+        to: 'iot-unit:math.fraction.unit',
+        convert: function(paramd) {
+            return paramd.value / 100;
+        },
+    },
+    {
+        from: 'iot-unit:math.fraction.unit',
+        to: 'iot-unit:math.fraction.percent',
+        convert: function(paramd) {
+            return paramd.value * 100;
+        },
+    },
 ];
 
 /**
