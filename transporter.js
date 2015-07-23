@@ -402,7 +402,7 @@ var bind = function (primary_transport, secondary_transport, paramd) {
             if (paramd.update.indexOf(ud.band) === -1) {
                 return;
             }
-
+            
             secondary_transport.update(ud, callback);
         })
     }

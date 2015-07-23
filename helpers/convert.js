@@ -118,7 +118,7 @@ var convert = function(paramd) {
     // find a conversion
     var cds = _find(paramd.from, paramd.to);
     if (!cds) {
-        throw new Error("no conversion found from '" + from + "' to '" + to + "'");
+        throw new Error("no conversion found from '" + paramd.from + "' to '" + paramd.to + "'");
     }
 
     // convert
