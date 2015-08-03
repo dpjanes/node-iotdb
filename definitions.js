@@ -55,7 +55,7 @@ attribute.integer.channel = iotdb.make_integer(":value")
     .minimum(1);
 attribute.integer.temperature = iotdb.make_integer(":temperature");
 attribute.integer.temperature.celsius = iotdb.make_integer(":temperature")
-    .unit("iot-unit:temperature.metric.celsius");
+    .unit("iot-unit:temperature.si.celsius");
 attribute.integer.fahrenheit = iotdb.make_integer(":temperature")
     .unit("iot-unit:temperature.imperial.fahrenheit");
 
@@ -63,11 +63,11 @@ attribute.integer.fahrenheit = iotdb.make_integer(":temperature")
 attribute.number = iotdb.make_number(":value");
 attribute.number.temperature = iotdb.make_number(":temperature");
 attribute.number.temperature.celsius = iotdb.make_number(":temperature")
-    .unit("iot-unit:temperature.metric.celsius");
+    .unit("iot-unit:temperature.si.celsius");
 attribute.number.fahrenheit = iotdb.make_number(":temperature")
     .unit("iot-unit:temperature.imperial.fahrenheit");
 attribute.number.temperature.kelvin = iotdb.make_number(":temperature")
-    .unit("iot-unit:temperature.metric.kelvin");
+    .unit("iot-unit:temperature.si.kelvin");
 
 attribute.number.percent = iotdb.make_percent(":value")
 attribute.number.percent.volume = iotdb.make_percent(":volume")
@@ -158,11 +158,11 @@ attribute.sensor.number.particulates = iotdb.make_number(':sensor.particulates')
 attribute.sensor.number.shatter = iotdb.make_number(':sensor.shatter');
 attribute.sensor.number.temperature = iotdb.make_number(":sensor.temperature")
 attribute.sensor.number.temperature.celsius = iotdb.make_number(":sensor.temperature")
-    .unit("iot-unit:temperature.metric.celsius");
+    .unit("iot-unit:temperature.si.celsius");
 attribute.sensor.number.temperature.fahrenheit = iotdb.make_number(":sensor.temperature")
     .unit("iot-unit:temperature.imperial.fahrenheit");
 attribute.sensor.number.temperature.kelvin = iotdb.make_number(":sensor.temperature")
-    .unit("iot-unit:temperature.metric.kelvin");
+    .unit("iot-unit:temperature.si.kelvin");
 attribute.sensor.number.humidty = iotdb.make_number(':sensor.humidty');
 attribute.sensor.number.sound = iotdb.make_number(':sensor.sound');
 attribute.sensor.number.water = iotdb.make_number(':sensor.water');

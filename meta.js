@@ -48,18 +48,23 @@ var machine_id;
 
 /**
  *  Return the metadata
+ *
+ *
  */
 Meta.prototype.state = function () {
     var self = this;
 
     var metad = {};
-    metad[_.ld.expand('iot:thing')] = self.thing.thing_id();
+    metad[_.ld.expand('iot:thing-id')] = self.thing.thing_id();
+    metad[_.ld.expand('iot:model-id')] = self.thing.code();
     metad[_.ld.expand('schema:name')] = self.thing.name;
 
     if (self.thing.bridge_instance) {
-        // bridge metadata
-        _.extend(metad, _.ld.expand(self.thing.bridge_instance.meta()));
+        var bmetad = _.ld.expand(self.thing.bridge_instance.meta());
+        delete bmetad[_.ld.expand('iot:thing-id')];
+        delete bmetad[_.ld.expand('iot:thing')];
 
+        _.extend(metad, bmetad);
 
         // binding metadata
         if (self.thing.bridge_instance.binding && self.thing.bridge_instance.binding.metad) {

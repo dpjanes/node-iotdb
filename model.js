@@ -1538,8 +1538,11 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                 }
             }
         };
+        
+        var bmetad = bridge_instance.meta();
+        var thing_id = bmetad['iot:thing-id'] || bmetad['iot:thing'];
 
-        self._thing_id = self.bridge_instance.meta()["iot:thing"] + ":" + self.code();
+        self._thing_id = thing_id + ":" + self.code();
     }
 
     reachabled[self._thing_id] = is_reachable;
