@@ -212,14 +212,14 @@ Attribute.prototype._validate_purpose = function (purpose_iri) {
  *  This is a value, i.e. it is measuring something
  */
 Attribute.prototype.reading = function () {
-    return this.property('iot:role', 'iot-attribute:role-reading');
+    return this.property('iot:role', 'iot-attribute:role-reading').property("iot:read", true);
 };
 
 /**
  *  This is a control, i.e. you can change with it
  */
 Attribute.prototype.control = function () {
-    return this.property('iot:role', 'iot-attribute:role-control');
+    return this.property('iot:role', 'iot-attribute:role-control').property('iot:write', true);
 };
 
 
