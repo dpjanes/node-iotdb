@@ -189,6 +189,23 @@ ModelMaker.prototype.facet = function (_value) {
     return this;
 };
 
+ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
+    var self = this;
+
+    key_iri = _.ld.compact(key_iri);
+    if (key_iri === "schema:name") {
+        self.name(value);
+    } else if (key_iri === "schema:description") {
+        self.description(value);
+    } else if (key_iri === "iot:facet") {
+        self.facet(value);
+    } else {
+        console.log("HERE:XXX", key_iri, value);
+    }
+
+    return this;
+};
+
 /**
  *  Add a new {@link Attribute} to the {@link Thing} being made.
  *
