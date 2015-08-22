@@ -65,7 +65,7 @@ var HueLight = model.make_model('HueLight')
     .attribute(attribute.make_boolean("on"))
     .attribute(
         attribute.make_string("color")
-            .format("iot:color")
+            .format("iot:format.color")
     )
     .make()
  *  </pre>
@@ -366,7 +366,7 @@ ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, 
     var control_attribute = _.deepCopy(reading_attribute);
     control_attribute['@id'] = '#' + control_attribute_code;
 
-    _.ld.remove(control_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-attribute:role-reading"));
+    _.ld.remove(control_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-purpose:role-reading"));
     control_attribute.control();
 
     self.__attributed[control_attribute_code] = control_attribute;
@@ -394,7 +394,7 @@ ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, 
     var reading_attribute = _.deepCopy(control_attribute);
     reading_attribute['@id'] = '#' + reading_attribute_code;
 
-    _.ld.remove(reading_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-attribute:role-control"));
+    _.ld.remove(reading_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-purpose:role-control"));
     reading_attribute.reading();
 
     self.__attributed[reading_attribute_code] = reading_attribute;

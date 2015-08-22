@@ -791,7 +791,7 @@ ThingArray.prototype.with_name = function (name) {
 
 ThingArray.prototype.with_number = function (number) {
     return this.filter({
-        "iot:number": parseInt(number)
+        "iot:thing-number": parseInt(number)
     });
 };
 

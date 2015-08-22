@@ -13,9 +13,10 @@ var _ = require("../helpers")
 
 var model = require("../model");
 var thing_array = require("../thing_array");
-var transporter = require("../transporter");
+// var transporter = require("../transporter");
 
 /* --- tests --- */
+/*
 describe('test_is:', function() {
     var testModel = model.make_model().code('a').make();
     var testThing = new testModel();
@@ -123,3 +124,4 @@ describe('test_is:', function() {
         assert.ok(_.is.Object(function() {}));
     });
 })
+*/

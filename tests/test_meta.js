@@ -24,7 +24,11 @@ var ts_3 = function() { return TS_3; };
 
 var fake_thing = {
     thing_id: function() {
-        "urn:iotdb:thing:fake_thing:1"
+        return "urn:iotdb:thing:fake_thing:1"
+    },
+
+    code: function() {
+        return "fake";
     },
 
     meta_changed: function() {

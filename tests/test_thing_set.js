@@ -16,10 +16,10 @@ var model = require("../model")
 var _ = require("../helpers")
 
 /* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot:boolean");
-var iot_js_integer = _.ld.expand("iot:integer");
-var iot_js_number = _.ld.expand("iot:number");
-var iot_js_string = _.ld.expand("iot:string");
+var iot_js_boolean = _.ld.expand("iot:type.boolean");
+var iot_js_integer = _.ld.expand("iot:type.integer");
+var iot_js_number = _.ld.expand("iot:type.number");
+var iot_js_string = _.ld.expand("iot:type.string");
 
 var iot_js_type = _.ld.expand("iot:type");
 
@@ -108,10 +108,10 @@ describe('test_thing_set:', function(){
         t.set('on', false)
         assert.strictEqual(true, t.state("ostate")['powered']) // no change
 
-        t.set('iot-attribute:on', false)
+        t.set('iot-purpose:on', false)
         assert.strictEqual(false, t.state("ostate")['powered']) 
 
-        t.set('iot-attribute:on', true)
+        t.set('iot-purpose:on', true)
         assert.strictEqual(true, t.state("ostate")['powered']) 
     });
 })

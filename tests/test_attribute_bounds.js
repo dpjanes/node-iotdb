@@ -15,10 +15,10 @@ var attribute = require("../attribute")
 var _ = require("../helpers")
 
 /* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot:boolean");
-var iot_js_integer = _.ld.expand("iot:integer");
-var iot_js_number = _.ld.expand("iot:number");
-var iot_js_string = _.ld.expand("iot:string");
+var iot_js_boolean = _.ld.expand("iot:type.boolean");
+var iot_js_integer = _.ld.expand("iot:type.integer");
+var iot_js_number = _.ld.expand("iot:type.number");
+var iot_js_string = _.ld.expand("iot:type.string");
 
 var iot_js_type = _.ld.expand("iot:type");
 

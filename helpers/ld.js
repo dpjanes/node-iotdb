@@ -34,7 +34,7 @@ var _namespace = {
     "wikipedia": "https://en.wikipedia.org/wiki/",
 
     "iot": "https://iotdb.org/pub/iot#",
-    "iot-attribute": "https://iotdb.org/pub/iot-attribute#",
+    "iot-purpose": "https://iotdb.org/pub/iot-purpose#",
     "iot-facet": "https://iotdb.org/pub/iot-facet#",
     "iot-js": "https://iotdb.org/pub/iot-js#",
     "iot-iotdb": "https://iotdb.org/pub/iot-iotdb#",

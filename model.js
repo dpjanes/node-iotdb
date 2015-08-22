@@ -42,8 +42,8 @@ var logger = bunyan.createLogger({
 var VERBOSE = true;
 var iot_name = _.ld.expand("schema:name");
 var iot_role = _.ld.expand("iot:role");
-var iot_role_reading = _.ld.expand("iot-attribute:role-reading");
-var iot_role_control = _.ld.expand("iot-attribute:role-control");
+var iot_role_reading = _.ld.expand("iot-purpose:role-reading");
+var iot_role_control = _.ld.expand("iot-purpose:role-control");
 
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "state";
@@ -110,8 +110,8 @@ thing
  *  Here's an example of doing the same thing semantically
  *  <pre>
 thing
-    .set('iot-attribute:on', true)
-    .set('iot-attribute:color', '#FF0000')
+    .set('iot-purpose:on', true)
+    .set('iot-purpose:color', '#FF0000')
  *  </pre>
  *
  *  <hr />
@@ -375,7 +375,7 @@ Model.prototype.jsonld = function (paramd) {
     }
     if (ads.length > 0) {
         rd[_.ld.expand("iot:attribute")] = ads;
-        nss["iot-attribute"] = true;
+        nss["iot-purpose"] = true;
     }
 
     cd = rd["@context"];
@@ -1238,7 +1238,7 @@ Model.prototype._do_notifies_send = function () {
  *  <ul>
  *  <li>
  *  If it starts with an ":", we convert it to
- *  <code>iot-attribute:part</code>
+ *  <code>iot-purpose:part</code>
  *  and research
  *  for a <code>iot:purpose</code> with that value.
  *
@@ -1287,7 +1287,7 @@ Model.prototype._find = function (find_key, paramd) {
         var last_key = subkeys[subkeys.length - 1];
         if (last_key.substring(0, 1) === ":") {
             d = {};
-            d[_.ld.expand("iot:purpose")] = _.ld.expand("iot-attribute:" + last_key.substring(1));
+            d[_.ld.expand("iot:purpose")] = _.ld.expand("iot-purpose:" + last_key.substring(1));
 
             return thing._find(d, paramd);
         } else if (last_key.indexOf(":") > -1) {
