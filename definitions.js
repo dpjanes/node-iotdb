@@ -93,18 +93,18 @@ attribute.datetime.time = iotdb.make_time(":when");
 attribute.vector = {};
 attribute.vector.number = {};
 attribute.vector.number.xy = {
-    x: iotdb.make_number(':x').vector("x/y"),
-    y: iotdb.make_number(':y').vector("x/y"),
+    x: iotdb.make_number(':plane.x').vector("x/y"),
+    y: iotdb.make_number(':plane.y').vector("x/y"),
 };
 attribute.vector.number.xyz = {
-    x: iotdb.make_number(':x').vector("x/y/z"),
-    y: iotdb.make_number(':y').vector("x/y/z"),
-    z: iotdb.make_number(':z').vector("x/y/z"),
+    x: iotdb.make_number(':plane.x').vector("x/y/z"),
+    y: iotdb.make_number(':plane.y').vector("x/y/z"),
+    z: iotdb.make_number(':plane.z').vector("x/y/z"),
 };
 attribute.vector.number.axes = {
-    roll: iotdb.make_number(':roll').vector("roll/pitch/yaw"),
-    pitch: iotdb.make_number(':pitch').vector("roll/pitch/yaw"),
-    yaw: iotdb.make_number(':yaw').vector("roll/pitch/yaw"),
+    roll: iotdb.make_number(':plane.roll').vector("roll/pitch/yaw"),
+    pitch: iotdb.make_number(':plane.pitch').vector("roll/pitch/yaw"),
+    yaw: iotdb.make_number(':plane.yaw').vector("roll/pitch/yaw"),
 };
 attribute.vector.number.ll = {
     latitude: iotdb
@@ -126,23 +126,23 @@ attribute.vector.number.lle = {
         .unit("iot-unit:math.angle.degree")
         .minimum(-90)
         .maximum(90)
-        .vector("lat/lon/elevation"),
+        .vector("lat/lon/altitude"),
     longitude: iotdb
         .make_number(':longitude')
         .unit("iot-unit:math.angle.degree")
         .minimum(-180)
         .maximum(180)
-        .vector("lat/lon/elevation"),
+        .vector("lat/lon/altitude"),
     elevation: iotdb
-        .make_number(':elevation')
-        .vector("lat/lon/elevation"),
+        .make_number(':altitude')
+        .vector("lat/lon/altitude"),
 };
 
 /* sensors */
 attribute.sensor = {};
 
 /* sensor: numbers */
-attribute.sensor.number = {};
+attribute.sensor.number = iotdb.make_number(':sensor')
 attribute.sensor.number.battery = iotdb.make_number(':sensor.battery')
 attribute.sensor.number.fire = iotdb.make_number(':sensor.fire');
 attribute.sensor.number.heat = iotdb.make_number(':sensor.heat');
@@ -169,7 +169,7 @@ attribute.sensor.number.water = iotdb.make_number(':sensor.water');
 attribute.sensor.number.humidity = iotdb.make_number(':sensor.humidity')
 
 /* sensor: booleans */
-attribute.sensor.boolean = {};
+attribute.sensor.boolean = iotdb.make_boolean(':sensor')
 attribute.sensor.boolean.battery = iotdb.make_boolean(':sensor.battery')
 attribute.sensor.boolean.fire = iotdb.make_boolean(':sensor.fire');
 attribute.sensor.boolean.heat = iotdb.make_boolean(':sensor.heat');
@@ -191,7 +191,7 @@ attribute.sensor.boolean.water = iotdb.make_boolean(':sensor.water');
 attribute.sensor.boolean.humidity = iotdb.make_boolean(':sensor.humidity')
 
 /* sensor: unit (0-1) */
-attribute.sensor.unit = {};
+attribute.sensor.unit = iotdb.make_unit(':sensor')
 attribute.sensor.unit.battery = iotdb.make_unit(':sensor.battery')
 attribute.sensor.unit.fire = iotdb.make_unit(':sensor.fire');
 attribute.sensor.unit.heat = iotdb.make_unit(':sensor.heat');
@@ -212,7 +212,7 @@ attribute.sensor.unit.water = iotdb.make_unit(':sensor.water');
 attribute.sensor.unit.humidity = iotdb.make_unit(':sensor.humidity')
 
 /* sensor: percent (0-100) */
-attribute.sensor.percent = {};
+attribute.sensor.percent = iotdb.make_percent(':sensor')
 attribute.sensor.percent.battery = iotdb.make_percent(':sensor.battery')
 attribute.sensor.percent.fire = iotdb.make_percent(':sensor.fire');
 attribute.sensor.percent.heat = iotdb.make_percent(':sensor.heat');
@@ -233,7 +233,7 @@ attribute.sensor.percent.water = iotdb.make_percent(':sensor.water');
 attribute.sensor.percent.humidity = iotdb.make_percent(':sensor.humidity')
 
 /* sensor: string */
-attribute.sensor.string = {};
+attribute.sensor.string = iotdb.make_string(':sensor')
 attribute.sensor.string.battery = iotdb.make_string(':sensor.battery')
 attribute.sensor.string.fire = iotdb.make_string(':sensor.fire');
 attribute.sensor.string.heat = iotdb.make_string(':sensor.heat');
