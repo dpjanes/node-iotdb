@@ -270,6 +270,11 @@ ModelMaker.prototype.action = function (purpose, xd) {
 // reading
 ModelMaker.prototype.i = function (code, attribute) {
     var name = _.ld.first(attribute, 'http://schema.org/name');
+    
+    if (arguments.length === 1) {
+        attribute = arguments[0];
+        code = attribute.code();
+    }
 
     return this.attribute(
         _.deepCopy(attribute)
@@ -282,6 +287,11 @@ ModelMaker.prototype.i = function (code, attribute) {
 // control
 ModelMaker.prototype.o = function (code, attribute) {
     var name = _.ld.first(attribute, 'http://schema.org/name');
+    
+    if (arguments.length === 1) {
+        attribute = arguments[0];
+        code = attribute.code();
+    }
 
     return this.attribute(
         _.deepCopy(attribute)
