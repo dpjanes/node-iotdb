@@ -69,6 +69,11 @@ attribute.number.fahrenheit = iotdb.make_number(":temperature")
 attribute.number.temperature.kelvin = iotdb.make_number(":temperature")
     .unit("iot-unit:temperature.si.kelvin");
 
+attribute.number.frequency = iotdb.make_number(":frequency")
+    .unit("iot-unit:math.si.hertz");
+attribute.number.duration = iotdb.make_number(":duration")
+    .unit("iot-unit:math.si.second");
+
 attribute.number.percent = iotdb.make_percent(":value")
 attribute.number.percent.volume = iotdb.make_percent(":volume")
 attribute.number.percent.brightness = iotdb.make_percent(":brightness")

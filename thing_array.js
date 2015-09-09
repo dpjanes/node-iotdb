@@ -423,7 +423,7 @@ ThingArray.prototype.set = function () {
         item.set.apply(item, Array.prototype.slice.call(arguments));
     }
 
-    self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
+    self._persist_command(model.Model.prototype.set, arguments); // NO!!!, KEY_SETTER);
 
     return self;
 };

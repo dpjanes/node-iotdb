@@ -383,7 +383,8 @@ exports.cfg_envd = function (envd) {
         }
     }
 
-    if (!envd.IOTDB_CFG) {
+    // Windows sometimes doesn't habe $HOME? Issue #5
+    if (!envd.IOTDB_CFG && process.env['HOME']) {
         envd.IOTDB_CFG = node_path.join(process.env['HOME'], ".iotdb");
     }
 
