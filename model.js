@@ -43,7 +43,8 @@ var VERBOSE = true;
 var iot_name = _.ld.expand("schema:name");
 var iot_role = _.ld.expand("iot:role");
 var iot_role_reading = _.ld.expand("iot-purpose:role-reading");
-var iot_role_control = _.ld.expand("iot-purpose:role-control");
+var iot_role_control = _.ld.expand("iot-purpose:role-control");  // MUST BE CHANGED TO READ/WRITE
+var iot_clear_value = _.ld.expand("iot:clear-value");
 
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "state";
@@ -747,6 +748,11 @@ Model.prototype._push_attributes = function (attributes) {
         }
 
         _.d.set(pushd, attribute_code, attribute_value);
+
+        // set iot:clear-value and the ostate will always revert to null
+        if (_.ld.first(attribute, iot_clear_value)) {
+            attribute._ovalue = null;
+        }
     });
 
     // nothing to do?
