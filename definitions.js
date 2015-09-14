@@ -24,7 +24,7 @@
 
 "use strict";
 
-var iotdb = require('iotdb')
+var iotdb = require('./iotdb')
 
 /*
  *  Version 0.4 - explicit declarations
