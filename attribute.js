@@ -514,7 +514,7 @@ Attribute.prototype.enumeration = function (values) {
 
     self._validate_enumeration(values);
 
-    var key_iri = _.ld.expand("iot:format.enumeration");
+    var key_iri = _.ld.expand("iot:enumeration");
 
     _.ld.extend(self, key_iri, values);
 

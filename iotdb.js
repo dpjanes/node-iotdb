@@ -393,3 +393,10 @@ exports.things = function () {
 
     return iot.things.apply(iot, Array.prototype.slice.call(arguments));
 };
+
+/**
+ *  Windows compatibility
+ */
+if (!process.env.HOME && process.env.USERPROFILE) {
+    process.env.HOME = process.env.USERPROFILE;
+}

@@ -957,6 +957,7 @@ Model.prototype.on = function (find_key, callback) {
         return self;
     }
 
+
     if (rd.attribute) {
         attribute_key = rd.attribute.code();
 
