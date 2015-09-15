@@ -322,7 +322,7 @@ exports.cfg_load_js = function (filenames, callback) {
                 if (!filename.match(/^([.]\/|[.][.]\/|\/)/)) {
                     filename = "./" + filename;
                 }
-                if (filename.substring(0, 1) !== "/") {
+                if (!node_path.isAbsolute(filename)) {
                     filename = node_path.join(process.cwd(), filename);
                 }
 
