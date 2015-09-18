@@ -88,13 +88,13 @@ Things.prototype.things = function (model_code) {
 
 /**
  */
-Things.prototype.connect = function (modeld, initd) {
-    return this.things(this.discover(modeld, initd));
+Things.prototype.connect = function (modeld, initd, metad) {
+    return this.things(this.discover(modeld, initd, metad));
 };
 
 /**
  */
-Things.prototype.discover = function (modeld, initd) {
+Things.prototype.discover = function (modeld, initd, metad) {
     var self = this;
 
     logger.info({
@@ -125,13 +125,22 @@ Things.prototype.discover = function (modeld, initd) {
         throw new Error("expected undefined|null|string|dictionary");
     }
 
-    // optional second dictionary
+    // optional second dictionary - arguments to create
     if (initd !== undefined) {
         if (!_.is.Object(initd)) {
-            throw new Error("expected initd to be a dictionary");
+            throw new Error("expected initd to be a Dictionary");
         }
 
         modeld = _.defaults(modeld, initd);
+    }
+
+    // optional third dictionary - metadata (something of a hack)
+    if (metad !== undefined) {
+        if (!_.is.Object(metad)) {
+            throw new Error("expected metad to be a Dictionary");
+        }
+
+        modeld["__metad"] = metad;
     }
 
     // run when ready
@@ -338,6 +347,9 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
     var thing_id = model_instance.thing_id();
     var thing = self._thingd[thing_id];
 
+    if (modeld.__metad) {
+        model_instance.update("meta", modeld.__metad);
+    }
 
     if (!thing) {
         // add the new thing

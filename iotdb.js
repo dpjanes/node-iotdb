@@ -149,8 +149,8 @@ IOT.prototype.things = function (model_code) {
  *  Connect to Things. Return a Thing Array
  *  of things thus discovered
  */
-IOT.prototype.connect = function (modeld, initd) {
-    return this._things.connect(modeld, initd);
+IOT.prototype.connect = function (modeld, initd, metad) {
+    return this._things.connect(modeld, initd, metad);
 };
 
 /**
