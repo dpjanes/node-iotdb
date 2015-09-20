@@ -61,10 +61,12 @@ Meta.prototype.state = function () {
 
     if (self.thing.bridge_instance) {
         var bmetad = _.ld.expand(self.thing.bridge_instance.meta());
-        delete bmetad[_.ld.expand('iot:thing-id')];
-        delete bmetad[_.ld.expand('iot:thing')];
+        if (bmetad) {
+            delete bmetad[_.ld.expand('iot:thing-id')];
+            delete bmetad[_.ld.expand('iot:thing')];
 
-        _.extend(metad, bmetad);
+            _.extend(metad, bmetad);
+        }
 
         // binding metadata
         if (self.thing.bridge_instance.binding && self.thing.bridge_instance.binding.metad) {
