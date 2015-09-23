@@ -257,7 +257,7 @@ ModelMaker.prototype.action = function (purpose, xd) {
 
     var ad = attribute.make(purpose, code, name)
         .control()
-        .type(":null");
+        .type(":type.null");
     if (xd) {
         _.extend(ad, xd);
     }
