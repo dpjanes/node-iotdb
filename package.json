@@ -20,8 +20,8 @@
         "grunt-contrib-watch": "~0.6.1", 
         "grunt-jsbeautifier": "~0.2.10", 
         "jshint-stylish": "~2.0.1", 
-        "load-grunt-tasks": "~3.2.0", 
-        "request": "~2.62.0"
+        "load-grunt-tasks": "~3.3.0", 
+        "request": "~2.63.0"
     }, 
     "homepage": "https://iotdb.org", 
     "keywords": [
@@ -45,5 +45,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.10.13"
+    "version": "0.10.14"
 }
