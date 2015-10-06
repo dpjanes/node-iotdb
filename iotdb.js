@@ -344,10 +344,10 @@ var _cookbook_name = _group_default;
 var _cookbook_id;
 
 var recipe = function (initd) {
-    if (_cookbook_name) {
+    if (_cookbook_name && !initd.group) {
         initd.group = _cookbook_name;
     }
-    if (_cookbook_id) {
+    if (_cookbook_id && !initd.cookbook_id) {
         initd.cookbook_id = _cookbook_id;
     }
 

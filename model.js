@@ -43,7 +43,7 @@ var VERBOSE = true;
 var iot_name = _.ld.expand("schema:name");
 var iot_role = _.ld.expand("iot:role");
 var iot_role_reading = _.ld.expand("iot-purpose:role-reading");
-var iot_role_control = _.ld.expand("iot-purpose:role-control");  // MUST BE CHANGED TO READ/WRITE
+var iot_role_control = _.ld.expand("iot-purpose:role-control"); // MUST BE CHANGED TO READ/WRITE
 var iot_clear_value = _.ld.expand("iot:clear-value");
 
 var EVENT_THINGS_CHANGED = "things_changed";
@@ -1545,7 +1545,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                 }
             }
         };
-        
+
         var bmetad = bridge_instance.meta();
         var thing_id = bmetad['iot:thing-id'] || bmetad['iot:thing'];
 
