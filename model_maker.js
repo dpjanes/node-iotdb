@@ -200,7 +200,7 @@ ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
     } else if (key_iri === "iot:facet") {
         self.facet(value);
     } else {
-        console.log("HERE:XXX", key_iri, value);
+        // console.log("HERE:XXX", key_iri, value);
     }
 
     return this;
