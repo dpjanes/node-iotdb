@@ -370,6 +370,19 @@ exports.recipe = recipe;
 exports.cookbook = cookbook;
 
 /**
+ *  Users
+ *  we really don't have anything here except a function
+ *  to return the "owner" - basically the user the 
+ *  system has authorized itself as. We may do
+ *  more exciting things in the future
+ */
+exports.users = {
+    owner: function() {
+        return null;
+    },
+};
+
+/**
  *  Singleton
  */
 exports.instance = null;
