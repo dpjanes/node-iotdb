@@ -200,6 +200,7 @@ Modules.prototype._load_setup = function () {
                 exception: x,
                 cause: "likely the module has a bad setup function",
             }, "unexpected exception running module.setup");
+            process.exit(1);
         }
     }
 };

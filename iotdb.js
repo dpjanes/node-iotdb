@@ -371,14 +371,16 @@ exports.cookbook = cookbook;
 
 /**
  *  Users
- *  we really don't have anything here except a function
- *  to return the "owner" - basically the user the 
- *  system has authorized itself as. We may do
- *  more exciting things in the future
+ *  Sorry no real docs. By default everything is open. 
+ *  HomeStar changes these to do user authentication. 
+ *  Transporters are the biggest clients of this interface
  */
 exports.users = {
     owner: function() {
         return null;
+    },
+    authorize: function(authd, callback) {
+        return callback(null, true);
     },
 };
 
