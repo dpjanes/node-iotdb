@@ -85,6 +85,7 @@ attribute.number.unit.brightness = iotdb.make_unit(":brightness");
 /* strings */
 attribute.string = iotdb.make_string(":value");
 attribute.string.iri = iotdb.make_iri(":iri");
+attribute.string.iri.image = iotdb.make_iri(":iri.image");
 attribute.string.color = iotdb.make_color(":color");
 attribute.color = iotdb.make_color(":color");
 attribute.string.band = iotdb.make_string(":band");
@@ -93,6 +94,8 @@ attribute.string.message.text = iotdb.make_string(":message.text");
 attribute.string.message.html = iotdb.make_string(":message.html");
 
 attribute.datetime = iotdb.make_datetime(":when")
+attribute.datetime.start = iotdb.make_datetime(":when-start")
+attribute.datetime.end = iotdb.make_datetime(":when-end")
 attribute.datetime.timestamp = iotdb.make_datetime(":timestamp")
 attribute.datetime.date = iotdb.make_date(":when")
 attribute.datetime.time = iotdb.make_time(":when");

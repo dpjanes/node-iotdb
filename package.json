@@ -21,7 +21,7 @@
         "grunt-jsbeautifier": "~0.2.10", 
         "jshint-stylish": "~2.0.1", 
         "load-grunt-tasks": "~3.3.0", 
-        "request": "~2.64.0"
+        "request": "~2.65.0"
     }, 
     "homepage": "https://iotdb.org", 
     "keywords": [
@@ -45,5 +45,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.10.16"
+    "version": "0.10.17"
 }
