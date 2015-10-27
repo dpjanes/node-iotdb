@@ -25,6 +25,7 @@
 var assert = require("assert");
 var url = require("url");
 var path = require("path");
+var fs = require("fs");
 
 var _ = require("./helpers");
 var attribute = require("./attribute");
@@ -181,6 +182,12 @@ Model.prototype.description = function () {
  */
 Model.prototype.help = function () {
     return this.__help;
+};
+
+/**
+ */
+Model.prototype.facet = function () {
+    return this.__facets;
 };
 
 /**
@@ -349,6 +356,11 @@ Model.prototype.jsonld = function (paramd) {
     var help = self.help();
     if (!_.is.Empty(help)) {
         rd[_.ld.expand("iot:help")] = help;
+    }
+
+    var facet = self.facet();
+    if (!_.is.Empty(facet)) {
+        rd[_.ld.expand("iot:facet")] = facet;
     }
 
     // attributes
@@ -1565,6 +1577,12 @@ Model.prototype._validate_bind_bridge = function (bridge_instance) {
 };
 
 var make_model_from_jsonld = function (d) {
+    if (_.is.String(d)) {
+        d = JSON.parse(fs.readFileSync(d, {
+            encoding: 'utf8'
+        }));
+    }
+
     var jsonld = _.ld.compact(d);
 
     if (jsonld["@type"] !== "iot:Model") {
