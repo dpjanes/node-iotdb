@@ -300,110 +300,6 @@ Model.prototype._validate_has_tag = function (tag) {
     }
 };
 
-/**
- *  Return the JSON-LD version of this thing
- *
- *  @param {dictionary} paramd
- *  @param {boolean} paramd.include_state
- *  Include the current state
- *
- *  @param {url} paramd.base
- *  Base URL, otherwise 'file:///<code>/'
- *
- *  @return {dictionary}
- *  JSON-LD dictionary
- */
-Model.prototype.jsonld = function (paramd) {
-    var self = this;
-    var key;
-    var value;
-    var cd;
-
-    paramd = (paramd !== undefined) ? paramd : {};
-    paramd.base = (paramd.base !== undefined) ? paramd.base : ("file:///" + self.code() + "");
-    paramd.context = (paramd.context !== undefined) ? paramd.context : true;
-    paramd.path = (paramd.path !== undefined) ? paramd.path : "";
-
-    var rd = {};
-    var nss = {
-        "iot": true,
-        "schema": true,
-    };
-
-    if (paramd.context) {
-        cd = {};
-        cd["@base"] = paramd.base;
-        cd["@vocab"] = paramd.base + "#";
-        rd["@context"] = cd;
-        rd["@id"] = "";
-    } else if (paramd.path.length > 0) {
-        rd["@id"] = "#" + paramd.path.replace(/\/+$/, '');
-    } else {
-        rd["@id"] = "#";
-    }
-
-    rd["@type"] = _.ld.expand("iot:Model");
-
-    var name = self.name();
-    if (!_.is.Empty(name)) {
-        rd[_.ld.expand("schema:name")] = name;
-    }
-
-    var description = self.description();
-    if (!_.is.Empty(description)) {
-        rd[_.ld.expand("schema:description")] = description;
-    }
-
-    var help = self.help();
-    if (!_.is.Empty(help)) {
-        rd[_.ld.expand("iot:help")] = help;
-    }
-
-    var facet = self.facet();
-    if (!_.is.Empty(facet)) {
-        rd[_.ld.expand("iot:facet")] = facet;
-    }
-
-    // attributes
-    var ads = [];
-    var attributes = self.attributes();
-    for (var ax in attributes) {
-        var attribute = attributes[ax];
-        var ad = {};
-        // ad[_.ld.expand('schema:name')] = attribute.code()
-        ads.push(ad);
-
-        for (key in attribute) {
-            if (!attribute.hasOwnProperty(key)) {
-                continue;
-            }
-
-            value = attribute[key];
-            if (value === undefined) {} else if (_.is.Function(value)) {} else if (key.match(/^_/)) {} else if (key === "@id") {
-                ad[key] = "#" + paramd.path + value.substring(1);
-            } else {
-                ad[key] = value;
-                nss[key.replace(/:.*$/, '')] = true;
-            }
-        }
-    }
-    if (ads.length > 0) {
-        rd[_.ld.expand("iot:attribute")] = ads;
-        nss["iot-purpose"] = true;
-    }
-
-    cd = rd["@context"];
-    if (cd) {
-        for (var nkey in nss) {
-            var ns = _.ld.namespace[nkey];
-            if (ns) {
-                cd[nkey] = ns;
-            }
-        }
-    }
-
-    return rd;
-};
 
 /**
  *  Return the JSON-LD version of this thing
@@ -1781,14 +1677,6 @@ Model.prototype._validate_bind_bridge = function (bridge_instance) {
 };
 
 var make_model_from_jsonld = function (d) {
-    /*
-    if (_.is.String(d)) {
-        d = JSON.parse(fs.readFileSync(d, {
-            encoding: 'utf8'
-        }));
-    }
-    */
-
     var jsonld = _.ld.compact(d);
 
     if (jsonld["@type"] !== "iot:Model") {
