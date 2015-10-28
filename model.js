@@ -530,6 +530,19 @@ Model.prototype.iotql = function (paramd) {
         "iot:write",
     ];
 
+    var _single_value = function(v) {
+        if (!_.is.String(v)) {
+            return v;
+        }
+        
+        var xv = _.ld.expand(v);
+        if (xv !== v) {
+            return v;
+        }
+
+        return JSON.stringify(v, null, 2);
+    };
+
     var _collect = function(d) {
         var rs = [];
 
@@ -542,9 +555,16 @@ Model.prototype.iotql = function (paramd) {
             var values = _.ld.list(d, key, []);
             if (values.length === 0) {
             } else if (values.length === 1) {
-                rs.push(util.format("    %s = %s", key, JSON.stringify(values[0], null, 2)));
+                rs.push(util.format("    %s = %s", key, _single_value(values[0])));
             } else {
-                rs.push(util.format("    %s = %s", key, JSON.stringify(values, null, 2)));
+                rs.push(util.format("    %s = [", key));
+                values.map(function(v) {
+                    v = _single_value(v);
+                    if (v !== undefined) {
+                        rs.push(util.format("         %s", v));
+                    }
+                });
+                rs.push(util.format("    ]"));
             }
         });
 

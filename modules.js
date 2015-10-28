@@ -29,6 +29,7 @@ var _ = require('./helpers');
 var keystore = require("./keystore").keystore;
 
 var cfg = require('./cfg');
+var model = require('./model');
 
 var events = require('events');
 var util = require('util');
@@ -146,6 +147,10 @@ Modules.prototype.bindings = function () {
                 return;
             } else if (!binding.model) {
                 return;
+            }
+
+            if (!_.is.Model(binding.model)) {
+                binding.model = model.make_model_from_jsonld(binding.model);
             }
 
             if (binding.model_code === undefined) {
