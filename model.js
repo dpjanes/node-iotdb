@@ -1781,11 +1781,13 @@ Model.prototype._validate_bind_bridge = function (bridge_instance) {
 };
 
 var make_model_from_jsonld = function (d) {
+    /*
     if (_.is.String(d)) {
         d = JSON.parse(fs.readFileSync(d, {
             encoding: 'utf8'
         }));
     }
+    */
 
     var jsonld = _.ld.compact(d);
 
@@ -1797,6 +1799,18 @@ var make_model_from_jsonld = function (d) {
     var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '');
 
     var mmaker = iotdb.make_model(base_name);
+
+    for (var dkey in d) {
+        if (dkey.match(/^@/)) {
+            continue;
+        } else if (dkey === "iot:attribute") {
+            continue;
+        } else if (dkey.indexOf(':') === -1) {
+            continue;
+        } else {
+            mmaker.property_value(dkey, d[dkey]);
+        }
+    }
 
     var ads = jsonld["iot:attribute"];
     for (var ai in ads) {

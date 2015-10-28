@@ -176,14 +176,20 @@ ModelMaker.prototype.product = function (value) {
 /**
  */
 ModelMaker.prototype.facet = function (_value) {
-    if (_value.match(/^:.*[.]/)) {
+    var self = this;
+
+    if (_.is.Array(_value)) {
+        _value.map(function(v) {
+            self.__facets.push(_.ld.expand(v, "iot-facet:"));
+        });
+    } else if (_value.match(/^:.*[.]/)) {
         var parts = _value.split(".");
         for (var pi = 0; pi < parts.length; pi++) {
             var sub = parts.slice(0, pi + 1).join(".");
-            this.__facets.push(_.ld.expand(sub, "iot-facet:"));
+            self.__facets.push(_.ld.expand(sub, "iot-facet:"));
         }
     } else {
-        this.__facets.push(_.ld.expand(_value, "iot-facet:"));
+        self.__facets.push(_.ld.expand(_value, "iot-facet:"));
     }
 
     return this;
