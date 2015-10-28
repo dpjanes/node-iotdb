@@ -26,6 +26,7 @@ var assert = require("assert");
 var url = require("url");
 var path = require("path");
 var fs = require("fs");
+var util = require("util");
 
 var _ = require("./helpers");
 var attribute = require("./attribute");
@@ -402,6 +403,189 @@ Model.prototype.jsonld = function (paramd) {
     }
 
     return rd;
+};
+
+/**
+ *  Return the JSON-LD version of this thing
+ *
+ *  @param {dictionary} paramd
+ *  @param {boolean} paramd.include_state
+ *  Include the current state
+ *
+ *  @param {url} paramd.base
+ *  Base URL, otherwise 'file:///<code>/'
+ *
+ *  @return {dictionary}
+ *  JSON-LD dictionary
+ */
+Model.prototype.jsonld = function (paramd) {
+    var self = this;
+    var key;
+    var value;
+    var cd;
+
+    paramd = (paramd !== undefined) ? paramd : {};
+    paramd.base = (paramd.base !== undefined) ? paramd.base : ("file:///" + self.code() + "");
+    paramd.context = (paramd.context !== undefined) ? paramd.context : true;
+    paramd.path = (paramd.path !== undefined) ? paramd.path : "";
+
+    var rd = {};
+    var nss = {
+        "iot": true,
+        "schema": true,
+    };
+
+    if (paramd.context) {
+        cd = {};
+        cd["@base"] = paramd.base;
+        cd["@vocab"] = paramd.base + "#";
+        rd["@context"] = cd;
+        rd["@id"] = "";
+    } else if (paramd.path.length > 0) {
+        rd["@id"] = "#" + paramd.path.replace(/\/+$/, '');
+    } else {
+        rd["@id"] = "#";
+    }
+
+    rd["@type"] = _.ld.expand("iot:Model");
+
+    var name = self.name();
+    if (!_.is.Empty(name)) {
+        rd[_.ld.expand("schema:name")] = name;
+    }
+
+    var description = self.description();
+    if (!_.is.Empty(description)) {
+        rd[_.ld.expand("schema:description")] = description;
+    }
+
+    var help = self.help();
+    if (!_.is.Empty(help)) {
+        rd[_.ld.expand("iot:help")] = help;
+    }
+
+    var facet = self.facet();
+    if (!_.is.Empty(facet)) {
+        rd[_.ld.expand("iot:facet")] = facet;
+    }
+
+    // attributes
+    var ads = [];
+    var attributes = self.attributes();
+    for (var ax in attributes) {
+        var attribute = attributes[ax];
+        var ad = {};
+        // ad[_.ld.expand('schema:name')] = attribute.code()
+        ads.push(ad);
+
+        for (key in attribute) {
+            if (!attribute.hasOwnProperty(key)) {
+                continue;
+            }
+
+            value = attribute[key];
+            if (value === undefined) {} else if (_.is.Function(value)) {} else if (key.match(/^_/)) {} else if (key === "@id") {
+                ad[key] = "#" + paramd.path + value.substring(1);
+            } else {
+                ad[key] = value;
+                nss[key.replace(/:.*$/, '')] = true;
+            }
+        }
+    }
+    if (ads.length > 0) {
+        rd[_.ld.expand("iot:attribute")] = ads;
+        nss["iot-purpose"] = true;
+    }
+
+    cd = rd["@context"];
+    if (cd) {
+        for (var nkey in nss) {
+            var ns = _.ld.namespace[nkey];
+            if (ns) {
+                cd[nkey] = ns;
+            }
+        }
+    }
+
+    return rd;
+};
+
+Model.prototype.iotql = function (paramd) {
+    var self = this;
+    var jsonld = _.ld.compact(self.jsonld(paramd));
+    var keys = [
+        "schema:name",
+        "schema:description",
+        "schema:image",
+        "schema:url",
+        "iot:facet",
+        "iot:purpose",
+        "iot:what",
+        "iot:type",
+        "iot:unit",
+        "iot:format",
+        "iot:minimum",
+        "iot:maximum",
+        "iot:read",
+        "iot:write",
+    ];
+
+    var _collect = function(d) {
+        var rs = [];
+
+        if (_.ld.first(d, "iot:read") && _.ld.first(d, "iot:write")) {
+            delete d["iot:read"];
+            delete d["iot:write"];
+        }
+
+        keys.map(function(key) {
+            var values = _.ld.list(d, key, []);
+            if (values.length === 0) {
+            } else if (values.length === 1) {
+                rs.push(util.format("    %s = %s", key, JSON.stringify(values[0], null, 2)));
+            } else {
+                rs.push(util.format("    %s = %s", key, JSON.stringify(values, null, 2)));
+            }
+        });
+
+        // XXX - should get other values here!
+
+        return rs;
+    };
+
+    var results = [];
+    var top_kvs = _collect(jsonld);
+
+    if (top_kvs.length) {
+        results.push(util.format("CREATE MODEL %s WITH", _.id.to_camel_case(self.code())));
+
+        top_kvs.map(function(kv) {
+            results.push(kv);
+        });
+    } else {
+        results.push(util.format("CREATE MODEL %s", _.id.to_camel_case(self.code())));
+    }
+
+    var ads = _.ld.list(jsonld, "iot:attribute");
+    ads.map(function(ad) {
+        var ad_kvs = _collect(ad);
+        var ad_code = _.ld.first(ad, "@id", "").replace(/^#/, '');
+        if (ad_code.match(/[^a-z_]/)) {
+            ad_code = JSON.stringify(ad_code);
+        }
+
+        if (ad_kvs.length) {
+            results.push(util.format("ATTRIBUTE %s WITH", ad_code));
+            ad_kvs.map(function(kv) {
+                results.push(kv);
+            });
+        } else {
+            results.push(util.format("ATTRIBUTE %s", ad_code));
+        }
+
+    });
+
+    return results.join("\n") + "\n;\n";
 };
 
 /**
