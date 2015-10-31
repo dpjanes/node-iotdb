@@ -451,20 +451,17 @@ Model.prototype.iotql = function (paramd) {
             var values = _.ld.list(d, key, []);
             if (values.length === 0) {
             } else if (values.length === 1) {
-                rs.push(util.format("    %s = %s", key, _single_value(values[0])));
+                rs.push(util.format("    %s = %s,", key, _single_value(values[0])));
             } else {
-                rs.push(util.format("    %s = [", key));
                 values.map(function(v) {
-                    v = _single_value(v);
-                    if (v !== undefined) {
-                        rs.push(util.format("         %s", v));
-                    }
+                    rs.push(util.format("    %s = %s,", key, _single_value(v)));
                 });
-                rs.push(util.format("    ]"));
             }
         });
 
-        // XXX - should get other values here!
+        if (rs.length) {
+            rs[rs.length - 1] = rs[rs.length - 1].replace(/.$/, '');
+        }
 
         return rs;
     };
@@ -475,7 +472,7 @@ Model.prototype.iotql = function (paramd) {
     if (top_kvs.length) {
         results.push(util.format("CREATE MODEL %s WITH", _.id.to_camel_case(self.code())));
 
-        top_kvs.map(function(kv) {
+        top_kvs.map(function(kv, index) {
             results.push(kv);
         });
     } else {
@@ -1416,6 +1413,7 @@ Model.prototype._find = function (find_key, paramd) {
             return thing._find(d, paramd);
         }
 
+
         attribute = thing.__attributed[last_key];
         if (attribute !== undefined) {
             return {
@@ -1718,7 +1716,7 @@ var make_model_from_jsonld = function (d) {
             var avalue = ad[akey];
 
             if (akey === "@id") {} else if (akey === "@type") {} else if (akey.indexOf(':') === -1) {} else {
-                amaker.property_value(akey, avalue);
+                amaker.property(akey, avalue);
             }
         }
 

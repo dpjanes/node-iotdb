@@ -151,6 +151,18 @@ Modules.prototype.bindings = function () {
 
             if (!_.is.Model(binding.model)) {
                 binding.model = model.make_model_from_jsonld(binding.model);
+
+                /*
+                var i = new binding.model();
+                var c = i.code();
+                if (c === "we-mo-socket") {
+                    console.log("----");
+                    // console.log("HERE:OCT31", i);
+                    i.set(':on', true);
+                    console.log("----");
+                    // process.exit();
+                }
+                */
             }
 
             if (binding.model_code === undefined) {
