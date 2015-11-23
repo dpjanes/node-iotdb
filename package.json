@@ -6,7 +6,7 @@
     "dependencies": {
         "bunyan": "~1.5.1", 
         "canonical-json": "~0.0.4", 
-        "node-uuid": "~1.4.6", 
+        "node-uuid": "~1.4.7", 
         "prompt": "~0.2.14", 
         "underscore": "~1.8.3", 
         "unirest": "~0.4.2"
@@ -16,12 +16,12 @@
         "grunt": "~0.4.5", 
         "grunt-contrib-jshint": "~0.11.3", 
         "grunt-contrib-nodeunit": "~0.4.1", 
-        "grunt-contrib-uglify": "~0.10.1", 
+        "grunt-contrib-uglify": "~0.11.0", 
         "grunt-contrib-watch": "~0.6.1", 
         "grunt-jsbeautifier": "~0.2.10", 
-        "jshint-stylish": "~2.0.1", 
+        "jshint-stylish": "~2.1.0", 
         "load-grunt-tasks": "~3.3.0", 
-        "request": "~2.65.0"
+        "request": "~2.67.0"
     }, 
     "homepage": "https://iotdb.org", 
     "keywords": [
@@ -45,5 +45,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.10.20"
+    "version": "0.10.21"
 }
