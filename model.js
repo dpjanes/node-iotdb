@@ -418,6 +418,7 @@ Model.prototype.iotql = function (paramd) {
         "iot:purpose",
         "iot:what",
         "iot:type",
+        "iot:enumeration",
         "iot:unit",
         "iot:format",
         "iot:minimum",
