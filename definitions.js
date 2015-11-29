@@ -37,12 +37,14 @@ exports.attribute = attribute;
 
 /* boolean */
 attribute.boolean = iotdb.make_boolean(":value");
+attribute.boolean.value = iotdb.make_boolean(":value");
 attribute.boolean.on = iotdb.make_boolean(":on");
 attribute.boolean.mute = iotdb.make_boolean(":mute");
 attribute.boolean.flag = iotdb.make_boolean(":flag");
 
 /* integer */
 attribute.integer = iotdb.make_integer(":value")
+attribute.integer.value = iotdb.make_integer(":value")
 attribute.integer.percent = iotdb.make_integer(":value")
     .minimum(0)
     .maximum(100)
@@ -61,6 +63,7 @@ attribute.integer.fahrenheit = iotdb.make_integer(":temperature")
 
 /* numbers */
 attribute.number = iotdb.make_number(":value");
+attribute.number.value = iotdb.make_number(":value");
 attribute.number.temperature = iotdb.make_number(":temperature");
 attribute.number.temperature.celsius = iotdb.make_number(":temperature")
     .unit("iot-unit:temperature.si.celsius");
@@ -84,6 +87,7 @@ attribute.number.unit.brightness = iotdb.make_unit(":brightness");
 
 /* strings */
 attribute.string = iotdb.make_string(":value");
+attribute.string.value = iotdb.make_string(":value");
 attribute.string.iri = iotdb.make_iri(":iri");
 attribute.string.iri.image = iotdb.make_iri(":iri.image");
 attribute.string.color = iotdb.make_color(":color");
