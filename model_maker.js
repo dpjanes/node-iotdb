@@ -179,7 +179,7 @@ ModelMaker.prototype.facet = function (_value) {
     var self = this;
 
     if (_.is.Array(_value)) {
-        _value.map(function(v) {
+        _value.map(function (v) {
             self.__facets.push(_.ld.expand(v, "iot-facet:"));
         });
     } else if (_value.match(/^:.*[.]/)) {

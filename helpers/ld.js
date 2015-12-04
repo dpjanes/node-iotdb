@@ -340,7 +340,7 @@ var _ld_patchup = function (v, paramd) {
                     nd[key] = {
                         "@id": _ld_expand(key),
                         "@type": "@id"
-                    }
+                    };
                 }
             }
         } else if (_.is.Array(o)) {

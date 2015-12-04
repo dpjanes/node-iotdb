@@ -366,6 +366,24 @@ var cookbook = function (cookbook_name, cookbook_id) {
     }
 };
 
+/**
+ *  At a minimum, this will run everything
+ *  in iotdb-recipes
+ */
+var load_recipes = function(initd) {
+    try {
+        exports.module('iotdb-recipes').load_recipes(initd);
+    } catch (x) {
+        logger.error({
+            method: "load_recipes",
+            error: _.error.message(x),
+            cause: "likely you need to do $ homestar install iotdb-recipes",
+            stack: x.stack,
+        }, "recipes could not be initialized");
+    }
+};
+
+exports.load_recipes = load_recipes;
 exports.recipe = recipe;
 exports.cookbook = cookbook;
 
@@ -376,10 +394,10 @@ exports.cookbook = cookbook;
  *  Transporters are the biggest clients of this interface
  */
 exports.users = {
-    owner: function() {
+    owner: function () {
         return null;
     },
-    authorize: function(authd, callback) {
+    authorize: function (authd, callback) {
         return callback(null, true);
     },
 };

@@ -427,11 +427,11 @@ Model.prototype.iotql = function (paramd) {
         "iot:write",
     ];
 
-    var _single_value = function(v) {
+    var _single_value = function (v) {
         if (!_.is.String(v)) {
             return v;
         }
-        
+
         var xv = _.ld.expand(v);
         if (xv !== v) {
             return v;
@@ -440,7 +440,7 @@ Model.prototype.iotql = function (paramd) {
         return JSON.stringify(v, null, 2);
     };
 
-    var _collect = function(d) {
+    var _collect = function (d) {
         var rs = [];
 
         if (_.ld.first(d, "iot:read") && _.ld.first(d, "iot:write")) {
@@ -448,13 +448,12 @@ Model.prototype.iotql = function (paramd) {
             delete d["iot:write"];
         }
 
-        keys.map(function(key) {
+        keys.map(function (key) {
             var values = _.ld.list(d, key, []);
-            if (values.length === 0) {
-            } else if (values.length === 1) {
+            if (values.length === 0) {} else if (values.length === 1) {
                 rs.push(util.format("    %s = %s,", key, _single_value(values[0])));
             } else {
-                values.map(function(v) {
+                values.map(function (v) {
                     rs.push(util.format("    %s = %s,", key, _single_value(v)));
                 });
             }
@@ -473,7 +472,7 @@ Model.prototype.iotql = function (paramd) {
     if (top_kvs.length) {
         results.push(util.format("CREATE MODEL %s WITH", _.id.to_camel_case(self.code())));
 
-        top_kvs.map(function(kv, index) {
+        top_kvs.map(function (kv, index) {
             results.push(kv);
         });
     } else {
@@ -481,7 +480,7 @@ Model.prototype.iotql = function (paramd) {
     }
 
     var ads = _.ld.list(jsonld, "iot:attribute");
-    ads.map(function(ad) {
+    ads.map(function (ad) {
         var ad_kvs = _collect(ad);
         var ad_code = _.ld.first(ad, "@id", "").replace(/^#/, '');
         if (ad_code.match(/[^a-z_]/)) {
@@ -490,7 +489,7 @@ Model.prototype.iotql = function (paramd) {
 
         if (ad_kvs.length) {
             results.push(util.format("ATTRIBUTE %s WITH", ad_code));
-            ad_kvs.map(function(kv) {
+            ad_kvs.map(function (kv) {
                 results.push(kv);
             });
         } else {
@@ -1643,11 +1642,17 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                     pulld["@timestamp"] = _.timestamp.make();
                 }
 
-                self.update("istate", pulld);
+                var paramd = {};
+                if (pulld["@__validate"]) {
+                    delete pulld["@__validate"];
+                    paramd.validate = true;
+                }
+
+                self.update("istate", pulld, paramd);
             } else {
                 // note the doesn't account for other meta changes sigh - real hack, fix
                 if (reachabled[self._thing_id] !== is_reachable) {
-                    console.log("WAS", reachabled[self._thing_id], "IS", is_reachable);
+                    // console.log("WAS", reachabled[self._thing_id], "IS", is_reachable);
                     reachabled[self._thing_id] = is_reachable;
 
                     self.meta()._updated["@timestamp"] = _.timestamp.make();
