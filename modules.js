@@ -86,7 +86,8 @@ Modules.prototype._load_master = function () {
                 module_name: module_name,
                 module_folder: module_folder,
                 cause: "likely the module being imported is not set up correctly",
-                exception: x,
+                error: _.error.message(x),
+                stack: x.stack,
             }, "unexpected exception loading module");
             continue
         }
@@ -216,6 +217,8 @@ Modules.prototype._load_setup = function () {
                 module_name: module_name,
                 exception: x,
                 cause: "likely the module has a bad setup function",
+                error: _.error.message(x),
+                stack: x.stack,
             }, "unexpected exception running module.setup");
             process.exit(1);
         }

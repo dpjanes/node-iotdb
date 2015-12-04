@@ -370,7 +370,7 @@ var cookbook = function (cookbook_name, cookbook_id) {
  *  At a minimum, this will run everything
  *  in iotdb-recipes
  */
-var load_recipes = function(initd) {
+var load_recipes = function (initd) {
     try {
         exports.module('iotdb-recipes').load_recipes(initd);
     } catch (x) {
