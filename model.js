@@ -990,14 +990,18 @@ Model.prototype.set = function (find_key, new_value) {
         throw new Error("Model.set: internal error: impossible state for: " + find_key);
     }
 
-    // just handoff to "update"
+    // just to "update"
+    // iot:type == iot:type.null are "forced", i.e. always sent
     var updated = {};
     updated[rd.attribute.code()] = new_value;
     updated["@timestamp"] = _.timestamp.make();
 
-    self.update("ostate", updated, {
+    var update_paramd = {
         check_timestamp: false,
-    });
+        force: rd.attribute.is_type_null(),
+    };
+
+    self.update("ostate", updated, update_paramd);
 };
 
 Model.prototype._validate_set = function (find_key, new_value) {

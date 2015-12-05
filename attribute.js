@@ -36,6 +36,7 @@ var iot_js_boolean = _.ld.expand("iot:type.boolean");
 var iot_js_integer = _.ld.expand("iot:type.integer");
 var iot_js_number = _.ld.expand("iot:type.number");
 var iot_js_string = _.ld.expand("iot:type.string");
+var iot_js_null = _.ld.expand("iot:type.null");
 
 var iot_js_set = _.ld.expand("iot:set");
 var iot_js_list = _.ld.expand("iot:list");
@@ -551,6 +552,14 @@ Attribute.prototype._validate_type = function (type_iri) {
     if (!_.is.AbsoluteURL(type_iri)) {
         throw new Error("Attribute.type: type_iri must expand to a IRI, not: " + type_iri);
     }
+};
+
+Attribute.prototype.types = function () {
+    return _.ld.list(this, iot_js_type, []);
+};
+
+Attribute.prototype.is_type_null = function () {
+    return this.types().indexOf(iot_js_null) > -1;
 };
 
 /**
