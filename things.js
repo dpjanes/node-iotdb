@@ -140,7 +140,7 @@ Things.prototype.discover = function (modeld, initd, metad) {
             throw new Error("expected metad to be a Dictionary");
         }
 
-        modeld["__metad"] = metad;
+        modeld["meta"] = metad;
     }
 
     // run when ready
@@ -347,8 +347,8 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
     var thing_id = model_instance.thing_id();
     var thing = self._thingd[thing_id];
 
-    if (modeld.__metad) {
-        model_instance.update("meta", modeld.__metad);
+    if (modeld.meta) {
+        model_instance.update("meta", modeld.meta);
     }
 
     if (!thing) {
