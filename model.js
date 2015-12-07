@@ -1014,6 +1014,63 @@ Model.prototype._validate_set = function (find_key, new_value) {
 };
 
 /**
+ *  This will return the semantic definition of a key. If passed without
+ *  arguments, it will return the definition of everything as a dictionary
+ */
+Model.prototype.define = function (find_key, paramd) {
+    var self = this;
+
+    if (arguments.length === 0) {
+        find_key = null;
+    }
+
+    paramd = _.defaults({
+        set: true,
+    });
+
+    if (find_key === null) {
+        return self._define_all();
+    } else {
+        return self._define_one(find_key, paramd);
+    }
+};
+
+Model.prototype._define_all = function (find_key, paramd) {
+    var self = this;
+
+    var rd = {};
+    var attributes = self.attributes();
+    for (var ai = 0; ai < attributes.length; ai++) {
+        attribute = attributes[ai];
+        _.ld.set(rd, attribute.code(), _.ld.compact(attribute, {
+            jsonld: true,
+        }));
+    };
+
+    return rd;
+};
+
+Model.prototype._define_one = function (find_key, paramd) {
+    var self = this;
+
+    var rd = self._find(find_key, {
+        set: paramd.set,
+    });
+
+    if (rd === undefined) {
+        return null;
+    } else if (rd === null) {
+        return null;
+    } else if (!rd.attribute) {
+        throw new Error("Model.define: internal error: impossible state for: " + find_key);
+    }
+
+    return _.ld.compact(rd.attribute, {
+        jsonld: true,
+    });
+};
+
+/**
  *  Register for a callback. See {@link Thing#end Model.end}
  *  for when callbacks will occcur. Note that
  *  also that we try to supress callbacks

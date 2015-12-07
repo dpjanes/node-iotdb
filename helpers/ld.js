@@ -150,6 +150,7 @@ var _ld_compact = function (v, paramd) {
     paramd = _.defaults(paramd, {
         json: true,     // only JSON-friendly
         scrub: false,   // only with ':' in key
+        jsonld: false,  // only with ':' in key or starting with '@'
     });
 
     if (_.is.Array(v)) {
@@ -163,12 +164,22 @@ var _ld_compact = function (v, paramd) {
             }
         }
         return nvs;
+    } else if (_.is.Function(v)) {
+        return undefined;
     } else if (_.is.Object(v)) {
         var ovd = v;
         var nvd = {};
         for (var ovkey in ovd) {
-            if (paramd.scrub && (ovkey.indexOf(':') === -1)) {
-                continue;
+            if (paramd.jsonld) {
+                if (ovkey.indexOf(':') !== -1) {
+                } else if (ovkey.match(/^@/)) {
+                } else {
+                    continue
+                }
+            } else if (paramd.scrub) {
+                if (ovkey.indexOf(':') === -1) {
+                    continue
+                }
             }
             
             var ovvalue = ovd[ovkey];
