@@ -1017,41 +1017,68 @@ Model.prototype._validate_set = function (find_key, new_value) {
  *  This will return the semantic definition of a key. If passed without
  *  arguments, it will return the definition of everything as a dictionary
  */
-Model.prototype.define = function (find_key, paramd) {
+Model.prototype.explain = function (find_key, paramd) {
     var self = this;
 
     if (arguments.length === 0) {
         find_key = null;
     }
 
-    paramd = _.defaults({
-        set: true,
-    });
-
     if (find_key === null) {
-        return self._define_all();
+        return self._explain_all(paramd);
     } else {
-        return self._define_one(find_key, paramd);
+        return self._explain_one(find_key, paramd);
     }
 };
 
-Model.prototype._define_all = function (find_key, paramd) {
+Model.prototype._explain_all = function (paramd) {
     var self = this;
+
+    paramd = _.defaults(paramd, {
+        write: true,
+        read: true,
+        code: false,
+    });
 
     var rd = {};
     var attributes = self.attributes();
     for (var ai = 0; ai < attributes.length; ai++) {
-        attribute = attributes[ai];
-        _.ld.set(rd, attribute.code(), _.ld.compact(attribute, {
+        var attribute = attributes[ai];
+        var ad = _.ld.compact(attribute, {
             jsonld: true,
-        }));
+        });
+
+        if (paramd.write && !_.ld.first(ad, "iot:write")) {
+            continue;
+        }
+        if (paramd.read && !_.ld.first(ad, "iot:read")) {
+            continue;
+        }
+
+        var key;
+        if (paramd.code) {
+            key = attribute.code();
+        } else {
+            key = _.ld.first(ad, "iot:purpose");
+            if (!key) {
+                return;
+            }
+
+            key = key.replace(/^iot-purpose:/, ':');
+        }
+
+        _.ld.set(rd, key, ad);
     };
 
     return rd;
 };
 
-Model.prototype._define_one = function (find_key, paramd) {
+Model.prototype._explain_one = function (find_key, paramd) {
     var self = this;
+
+    paramd = _.defaults(paramd, {
+        set: true,
+    });
 
     var rd = self._find(find_key, {
         set: paramd.set,

@@ -37,6 +37,7 @@ var modules = [
     require('./helpers/d'),
     require('./helpers/hash'),
     require('./helpers/is'),
+    require('./helpers/net'),
     require('./helpers/color'),
     require('./helpers/timestamp'),
     require('./helpers/error'),
@@ -378,25 +379,7 @@ var _format = function (template, valueds) {
 /**
  *  Try to figure out our IP address
  */
-exports.ipv4 = function () {
-    var os = require('os');
-    var ifaces = os.networkInterfaces();
-    for (var dev in ifaces) {
-        var devs = ifaces[dev]
-        for (var di in devs) {
-            var details = devs[di]
-
-            if (details.family != 'IPv4') {
-                continue
-            }
-            if (details.address == '127.0.0.1') {
-                continue
-            }
-
-            return details.address
-        }
-    }
-}
+exports.ipv4 = exports.net.ipv4;
 
 /**
  */
