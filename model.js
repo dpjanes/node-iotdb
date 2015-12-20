@@ -229,6 +229,9 @@ Model.prototype._state_istate = function () {
     var attributes = self.attributes();
     for (var ai in attributes) {
         var attribute = attributes[ai];
+        if (!attribute.is_reading()) {
+            continue
+        }
 
         _.d.set(state, attribute.code(), attribute._ivalue);
     }

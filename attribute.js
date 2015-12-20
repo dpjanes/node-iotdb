@@ -216,6 +216,10 @@ Attribute.prototype.reading = function () {
     return this.property('iot:role', 'iot-purpose:role-reading').property("iot:read", true);
 };
 
+Attribute.prototype.is_reading = function () {
+    return _.ld.first(this, iot_js_read) ? true : false;
+};
+
 /**
  *  This is a control, i.e. you can change with it
  */
@@ -223,6 +227,9 @@ Attribute.prototype.control = function () {
     return this.property('iot:role', 'iot-purpose:role-control').property('iot:write', true);
 };
 
+Attribute.prototype.is_control = function () {
+    return _.ld.first(this, iot_js_write) ? true : false;
+};
 
 /**
  *  Define the {@link https://iotdb.org/pub/iot.html#name schema:name}
