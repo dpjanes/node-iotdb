@@ -25,6 +25,7 @@ var iot_js_type = _.ld.expand("iot:type");
 var iot_js_minimum = _.ld.expand("iot:minimum");
 var iot_js_maximum = _.ld.expand("iot:maximum");
 
+
 /* --- tests --- */
 describe('test_attribute_convert:', function(){
   describe('boolean->', function(){
@@ -42,12 +43,22 @@ describe('test_attribute_convert:', function(){
             assert.strictEqual(0, a._convert(false, [ iot_js_integer ]))
             assert.strictEqual(1, a._convert(true, [ iot_js_integer ]))
         })
+        it('return 10 or 99 as appropriate', function(){
+            var a = new attribute.Attribute();
+            assert.strictEqual(10, a._convert_boolean(false, [ iot_js_integer ], 10, 99))
+            assert.strictEqual(99, a._convert_boolean(true, [ iot_js_integer ], 10, 99))
+        })
       })
       describe('->number', function(){
         it('return 0 or 1 as appropriate', function(){
             var a = new attribute.Attribute();
             assert.strictEqual(0, a._convert(false, [ iot_js_integer ]))
             assert.strictEqual(1, a._convert(true, [ iot_js_integer ]))
+        })
+        it('return -99.1 or 99.9 as appropriate', function(){
+            var a = new attribute.Attribute();
+            assert.strictEqual(-99.1, a._convert_boolean(false, [ iot_js_integer ], -99.1, 99.9))
+            assert.strictEqual(99.9, a._convert_boolean(true, [ iot_js_integer ], -99.1, 99.9))
         })
       })
       describe('->string', function(){

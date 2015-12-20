@@ -50,12 +50,22 @@ describe('test_attribute_validate:', function(){
             assert.strictEqual(0, wrap_validate(a, false));
             assert.strictEqual(1, wrap_validate(a, true));
         })
+        it('return 10 or 99 as appropriate', function(){
+            var a = attribute.make_integer("value").minimum(10).maximum(99).reading()
+            assert.strictEqual(10, wrap_validate(a, false));
+            assert.strictEqual(99, wrap_validate(a, true));
+        })
       })
       describe('->number', function(){
         it('return 0 or 1 as appropriate', function(){
-            var a = attribute.make_integer("value").reading()
+            var a = attribute.make_number("value").reading()
             assert.strictEqual(0, wrap_validate(a, false));
             assert.strictEqual(1, wrap_validate(a, true));
+        })
+        it('return -99.1 or 99.9 as appropriate', function(){
+            var a = attribute.make_number("value").minimum(-99.1).maximum(99.9).reading()
+            assert.strictEqual(-99.1, wrap_validate(a, false));
+            assert.strictEqual(99.9, wrap_validate(a, true));
         })
       })
       describe('->string', function(){

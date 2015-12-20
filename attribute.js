@@ -612,8 +612,8 @@ Attribute.prototype.minimum = function (value) {
 };
 
 Attribute.prototype._validate_minimum = function (value) {
-    if (!_.is.Integer(value)) {
-        throw new Error("Attribute.minimum: minimum must be an integer, not: " + value);
+    if (!_.is.Number(value)) {
+        throw new Error("Attribute.minimum: minimum must be a Number, not: " + value);
     }
 };
 
@@ -634,8 +634,8 @@ Attribute.prototype.maximum = function (value) {
 };
 
 Attribute.prototype._validate_maximum = function (value) {
-    if (!_.is.Integer(value)) {
-        throw new Error("Attribute.maximum: maximum must be an integer, not: " + value);
+    if (!_.is.Number(value)) {
+        throw new Error("Attribute.maximum: maximum must be a Number, not: " + value);
     }
 };
 
@@ -933,7 +933,10 @@ Attribute.prototype._convert = function (value, types) {
     if (value === undefined) {
         return self._default(value, types);
     } else if (_.is.Boolean(value)) {
-        return self._convert_boolean(value, types);
+        var minimum = _.ld.first(self, iot_js_minimum, null);
+        var maximum = _.ld.first(self, iot_js_maximum, null);
+
+        return self._convert_boolean(value, types, minimum, maximum);
     } else if (_.is.Integer(value)) {
         return self._convert_integer(value, types);
     } else if (_.is.Number(value)) {
@@ -962,17 +965,25 @@ Attribute.prototype._default = function (value, types) {
     }
 };
 
-Attribute.prototype._convert_boolean = function (value, types) {
+/**
+ *  DPJ 2015-12-20
+ *  Note how booleans will be converted to the minimum or maximum 
+ *  value if converting to a ranged number-type
+ */
+Attribute.prototype._convert_boolean = function (value, types, minimum, maximum) {
     if (VERBOSE) {
         logger.debug("is-a-boolean", value, "wants-to-be", types);
     }
 
+    minimum = minimum || 0;
+    maximum = maximum || 1;
+
     if (types.indexOf(iot_js_boolean) > -1) {
         return value;
     } else if (types.indexOf(iot_js_integer) > -1) {
-        return value ? 1 : 0;
+        return value ? maximum : minimum;
     } else if (types.indexOf(iot_js_number) > -1) {
-        return value ? 1 : 0;
+        return value ? maximum : minimum;
     } else if (types.indexOf(iot_js_string) > -1) {
         return value ? "1" : "0";
     } else {
