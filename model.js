@@ -892,8 +892,9 @@ Model.prototype._push_attributes = function (attributes) {
             });
         } catch (x) {
             logger.error({
-                exception: x,
+                exception: _.error.message(x),
                 cause: "likely in the Bridge",
+                stack: x.stack,
             }, "unexpected exception pushing");
 
             if (--self._pushes === 0) {
