@@ -23,6 +23,8 @@
 "use strict";
 
 var _ = require("./helpers");
+var constants = require("./constants");
+
 var assert = require("assert");
 
 var bunyan = require('bunyan');
@@ -30,31 +32,6 @@ var logger = bunyan.createLogger({
     name: 'iotdb',
     module: 'attribute',
 });
-
-/* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot:type.boolean");
-var iot_js_integer = _.ld.expand("iot:type.integer");
-var iot_js_number = _.ld.expand("iot:type.number");
-var iot_js_string = _.ld.expand("iot:type.string");
-var iot_js_null = _.ld.expand("iot:type.null");
-
-var iot_js_set = _.ld.expand("iot:set");
-var iot_js_list = _.ld.expand("iot:list");
-
-var iot_js_type = _.ld.expand("iot:type");
-
-var iot_js_minimum = _.ld.expand("iot:minimum");
-var iot_js_maximum = _.ld.expand("iot:maximum");
-
-var iot_js_read = _.ld.expand("iot:read");
-var iot_js_write = _.ld.expand("iot:write");
-
-var iot_js_format = _.ld.expand("iot:format");
-var iot_js_color = _.ld.expand("iot:format.color");
-var iot_js_iri = _.ld.expand("iot:format.iri");
-var iot_js_time = _.ld.expand("iot:format.time");
-var iot_js_date = _.ld.expand("iot:format.date");
-var iot_js_datetime = _.ld.expand("iot:format.datetime");
 
 var VERBOSE = false;
 
@@ -211,24 +188,34 @@ Attribute.prototype._validate_purpose = function (purpose_iri) {
 
 /**
  *  This is a value, i.e. it is measuring something
+ *  @depreciated
  */
 Attribute.prototype.reading = function () {
-    return this.property('iot:role', 'iot-purpose:role-reading').property("iot:read", true);
-};
-
-Attribute.prototype.is_reading = function () {
-    return _.ld.first(this, iot_js_read) ? true : false;
+    return this.property("iot:read", true);
 };
 
 /**
  *  This is a control, i.e. you can change with it
+ *  @depreciated
  */
 Attribute.prototype.control = function () {
-    return this.property('iot:role', 'iot-purpose:role-control').property('iot:write', true);
+    return this.property('iot:write', true);
 };
 
-Attribute.prototype.is_control = function () {
-    return _.ld.first(this, iot_js_write) ? true : false;
+Attribute.prototype.is_read = function () {
+    return _.ld.first(this, constants.iot_read) ? true : false;
+};
+
+Attribute.prototype.is_write = function () {
+    return _.ld.first(this, constants.iot_write) ? true : false;
+};
+
+Attribute.prototype.is_actuator = function () {
+    return _.ld.first(this, constants.iot_actuator) ? true : false;
+};
+
+Attribute.prototype.is_sensor = function () {
+    return _.ld.first(this, constants.iot_sensor) ? true : false;
 };
 
 /**
@@ -562,11 +549,11 @@ Attribute.prototype._validate_type = function (type_iri) {
 };
 
 Attribute.prototype.types = function () {
-    return _.ld.list(this, iot_js_type, []);
+    return _.ld.list(this, constants.iot_type, []);
 };
 
 Attribute.prototype.is_type_null = function () {
-    return this.types().indexOf(iot_js_null) > -1;
+    return this.types().indexOf(constants.iot_null) > -1;
 };
 
 /**
@@ -608,7 +595,7 @@ Attribute.prototype.minimum = function (value) {
 
     self._validate_minimum(value);
 
-    return self.property_value(iot_js_minimum, value);
+    return self.property_value(constants.iot_minimum, value);
 };
 
 Attribute.prototype._validate_minimum = function (value) {
@@ -630,7 +617,7 @@ Attribute.prototype.maximum = function (value) {
 
     self._validate_maximum(value);
 
-    return self.property_value(iot_js_maximum, value);
+    return self.property_value(constants.iot_maximum, value);
 };
 
 Attribute.prototype._validate_maximum = function (value) {
@@ -645,7 +632,7 @@ Attribute.prototype._validate_maximum = function (value) {
  *  @return {this}
  */
 Attribute.prototype.read_only = function () {
-    return this.property_value(iot_js_write, false);
+    return this.property_value(constants.iot_write, false);
 };
 
 /**
@@ -692,7 +679,7 @@ Attribute.prototype.make = function () {
 Attribute.prototype.validate = function (paramd) {
     var self = this;
 
-    var iot_types = _.ld.list(self, iot_js_type, []);
+    var iot_types = _.ld.list(self, constants.iot_type, []);
 
     if (_.is.Date(paramd.value)) {
         paramd.value = paramd.value.toISOString();
@@ -703,13 +690,13 @@ Attribute.prototype.validate = function (paramd) {
     if (_.is.Number(paramd.value)) {
         paramd.value = self._bounded(
             paramd.value,
-            _.ld.first(self, iot_js_minimum),
-            _.ld.first(self, iot_js_maximum)
+            _.ld.first(self, constants.iot_minimum),
+            _.ld.first(self, constants.iot_maximum)
         );
     }
 
     if (_.is.String(paramd.value)) {
-        var iot_formats = _.ld.list(self, iot_js_format, []);
+        var iot_formats = _.ld.list(self, constants.iot_format, []);
         if (iot_formats.length > 0) {
             var formatted_value = self._format(paramd.value, iot_formats, paramd);
             if (formatted_value === undefined) {
@@ -735,9 +722,9 @@ Attribute.prototype.validate_value = function (value) {
     var self = this;
     var paramd;
 
-    var iot_types = _.ld.list(self, iot_js_type, []);
-    var is_set = iot_types.indexOf(iot_js_set) > -1;
-    var is_list = iot_types.indexOf(iot_js_list) > -1;
+    var iot_types = _.ld.list(self, constants.iot_type, []);
+    var is_set = iot_types.indexOf(constants.iot_set) > -1;
+    var is_list = iot_types.indexOf(constants.iot_list) > -1;
 
     if (is_set || is_list) {
         if ((value === null) || (value === undefined)) {
@@ -806,7 +793,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
         return value;
     }
 
-    if (formats.indexOf(iot_js_color) > -1) {
+    if (formats.indexOf(constants.iot_color) > -1) {
         known = true;
         otherwise = undefined;
         if (paramd.use_otherwise) {
@@ -823,7 +810,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
         }
     }
 
-    if (formats.indexOf(iot_js_datetime) > -1) {
+    if (formats.indexOf(constants.iot_datetime) > -1) {
         known = true;
         otherwise = undefined;
         if (paramd.use_otherwise) {
@@ -839,7 +826,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
         }
     }
 
-    if (formats.indexOf(iot_js_date) > -1) {
+    if (formats.indexOf(constants.iot_date) > -1) {
         known = true;
         otherwise = undefined;
         if (paramd.use_otherwise) {
@@ -855,7 +842,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
         }
     }
 
-    if (formats.indexOf(iot_js_time) > -1) {
+    if (formats.indexOf(constants.iot_time) > -1) {
         known = true;
         otherwise = undefined;
         if (paramd.use_otherwise) {
@@ -871,7 +858,7 @@ Attribute.prototype._format = function (value, formats, paramd) {
         }
     }
 
-    if (formats.indexOf(iot_js_iri) > -1) {
+    if (formats.indexOf(constants.iot_iri) > -1) {
         // XXX not implemented
         return value;
     }
@@ -933,8 +920,8 @@ Attribute.prototype._convert = function (value, types) {
     if (value === undefined) {
         return self._default(value, types);
     } else if (_.is.Boolean(value)) {
-        var minimum = _.ld.first(self, iot_js_minimum, null);
-        var maximum = _.ld.first(self, iot_js_maximum, null);
+        var minimum = _.ld.first(self, constants.iot_minimum, null);
+        var maximum = _.ld.first(self, constants.iot_maximum, null);
 
         return self._convert_boolean(value, types, minimum, maximum);
     } else if (_.is.Integer(value)) {
@@ -952,13 +939,13 @@ Attribute.prototype._default = function (value, types) {
     if (VERBOSE) {
         logger.debug("undefined", "wants-to-be", types);
     }
-    if (types.indexOf(iot_js_boolean) > -1) {
+    if (types.indexOf(constants.iot_boolean) > -1) {
         return false;
-    } else if (types.indexOf(iot_js_integer) > -1) {
+    } else if (types.indexOf(constants.iot_integer) > -1) {
         return 0;
-    } else if (types.indexOf(iot_js_number) > -1) {
+    } else if (types.indexOf(constants.iot_number) > -1) {
         return 0.0;
-    } else if (types.indexOf(iot_js_string) > -1) {
+    } else if (types.indexOf(constants.iot_string) > -1) {
         return "";
     } else {
         return null;
@@ -978,13 +965,13 @@ Attribute.prototype._convert_boolean = function (value, types, minimum, maximum)
     minimum = minimum || 0;
     maximum = maximum || 1;
 
-    if (types.indexOf(iot_js_boolean) > -1) {
+    if (types.indexOf(constants.iot_boolean) > -1) {
         return value;
-    } else if (types.indexOf(iot_js_integer) > -1) {
+    } else if (types.indexOf(constants.iot_integer) > -1) {
         return value ? maximum : minimum;
-    } else if (types.indexOf(iot_js_number) > -1) {
+    } else if (types.indexOf(constants.iot_number) > -1) {
         return value ? maximum : minimum;
-    } else if (types.indexOf(iot_js_string) > -1) {
+    } else if (types.indexOf(constants.iot_string) > -1) {
         return value ? "1" : "0";
     } else {
         return value;
@@ -996,13 +983,13 @@ Attribute.prototype._convert_integer = function (value, types) {
         logger.debug("is-a-integer", value, "wants-to-be", types);
     }
 
-    if (types.indexOf(iot_js_boolean) > -1) {
+    if (types.indexOf(constants.iot_boolean) > -1) {
         return value ? true : false;
-    } else if (types.indexOf(iot_js_integer) > -1) {
+    } else if (types.indexOf(constants.iot_integer) > -1) {
         return value;
-    } else if (types.indexOf(iot_js_number) > -1) {
+    } else if (types.indexOf(constants.iot_number) > -1) {
         return Math.round(value);
-    } else if (types.indexOf(iot_js_string) > -1) {
+    } else if (types.indexOf(constants.iot_string) > -1) {
         return "" + value;
     } else {
         return value;
@@ -1014,13 +1001,13 @@ Attribute.prototype._convert_number = function (value, types) {
         logger.debug("is-a-number", value, "wants-to-be", types);
     }
 
-    if (types.indexOf(iot_js_boolean) > -1) {
+    if (types.indexOf(constants.iot_boolean) > -1) {
         return value ? true : false;
-    } else if (types.indexOf(iot_js_number) > -1) {
+    } else if (types.indexOf(constants.iot_number) > -1) {
         return value;
-    } else if (types.indexOf(iot_js_integer) > -1) {
+    } else if (types.indexOf(constants.iot_integer) > -1) {
         return Math.round(value);
-    } else if (types.indexOf(iot_js_string) > -1) {
+    } else if (types.indexOf(constants.iot_string) > -1) {
         return "" + value;
     } else {
         return value;
@@ -1034,9 +1021,9 @@ Attribute.prototype._convert_string = function (value, types) {
     if (VERBOSE) {
         logger.debug("is-a-string", value, "wants-to-be", types);
     }
-    if (types.indexOf(iot_js_string) > -1) {
+    if (types.indexOf(constants.iot_string) > -1) {
         return value;
-    } else if (types.indexOf(iot_js_boolean) > -1) {
+    } else if (types.indexOf(constants.iot_boolean) > -1) {
         value = value.toLowerCase();
         if (value.length === 0) {
             value = false;
@@ -1055,7 +1042,7 @@ Attribute.prototype._convert_string = function (value, types) {
         if (VERBOSE) {
             logger.debug(" ... became boolean", value);
         }
-    } else if (types.indexOf(iot_js_integer) > -1) {
+    } else if (types.indexOf(constants.iot_integer) > -1) {
         value = Math.round(parseFloat(value));
         if (isNaN(value)) {
             value = undefined;
@@ -1063,7 +1050,7 @@ Attribute.prototype._convert_string = function (value, types) {
         if (VERBOSE) {
             logger.debug(" ... became integer", value);
         }
-    } else if (types.indexOf(iot_js_number) > -1) {
+    } else if (types.indexOf(constants.iot_number) > -1) {
         value = parseFloat(value);
         if (isNaN(value)) {
             value = undefined;

@@ -235,6 +235,17 @@ ModelMaker.prototype.attribute = function (attribute) {
         }
     }
 
+    /* fixup */
+    /*
+    if (_.ld.first(this, iot_js_sensor) ? true : false;
+
+var iot_js_actuator = _.ld.expand("iot:actuator");
+var iot_js_sensor = _.ld.expand("iot:sensor");
+
+
+    console.log("HERE:XXX", attribute);
+    */
+
     /* do not copy nested values */
     attribute = _.deepCopy(attribute);
     for (var akey in attribute) {

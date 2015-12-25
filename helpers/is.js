@@ -144,6 +144,10 @@ var isObject = function (obj) {
     return _.underscore.isObject(obj);
 };
 
+var _isNaN = function (obj) {
+    return isNumber(obj) && isNaN(obj);
+};
+
 exports.is = {
     // IOTDB classes
     Thing: isThing,
@@ -176,4 +180,5 @@ exports.is = {
 	RegExp: isRegExp,
 	String: isString,
 	Undefined: isUndefined,
+	NaN: _isNaN,
 };
