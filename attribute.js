@@ -129,7 +129,7 @@ Attribute.prototype._get_code = function () {
 
     var code = self['@id'];
     if (code === undefined) {
-        code = self[_.ld.expand("iot:purpose")];
+        code = self[constants.iot_purpose];
     }
     if (code !== undefined) {
         return code.replace(/^.*#/, "");
@@ -232,7 +232,7 @@ Attribute.prototype.name = function (_value) {
     var self = this;
     self._validate_name(_value);
 
-    return this.property_value(_.ld.expand('schema:name'), _value, {
+    return this.property_value(constants.schema_name, _value, {
         array: false
     });
 };
@@ -258,7 +258,7 @@ Attribute.prototype.description = function (_value) {
 
     self._validate_description(_value);
 
-    return self.property_value(_.ld.expand('schema:description'), _value);
+    return self.property_value(constants.schema_description, _value);
 };
 
 Attribute.prototype._validate_description = function (_value) {
@@ -373,7 +373,7 @@ Attribute.prototype._validate_property_value = function (key_iri, value, paramd)
  */
 Attribute.prototype.list = function () {
     var self = this;
-    self.property_value("iot:type", _.ld.expand("iot:list"));
+    self.property_value("iot:type", constants.iot_list);
     return self;
 };
 
@@ -382,7 +382,7 @@ Attribute.prototype.list = function () {
  */
 Attribute.prototype.set = function () {
     var self = this;
-    self.property_value("iot:type", _.ld.expand("iot:set"));
+    self.property_value("iot:type", constants.iot_set);
     return self;
 };
 

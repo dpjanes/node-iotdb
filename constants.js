@@ -22,6 +22,9 @@
 
 var _ = require("./helpers");
 
+exports.schema_name = _.ld.expand("schema:name");
+exports.schema_description = _.ld.expand("schema:description");
+
 exports.iot_type = _.ld.expand("iot:type");
 exports.iot_unit = _.ld.expand("iot:unit");
 exports.iot_purpose = _.ld.expand("iot:purpose");
@@ -49,4 +52,3 @@ exports.iot_iri = _.ld.expand("iot:format.iri");
 exports.iot_time = _.ld.expand("iot:format.time");
 exports.iot_date = _.ld.expand("iot:format.date");
 exports.iot_datetime = _.ld.expand("iot:format.datetime");
-
