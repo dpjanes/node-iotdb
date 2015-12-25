@@ -25,6 +25,7 @@
 var _ = require("./helpers");
 var attribute = require("./attribute");
 var model = require("./model");
+var constants = require("./constants");
 
 var events = require('events');
 var util = require('util');
@@ -235,16 +236,34 @@ ModelMaker.prototype.attribute = function (attribute) {
         }
     }
 
-    /* fixup */
-    /*
-    if (_.ld.first(this, iot_js_sensor) ? true : false;
+    /* fixup / defaults */
+    var is_read = _.ld.first(attribute, constants.iot_read, null);
+    var is_write = _.ld.first(attribute, constants.iot_write, null);
 
-var iot_js_actuator = _.ld.expand("iot:actuator");
-var iot_js_sensor = _.ld.expand("iot:sensor");
+    if ((is_read === null) && (is_write === null)) {
+        is_read = true;
+        is_write = true;
+    } else {
+        is_read = is_read ? true : false;
+        is_write = is_write ? true : false;
+    }
 
+    attribute.property_value(constants.iot_read, is_read);
+    attribute.property_value(constants.iot_write, is_write);
 
-    console.log("HERE:XXX", attribute);
-    */
+    var is_sensor = _.ld.first(attribute, constants.iot_sensor, null);
+    var is_actuator = _.ld.first(attribute, constants.iot_actuator, null);
+
+    if ((is_sensor === null) && (is_actuator === null)) {
+        is_sensor = is_read;
+        is_actuator = is_write;
+    } else {
+        is_sensor = is_sensor ? true : false;
+        is_actuator = is_actuator ? true : false;
+    }
+
+    attribute.property_value(constants.iot_sensor, is_sensor);
+    attribute.property_value(constants.iot_actuator, is_actuator);
 
     /* do not copy nested values */
     attribute = _.deepCopy(attribute);
