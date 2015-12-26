@@ -13,66 +13,56 @@
 var assert = require("assert")
 var attribute = require("../attribute")
 var _ = require("../helpers")
-
-/* --- constants --- */
-var iot_js_boolean = _.ld.expand("iot:type.boolean");
-var iot_js_integer = _.ld.expand("iot:type.integer");
-var iot_js_number = _.ld.expand("iot:type.number");
-var iot_js_string = _.ld.expand("iot:type.string");
-
-var iot_js_type = _.ld.expand("iot:type");
-
-var iot_js_minimum = _.ld.expand("iot:minimum");
-var iot_js_maximum = _.ld.expand("iot:maximum");
+var constants = require("../constants")
 
 /* --- tests --- */
 describe('test_attribute_preference:', function(){
   describe('boolean', function(){
     it('conversion where there are choices', function(){
         var a = new attribute.Attribute();
-        assert.strictEqual(true, a._convert(true, [ iot_js_boolean, iot_js_integer ]))
-        assert.strictEqual(true, a._convert(true, [ iot_js_boolean, iot_js_number ]))
-        assert.strictEqual(true, a._convert(true, [ iot_js_boolean, iot_js_string ]))
+        assert.strictEqual(true, a._convert(true, [ constants.iot_boolean, constants.iot_integer ]))
+        assert.strictEqual(true, a._convert(true, [ constants.iot_boolean, constants.iot_number ]))
+        assert.strictEqual(true, a._convert(true, [ constants.iot_boolean, constants.iot_string ]))
 
-        assert.strictEqual(1, a._convert(true, [ iot_js_integer, iot_js_number ]))
-        assert.strictEqual(1, a._convert(true, [ iot_js_integer, iot_js_string ]))
-        assert.strictEqual(1, a._convert(true, [ iot_js_number, iot_js_string ]))
+        assert.strictEqual(1, a._convert(true, [ constants.iot_integer, constants.iot_number ]))
+        assert.strictEqual(1, a._convert(true, [ constants.iot_integer, constants.iot_string ]))
+        assert.strictEqual(1, a._convert(true, [ constants.iot_number, constants.iot_string ]))
     });
   });
   describe('integer', function(){
     it('conversion where there are choices', function(){
         var a = new attribute.Attribute();
-        assert.strictEqual(true, a._convert(3, [ iot_js_boolean, iot_js_integer ]))
-        assert.strictEqual(true, a._convert(3, [ iot_js_boolean, iot_js_number ]))
-        assert.strictEqual(true, a._convert(3, [ iot_js_boolean, iot_js_string ]))
+        assert.strictEqual(true, a._convert(3, [ constants.iot_boolean, constants.iot_integer ]))
+        assert.strictEqual(true, a._convert(3, [ constants.iot_boolean, constants.iot_number ]))
+        assert.strictEqual(true, a._convert(3, [ constants.iot_boolean, constants.iot_string ]))
 
-        assert.strictEqual(3, a._convert(3, [ iot_js_integer, iot_js_number ]))
-        assert.strictEqual(3, a._convert(3, [ iot_js_integer, iot_js_string ]))
-        assert.strictEqual(3, a._convert(3, [ iot_js_number, iot_js_string ]))
+        assert.strictEqual(3, a._convert(3, [ constants.iot_integer, constants.iot_number ]))
+        assert.strictEqual(3, a._convert(3, [ constants.iot_integer, constants.iot_string ]))
+        assert.strictEqual(3, a._convert(3, [ constants.iot_number, constants.iot_string ]))
     });
   });
   describe('number', function(){
     it('conversion where there are choices', function(){
         var a = new attribute.Attribute();
-        assert.strictEqual(true, a._convert(3.14, [ iot_js_boolean, iot_js_integer ]))
-        assert.strictEqual(true, a._convert(3.14, [ iot_js_boolean, iot_js_number ]))
-        assert.strictEqual(true, a._convert(3.14, [ iot_js_boolean, iot_js_string ]))
+        assert.strictEqual(true, a._convert(3.14, [ constants.iot_boolean, constants.iot_integer ]))
+        assert.strictEqual(true, a._convert(3.14, [ constants.iot_boolean, constants.iot_number ]))
+        assert.strictEqual(true, a._convert(3.14, [ constants.iot_boolean, constants.iot_string ]))
 
-        assert.strictEqual(3.14, a._convert(3.14, [ iot_js_integer, iot_js_number ]))
-        assert.strictEqual(3, a._convert(3.14, [ iot_js_integer, iot_js_string ]))
-        assert.strictEqual(3.14, a._convert(3.14, [ iot_js_number, iot_js_string ]))
+        assert.strictEqual(3.14, a._convert(3.14, [ constants.iot_integer, constants.iot_number ]))
+        assert.strictEqual(3, a._convert(3.14, [ constants.iot_integer, constants.iot_string ]))
+        assert.strictEqual(3.14, a._convert(3.14, [ constants.iot_number, constants.iot_string ]))
     });
   });
   describe('number', function(){
     it('conversion where there are choices', function(){
         var a = new attribute.Attribute();
-        assert.strictEqual(true, a._convert("on", [ iot_js_boolean, iot_js_integer ]))
-        assert.strictEqual(true, a._convert("on", [ iot_js_boolean, iot_js_number ]))
-        assert.strictEqual("on", a._convert("on", [ iot_js_boolean, iot_js_string ]))
+        assert.strictEqual(true, a._convert("on", [ constants.iot_boolean, constants.iot_integer ]))
+        assert.strictEqual(true, a._convert("on", [ constants.iot_boolean, constants.iot_number ]))
+        assert.strictEqual("on", a._convert("on", [ constants.iot_boolean, constants.iot_string ]))
 
-        assert.ok(isNaN(a._convert("on", [ iot_js_integer, iot_js_number ])))
-        assert.strictEqual("on", a._convert("on", [ iot_js_integer, iot_js_string ]))
-        assert.strictEqual("on", a._convert("on", [ iot_js_number, iot_js_string ]))
+        assert.ok(isNaN(a._convert("on", [ constants.iot_integer, constants.iot_number ])))
+        assert.strictEqual("on", a._convert("on", [ constants.iot_integer, constants.iot_string ]))
+        assert.strictEqual("on", a._convert("on", [ constants.iot_number, constants.iot_string ]))
     });
   });
 })
