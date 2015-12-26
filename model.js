@@ -43,7 +43,6 @@ var logger = bunyan.createLogger({
 
 /* --- constants --- */
 var VERBOSE = true;
-var iot_clear_value = _.ld.expand("iot:clear-value");
 
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "state";
@@ -343,26 +342,26 @@ Model.prototype.jsonld = function (paramd) {
         rd["@id"] = "#";
     }
 
-    rd["@type"] = _.ld.expand("iot:Model");
+    rd["@type"] = constants.iot_Model;
 
     var name = self.name();
     if (!_.is.Empty(name)) {
-        rd[_.ld.expand("schema:name")] = name;
+        rd[constants.schema_name] = name;
     }
 
     var description = self.description();
     if (!_.is.Empty(description)) {
-        rd[_.ld.expand("schema:description")] = description;
+        rd[constants.schema_description] = description;
     }
 
     var help = self.help();
     if (!_.is.Empty(help)) {
-        rd[_.ld.expand("iot:help")] = help;
+        rd[constants.iot_help] = help;
     }
 
     var facet = self.facet();
     if (!_.is.Empty(facet)) {
-        rd[_.ld.expand("iot:facet")] = facet;
+        rd[constants.iot_facet] = facet;
     }
 
     // attributes
@@ -371,7 +370,6 @@ Model.prototype.jsonld = function (paramd) {
     for (var ax in attributes) {
         var attribute = attributes[ax];
         var ad = {};
-        // ad[_.ld.expand('schema:name')] = attribute.code()
         ads.push(ad);
 
         for (key in attribute) {
@@ -389,7 +387,7 @@ Model.prototype.jsonld = function (paramd) {
         }
     }
     if (ads.length > 0) {
-        rd[_.ld.expand("iot:attribute")] = ads;
+        rd[constants.iot_attribute] = ads;
         nss["iot-purpose"] = true;
     }
 
@@ -859,7 +857,7 @@ Model.prototype._push_attributes = function (attributes) {
         _.d.set(pushd, attribute_code, attribute_value);
 
         // set iot:clear-value and the ostate will always revert to null
-        if (_.ld.first(attribute, iot_clear_value)) {
+        if (_.ld.first(attribute, constants.iot_clear_value)) {
             attribute._ovalue = null;
         }
     });
@@ -1492,12 +1490,12 @@ Model.prototype._find = function (find_key, paramd) {
         var last_key = subkeys[subkeys.length - 1];
         if (last_key.substring(0, 1) === ":") {
             d = {};
-            d[_.ld.expand("iot:purpose")] = _.ld.expand("iot-purpose:" + last_key.substring(1));
+            d[constants.iot_purpose] = _.ld.expand("iot-purpose:" + last_key.substring(1));
 
             return thing._find(d, paramd);
         } else if (last_key.indexOf(":") > -1) {
             d = {};
-            d[_.ld.expand("iot:purpose")] = _.ld.expand(last_key);
+            d[constants.iot_purpose] = _.ld.expand(last_key);
 
             return thing._find(d, paramd);
         }

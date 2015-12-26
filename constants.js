@@ -25,11 +25,21 @@ var _ = require("./helpers");
 exports.schema_name = _.ld.expand("schema:name");
 exports.schema_description = _.ld.expand("schema:description");
 
+exports.iot_Model = _.ld.expand("iot:Model");
+exports.iot_Attribute = _.ld.expand("iot:Attribute");
+
+exports.iot_attribute = _.ld.expand("iot:attribute");
+exports.iot_help = _.ld.expand("iot:help");
 exports.iot_type = _.ld.expand("iot:type");
 exports.iot_unit = _.ld.expand("iot:unit");
 exports.iot_purpose = _.ld.expand("iot:purpose");
 exports.iot_format = _.ld.expand("iot:format");
 exports.iot_facet = _.ld.expand("iot:facet");
+
+exports.iot_reachable = _.ld.expand('iot:reachable');
+exports.iot_thing_id = _.ld.expand('iot:thing-id');
+exports.iot_thing = _.ld.expand('iot:thing');
+exports.iot_model_id = _.ld.expand('iot:model-id');
 
 exports.iot_boolean = _.ld.expand("iot:type.boolean");
 exports.iot_integer = _.ld.expand("iot:type.integer");
@@ -47,6 +57,8 @@ exports.iot_write = _.ld.expand("iot:write");
 
 exports.iot_actuator = _.ld.expand("iot:actuator");
 exports.iot_sensor = _.ld.expand("iot:sensor");
+
+exports.iot_clear_value = _.ld.expand("iot:clear-value");
 
 exports.iot_color = _.ld.expand("iot:format.color");
 exports.iot_iri = _.ld.expand("iot:format.iri");

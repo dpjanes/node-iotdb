@@ -23,6 +23,7 @@
 "use strict";
 
 var _ = require("./helpers.js");
+var constants = require("./constants.js");
 var assert = require("assert");
 
 var bunyan = require('bunyan');
@@ -31,7 +32,6 @@ var logger = bunyan.createLogger({
     module: 'meta',
 });
 
-var iot_reachable = _.ld.expand('iot:reachable');
 
 /**
  *  This represents the Thing data in the graph.
@@ -55,19 +55,19 @@ Meta.prototype.state = function () {
     var self = this;
 
     var metad = {};
-    metad[_.ld.expand('iot:thing-id')] = self.thing.thing_id();
-    metad[_.ld.expand('iot:model-id')] = self.thing.code();
-    metad[_.ld.expand('schema:name')] = self.thing.name;
+    metad[constants.iot_thing_id] = self.thing.thing_id();
+    metad[constants.iot_model_id] = self.thing.code();
+    metad[constants.schema_name] = self.thing.name;
 
     if (self.thing.__facets) {
-        metad[_.ld.expand('iot:facet')] = self.thing.__facets;
+        metad[constants.iot_facet] = self.thing.__facets;
     }
 
     if (self.thing.bridge_instance) {
         var bmetad = _.ld.expand(self.thing.bridge_instance.meta());
         if (bmetad) {
-            delete bmetad[_.ld.expand('iot:thing-id')];
-            delete bmetad[_.ld.expand('iot:thing')];
+            delete bmetad[constants.iot_thing_id];
+            delete bmetad[constants.iot_thing];
 
             _.extend(metad, bmetad);
         }
@@ -78,9 +78,9 @@ Meta.prototype.state = function () {
         }
 
         // bridge reachable
-        metad[iot_reachable] = self.thing.bridge_instance.reachable() ? true : false;
+        metad[constants.iot_reachable] = self.thing.bridge_instance.reachable() ? true : false;
     } else {
-        metad[iot_reachable] = false;
+        metad[constants.iot_reachable] = false;
     }
 
     _.extend(metad, self._updated);
@@ -126,7 +126,7 @@ Meta.prototype.set = function (key, value) {
     var self = this;
 
     key = _.ld.expand(key);
-    if (key === iot_reachable) {
+    if (key === constants.iot_reachable) {
         return;
     }
 
@@ -173,7 +173,7 @@ Meta.prototype.update = function (ind, paramd) {
     var in_keys = _.keys(ind);
     for (var ki in in_keys) {
         var in_key = in_keys[ki];
-        if (in_key === iot_reachable) {
+        if (in_key === constants.iot_reachable) {
             continue;
         } else if (in_key === "@timestamp") {
             continue;
