@@ -288,6 +288,7 @@ ModelMaker.prototype.attribute = function (attribute) {
 /*
  *  Action
  */
+/*
 ModelMaker.prototype.action = function (purpose, xd) {
     var self = this;
 
@@ -307,8 +308,10 @@ ModelMaker.prototype.action = function (purpose, xd) {
 
     return self;
 };
+*/
 
 // reading @depreciated
+/*
 ModelMaker.prototype.i = function (code, attribute) {
     var name = _.ld.first(attribute, constants.schema_name);
 
@@ -324,8 +327,10 @@ ModelMaker.prototype.i = function (code, attribute) {
         .reading()
     );
 };
+*/
 
 // control @depreciated
+/*
 ModelMaker.prototype.o = function (code, attribute) {
     var name = _.ld.first(attribute, constants.schema_name);
 
@@ -341,8 +346,10 @@ ModelMaker.prototype.o = function (code, attribute) {
         .control()
     );
 };
+*/
 
 // reading & control @depreciated
+/*
 ModelMaker.prototype.io = function (out_code, in_code, attribute) {
     if (arguments.length === 1) {
         attribute = arguments[0];
@@ -380,6 +387,8 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
 
     return this;
 };
+*/
+
 /**
  */
 ModelMaker.prototype.vector = function (attribute_codes) {

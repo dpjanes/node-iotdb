@@ -16,6 +16,9 @@ var _ = require("../helpers")
 var model = require("../model");
 var definitions = require("../definitions");
 
+require('./instrument/attribute');
+require('./instrument/model_maker');
+
 var BooleanModel = model.make_model('BooleanModel')
     .io("value", definitions.attribute.boolean)
     .make();
