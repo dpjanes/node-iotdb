@@ -6,7 +6,7 @@
  *  2014-02-14
  *  "Valentines's Day"
  *
- *  Copyright [2013-2015] [David P. Janes]
+ *  Copyright [2013-2016] [David P. Janes]
  *
  *  Much cleaner Keystore than the one in IOTDB.js
  *

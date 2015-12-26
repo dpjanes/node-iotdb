@@ -5,7 +5,7 @@
  *  IOTDB.org
  *  2014-02-18
  *
- *  Copyright [2013-2015] [David P. Janes]
+ *  Copyright [2013-2016] [David P. Janes]
  *
  *  Things Manager. Handle finding new Things and
  *  tracking things that we already know about.
