@@ -199,15 +199,19 @@ ModelMaker.prototype.facet = function (_value) {
 ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
     var self = this;
 
-    key_iri = _.ld.compact(key_iri);
-    if (key_iri === "schema:name") {
+    if (key_iri === constants.schema_name) {
         self.name(value);
-    } else if (key_iri === "schema:description") {
+    } else if (key_iri === constants.schema_description) {
         self.description(value);
-    } else if (key_iri === "iot:facet") {
+    } else if (key_iri === constants.iot_facet) {
         self.facet(value);
     } else {
-        // console.log("HERE:XXX", key_iri, value);
+        logger.error({
+            method: "property_value",
+            key: key_iri,
+            value: value,
+            cause: "IOTDB error - this can be ignored for now",
+        }, "setting property/values on Models not supported - yet");
     }
 
     return this;
@@ -289,7 +293,7 @@ ModelMaker.prototype.action = function (purpose, xd) {
     purpose = _.ld.compact(purpose);
 
     var code = purpose.replace(/^.*:/, '');
-    var name = _.ld.first(attribute, 'http://schema.org/name') || code;
+    var name = _.ld.first(attribute, constants.schema_name) || code;
 
     var ad = attribute.make(purpose, code, name)
         .control()
@@ -303,9 +307,9 @@ ModelMaker.prototype.action = function (purpose, xd) {
     return self;
 };
 
-// reading
+// reading @depreciated
 ModelMaker.prototype.i = function (code, attribute) {
-    var name = _.ld.first(attribute, 'http://schema.org/name');
+    var name = _.ld.first(attribute, constants.schema_name);
 
     if (arguments.length === 1) {
         attribute = arguments[0];
@@ -320,9 +324,9 @@ ModelMaker.prototype.i = function (code, attribute) {
     );
 };
 
-// control
+// control @depreciated
 ModelMaker.prototype.o = function (code, attribute) {
-    var name = _.ld.first(attribute, 'http://schema.org/name');
+    var name = _.ld.first(attribute, constants.schema_name);
 
     if (arguments.length === 1) {
         attribute = arguments[0];
@@ -337,7 +341,7 @@ ModelMaker.prototype.o = function (code, attribute) {
     );
 };
 
-// reading & control
+// reading & control @depreciated
 ModelMaker.prototype.io = function (out_code, in_code, attribute) {
     if (arguments.length === 1) {
         attribute = arguments[0];
@@ -348,7 +352,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         in_code = out_code;
     }
 
-    var name = _.ld.first(attribute, 'http://schema.org/name');
+    var name = _.ld.first(attribute, constants.schema_name);
 
     if (out_code === in_code) {
         this.attribute(
@@ -371,71 +375,10 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
             .name(name || out_code)
             .control()
         );
-
-        /*
-        this.make_attribute_control(in_code, out_code).name(name || out_code);
-        */
     }
 
     return this;
 };
-
-/**
- *  Defines a control for a 'value' attribute
- */
-/*
-ModelMaker.prototype.link_control_reading = function (control_attribute_code, reading_attribute_code) {
-    var self = this;
-
-    reading_attribute_code = reading_attribute_code.replace(/^:/, '');
-    var reading_attribute = self.__attributed[reading_attribute_code];
-    if (!reading_attribute) {
-        throw "# value attribute not found: " + reading_attribute_code;
-    }
-
-    control_attribute_code = control_attribute_code.replace(/^:/, '');
-    var control_attribute = self.__attributed[control_attribute_code];
-    if (!control_attribute) {
-        throw "# value attribute not found: " + reading_attribute_code;
-    }
-
-    reading_attribute[_.ld.expand("iot:related-role")] = '#' + control_attribute_code;
-    control_attribute[_.ld.expand("iot:related-role")] = '#' + reading_attribute_code;
-
-    return self;
-};
-*/
-
-/**
- *  Defines a control for a 'value' attribute
- */
-/*
-ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, control_attribute_code) {
-    var self = this;
-
-    assert.ok(_.is.String(reading_attribute_code));
-    assert.ok(_.is.String(control_attribute_code));
-
-    var reading_attribute = self.__attributed[reading_attribute_code];
-    if (!reading_attribute) {
-        throw "# value attribute not found: " + reading_attribute_code;
-    }
-
-    var control_attribute = _.deepCopy(reading_attribute);
-    control_attribute['@id'] = '#' + control_attribute_code;
-
-    _.ld.remove(control_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-purpose:role-reading"));
-    control_attribute.control();
-
-    self.__attributed[control_attribute_code] = control_attribute;
-    self.__attributes.push(control_attribute);
-
-    self.link_control_reading(control_attribute_code, reading_attribute_code);
-
-    return self;
-};
-*/
-
 /**
  */
 ModelMaker.prototype.vector = function (attribute_codes) {

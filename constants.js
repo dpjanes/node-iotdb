@@ -29,6 +29,7 @@ exports.iot_type = _.ld.expand("iot:type");
 exports.iot_unit = _.ld.expand("iot:unit");
 exports.iot_purpose = _.ld.expand("iot:purpose");
 exports.iot_format = _.ld.expand("iot:format");
+exports.iot_facet = _.ld.expand("iot:facet");
 
 exports.iot_boolean = _.ld.expand("iot:type.boolean");
 exports.iot_integer = _.ld.expand("iot:type.integer");
