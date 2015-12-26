@@ -32,6 +32,7 @@ var _ = require("./helpers");
 var attribute = require("./attribute");
 var meta_thing = require("./meta");
 var model_maker = require("./model_maker");
+var constants = require("./constants");
 var iotdb = require("./iotdb");
 
 var bunyan = require('bunyan');
@@ -42,10 +43,6 @@ var logger = bunyan.createLogger({
 
 /* --- constants --- */
 var VERBOSE = true;
-var iot_name = _.ld.expand("schema:name");
-var iot_role = _.ld.expand("iot:role");
-var iot_role_reading = _.ld.expand("iot-purpose:role-reading");
-var iot_role_control = _.ld.expand("iot-purpose:role-control"); // MUST BE CHANGED TO READ/WRITE
 var iot_clear_value = _.ld.expand("iot:clear-value");
 
 var EVENT_THINGS_CHANGED = "things_changed";
@@ -1528,7 +1525,7 @@ Model.prototype._find = function (find_key, paramd) {
                  *  values and we ignore schema:name (because
                  *  iotdb.make_attribute always adds a name)
                  */
-                if (match_key === iot_name) {
+                if (match_key === constants.schema_name) {
                     continue;
                 } else if (match_key.indexOf('@') === 0) {
                     continue;
@@ -1576,28 +1573,28 @@ Model.prototype._find = function (find_key, paramd) {
             return matches[0];
         }
 
-        var match_reading = null;
-        var match_control = null;
+        var match_sensor = null;
+        var match_actuator = null;
         for (var mi in matches) {
             var match = matches[mi];
-            if (_.ld.contains(match.attribute, iot_role, iot_role_reading)) {
-                match_reading = match;
+            if (!match_sensor && match.is_sensor()) {
+                match_sensor = match;
             }
-            if (_.ld.contains(match.attribute, iot_role, iot_role_control)) {
-                match_control = match;
+            if (!match_actuator && match.is_actuator()) {
+                match_actuator = match;
             }
         }
 
-        if (paramd.set && match_control) {
-            return match_control;
-        } else if (paramd.get && match_reading) {
-            return match_reading;
-        } else if (paramd.on && match_reading) {
-            return match_reading;
-        } else if (match_control) {
-            return match_control;
-        } else if (match_reading) {
-            return match_control;
+        if (paramd.set && match_actuator) {
+            return match_actuator;
+        } else if (paramd.get && match_sensor) {
+            return match_sensor;
+        } else if (paramd.on && match_sensor) {
+            return match_sensor;
+        } else if (match_actuator) {
+            return match_actuator;
+        } else if (match_sensor) {
+            return match_actuator;
         } else {
             return matches[0];
         }

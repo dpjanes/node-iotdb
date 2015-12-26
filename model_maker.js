@@ -365,7 +365,16 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
             .name(name || in_code)
             .reading()
         );
+        this.attribute(
+            _.deepCopy(attribute)
+            .code(out_code)
+            .name(name || out_code)
+            .control()
+        );
+
+        /*
         this.make_attribute_control(in_code, out_code).name(name || out_code);
+        */
     }
 
     return this;
@@ -374,6 +383,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
 /**
  *  Defines a control for a 'value' attribute
  */
+/*
 ModelMaker.prototype.link_control_reading = function (control_attribute_code, reading_attribute_code) {
     var self = this;
 
@@ -394,10 +404,12 @@ ModelMaker.prototype.link_control_reading = function (control_attribute_code, re
 
     return self;
 };
+*/
 
 /**
  *  Defines a control for a 'value' attribute
  */
+/*
 ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, control_attribute_code) {
     var self = this;
 
@@ -422,34 +434,7 @@ ModelMaker.prototype.make_attribute_control = function (reading_attribute_code, 
 
     return self;
 };
-
-/**
- *  Defines a value for a 'control' attribute
- */
-ModelMaker.prototype.make_attribute_reading = function (control_attribute_code, reading_attribute_code) {
-    var self = this;
-
-    assert.ok(_.is.String(control_attribute_code));
-    assert.ok(_.is.String(reading_attribute_code));
-
-    var control_attribute = self.__attributed[control_attribute_code];
-    if (!control_attribute) {
-        throw "# control attribute not found: " + control_attribute_code;
-    }
-
-    var reading_attribute = _.deepCopy(control_attribute);
-    reading_attribute['@id'] = '#' + reading_attribute_code;
-
-    _.ld.remove(reading_attribute, _.ld.expand("iot:role"), _.ld.expand("iot-purpose:role-control"));
-    reading_attribute.reading();
-
-    self.__attributed[reading_attribute_code] = reading_attribute;
-    self.__attributes.push(reading_attribute);
-
-    self.link_control_reading(control_attribute_code, reading_attribute_code);
-
-    return self;
-};
+*/
 
 /**
  */
