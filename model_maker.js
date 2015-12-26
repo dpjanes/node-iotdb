@@ -199,6 +199,7 @@ ModelMaker.prototype.facet = function (_value) {
 ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
     var self = this;
 
+    key_iri = _.ld.expand(key_iri);
     if (key_iri === constants.schema_name) {
         self.name(value);
     } else if (key_iri === constants.schema_description) {
