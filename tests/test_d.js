@@ -226,18 +226,6 @@ describe('test_d:', function() {
             });
         });
     });
-    describe('transform', function() {
-        it('call - empty', function() {
-            var od = _.d.transform({});
-            var xd = {};
-            assert.ok(_.is.Equal(od, xd));
-        });
-        it('call - empty', function() {
-            var od = _.d.transform({}, {});
-            var xd = {};
-            assert.ok(_.is.Equal(od, xd));
-        });
-    });
     describe('smart_extend', function() {
         it('call - empty', function() {
             var od = _.d.smart_extend({});
@@ -247,6 +235,16 @@ describe('test_d:', function() {
         it('call - empty', function() {
             var od = _.d.smart_extend({}, {});
             var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - bad argument 1', function() {
+            var od = _.d.smart_extend(1, { "a": "b" });
+            var xd = { "a": "b"};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - bad argument 2', function() {
+            var od = _.d.smart_extend({ "a": "b" }, 222);
+            var xd = { "a": "b"};
             assert.ok(_.is.Equal(od, xd));
         });
         it('call - merge', function() {
@@ -383,6 +381,127 @@ describe('test_d:', function() {
             var xd = _.deepCopy(d1d);
             xd["sub"] = [ "hi", { "good": "times" }, "there" ];
 
+            assert.ok(_.is.Equal(od, xd));
+        });
+    });
+    describe('transform', function() {
+        it('call - empty', function() {
+            var od = _.d.transform({});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - empty', function() {
+            var od = _.d.transform({}, {});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - empty transform', function() {
+            var od = _.d.transform(d1d, {});
+            var xd = d1d;
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - upper case keys', function() {
+            var od = _.d.transform(d1d, {
+                key: function(value) {
+                    return value.toUpperCase();
+                },
+            });
+            var xd = {
+              STRING0: '',
+              STRING1: 'hello',
+              STRING2: 'world',
+              BOOLEAN0: false,
+              BOOLEAN1: true,
+              INTEGER0: 0,
+              INTEGER1: 1,
+              INTEGER2: -1,
+              NUMBER0: 0.1,
+              NUMBER1: 3.14,
+              NUMBER2: -3.14,
+              ARRAY0: [ 'a', 'b', 'c' ],
+              DICT0: { STRING0: 'the number 99', INTEGER0: 99, NUMBER0: -99.9 } };
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - remove keys', function() {
+            var od = _.d.transform(d1d, {
+                key: function(value) {
+                    if (value.match(/^(string|dict)/)) {
+                        return value;
+                    }
+                },
+            });
+            var xd = {
+                string0: '',
+                string1: 'hello',
+                string2: 'world',
+                dict0: { string0: 'the number 99' } };
+
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - change value to null', function() {
+            var od = _.d.transform(d1d, {
+                value: function(value) {
+                    return null;
+                },
+            });
+            var xd = {
+                string0: null,
+                string1: null,
+                string2: null,
+                boolean0: null,
+                boolean1: null,
+                integer0: null,
+                integer1: null,
+                integer2: null,
+                number0: null,
+                number1: null,
+                number2: null,
+                array0: [ null, null, null ],
+                dict0: { string0: null, integer0: null, number0: null } };
+
+
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - filter', function() {
+            var sd = _.deepCopy(d1d);
+            sd["array0"] = [ "a", 0, "b", 1, "c", 2 ];
+            var od = _.d.transform(sd, {
+                filter: function(value) {
+                    if (_.is.String(value) || _.is.Array(value)) {
+                        return true;
+                    }
+                },
+            });
+            var xd = { string0: '', string1: 'hello', string2: 'world', "array0": [ "a", "b", "c", ],}
+
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - pre', function() {
+            var od = _.d.transform(d1d, {
+                pre: function() {
+                    return { "a": "b" };
+                },
+                key: function(value) {
+                    return value.toUpperCase();
+                },
+            });
+            var xd = {
+                "A": "b",
+            };
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - post', function() {
+            var od = _.d.transform(d1d, {
+                post: function() {
+                    return { "a": "b" };
+                },
+                key: function(value) {
+                    return value.toUpperCase();
+                },
+            });
+            var xd = {
+                "a": "b",
+            };
             assert.ok(_.is.Equal(od, xd));
         });
     });

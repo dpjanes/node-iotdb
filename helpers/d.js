@@ -202,6 +202,10 @@ var json = function (xvalue) {
  *  Like extend, except dictionaries get merged.
  */
 var smart_extend = function (od) {
+    if (!_.is.Dictionary(od)) {
+        od = {};
+    }
+
     _.each(Array.prototype.slice.call(arguments, 1), function (xd) {
         if (!_.isObject(xd)) {
             return;
