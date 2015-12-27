@@ -515,8 +515,9 @@ Model.prototype.get = function (find_key) {
 
     self._validate_get(find_key);
 
-    var rd = self._find(find_key, {
-        get: true
+    var rd = self.find(find_key, {
+        mode: "get",
+        get: true,
     });
     if (rd === undefined) {
         // console.log("# Model.get: attribute '" + find_key + "' not found XXX");
@@ -973,7 +974,8 @@ Model.prototype.set = function (find_key, new_value) {
     self._validate_set(find_key, new_value);
 
     // convert the attribute to an attribute code here
-    var rd = self._find(find_key, {
+    var rd = self.find(find_key, {
+        mode: "set",
         set: true
     });
 
@@ -1079,7 +1081,8 @@ Model.prototype._explain_one = function (find_key, paramd) {
         set: true,
     });
 
-    var rd = self._find(find_key, {
+    var rd = self.find(find_key, {
+        mode: paramd.set ? "set" : "get",
         set: paramd.set,
     });
 
@@ -1142,8 +1145,9 @@ Model.prototype.on = function (find_key, callback) {
         return self;
     }
 
-    var rd = self._find(find_key, {
-        on: true
+    var rd = self.find(find_key, {
+        mode: "on",
+        on: true,
     });
     if (rd === undefined) {
         logger.error({
@@ -1472,12 +1476,15 @@ Model.prototype._do_notifies_send = function () {
  *
  *  @protected
  */
-Model.prototype._find = function (find_key, paramd) {
+Model.prototype.find = function (find_key, paramd) {
     var self = this;
     var d;
     var attribute;
 
+    // console.log("DEC28: find_key", find_key);
+
     paramd = _.defaults(paramd, {
+        mode: "get",
         set: false,
         get: false,
         on: false,
@@ -1492,12 +1499,12 @@ Model.prototype._find = function (find_key, paramd) {
             d = {};
             d[constants.iot_purpose] = _.ld.expand("iot-purpose:" + last_key.substring(1));
 
-            return thing._find(d, paramd);
+            return thing.find(d, paramd);
         } else if (last_key.indexOf(":") > -1) {
             d = {};
             d[constants.iot_purpose] = _.ld.expand(last_key);
 
-            return thing._find(d, paramd);
+            return thing.find(d, paramd);
         }
 
 
@@ -1528,6 +1535,7 @@ Model.prototype._find = function (find_key, paramd) {
                 } else if (match_key.indexOf('@') === 0) {
                     continue;
                 }
+
 
                 var match_value = find_key[match_key];
                 var attribute_value = attribute[match_key];
@@ -1560,6 +1568,8 @@ Model.prototype._find = function (find_key, paramd) {
             }
         }
 
+        // console.log("DEC28: matches", matches);
+
         /*
          *  Because there's paired items with the same semantic meaning
          *  e.g. (on / on-value), we have to choose which one we want
@@ -1575,19 +1585,19 @@ Model.prototype._find = function (find_key, paramd) {
         var match_actuator = null;
         for (var mi in matches) {
             var match = matches[mi];
-            if (!match_sensor && match.is_sensor()) {
+            if (!match_sensor && match.attribute.is_sensor()) {
                 match_sensor = match;
             }
-            if (!match_actuator && match.is_actuator()) {
+            if (!match_actuator && match.attribute.is_actuator()) {
                 match_actuator = match;
             }
         }
 
-        if (paramd.set && match_actuator) {
+        if ((paramd.mode === "set") && match_actuator) {
             return match_actuator;
-        } else if (paramd.get && match_sensor) {
+        } else if ((paramd.mode === "get") && match_sensor) {
             return match_sensor;
-        } else if (paramd.on && match_sensor) {
+        } else if ((paramd.mode === "on") && match_sensor) {
             return match_sensor;
         } else if (match_actuator) {
             return match_actuator;
