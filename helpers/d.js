@@ -142,14 +142,22 @@ var transform = function(o, paramd) {
 
 /**
  *  Return true iff everything in subd is in superd
+ *  Note that not recursive on dictionaries
  */
 var d_contains_d = function (superd, subd) {
+    if (!_.is.Dictionary(superd)) {
+        return false;
+    }
+    if (!_.is.Dictionary(subd)) {
+        return false;
+    }
+
     var subkeys = _.keys(subd);
     for (var sx in subkeys) {
         var subkey = subkeys[sx];
         var subvalue = subd[subkey];
         var supervalue = superd[subkey];
-        if (subvalue !== supervalue) {
+        if (!_.is.Equal(subvalue, supervalue)) {
             return false;
         }
     }
