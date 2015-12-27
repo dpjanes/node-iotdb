@@ -517,7 +517,6 @@ Model.prototype.get = function (find_key) {
 
     var rd = self.find(find_key, {
         mode: "get",
-        get: true,
     });
     if (rd === undefined) {
         // console.log("# Model.get: attribute '" + find_key + "' not found XXX");
@@ -976,7 +975,6 @@ Model.prototype.set = function (find_key, new_value) {
     // convert the attribute to an attribute code here
     var rd = self.find(find_key, {
         mode: "set",
-        set: true
     });
 
     if (rd === undefined) {
@@ -1083,7 +1081,6 @@ Model.prototype._explain_one = function (find_key, paramd) {
 
     var rd = self.find(find_key, {
         mode: paramd.set ? "set" : "get",
-        set: paramd.set,
     });
 
     if (rd === undefined) {
@@ -1147,7 +1144,6 @@ Model.prototype.on = function (find_key, callback) {
 
     var rd = self.find(find_key, {
         mode: "on",
-        on: true,
     });
     if (rd === undefined) {
         logger.error({
@@ -1485,9 +1481,7 @@ Model.prototype.find = function (find_key, paramd) {
 
     paramd = _.defaults(paramd, {
         mode: "get",
-        set: false,
-        get: false,
-        on: false,
+        expand: true,
     });
 
     if (_.is.String(find_key)) {
@@ -1499,14 +1493,19 @@ Model.prototype.find = function (find_key, paramd) {
             d = {};
             d[constants.iot_purpose] = _.ld.expand("iot-purpose:" + last_key.substring(1));
 
-            return thing.find(d, paramd);
+            return thing.find(d, {
+                mode: paramd.mode,
+                expand: false,
+            });
         } else if (last_key.indexOf(":") > -1) {
             d = {};
             d[constants.iot_purpose] = _.ld.expand(last_key);
 
-            return thing.find(d, paramd);
+            return thing.find(d, {
+                mode: paramd.mode,
+                expand: false,
+            });
         }
-
 
         attribute = thing.__attributed[last_key];
         if (attribute !== undefined) {
@@ -1518,6 +1517,10 @@ Model.prototype.find = function (find_key, paramd) {
 
         return undefined;
     } else {
+        if (paramd.expand) {
+            find_key = _.ld.expand(find_key);
+        }
+
         var attributes = self.attributes();
         var matches = [];
         for (var ai = 0; ai < attributes.length; ai++) {
