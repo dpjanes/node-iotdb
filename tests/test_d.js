@@ -226,4 +226,164 @@ describe('test_d:', function() {
             });
         });
     });
+    describe('transform', function() {
+        it('call - empty', function() {
+            var od = _.d.transform({});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - empty', function() {
+            var od = _.d.transform({}, {});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+    });
+    describe('smart_extend', function() {
+        it('call - empty', function() {
+            var od = _.d.smart_extend({});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - empty', function() {
+            var od = _.d.smart_extend({}, {});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - merge', function() {
+            var srcd = {};
+            var upd = {
+                "hi": "there",
+            };
+            var xd = {
+                "hi": "there",
+            };
+            _.d.smart_extend(srcd, upd);
+
+            assert.ok(_.is.Equal(srcd, xd));
+        });
+        it('call - merge', function() {
+            var srcd = {
+                "a": "b",
+            };
+            var upd = {
+                "hi": "there",
+            };
+            var xd = {
+                "a": "b",
+                "hi": "there",
+            };
+            _.d.smart_extend(srcd, upd);
+
+            assert.ok(_.is.Equal(srcd, xd));
+        });
+        it('call - merge: dict in src', function() {
+            var srcd = {
+                "a": "b",
+                "hi": {},
+            };
+            var upd = {
+                "hi": "there",
+            };
+            var xd = {
+                "a": "b",
+                "hi": "there",
+            };
+            _.d.smart_extend(srcd, upd);
+
+            assert.ok(_.is.Equal(srcd, xd));
+        });
+        it('call - merge: dict in update', function() {
+            var srcd = {
+                "a": "b",
+                "hi": "there",
+            };
+            var upd = {
+                "hi": {},
+            };
+            var xd = {
+                "a": "b",
+                "hi": {},
+            };
+            _.d.smart_extend(srcd, upd);
+
+            assert.ok(_.is.Equal(srcd, xd));
+        });
+        it('call - merge subdictionary', function() {
+            var srcd = {
+                "a": "b",
+                "sub": {
+                    "c": "d",
+                    "e": "f",
+                },
+            };
+            var upd = {
+                "hi": "there",
+                "sub": {
+                    "e": "updated",
+                    "g": "h",
+                },
+            };
+            var xd = {
+                "a": "b",
+                "hi": "there",
+                "sub": {
+                    "c": "d",
+                    "e": "updated",
+                    "g": "h",
+                },
+            };
+            _.d.smart_extend(srcd, upd);
+
+            assert.ok(_.is.Equal(srcd, xd));
+        });
+    });
+    describe('json', function() {
+        it('call - empty', function() {
+            var od = _.d.json({});
+            var xd = {};
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - clean', function() {
+            var od = _.d.json(d1d);
+            assert.ok(_.is.Equal(od, d1d));
+        });
+        it('call - dirty', function() {
+            var sd = _.deepCopy(d1d);
+            sd["function"] = function() {};
+            sd["nan"] = NaN;
+            sd["undefined"] = undefined;
+            var od = _.d.json(sd);
+            assert.ok(_.is.Equal(od, d1d));
+        });
+        it('call - dirty subdictionary', function() {
+            var sd = _.deepCopy(d1d);
+            var ssd = {};
+            ssd["function"] = function() {};
+            ssd["nan"] = NaN;
+            ssd["undefined"] = undefined;
+            ssd["good"] = "times";
+            sd["sub"] = ssd;
+            var od = _.d.json(sd);
+
+            var xd = _.deepCopy(d1d);
+            xd["sub"] = { "good": "times" };
+
+            assert.ok(_.is.Equal(od, xd));
+        });
+        it('call - dirty array', function() {
+            var sd = _.deepCopy(d1d);
+            var ssd = {};
+            ssd["function"] = function() {};
+            ssd["nan"] = NaN;
+            ssd["undefined"] = undefined;
+            ssd["good"] = "times";
+            sd["sub"] = [ "hi", ssd, "there" ];
+            var od = _.d.json(sd);
+
+            var xd = _.deepCopy(d1d);
+            xd["sub"] = [ "hi", { "good": "times" }, "there" ];
+
+            assert.ok(_.is.Equal(od, xd));
+        });
+    });
 })

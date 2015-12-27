@@ -166,9 +166,40 @@ var d_contains_d = function (superd, subd) {
 };
 
 /**
+ *  Returns a JSON-scrubed version
+ */
+var json = function (xvalue) {
+    if (xvalue === undefined) {
+        return undefined;
+    } else if (_.is.Function(xvalue)) {
+        return undefined;
+    } else if (_.is.NaN(xvalue)) {
+        return undefined;
+    } else if (_.is.Dictionary(xvalue)) {
+        var nd = {};
+        _.mapObject(xvalue, function(o, key) {
+            var n = json(o);
+            if (n !== undefined) {
+                nd[key] = n;
+            }
+        });
+        return nd;
+    } else if (_.is.Array(xvalue)) {
+        var ns = [];
+        xvalue.map(function(o) {
+            var n = json(o);
+            if (n !== undefined) {
+                ns.push(n);
+            }
+        });
+        return ns;
+    } else {
+        return xvalue;
+    }
+};
+
+/**
  *  Like extend, except dictionaries get merged.
- *  This also only uses JSON-like params, functions
- *  are not copied
  */
 var smart_extend = function (od) {
     _.each(Array.prototype.slice.call(arguments, 1), function (xd) {
@@ -184,7 +215,7 @@ var smart_extend = function (od) {
                 od[key] = _.deepCopy(xvalue);
             } else if (_.isObject(ovalue) && _.isObject(xvalue)) {
                 smart_extend(ovalue, xvalue);
-            } else if (xvalue === undefined) {} else if (_.isFunction(xvalue)) {} else if (_.isNaN(xvalue)) {} else {
+            } else {
                 od[key] = xvalue;
             }
         }
@@ -198,6 +229,7 @@ exports.d = {
     set: set,
     transform: transform,
     smart_extend: smart_extend,
+    json: json,
 
     is: {
         superset: function(a, b) {
