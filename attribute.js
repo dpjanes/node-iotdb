@@ -1103,9 +1103,11 @@ exports.make = function (purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
+/*
 exports.make_null = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:type.null");
 };
+*/
 
 /**
  *  Make an Attribute that expects a <code>boolean<code> as a value.
@@ -1116,9 +1118,11 @@ exports.make_null = function (purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
+/*
 exports.make_boolean = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:type.boolean");
 };
+*/
 
 /**
  *  Make an Attribute that expects a <code>integer<code> as a value.
@@ -1129,9 +1133,11 @@ exports.make_boolean = function (purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
+/*
 exports.make_integer = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:type.integer");
 };
+*/
 
 /**
  *  Make an Attribute that expects a <code>make_number<code> as a value.
@@ -1142,6 +1148,7 @@ exports.make_integer = function (purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
+/*
 exports.make_number = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:type.number");
 };
@@ -1163,6 +1170,7 @@ exports.make_percent = function (purpose, code, name) {
         .minimum(0)
         .maximum(100);
 };
+*/
 
 /**
  *  Make an Attribute that expects a <code>string<code> as a value.
@@ -1173,6 +1181,7 @@ exports.make_percent = function (purpose, code, name) {
  *  @return {Attribute}
  *  a new attribute
  */
+/*
 exports.make_string = function (purpose, code, name) {
     return exports.make(purpose, code, name).property("iot:type", "iot:type.string");
 };
@@ -1206,3 +1215,4 @@ exports.make_color = function (purpose, code, name) {
         .property("iot:type", "iot:type.string")
         .format("iot:format.color");
 };
+*/

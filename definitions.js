@@ -26,23 +26,23 @@
 
 var iotdb = require('./iotdb')
 
+if (0) {
 /*
  *  Version 0.4 - explicit declarations
  *
  *  These are all available in IOTDB as a top
  *  level export (i.e. iotdb.boolean.mute)
  */
+/*
 var attribute = {};
 exports.attribute = attribute;
 
-/* boolean */
 attribute.boolean = iotdb.make_boolean(":value");
 attribute.boolean.value = iotdb.make_boolean(":value");
 attribute.boolean.on = iotdb.make_boolean(":on");
 attribute.boolean.mute = iotdb.make_boolean(":mute");
 attribute.boolean.flag = iotdb.make_boolean(":flag");
 
-/* integer */
 attribute.integer = iotdb.make_integer(":value")
 attribute.integer.value = iotdb.make_integer(":value")
 attribute.integer.percent = iotdb.make_integer(":value")
@@ -61,7 +61,6 @@ attribute.integer.temperature.celsius = iotdb.make_integer(":temperature")
 attribute.integer.fahrenheit = iotdb.make_integer(":temperature")
     .unit("iot-unit:temperature.imperial.fahrenheit");
 
-/* numbers */
 attribute.number = iotdb.make_number(":value");
 attribute.number.value = iotdb.make_number(":value");
 attribute.number.temperature = iotdb.make_number(":temperature");
@@ -85,7 +84,6 @@ attribute.number.unit = iotdb.make_unit(":value");
 attribute.number.unit.volume = iotdb.make_unit(":volume");
 attribute.number.unit.brightness = iotdb.make_unit(":brightness");
 
-/* strings */
 attribute.string = iotdb.make_string(":value");
 attribute.string.value = iotdb.make_string(":value");
 attribute.string.iri = iotdb.make_iri(":iri");
@@ -104,7 +102,6 @@ attribute.datetime.timestamp = iotdb.make_datetime(":timestamp")
 attribute.datetime.date = iotdb.make_date(":when")
 attribute.datetime.time = iotdb.make_time(":when");
 
-/* vectors */
 attribute.vector = {};
 attribute.vector.number = {};
 attribute.vector.number.xy = {
@@ -153,10 +150,8 @@ attribute.vector.number.lle = {
         .vector("lat/lon/altitude"),
 };
 
-/* sensors */
 attribute.sensor = {};
 
-/* sensor: numbers */
 attribute.sensor.number = iotdb.make_number(':sensor')
 attribute.sensor.number.battery = iotdb.make_number(':sensor.battery')
 attribute.sensor.number.fire = iotdb.make_number(':sensor.fire');
@@ -183,7 +178,6 @@ attribute.sensor.number.sound = iotdb.make_number(':sensor.sound');
 attribute.sensor.number.water = iotdb.make_number(':sensor.water');
 attribute.sensor.number.humidity = iotdb.make_number(':sensor.humidity')
 
-/* sensor: booleans */
 attribute.sensor.boolean = iotdb.make_boolean(':sensor')
 attribute.sensor.boolean.battery = iotdb.make_boolean(':sensor.battery')
 attribute.sensor.boolean.fire = iotdb.make_boolean(':sensor.fire');
@@ -205,7 +199,6 @@ attribute.sensor.boolean.sound = iotdb.make_boolean(':sensor.sound');
 attribute.sensor.boolean.water = iotdb.make_boolean(':sensor.water');
 attribute.sensor.boolean.humidity = iotdb.make_boolean(':sensor.humidity')
 
-/* sensor: unit (0-1) */
 attribute.sensor.unit = iotdb.make_unit(':sensor')
 attribute.sensor.unit.battery = iotdb.make_unit(':sensor.battery')
 attribute.sensor.unit.fire = iotdb.make_unit(':sensor.fire');
@@ -226,7 +219,6 @@ attribute.sensor.unit.sound = iotdb.make_unit(':sensor.sound');
 attribute.sensor.unit.water = iotdb.make_unit(':sensor.water');
 attribute.sensor.unit.humidity = iotdb.make_unit(':sensor.humidity')
 
-/* sensor: percent (0-100) */
 attribute.sensor.percent = iotdb.make_percent(':sensor')
 attribute.sensor.percent.battery = iotdb.make_percent(':sensor.battery')
 attribute.sensor.percent.fire = iotdb.make_percent(':sensor.fire');
@@ -247,7 +239,6 @@ attribute.sensor.percent.sound = iotdb.make_percent(':sensor.sound');
 attribute.sensor.percent.water = iotdb.make_percent(':sensor.water');
 attribute.sensor.percent.humidity = iotdb.make_percent(':sensor.humidity')
 
-/* sensor: string */
 attribute.sensor.string = iotdb.make_string(':sensor')
 attribute.sensor.string.battery = iotdb.make_string(':sensor.battery')
 attribute.sensor.string.fire = iotdb.make_string(':sensor.fire');
@@ -267,3 +258,4 @@ attribute.sensor.string.humidty = iotdb.make_string(':sensor.humidty');
 attribute.sensor.string.sound = iotdb.make_string(':sensor.sound');
 attribute.sensor.string.water = iotdb.make_string(':sensor.water');
 attribute.sensor.string.humidity = iotdb.make_string(':sensor.humidity')
+*/

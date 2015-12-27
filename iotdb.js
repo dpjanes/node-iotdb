@@ -267,10 +267,12 @@ for (var key in exports.attribute) {
     exports[key] = exports.attribute[key];
 }
 
+/*
 exports.definitions = require('./definitions');
 for (var key in exports.definitions.attribute) {
     exports[key] = exports.definitions.attribute[key];
 }
+*/
 
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;

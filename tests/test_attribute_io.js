@@ -11,10 +11,10 @@
 "use strict";
 
 var assert = require("assert")
-var attribute = require("../attribute")
+var attribute = require("./instrument/attribute")
 var _ = require("../helpers")
 var model = require("../model");
-var definitions = require("../definitions");
+var definitions = require("./instrument/definitions");
 
 require('./instrument/attribute');
 require('./instrument/model_maker');

@@ -477,7 +477,7 @@ Model.prototype.iotql = function (paramd) {
         results.push(util.format("CREATE MODEL %s", _.id.to_camel_case(self.code())));
     }
 
-    var ads = _.ld.list(jsonld, "iot:attribute");
+    var ads = _.ld.list(jsonld, "iot:attribute", []);
     ads.map(function (ad) {
         var ad_kvs = _collect(ad);
         var ad_code = _.ld.first(ad, "@id", "").replace(/^#/, '');

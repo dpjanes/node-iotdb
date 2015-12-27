@@ -390,10 +390,10 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
 */
 
 /**
- */
 ModelMaker.prototype.vector = function (attribute_codes) {
     return this;
 };
+ */
 
 var aid = 0;
 

@@ -11,7 +11,7 @@
 "use strict";
 
 var assert = require("assert")
-var attribute = require("../attribute")
+var attribute = require("./instrument/attribute")
 var _ = require("../helpers")
 var constants = require("../constants")
 
