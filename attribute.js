@@ -92,7 +92,7 @@ attribute.make_number()
 var Attribute = function () {
     var self = this;
 
-    self['@type'] = _.ld.expand('iot:Attribute');
+    self['@type'] = constants.iot_Attribute;
 };
 
 /**
@@ -282,7 +282,7 @@ Attribute.prototype.help = function (_value) {
 
     self._validate_help(_value);
 
-    return self.property_value(_.ld.expand('iot:help'), _value);
+    return self.property_value(constants.iot_help, _value);
 };
 
 Attribute.prototype._validate_help = function (_value) {
@@ -406,7 +406,7 @@ Attribute.prototype.unit = function (unit_iri) {
     unit_iri = _.ld.expand(unit_iri, "iot-unit:");
     self._validate_unit(unit_iri);
 
-    return self.property_value(_.ld.expand("iot:unit"), unit_iri);
+    return self.property_value(constants.iot_unit, unit_iri);
 };
 
 Attribute.prototype._validate_unit = function (unit_iri) {
@@ -429,7 +429,7 @@ Attribute.prototype.measuring = function (iri) {
     iri = _.ld.expand(iri);
     self._validate_measuring(iri);
 
-    return self.property_value(_.ld.expand("iot:measuring"), iri);
+    return self.property_value(constants.iot_measuring, iri);
 };
 
 Attribute.prototype._validate_measuring = function (iri) {
@@ -472,7 +472,7 @@ Attribute.prototype.vector = function (name) {
 
     self._validate_vector(name);
 
-    return self.property_value(_.ld.expand("iot:vector"), name);
+    return self.property_value(constants.iot_vector, name);
 };
 
 Attribute.prototype._validate_vector = function (name) {
@@ -509,9 +509,7 @@ Attribute.prototype.enumeration = function (values) {
 
     self._validate_enumeration(values);
 
-    var key_iri = _.ld.expand("iot:enumeration");
-
-    _.ld.extend(self, key_iri, values);
+    _.ld.extend(self, constants.iot_enumeration, values);
 
     return self;
 };
@@ -539,7 +537,7 @@ Attribute.prototype.type = function (type_iri) {
     type_iri = _.ld.expand(type_iri, "iot:");
     self._validate_type(type_iri);
 
-    return self.property_value(_.ld.expand("iot:type"), type_iri);
+    return self.property_value(constants.iot_type, type_iri);
 };
 
 Attribute.prototype._validate_type = function (type_iri) {
@@ -573,7 +571,7 @@ Attribute.prototype.format = function (format_iri) {
     format_iri = _.ld.expand(format_iri, "iot:format.");
     self._validate_format(format_iri);
 
-    return self.property_value(_.ld.expand("iot:format"), format_iri);
+    return self.property_value(constants.iot_format, format_iri);
 };
 
 Attribute.prototype._validate_format = function (format_iri) {

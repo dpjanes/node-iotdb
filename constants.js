@@ -34,7 +34,10 @@ exports.iot_type = _.ld.expand("iot:type");
 exports.iot_unit = _.ld.expand("iot:unit");
 exports.iot_purpose = _.ld.expand("iot:purpose");
 exports.iot_format = _.ld.expand("iot:format");
+exports.iot_enumeration = _.ld.expand("iot:enumeration");
 exports.iot_facet = _.ld.expand("iot:facet");
+exports.iot_measuring = _.ld.expand("iot:measuring");
+exports.iot_vector = _.ld.expand("iot:vector");
 
 exports.iot_reachable = _.ld.expand('iot:reachable');
 exports.iot_thing_id = _.ld.expand('iot:thing-id');
