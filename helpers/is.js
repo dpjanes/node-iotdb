@@ -53,18 +53,11 @@ var isThing = function (o) {
 };
 
 /**
- *  XXX - not finished! Need to start making Bridges subclass
  */
 var isBridge = function (o) {
     return o && o._isBridge;
 };
 
-/**
- *  Used in set/get/on
- */
-var isFindKey = function (o) {
-    return _.is.String(o) || _.is.Dictionary(o);
-};
 
 /**
  */
@@ -82,6 +75,10 @@ var isDictionary = function(o) {
     } else {
         return false;
     }
+};
+
+var isFindKey = function(o) {
+    return _.is.String(o) || _.is.Dictionary(o);
 };
 
 var isNull = function (obj) {
@@ -110,10 +107,6 @@ var isAbsoluteURL = function (o) {
 
 var isString = function (o) {
     return typeof o === 'string';
-};
-
-var isObject = function (o) {
-    return typeof o === 'object';
 };
 
 var isBoolean = function (o) {
@@ -156,29 +149,27 @@ exports.is = {
     Transport: isTransport,
     Transporter: isTransport,
     Bridge: isBridge,
-
-    // IOTDB special
     FindKey: isFindKey,
 
     // useful helpers
     Dictionary: isDictionary,
-	AbsoluteURL: isAbsoluteURL,
+    AbsoluteURL: isAbsoluteURL,
 
     // consistency
-	Empty: _.underscore.isEmpty,
-	Equal: _.underscore.isEqual,
+    Empty: _.underscore.isEmpty,
+    Equal: _.underscore.isEqual,
 
     // Javascript classes and types
-	Array: Array.isArray,
-	Boolean: isBoolean,
-	Date: isDate,
-	Function: isFunction,
-	Integer: isInteger,
-	Null: isNull,
-	Number: isNumber,
-	Object: isObject,
-	RegExp: isRegExp,
-	String: isString,
-	Undefined: isUndefined,
-	NaN: _isNaN,
+    Array: Array.isArray,
+    Boolean: isBoolean,
+    Date: isDate,
+    Function: isFunction,
+    Integer: isInteger,
+    Null: isNull,
+    Number: isNumber,
+    Object: isObject,
+    RegExp: isRegExp,
+    String: isString,
+    Undefined: isUndefined,
+    NaN: _isNaN,
 };
