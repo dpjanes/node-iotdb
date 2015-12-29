@@ -11,7 +11,7 @@
  *  See:
  *  http://tools.ietf.org/html/rfc5988
  *
- *  Copyright [2013-2014] [David P. Janes]
+ *  Copyright [2013-2016] [David P. Janes]
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.

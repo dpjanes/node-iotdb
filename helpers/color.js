@@ -12,7 +12,7 @@
  *  A lot of code is from here:
  *  http://stackoverflow.com/a/9493060/96338
  *
- *  Copyright [2013-2014] [David P. Janes]
+ *  Copyright [2013-2016] [David P. Janes]
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
