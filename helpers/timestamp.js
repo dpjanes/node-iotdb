@@ -43,8 +43,8 @@ var timestamp = function () {
  *  and use that
  */
 var advance = function (reference) {
-    var now = timestamp();
-    if (!reference || (reference < now)) {
+    var now = exports.timestamp.make();
+    if (!reference || !_.is.String(reference) || (reference < now)) {
         return now;
     }
 
@@ -132,7 +132,7 @@ var add_timestamp = function(d, paramd)  {
 var update_timestamp = function(d, paramd)  {
     paramd = _.defaults(paramd, {
         key: '@timestamp',
-        timestamp: timestamp(),
+        timestamp: exports.timestamp.make(),
     });
 
     if ((d === null) || !_.is.Object(d)) {
