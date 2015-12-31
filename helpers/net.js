@@ -46,7 +46,7 @@ var _ipv4 = function() {
     return _scan(function(ad) {
         if (ad.internal) {
             return null;
-        } else if (ad.family != 'IPv4') {
+        } else if (ad.family !== 'IPv4') {
             return null;
         } else {
             return ad.address;
@@ -58,7 +58,7 @@ var _ipv6 = function() {
     return _scan(function(ad) {
         if (ad.internal) {
             return null;
-        } else if (ad.family != 'IPv6') {
+        } else if (ad.family !== 'IPv6') {
             return null;
         } else {
             return ad.address;

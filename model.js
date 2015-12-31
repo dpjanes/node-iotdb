@@ -226,7 +226,7 @@ Model.prototype._state_istate = function () {
     for (var ai in attributes) {
         var attribute = attributes[ai];
         if (!attribute.is_read()) {
-            continue
+            continue;
         }
 
         _.d.set(state, attribute.code(), attribute._ivalue);
@@ -1067,7 +1067,7 @@ Model.prototype._explain_all = function (paramd) {
         }
 
         _.ld.set(rd, key, ad);
-    };
+    }
 
     return rd;
 };
@@ -1605,7 +1605,7 @@ Model.prototype.find = function (find_key, paramd) {
         } else if (match_actuator) {
             return match_actuator;
         } else if (match_sensor) {
-            return match_actuator;
+            return match_sensor;
         } else {
             return matches[0];
         }

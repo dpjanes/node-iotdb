@@ -174,11 +174,11 @@ var _ld_compact = function (v, paramd) {
                 if (ovkey.indexOf(':') !== -1) {
                 } else if (ovkey.match(/^@/)) {
                 } else {
-                    continue
+                    continue;
                 }
             } else if (paramd.scrub) {
                 if (ovkey.indexOf(':') === -1) {
-                    continue
+                    continue;
                 }
             }
             
