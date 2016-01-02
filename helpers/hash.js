@@ -54,10 +54,6 @@ var sha512 = function () {
     return _hash('sha512', arguments);
 };
 
-var md5 = function () {
-    return _hash('md5', arguments);
-};
-
 exports.hash = {
     md5: md5,
     sha1: sha1,
