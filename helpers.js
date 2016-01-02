@@ -52,9 +52,6 @@ for (var mi in modules) {
 
 exports.temperature = require("./helpers/temperature").temperature;
 
-exports.http = {};
-exports.http.parse_link = require("./helpers/parse_link").parse_link;
-
 var _queued = {};
 exports.Queue = require('./queue').FIFOQueue;
 exports.queue = function (name) {
@@ -375,11 +372,6 @@ var _format = function (template, valueds) {
         return template
     }
 };
-
-/**
- *  Try to figure out our IP address
- */
-exports.ipv4 = exports.net.ipv4;
 
 /**
  */

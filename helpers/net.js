@@ -25,6 +25,7 @@
 "use strict";
 
 var os = require('os');
+var _ = require('../helpers');
 
 function _scan(filter) { 
     var ifaces = os.networkInterfaces();
