@@ -28,7 +28,7 @@ var message = function(error, otherwise) {
     if (error && error.message) {
         return error.message;
     } else if (_.is.String(error)) {
-        return message;
+        return error;
     } else if (otherwise) {
         return otherwise;
     } else {

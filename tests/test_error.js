@@ -16,12 +16,32 @@ var _ = require("../helpers")
 describe('test_error', function() {
     describe('message', function() {
         it('empty', function() {
+            var value = undefined;
+            var result = _.error.message(value);
+            var expect = null;
+
+            assert.strictEqual(result, expect);
         });
         it('string', function() {
+            var value = "an error";
+            var result = _.error.message(value);
+            var expect = "an error";
+
+            assert.strictEqual(result, expect);
         });
         it('error', function() {
+            var value = new Error("an error");
+            var result = _.error.message(value);
+            var expect = "an error";
+
+            assert.strictEqual(result, expect);
         });
-        it('bad', function() {
+        it('bad with otherwise', function() {
+            var value = 1234;
+            var result = _.error.message(value, "an error");
+            var expect = "an error";
+
+            assert.strictEqual(result, expect);
         });
     });
 });
