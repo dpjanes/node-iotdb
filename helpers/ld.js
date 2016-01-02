@@ -348,83 +348,10 @@ var _ld_expand = function (v, paramd) {
 
 };
 
-/**
- *  This make sure all name spaces and @id types
- *  we are aware of are properly represented 
- *  in the @context
- */
-var _ld_patchup = function (v, paramd) {
-    var nd = {};
-
-    var _add = function(v) {
-        if (!_.is.String(v)) {
-            return false;
-        }
-
-        var vmatch = v.match(/^([-a-z0-9]*):.+/);
-        if (!vmatch) {
-            return false;
-        }
-        
-        var nshort = vmatch[1];
-        var nurl = _namespace[nshort];
-        if (!nurl) {
-            return false;
-        }
-
-        nd[nshort] = nurl;
-
-        return true;
-    };
-    var _walk = function(o) {
-        if (_.is.Object(o)) {
-            for (var key in o) {
-                if (!_add(key)) {
-                    continue;
-                } else if (!key.match(/^iot/)) {
-                    continue;
-                } else if (key === "iot:help") {
-                    continue;
-                }
-
-                var sv = o[key];
-                if (_walk(sv)) {
-                    nd[key] = {
-                        "@id": _ld_expand(key),
-                        "@type": "@id"
-                    };
-                }
-            }
-        } else if (_.is.Array(o)) {
-            var any = false;
-            o.map(function(sv) {
-                _add(sv);
-                any |= _walk(sv);
-            });
-            return any;
-        } else if (_.is.String(o)) {
-            if (_add(o)) {
-                return true;
-            }
-        }
-    };
-
-    _walk(v);
-
-    if (!v["@context"]) {
-        v["@context"] = {};
-    }
-
-    _.extend(v["@context"], nd);
-
-    return v;
-};
-
 exports.ld = {
     namespace: _namespace,
     compact: _ld_compact,
     expand: _ld_expand,
-    patchup: _ld_patchup,
     set: _ld_set,
     first: _ld_get_first,
     list: _ld_get_list,
