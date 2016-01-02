@@ -36,13 +36,7 @@ var _namespace = {
     "iot": "https://iotdb.org/pub/iot#",
     "iot-purpose": "https://iotdb.org/pub/iot-purpose#",
     "iot-facet": "https://iotdb.org/pub/iot-facet#",
-    "iot-js": "https://iotdb.org/pub/iot-js#",
-    "iot-iotdb": "https://iotdb.org/pub/iot-iotdb#",
-    "iot-ble": "https://iotdb.org/pub/iot-ble#",
     "iot-unit": "https://iotdb.org/pub/iot-unit#",
-    "iot-driver": "https://iotdb.org/pub/iot-driver#",
-    "iot-store": "https://iotdb.org/pub/iot-store#",
-    "iot-placement": "https://iotdb.org/pub/iot-placement#"
 };
 
 /*
