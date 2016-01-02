@@ -124,12 +124,3 @@ _see_extension = function (text) {
     }
 
 };
-
-
-/*
-var link = '<tcp://mqtt.iotdb.org:1883>; rel="mqtt"; payload=PUT; topic="bedroom/light"'
-var link = '<tcp://mqtt.iotdb.org:1883>; rel="mqtt"; payload=PUT; topic="bedroom/light",<ssl://mqtt.iotdb.org:1883>; rel="mqtt"; payload=PUT; topic="bedroom/light",'
-
-
-console.log(parse_link(link))
-*/
