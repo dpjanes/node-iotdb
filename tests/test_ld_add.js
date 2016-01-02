@@ -99,7 +99,6 @@ describe('test_ld_add', function() {
                 var what = [];
 
                 var expect = {};
-                expect[key] = what;
 
                 _.ld.add(d, key, what);
 
@@ -173,7 +172,7 @@ describe('test_ld_add', function() {
                 var what = [];
 
                 var expect = {};
-                expect[key] = [ "a value", what ];
+                expect[key] = "a value";
 
                 _.ld.add(d, key, what);
 
@@ -185,7 +184,7 @@ describe('test_ld_add', function() {
                 var what = [ "a", "b", "c" ];
 
                 var expect = {};
-                expect[key] = [ "a value", what ];
+                expect[key] = [ "a value", "a", "b", "c" ];
 
                 _.ld.add(d, key, what);
 
@@ -197,7 +196,19 @@ describe('test_ld_add', function() {
                 var what = [ "a", "b", "c" ];
 
                 var expect = {};
-                expect[key] = [ "a value", "b value", what ];
+                expect[key] = [ "a value", "b value", "a", "b", "c" ];
+
+                _.ld.add(d, key, what);
+
+                assert.deepEqual(d, expect);
+            });
+            it('array with array with repeats', function() {
+                var d = { "something": [ "a value", "b value" ] };
+                var key = "something";
+                var what = [ "a value", "b value", "c" ];
+
+                var expect = {};
+                expect[key] = [ "a value", "b value", "c" ];
 
                 _.ld.add(d, key, what);
 

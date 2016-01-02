@@ -135,28 +135,7 @@ var _ld_remove = function (d, key, value) {
     }
 };
 
-var _ld_add = function (d, key, value) {
-    if ((d === null) || (d === undefined)) {
-        return;
-    } else if (!_.is.Object(d)) {
-        throw new Error("expected Object");
-    }
-
-    var existing = d[key];
-    if (existing === undefined) {
-        d[key] = value;
-    } else if (_.is.Array(existing)) {
-        if (existing.indexOf(value) === -1) {
-            existing.push(value);
-        }
-    } else {
-        if (existing !== value) {
-            d[key] = [existing, value];
-        }
-    }
-};
-
-var _ld_extend = function (d, key, values) {
+var _ld_add = function (d, key, values) {
     if ((d === null) || (d === undefined)) {
         return;
     } else if (!_.is.Object(d)) {
@@ -166,9 +145,27 @@ var _ld_extend = function (d, key, values) {
     if (!_.is.Array(values)) {
         values = [ values ];
     }
-    for (var vi in values) {
-        var value = values[vi];
-        _ld_add(d, key, value);
+
+    var xs = d[key];
+    if (xs === undefined) {
+        xs = [];
+    } else if (!_.is.Array(xs)) {
+        xs = [ xs ];
+    } else {
+    }
+
+    values.map(function(value) {
+        if (xs.indexOf(value) === -1) {
+            xs.push(value);
+        }
+    });
+
+    if (xs.length === 0) {
+        delete d[key];
+    } else if (xs.length === 1) {
+        d[key] = xs[0];
+    } else {
+        d[key] = xs;
     }
 };
 
@@ -421,5 +418,4 @@ exports.ld = {
     contains: _ld_contains,
     remove: _ld_remove,
     add: _ld_add,
-    extend: _ld_extend,
 };

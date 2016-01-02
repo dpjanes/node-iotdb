@@ -509,7 +509,7 @@ Attribute.prototype.enumeration = function (values) {
 
     self._validate_enumeration(values);
 
-    _.ld.extend(self, constants.iot_enumeration, values);
+    _.ld.add(self, constants.iot_enumeration, values);
 
     return self;
 };
