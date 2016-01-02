@@ -12,9 +12,9 @@ var assert = require("assert")
 var _ = require("../helpers")
 
 /* --- tests --- */
-describe('test_ld:', function() {
-    describe('expand:', function() {
-        describe('string:', function() {
+describe('test_ld', function() {
+    describe('expand', function() {
+        describe('string', function() {
             it('simple with iot namespace', function() {
                 var src = "iot:value";
                 var expanded = _.ld.expand(src);
@@ -58,5 +58,248 @@ describe('test_ld:', function() {
                 assert.strictEqual(expanded, expected);
             });
         });
+    });
+    describe('compact', function() {
+    });
+    describe('patchup', function() {
+    });
+    describe('set', function() {
+    });
+    describe('first', function() {
+        describe('no dictionary', function() {
+            it('undefined', function() {
+                var valued = undefined;
+                var key = "something";
+                var expect = "otherwise";
+                var otherwise = "otherwise";
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('null', function() {
+                var valued = null;
+                var key = "something";
+                var expect = "otherwise";
+                var otherwise = "otherwise";
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+        });
+        describe('missing', function() {
+            it('missing', function() {
+                var valued = {};
+                var key = "something";
+                var expect = undefined;
+                var otherwise = undefined;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('missing with null default', function() {
+                var valued = {};
+                var key = "something";
+                var expect = null;
+                var otherwise = null;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('missing with string default', function() {
+                var valued = {};
+                var key = "something";
+                var expect = "else";
+                var otherwise = "else";
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+        });
+        describe('single value', function() {
+            it('string', function() {
+                var valued = {
+                    something: "a",
+                };
+                var key = "something";
+                var expect = "a";
+                var otherwise = null;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('number', function() {
+                var valued = {
+                    something: 123,
+                };
+                var key = "something";
+                var expect = 123;
+                var otherwise = null;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('dictionary', function() {
+                var valued = {
+                    something: { a: 1 },
+                };
+                var key = "something";
+                var expect = { a: 1 };
+                var otherwise = null;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+        });
+        describe('multi value', function() {
+            it('string', function() {
+                var valued = {
+                    something: [ "a", "b", ],
+                };
+                var key = "something";
+                var expect = "a";
+                var otherwise = null;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('number', function() {
+                var valued = {
+                    something: [ 123, 456 ],
+                };
+                var key = "something";
+                var expect = 123;
+                var otherwise = null;
+                var result = _.ld.first(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+        });
+    });
+    describe('list', function() {
+        describe('no dictionary', function() {
+            it('undefined', function() {
+                var valued = undefined;
+                var key = "something";
+                var expect = "otherwise";
+                var otherwise = "otherwise";
+                var result = _.ld.list(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('null', function() {
+                var valued = null;
+                var key = "something";
+                var expect = "otherwise";
+                var otherwise = "otherwise";
+                var result = _.ld.list(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+        });
+        describe('missing', function() {
+            it('missing', function() {
+                var valued = {};
+                var key = "something";
+                var expect = undefined;
+                var otherwise = undefined;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('missing with null default', function() {
+                var valued = {};
+                var key = "something";
+                var expect = null;
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+            it('missing with string default', function() {
+                var valued = {};
+                var key = "something";
+                var expect = "else";
+                var otherwise = "else";
+                var result = _.ld.list(valued, key, expect);
+
+                assert.strictEqual(result, expect);
+            });
+        });
+        describe('single value', function() {
+            it('string', function() {
+                var valued = {
+                    something: "a",
+                };
+                var key = "something";
+                var expect = [ "a" ];
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number', function() {
+                var valued = {
+                    something: 123,
+                };
+                var key = "something";
+                var expect = [ 123 ];
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('dictionary', function() {
+                var valued = {
+                    something: { a: 1 },
+                };
+                var key = "something";
+                var expect = [ { a: 1 } ];
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+        });
+        describe('multi value', function() {
+            it('string 1', function() {
+                var valued = {
+                    something: [ "a", ],
+                };
+                var key = "something";
+                var expect = [ "a", ];
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('string 2', function() {
+                var valued = {
+                    something: [ "a", "b", ],
+                };
+                var key = "something";
+                var expect = [ "a", "b" ];
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number', function() {
+                var valued = {
+                    something: [ 123, 456 ],
+                };
+                var key = "something";
+                var expect = [ 123, 456 ];
+                var otherwise = null;
+                var result = _.ld.list(valued, key, expect);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+        });
+    });
+    describe('contains', function() {
+    });
+    describe('remove', function() {
+    });
+    describe('extend', function() {
     });
 })
