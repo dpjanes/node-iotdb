@@ -49,17 +49,17 @@ var _ld_set = function (d, key, value) {
         throw new Error("expected Object");
     }
 
-    d[key] = value;
-    /*
-    var existing = d[key];
-    if (existing === undefined) {
+    if ((value === null) || (value === undefined)) {
+        delete d[key];
+    } else if (!_.is.Array(value)) {
         d[key] = value;
-    } else if (_.is.Array(existing)) {
-        existing.push(value);
+    } else if (value.length === 0) {
+        delete d[key];
+    } else if (value.length === 1) {
+        d[key] = value[0];
     } else {
-        d[key] = [existing, value];
+        d[key] = value;
     }
-    */
 };
 
 var _ld_get_first = function (d, key, otherwise) {
@@ -113,25 +113,38 @@ var _ld_contains = function (d, key, value) {
     }
 };
 
-var _ld_remove = function (d, key, value) {
+var _ld_remove = function (d, key, values) {
     if ((d === null) || (d === undefined)) {
         return;
     } else if (!_.is.Object(d)) {
         throw new Error("expected Object");
     }
 
-    var existing = d[key];
-    if (existing === undefined) {
-        return;
-    } else if (_.is.Array(existing)) {
-        var x = existing.indexOf(value);
-        if (x > -1) {
-            existing.splice(x, 1);
-        }
+    if (!_.is.Array(values)) {
+        values = [ values ];
+    }
+
+    var xs = d[key];
+    if (xs === undefined) {
+        xs = [];
+    } else if (!_.is.Array(xs)) {
+        xs = [ xs ];
     } else {
-        if (existing === value) {
-            delete d[key];
+    }
+
+    values.map(function(value) {
+        var x = xs.indexOf(value);
+        if (x !== -1) {
+            xs.splice(x, 1);
         }
+    });
+
+    if (xs.length === 0) {
+        delete d[key];
+    } else if (xs.length === 1) {
+        d[key] = xs[0];
+    } else {
+        d[key] = xs;
     }
 };
 

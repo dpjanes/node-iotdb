@@ -99,13 +99,24 @@ describe('test_ld', function() {
                 var what = [];
 
                 var expect = {};
-                expect[key] = what;
 
                 _.ld.set(d, key, what);
 
                 assert.deepEqual(d, expect);
             });
-            it('array', function() {
+            it('array with 1', function() {
+                var d = {};
+                var key = "something";
+                var what = [ "a", ];
+
+                var expect = {};
+                expect[key] = "a";
+
+                _.ld.set(d, key, what);
+
+                assert.deepEqual(d, expect);
+            });
+            it('array with many', function() {
                 var d = {};
                 var key = "something";
                 var what = [ "a", "b", "c" ];
@@ -119,6 +130,28 @@ describe('test_ld', function() {
             });
         });
         describe('key-in-use dictionary', function() {
+            it('null', function() {
+                var d = { "something": "a value" };
+                var key = "something";
+                var what = null;
+
+                var expect = {};
+
+                _.ld.set(d, key, what);
+
+                assert.deepEqual(d, expect);
+            });
+            it('undefined', function() {
+                var d = { "something": "a value" };
+                var key = "something";
+                var what = undefined;
+
+                var expect = {};
+
+                _.ld.set(d, key, what);
+
+                assert.deepEqual(d, expect);
+            });
             it('empty string', function() {
                 var d = { "something": "a value" };
                 var key = "something";
@@ -173,7 +206,6 @@ describe('test_ld', function() {
                 var what = [];
 
                 var expect = {};
-                expect[key] = what;
 
                 _.ld.set(d, key, what);
 
