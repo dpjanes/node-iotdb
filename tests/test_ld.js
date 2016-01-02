@@ -72,7 +72,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "otherwise";
                 var otherwise = "otherwise";
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -81,9 +81,19 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "otherwise";
                 var otherwise = "otherwise";
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
+            });
+            it('number', function() {
+                var valued = 1;
+                var key = "something";
+                var expect = "otherwise";
+                var otherwise = "otherwise";
+
+                assert.throws(function() {
+                    _.ld.first(valued, key, otherwise);
+                }, Error);
             });
         });
         describe('missing', function() {
@@ -92,7 +102,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = undefined;
                 var otherwise = undefined;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -101,7 +111,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = null;
                 var otherwise = null;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -110,7 +120,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "else";
                 var otherwise = "else";
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -123,7 +133,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "a";
                 var otherwise = null;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -134,7 +144,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = 123;
                 var otherwise = null;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -145,7 +155,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = { a: 1 };
                 var otherwise = null;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
@@ -158,7 +168,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "a";
                 var otherwise = null;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -169,7 +179,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = 123;
                 var otherwise = null;
-                var result = _.ld.first(valued, key, expect);
+                var result = _.ld.first(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -182,7 +192,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "otherwise";
                 var otherwise = "otherwise";
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -191,9 +201,19 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "otherwise";
                 var otherwise = "otherwise";
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
+            });
+            it('number', function() {
+                var valued = 1;
+                var key = "something";
+                var expect = "otherwise";
+                var otherwise = "otherwise";
+
+                assert.throws(function() {
+                    _.ld.list(valued, key, otherwise);
+                }, Error);
             });
         });
         describe('missing', function() {
@@ -202,7 +222,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = undefined;
                 var otherwise = undefined;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -211,7 +231,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = null;
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -220,7 +240,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = "else";
                 var otherwise = "else";
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.strictEqual(result, expect);
             });
@@ -233,7 +253,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = [ "a" ];
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
@@ -244,7 +264,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = [ 123 ];
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
@@ -255,7 +275,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = [ { a: 1 } ];
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
@@ -268,7 +288,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = [ "a", ];
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
@@ -279,7 +299,7 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = [ "a", "b" ];
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
@@ -290,13 +310,168 @@ describe('test_ld', function() {
                 var key = "something";
                 var expect = [ 123, 456 ];
                 var otherwise = null;
-                var result = _.ld.list(valued, key, expect);
+                var result = _.ld.list(valued, key, otherwise);
 
                 assert.ok(_.is.Equal(result, expect));
             });
         });
     });
     describe('contains', function() {
+        describe('no dictionary', function() {
+            it('undefined', function() {
+                var valued = undefined;
+                var key = "something";
+                var expect = false;
+                var what = "what";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.strictEqual(result, expect);
+            });
+            it('null', function() {
+                var valued = null;
+                var key = "something";
+                var expect = false;
+                var what = "what";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.strictEqual(result, expect);
+            });
+            it('number', function() {
+                var valued = 1;
+                var key = "something";
+                var expect = false;
+                var what = "what";
+
+                assert.throws(function() {
+                    _.ld.contains(valued, key, what);
+                }, Error);
+            });
+        });
+        describe('missing', function() {
+            it('missing', function() {
+                var valued = {};
+                var key = "something";
+                var expect = false;
+                var what = undefined;
+                var result = _.ld.contains(valued, key, what);
+
+                assert.strictEqual(result, expect);
+            });
+        });
+        describe('single value', function() {
+            it('string - contained', function() {
+                var valued = {
+                    something: "a",
+                };
+                var key = "something";
+                var expect = true;
+                var what = "a";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number - contained', function() {
+                var valued = {
+                    something: 123,
+                };
+                var key = "something";
+                var expect = true;
+                var what = 123;
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('string - not contained', function() {
+                var valued = {
+                    something: "a",
+                };
+                var key = "something";
+                var expect = false;
+                var what = "b";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number - not contained', function() {
+                var valued = {
+                    something: 123,
+                };
+                var key = "something";
+                var expect = false;
+                var what = 124;
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+        });
+        describe('multi value', function() {
+            it('string/"" - contained', function() {
+                var valued = {
+                    something: [ "a", "b", "" ],
+                };
+                var key = "something";
+                var expect = true;
+                var what = "";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number/0 - contained', function() {
+                var valued = {
+                    something: [ 12, 123, 0, ],
+                };
+                var key = "something";
+                var expect = true;
+                var what = 0;
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('string - contained', function() {
+                var valued = {
+                    something: [ "a", "b" ],
+                };
+                var key = "something";
+                var expect = true;
+                var what = "a";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number - contained', function() {
+                var valued = {
+                    something: [ 12, 123, ],
+                };
+                var key = "something";
+                var expect = true;
+                var what = 123;
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('string - not contained', function() {
+                var valued = {
+                    something: [ "a", "c" ],
+                };
+                var key = "something";
+                var expect = false;
+                var what = "b";
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+            it('number - not contained', function() {
+                var valued = {
+                    something: [ 123, 12345 ],
+                };
+                var key = "something";
+                var expect = false;
+                var what = 124;
+                var result = _.ld.contains(valued, key, what);
+
+                assert.ok(_.is.Equal(result, expect));
+            });
+        });
     });
     describe('remove', function() {
     });

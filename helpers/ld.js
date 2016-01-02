@@ -43,6 +43,12 @@ var _namespace = {
  *  JSON-LD section. NEW 0.4.X
  */
 var _ld_set = function (d, key, value) {
+    if ((d === null) || (d === undefined)) {
+        return;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
+    }
+
     var existing = d[key];
     if (existing === undefined) {
         d[key] = value;
@@ -54,8 +60,10 @@ var _ld_set = function (d, key, value) {
 };
 
 var _ld_get_first = function (d, key, otherwise) {
-    if (!d) {
+    if ((d === null) || (d === undefined)) {
         return otherwise;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
     }
 
     var existing = d[key];
@@ -69,8 +77,10 @@ var _ld_get_first = function (d, key, otherwise) {
 };
 
 var _ld_get_list = function (d, key, otherwise) {
-    if (!d) {
+    if ((d === null) || (d === undefined)) {
         return otherwise;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
     }
 
     var existing = d[key];
@@ -84,6 +94,12 @@ var _ld_get_list = function (d, key, otherwise) {
 };
 
 var _ld_contains = function (d, key, value) {
+    if ((d === null) || (d === undefined)) {
+        return false;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
+    }
+
     var existing = d[key];
     if (existing === undefined) {
         return false;
@@ -95,6 +111,12 @@ var _ld_contains = function (d, key, value) {
 };
 
 var _ld_remove = function (d, key, value) {
+    if ((d === null) || (d === undefined)) {
+        return;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
+    }
+
     var existing = d[key];
     if (existing === undefined) {
         return;
@@ -111,6 +133,12 @@ var _ld_remove = function (d, key, value) {
 };
 
 var _ld_add = function (d, key, value) {
+    if ((d === null) || (d === undefined)) {
+        return;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
+    }
+
     var existing = d[key];
     if (existing === undefined) {
         d[key] = value;
@@ -126,6 +154,12 @@ var _ld_add = function (d, key, value) {
 };
 
 var _ld_extend = function (d, key, values) {
+    if ((d === null) || (d === undefined)) {
+        return;
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
+    }
+
     if (!_.is.Array(values)) {
         values = [ values ];
     }
@@ -330,7 +364,7 @@ var _ld_patchup = function (v, paramd) {
         return true;
     };
     var _walk = function(o) {
-        if (_.is.Dictionary(o)) {
+        if (_.is.Object(o)) {
             for (var key in o) {
                 if (!_add(key)) {
                     continue;
