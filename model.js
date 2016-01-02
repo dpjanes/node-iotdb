@@ -1066,7 +1066,7 @@ Model.prototype._explain_all = function (paramd) {
             key = key.replace(/^iot-purpose:/, ':');
         }
 
-        _.ld.set(rd, key, ad);
+        _.ld.add(rd, key, ad);
     }
 
     return rd;

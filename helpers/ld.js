@@ -49,6 +49,8 @@ var _ld_set = function (d, key, value) {
         throw new Error("expected Object");
     }
 
+    d[key] = value;
+    /*
     var existing = d[key];
     if (existing === undefined) {
         d[key] = value;
@@ -57,6 +59,7 @@ var _ld_set = function (d, key, value) {
     } else {
         d[key] = [existing, value];
     }
+    */
 };
 
 var _ld_get_first = function (d, key, otherwise) {
