@@ -80,6 +80,10 @@ var _ld_get_first = function (d, key, otherwise) {
 };
 
 var _ld_get_list = function (d, key, otherwise) {
+    if (otherwise === undefined) {
+        otherwise = [];
+    }
+
     if ((d === null) || (d === undefined)) {
         return otherwise;
     } else if (!_.is.Object(d)) {

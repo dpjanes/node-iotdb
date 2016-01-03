@@ -48,11 +48,11 @@ describe('test_ld', function() {
             it('missing', function() {
                 var d = {};
                 var key = "something";
-                var expect = undefined;
+                var expect = [];
                 var otherwise = undefined;
                 var result = _.ld.list(d, key, otherwise);
 
-                assert.strictEqual(result, expect);
+                assert.deepEqual(result, expect);
             });
             it('missing with null default', function() {
                 var d = {};

@@ -27,7 +27,6 @@
 "use strict";
 
 var _ = require('./helpers');
-var keystore = require("./keystore").keystore;
 var modules = require("./modules").modules;
 
 var cfg = require('./cfg');

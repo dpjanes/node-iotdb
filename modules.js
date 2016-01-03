@@ -26,7 +26,6 @@
 "use strict";
 
 var _ = require('./helpers');
-var keystore = require("./keystore").keystore;
 
 var cfg = require('./cfg');
 var model = require('./model');
@@ -75,7 +74,7 @@ Modules.prototype._load_master = function () {
 
     self._moduled = {}
 
-    var moduled = keystore().get("modules");
+    var moduled = require('iotdb').keystore().get("modules");
     for (var module_name in moduled) {
         var module_folder = moduled[module_name];
         try {
