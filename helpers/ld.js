@@ -252,8 +252,6 @@ var _ld_compact = function (v, paramd) {
             return v;
         } else if (_.is.Number(v)) {
             return v;
-        } else if (_.is.Integer(v)) {
-            return v;
         } else if (_.is.Boolean(v)) {
             return v;
         } else if (_.isNull(v)) {
