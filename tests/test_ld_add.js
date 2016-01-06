@@ -118,6 +118,30 @@ describe('test_ld_add', function() {
             });
         });
         describe('key-in-use dictionary', function() {
+            it('null', function() {
+                var d = { "something": "a value" };
+                var key = "something";
+                var what = null;
+
+                var expect = {};
+                expect[key] = "a value";
+
+                _.ld.add(d, key, what);
+
+                assert.deepEqual(d, expect);
+            });
+            it('undefined', function() {
+                var d = { "something": "a value" };
+                var key = "something";
+                var what = undefined;
+
+                var expect = {};
+                expect[key] = "a value";
+
+                _.ld.add(d, key, what);
+
+                assert.deepEqual(d, expect);
+            });
             it('empty string', function() {
                 var d = { "something": "a value" };
                 var key = "something";

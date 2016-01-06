@@ -159,6 +159,10 @@ var _ld_add = function (d, key, values) {
         throw new Error("expected Object");
     }
 
+    if ((values === null) || (values === undefined)) {
+        return;
+    }
+
     if (!_.is.Array(values)) {
         values = [ values ];
     }
