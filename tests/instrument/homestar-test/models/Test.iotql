@@ -1,0 +1,15 @@
+--
+--  compile to JSON with 'iotql-model Test.iotql'
+--
+CREATE MODEL Test WITH
+    schema:name = "Test",
+    schema:description = "Test"
+ATTRIBUTE on WITH
+    schema:name = "on",
+    iot:purpose = iot-purpose:on,
+    iot:type = iot:type.boolean,
+    iot:write = true,
+    iot:read = true,
+    iot:actuator = true,
+    iot:sensor = true
+;

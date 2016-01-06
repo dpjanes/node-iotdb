@@ -113,16 +113,36 @@ Modules.prototype._load_bridges = function () {
     }
 };
 
+/**
+ *  A module is a complete package of code, corresponding
+ *  to an NPM package (which would have been a better name).
+ *  A module has one Bridge, one or more Bindings, and
+ *  one or more Models
+ *  <p>
+ *  This will return the module with the module_name,
+ *  or undefined if not found.
+ */
 Modules.prototype.module = function (module_name) {
     return this._moduled[module_name];
 };
 
+/**
+ *  The Bridge is the code that knows how to talk to
+ *  Things. It can be further parameterized by a Binding.
+ *  <p>
+ *  There is one Bridge per Module (maybe more in the future).
+ */
 Modules.prototype.bridges = function () {
     var self = this;
 
     return self._bridges;
 };
 
+/**
+ *  Find a bridge by the *MODULES* name. For the module
+ *  part we don't use the Bridge's self-identified
+ *  name except for debug purposes
+ */
 Modules.prototype.bridge = function (module_name) {
     var self = this;
 

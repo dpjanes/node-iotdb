@@ -1,0 +1,34 @@
+{
+  "@context": {
+    "@base": "file:///test",
+    "@vocab": "file:///test#",
+    "iot": "https://iotdb.org/pub/iot#",
+    "schema": "http://schema.org/",
+    "iot-purpose": "https://iotdb.org/pub/iot-purpose#",
+    "iot:purpose": {
+      "@id": "https://iotdb.org/pub/iot#purpose",
+      "@type": "@id"
+    },
+    "iot:type": {
+      "@id": "https://iotdb.org/pub/iot#type",
+      "@type": "@id"
+    }
+  },
+  "@id": "",
+  "@type": "iot:Model",
+  "schema:name": "Test",
+  "schema:description": "Test",
+  "iot:attribute": [
+    {
+      "@type": "iot:Attribute",
+      "@id": "#on",
+      "schema:name": "on",
+      "iot:purpose": "iot-purpose:on",
+      "iot:type": "iot:type.boolean",
+      "iot:write": true,
+      "iot:read": true,
+      "iot:actuator": true,
+      "iot:sensor": true
+    }
+  ]
+}
