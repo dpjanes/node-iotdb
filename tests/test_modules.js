@@ -16,20 +16,7 @@ var iotdb = require("../iotdb");
 var modules = require("../modules");
 var keystore = require("../keystore");
 
-var _keystore;
-iotdb.keystore = function() {
-    if (!_keystore) {
-        _keystore = new keystore.Keystore();
-        _keystore.d = {
-          "modules": {
-            "homestar-test": "./tests/instrument/homestar-test",
-            "homestar-broken": "./tests/instrument/homestar-broken",
-          }
-        };
-    }
-
-    return _keystore;
-};
+require('./instrument/iotdb');
 
 describe('test_modules', function() {
     describe('constructor', function() {
