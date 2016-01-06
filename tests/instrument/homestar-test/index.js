@@ -25,9 +25,15 @@
 exports.Bridge = require('./TestBridge').Bridge;
 exports.bindings = [
     require('./models/Test').binding,
+    require('./models/TestMissingBridge').binding,
+    require('./models/TestMissingModel').binding,
+    require('./models/TestRenameModel').binding,
 ];
 
 exports.iotdb = require("iotdb");
 exports.wrap = function(name, initd) {
     return exports.iotdb.make_wrap(name, exports.bindings, initd);
+};
+
+exports.setup = function() {
 };

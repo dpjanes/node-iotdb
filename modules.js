@@ -185,7 +185,7 @@ Modules.prototype.bindings = function () {
                 */
             }
 
-            if (binding.model_code === undefined) {
+            if (!binding.model_code) {
                 binding.model_code = (new binding.model()).code();
             } else {
                 /* morph the model's code -- see model_maker */
