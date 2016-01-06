@@ -54,6 +54,15 @@ var Things = function (paramd) {
 
 util.inherits(Things, events.EventEmitter);
 
+
+/**
+ *  This is for testing only
+ */
+Things.prototype._reset = function() {
+    this._thingd = {};
+    this._bridge_exemplars = [];
+};
+
 /**
  *  Return all things that we know about
  */

@@ -70,16 +70,10 @@ TestBridge.prototype.discover = function () {
         method: "discover"
     }, "called");
 
-    /*
-     *  This is the core bit of discovery. As you find new
-     *  thimgs, make a new TestBridge and call 'discovered'.
-     *  The first argument should be self.initd, the second
-     *  the thing that you do work with
-     */
-    var s = self._test();
-    s.on('something', function (native) {
-        self.discovered(new TestBridge(self.initd, native));
-    });
+    var native = {
+        note: "this is some data unique to a thing",
+    };
+    self.discovered(new TestBridge(self.initd, native));
 };
 
 /**
@@ -224,22 +218,6 @@ TestBridge.prototype.reachable = function () {
  *  See {iotdb.bridge.Bridge#configure} for documentation.
  */
 TestBridge.prototype.configure = function (app) {};
-
-/* -- internals -- */
-var __singleton;
-
-/**
- *  If you need a singleton to access the library
- */
-TestBridge.prototype._test = function () {
-    var self = this;
-
-    if (!__singleton) {
-        __singleton = test.init();
-    }
-
-    return __singleton;
-};
 
 /*
  *  API
