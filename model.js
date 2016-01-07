@@ -1713,6 +1713,8 @@ Model.prototype.bind_bridge = function (bridge_instance) {
     if (self.bridge_instance) {
         var mapping = self.bridge_instance.binding.mapping;
         self.bridge_instance.pulled = function (pulld) {
+            is_reachable = bridge_instance.reachable() ? true : false;
+
             if (pulld) {
                 pulld = _.deepCopy(pulld);
 
