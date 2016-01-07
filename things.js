@@ -58,7 +58,7 @@ util.inherits(Things, events.EventEmitter);
 /**
  *  This is for testing only
  */
-Things.prototype._reset = function() {
+Things.prototype._reset = function () {
     this._thingd = {};
     this._bridge_exemplars = [];
 };

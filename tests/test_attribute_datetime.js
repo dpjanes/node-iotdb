@@ -11,6 +11,7 @@
 "use strict";
 
 var assert = require("assert")
+var iotdb = require("../iotdb")
 var attribute = require("./instrument/attribute")
 var model = require("../model")
 var _ = require("../helpers")
