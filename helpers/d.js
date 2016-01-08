@@ -228,12 +228,33 @@ var smart_extend = function (od) {
     return od;
 };
 
+/**
+ *  Return a new Object composed of all its
+ *  arguments. A value is _only_ set if it's
+ *  not already set from a preceeding argument.
+ */
+var compose = function () {
+    var d = {}
+
+    _.each(arguments, function (defaultd) {
+        for (var key in defaultd) {
+            var pvalue = d[key]
+            if (pvalue === undefined) {
+                d[key] = defaultd[key]
+            }
+        }
+    });
+
+    return d;
+};
+
 exports.d = {
     get: get,
     set: set,
     transform: transform,
     smart_extend: smart_extend,
     json: json,
+    compose: compose,
 
     is: {
         superset: function(a, b) {
