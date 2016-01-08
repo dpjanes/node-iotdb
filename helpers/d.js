@@ -233,14 +233,13 @@ var smart_extend = function (od) {
  *  arguments. A value is _only_ set if it's
  *  not already set from a preceeding argument.
  */
-var compose = function () {
-    var d = {}
+var shallow_compose = function () {
+    var d = {};
 
-    _.each(arguments, function (defaultd) {
-        for (var key in defaultd) {
-            var pvalue = d[key]
-            if (pvalue === undefined) {
-                d[key] = defaultd[key]
+    _.each(arguments, function (ad) {
+        for (var key in ad) {
+            if (d[key] === undefined) {
+                d[key] = ad[key];
             }
         }
     });
@@ -254,7 +253,10 @@ exports.d = {
     transform: transform,
     smart_extend: smart_extend,
     json: json,
-    compose: compose,
+    compose: {
+        shallow: shallow_compose,
+        smart: smart_extend,
+    },
 
     is: {
         superset: function(a, b) {

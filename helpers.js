@@ -253,43 +253,6 @@ exports.defaults = function (paramd) {
 };
 
 /**
- *  Get a 'code' (like a model_code) from a URL. Basically
- *  the last path component in either the hash or in the path itself
- *
- *  @param {string} iri
- *  The IRI to get the code from
- *
- *  @return {string}
- *  The code
- */
-exports.iri_to_code = function (iri) {
-    var urlp = node_url.parse(iri);
-    if (urlp.hash && urlp.hash.length > 1) {
-        return path.basename(urlp.hash.substring(1))
-    } else {
-        return path.basename(urlp.pathname)
-    }
-};
-
-exports.dump_things = function (iot, things) {
-    console.log("----")
-    console.log("#things", things.length);
-    for (var ti = 0; ti < things.length; ti++) {
-        var thing = things[ti];
-        var meta = thing.meta()
-
-        console.log("")
-        console.log("  thing#:", ti + 1);
-        console.log("  name:", thing.code());
-        console.log("  thing_id:", thing.thing_id());
-
-        if (thing.initd.tag) {
-            console.log("  tags:", thing.initd.tag)
-        }
-    }
-};
-
-/**
  *  Django(-ish) string formatting. Can take
  *  multiple dictionaries as arguments, priority
  *  given to the first argument seen
