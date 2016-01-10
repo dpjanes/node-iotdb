@@ -50,6 +50,9 @@ for (var mi in modules) {
     }
 }
 
+// prefer '_.color.Color', this is for backwards compat
+exports.Color = exports.color.Color;
+
 exports.temperature = require("./helpers/temperature").temperature;
 
 var _queued = {};

@@ -285,6 +285,85 @@ Color.prototype.set_hsl = function (h, s, l) {
     return self;
 };
 
+/**
+ *  NB. this is not the same 'h' and 's' from hsl,
+ *  0 <= h <= 100
+ *  0 <= s <= 100
+ *  0 <= b <= 360
+ *
+ *  Code from
+ *  http://snipplr.com/view.php?codeview&id=14590
+ */
+Color.prototype.set_hsb = function (hue100, saturation100, brightness360) {
+	var r, g, b;
+	var i;
+	var f, p, q, t;
+	
+	// Make sure our arguments stay in-range
+	hue100 = Math.max(0, Math.min(360, hue100));
+	saturation100 = Math.max(0, Math.min(100, saturation100));
+	brightness360 = Math.max(0, Math.min(100, brightness360));
+	
+	// We accept saturation and value arguments from 0 to 100 because that'saturation100
+	// how Photoshop represents those values. Internally, however, the
+	// saturation and value are calculated from a range of 0 to 1. We make
+	// That conversion here.
+	saturation100 /= 100;
+	brightness360 /= 100;
+	
+	if(saturation100 == 0) {
+		// Achromatic (grey)
+		r = g = b = brightness360;
+		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+	}
+	
+	hue100 /= 60; // sector 0 to 5
+	i = Math.floor(hue100);
+	f = hue100 - i; // factorial part of hue100
+	p = brightness360 * (1 - saturation100);
+	q = brightness360 * (1 - saturation100 * f);
+	t = brightness360 * (1 - saturation100 * (1 - f));
+
+	switch(i) {
+		case 0:
+			r = brightness360;
+			g = t;
+			b = p;
+			break;
+			
+		case 1:
+			r = q;
+			g = brightness360;
+			b = p;
+			break;
+			
+		case 2:
+			r = p;
+			g = brightness360;
+			b = t;
+			break;
+			
+		case 3:
+			r = p;
+			g = q;
+			b = brightness360;
+			break;
+			
+		case 4:
+			r = t;
+			g = p;
+			b = brightness360;
+			break;
+			
+		default: // case 5:
+			r = brightness360;
+			g = p;
+			b = q;
+	}
+	
+    this.set_rgb_1(r, g, b);
+}
+
 Color.prototype.get_hex = function () {
     var self = this;
 
