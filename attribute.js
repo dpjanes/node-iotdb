@@ -156,6 +156,38 @@ Attribute.prototype._validate_code = function (code) {
 };
 
 /**
+ *  Return the first value, compacted
+ */
+Attribute.prototype.first = function (iri, otherwise) {
+    if (arguments.length < 2) {
+        otherwise = null;
+    }
+
+    var result = _.ld.first(self, _.ld.expand(iri), null);
+    if (result === null) {
+        return otherwise;
+    }
+
+    return _.ld.compact(result);
+}
+
+/**
+ *  Return as a list, compacted
+ */
+Attribute.prototype.first = function (iri, otherwise) {
+    if (arguments.length < 2) {
+        otherwise = null;
+    }
+
+    var result = _.ld.list(self, _.ld.expand(iri), null);
+    if (result === null) {
+        return otherwise;
+    }
+
+    return _.ld.compact(result);
+}
+
+/**
  *  Define the purpose of this Attribute, typically
  *  a IRI from 'iot-purpose:'.
  *
@@ -171,6 +203,10 @@ Attribute.prototype._validate_code = function (code) {
  */
 Attribute.prototype.purpose = function (purpose_iri) {
     var self = this;
+
+    if (arguments.length === 0) {
+        return self.first(constants.iot_purpose);
+    }
 
     purpose_iri = _.ld.expand(purpose_iri, 'iot-purpose:');
     self._validate_purpose(purpose_iri);
@@ -230,6 +266,11 @@ Attribute.prototype.is_sensor = function () {
  */
 Attribute.prototype.name = function (_value) {
     var self = this;
+
+    if (arguments.length === 0) {
+        return _.ld.first(self, constants.schema_name, null);
+    }
+
     self._validate_name(_value);
 
     return this.property_value(constants.schema_name, _value, {
@@ -255,6 +296,10 @@ Attribute.prototype._validate_name = function (_value) {
  */
 Attribute.prototype.description = function (_value) {
     var self = this;
+
+    if (arguments.length === 0) {
+        return _.ld.first(self, constants.schema_description, null);
+    }
 
     self._validate_description(_value);
 
@@ -403,6 +448,10 @@ Attribute.prototype.set = function () {
 Attribute.prototype.unit = function (unit_iri) {
     var self = this;
 
+    if (arguments.length === 0) {
+        return self.first(constants.iot_unit, _.ld.compact(constants.iot_null));
+    }
+
     unit_iri = _.ld.expand(unit_iri, "iot-unit:");
     self._validate_unit(unit_iri);
 
@@ -422,6 +471,7 @@ Attribute.prototype._validate_unit = function (unit_iri) {
  *  The measuring IRI.
  *
  *  @return {this}
+ *  @depreciated
  */
 Attribute.prototype.measuring = function (iri) {
     var self = this;
@@ -470,6 +520,10 @@ Attribute.prototype._validate_arithmetic_precision = function (places) {
 Attribute.prototype.vector = function (name) {
     var self = this;
 
+    if (arguments.length === 0) {
+        return self.first(constants.iot_vector, null);
+    }
+
     self._validate_vector(name);
 
     return self.property_value(constants.iot_vector, name);
@@ -507,6 +561,10 @@ Attribute.prototype.unit_multiplier = function (multiplier) {
 Attribute.prototype.enumeration = function (values) {
     var self = this;
 
+    if (arguments.length === 0) {
+        return self.list(constants.iot_enumeration, null);
+    }
+
     self._validate_enumeration(values);
 
     _.ld.add(self, constants.iot_enumeration, values);
@@ -534,6 +592,10 @@ Attribute.prototype._validate_enumeration = function (values) {
 Attribute.prototype.type = function (type_iri) {
     var self = this;
 
+    if (arguments.length === 0) {
+        return self.first(constants.iot_enumeration, null);
+    }
+
     type_iri = _.ld.expand(type_iri, "iot:");
     self._validate_type(type_iri);
 
@@ -546,6 +608,7 @@ Attribute.prototype._validate_type = function (type_iri) {
     }
 };
 
+// depreciate?
 Attribute.prototype.types = function () {
     return _.ld.list(this, constants.iot_type, []);
 };
@@ -567,6 +630,10 @@ Attribute.prototype.is_type_null = function () {
  */
 Attribute.prototype.format = function (format_iri) {
     var self = this;
+
+    if (arguments.length === 0) {
+        return self.first(constants.iot_format, null);
+    }
 
     format_iri = _.ld.expand(format_iri, "iot:format.");
     self._validate_format(format_iri);
@@ -591,6 +658,10 @@ Attribute.prototype._validate_format = function (format_iri) {
 Attribute.prototype.minimum = function (value) {
     var self = this;
 
+    if (arguments.length === 0) {
+        return self.first(constants.iot_minimum, null);
+    }
+
     self._validate_minimum(value);
 
     return self.property_value(constants.iot_minimum, value);
@@ -612,6 +683,10 @@ Attribute.prototype._validate_minimum = function (value) {
  */
 Attribute.prototype.maximum = function (value) {
     var self = this;
+
+    if (arguments.length === 0) {
+        return self.first(constants.iot_maximum, null);
+    }
 
     self._validate_maximum(value);
 
