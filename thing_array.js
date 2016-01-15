@@ -624,39 +624,53 @@ ThingArray.prototype.things_changed = function () {
 
 /* --- */
 
-ThingArray.prototype._filter_test = function (d, thing) {
+ThingArray.prototype._filter_test = function (queryd, thing) {
     var meta = thing.meta();
 
-    for (var dpredicate in d) {
-        var dobject = d[dpredicate];
-        if (dpredicate === "_name") {
-            var name = meta.get('schema:name');
-            if (name !== dobject) {
-                return false;
-            }
-            continue;
-        } else if (dpredicate === "_code") {
-            if (thing.code() !== dobject) {
-                return false;
-            }
-            continue;
-        } else if (dpredicate === "_tag") {
-            if (!thing.has_tag(dobject)) {
-                return false;
-            }
-            continue;
-        } else {
-            dpredicate = _.ld.expand(dpredicate);
+    for (var query_key in queryd) {
+        var match = query_key.match(/^(meta|model|istate|ostate):(.+)$/);
+        if (!match) {
+            logger.error({
+                method: "_filter_test",
+                cause: "bad query in the test dictionary",
+                query_key: query_key,
+                query_values: query_values,
+            }, "bad match request");
+            return false;
         }
 
+        var query_band = match[1];
+        var query_inner_key = match[2];
 
-        var value = meta.get(dpredicate);
-        if (value === undefined) {
+        var thing_state = thing.state(query_band);
+
+        if (query_band === "meta") {
+            var query_values = _.ld.expand(_.ld.list(queryd, query_key, []));
+            var thing_values = _.ld.list(thing_state, query_inner_key, []);
+
+            var intersection = _.intersection(query_values, thing_values);
+            if (intersection.length === 0) {
+                return false;
+            }
+        } else if ((query_band === "ostate") || (query_band === "istate") || (query_band === "model")) {
+            logger.error({
+                method: "_filter_test",
+                query_band: query_band,
+                query_key: query_key,
+                query_values: query_values,
+            }, "function not implemented (yet)");
+
             return false;
-        } else if (_.is.Array(value)) {
-            return value.indexOf(dobject) > -1;
         } else {
-            return value === dobject;
+            logger.error({
+                method: "_filter_test",
+                cause: "programming error - this should never happen",
+                query_band: query_band,
+                query_key: query_key,
+                query_values: query_values,
+            }, "bad band");
+
+            return false;
         }
     }
 
@@ -759,51 +773,45 @@ ThingArray.prototype.filter = function (d) {
     return out_items;
 };
 
-ThingArray.prototype.with_room = function (name) {
+ThingArray.prototype.with_id = function (id) {
     return this.filter({
-        "iot:place-room": name
-    });
-};
-
-ThingArray.prototype.with_floor = function (name) {
-    return this.filter({
-        "iot:place-floor": name
-    });
-};
-
-ThingArray.prototype.with_location = function (name) {
-    return this.filter({
-        "iot:place-location": name
+        "meta:iot:thing-id": id,
     });
 };
 
 ThingArray.prototype.with_code = function (code) {
     return this.filter({
-        "_code": code
+        "meta:iot:model-id": _.id.to_dash_case(code),
     });
 };
 
 ThingArray.prototype.with_name = function (name) {
     return this.filter({
-        "_name": name
+        "meta:schema:name": name
+    });
+};
+
+ThingArray.prototype.with_zone = function (name) {
+    return this.filter({
+        "meta:schema:name": name
     });
 };
 
 ThingArray.prototype.with_number = function (number) {
     return this.filter({
-        "iot:thing-number": parseInt(number)
+        "meta:iot:thing-number": parseInt(number)
     });
 };
 
 ThingArray.prototype.with_tag = function (tag) {
     return this.filter({
-        "_tag": tag
+        "meta:iot:tag": tag
     });
 };
 
 ThingArray.prototype.with_facet = function (facet) {
     return this.filter({
-        "iot:facet": _.ld.expand(facet, "iot-facet:")
+        "meta:iot:facet": facet,
     });
 };
 
@@ -814,31 +822,9 @@ ThingArray.prototype.with_model = function (model) {
     iot._clarify_model(modeld, model);
 
     return this.filter({
-        "_code": modeld.model_code
+        "_code": _.id.to_dash_cash(modeld.model_code),
     });
 };
-
-
-/*
-ThingArray.prototype.apply = function (paramd, f) {
-    var self = this;
-
-    if (_.is.Function(paramd)) {
-        f = paramd;
-        paramd = {};
-    }
-
-    var results = [];
-    for (var ii = 0; ii < self.length; ii++) {
-        var in_item = self[ii];
-        var result = f(in_item, paramd);
-        if (result !== undefined) {
-            results.push(result);
-        }
-    }
-    return results;
-};
-*/
 
 ThingArray.prototype.after = function (delay, f) {
     var self = this;
