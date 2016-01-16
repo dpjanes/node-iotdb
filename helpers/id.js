@@ -115,28 +115,6 @@ var _thing_urn_machine = function() {
 };
 
 /**
- *  Make a canonical ID for a Model
- */
-var model_urn = function(jsonld) {
-    var src_jsonld = _.deepCopy(jsonld);
-
-    var base_url = src_jsonld["@context"]["@base"];
-    var base_name = path.basename(url.parse(base_url).path).replace(/^.*:/, '');
-
-    src_jsonld["@context"]["@base"] = "";
-    src_jsonld["@context"]["@vocab"] = "";
-
-    src_jsonld = _.ld.compact(src_jsonld);
-
-    var canonical_jsonld = canonical_json(jsonld);
-
-    var canonical_hash = _.hash.md5(canonical_jsonld);
-    var model_urn = "urn:iotdb:model:" + canonical_hash + ":" + base_name;
-
-    return model_urn;
-};
-
-/**
  *  Make a canonical ID for a User.
  *  A user is simply identified by a URL.
  *  We do some _minor_ canonicalization,
@@ -236,7 +214,6 @@ var slugify = function (identifier) {
 };
 
 exports.id = {
-    model_urn: model_urn,
     user_urn: user_urn,
     thing_urn: {
         set: _set_ids,
