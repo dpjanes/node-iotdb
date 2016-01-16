@@ -298,6 +298,10 @@ Color.prototype.set_hsb = function (hue100, saturation100, brightness360) {
 	var r, g, b;
 	var i;
 	var f, p, q, t;
+
+    if ((hue100 === undefined) || (saturation100 === undefined) || (brightness360 === undefined)) {
+        return;
+    }
 	
 	// Make sure our arguments stay in-range
 	hue100 = Math.max(0, Math.min(360, hue100));

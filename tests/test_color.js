@@ -174,6 +174,54 @@ describe('test_color', function() {
             assert.strictEqual(color.l, 0.5);
         });
     });
+    describe('set_hsb', function() {
+        it('set red/(0,100,100)', function() {
+            var color = new _.color.Color();
+            color.set_hsb(0, 100, 100);
+
+            assert.strictEqual(color.r, 1);
+            assert.strictEqual(color.g, 0);
+            assert.strictEqual(color.b, 0);
+            assert.strictEqual(color.h, 0);
+            assert.strictEqual(color.s, 1);
+            assert.strictEqual(color.l, 0.5);
+        });
+
+        it('set green/(120,100,100)', function() {
+            var color = new _.color.Color();
+            color.set_hsb(120, 100, 100);
+
+            assert.strictEqual(color.r, 0);
+            assert.strictEqual(color.g, 1);
+            assert.strictEqual(color.b, 0);
+            assert.strictEqual(color.h, 1 / 3.0);
+            assert.strictEqual(color.s, 1);
+            assert.strictEqual(color.l, 0.5);
+        });
+        it('set blue/(240,100,100)', function() {
+            var color = new _.color.Color();
+            color.set_hsb(240, 100, 100);
+
+            assert.strictEqual(color.r, 0);
+            assert.strictEqual(color.g, 0);
+            assert.strictEqual(color.b, 1);
+            assert.strictEqual(color.h, 2 / 3.0);
+            assert.strictEqual(color.s, 1);
+            assert.strictEqual(color.l, 0.5);
+        });
+        it('set nothing', function() {
+            var color = new _.color.Color();
+            color.set_hsb(240, 100, 100);
+            color.set_hsb();
+
+            assert.strictEqual(color.r, 0);
+            assert.strictEqual(color.g, 0);
+            assert.strictEqual(color.b, 1);
+            assert.strictEqual(color.h, 2 / 3.0);
+            assert.strictEqual(color.s, 1);
+            assert.strictEqual(color.l, 0.5);
+        });
+    });
     describe('parseColor', function() {
         it('#0000FF', function() {
             var color = new _.color.Color();
