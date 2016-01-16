@@ -219,6 +219,26 @@ TestBridge.prototype.reachable = function () {
  */
 TestBridge.prototype.configure = function (app) {};
 
+/* --- test suite --- */
+TestBridge.prototype.test_disconnect = function (state) {
+    var self = this;
+
+    self.native = null;
+    self.pulled();
+};
+
+TestBridge.prototype.test_meta = function () {
+    var self = this;
+
+    self.pulled();
+};
+
+TestBridge.prototype.test_pull = function (stated) {
+    var self = this;
+
+    self.pulled(stated);
+};
+
 /*
  *  API
  */

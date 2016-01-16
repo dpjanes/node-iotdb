@@ -70,7 +70,12 @@ var BridgeWrapper = function (binding, initd) {
         bridge_instance.binding = binding;
 
         /* now make a model */
-        var model_instance = new binding.model();
+        var model_class = binding.model;
+        if (!_.is.Model(model_class)) {
+            model_class = require('./model').make_model_from_jsonld(model_class);
+        }
+
+        var model_instance = new model_class();
         model_instance.bind_bridge(bridge_instance);
 
         self.emit("thing", model_instance);
@@ -123,8 +128,13 @@ exports.make_wrap = function (name, bindings, initd) {
             continue
         }
 
-        var model = new binding.model();
-        if (model_code !== model.code()) {
+        var model_class = binding.model;
+        if (!_.is.Model(model_class)) {
+            model_class = require('./model').make_model_from_jsonld(model_class);
+        }
+
+        var model_instance = new model_class();
+        if (model_code !== model_instance.code()) {
             continue;
         }
 
