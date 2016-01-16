@@ -36,6 +36,18 @@ var _safe = function(component) {
     return encodeURIComponent(component).replace('%', '$');
 };
 
+var machine_id = "some-machine-id";
+var network_id = "some-network-id";
+
+var _set_ids = function(d) {
+    if (d.machine_id) {
+        machine_id = d.machine_id;
+    }
+    if (d.network_id) {
+        network_id = d.network_id;
+    }
+};
+
 /**
  *  Unique thing
  */
@@ -58,7 +70,9 @@ var _thing_urn_unique_hash = function() {
     }
 
     var hasher = crypto.createHash('md5');
-    hasher.update(arguments[arguments.length - 1]);
+    if (arguments.length) {
+        hasher.update("" + arguments[arguments.length - 1]);
+    }
     parts.push(hasher.digest("hex"));
 
     return parts.join(":");
@@ -69,7 +83,7 @@ var _thing_urn_unique_hash = function() {
  */
 var _thing_urn_network = function() {
     var hasher = crypto.createHash('md5');
-    hasher.update("some-network-id");
+    hasher.update(network_id);
 
     var parts = [ "urn", "iotdb", "thing" ];
     for (var ai in arguments) {
@@ -87,7 +101,7 @@ var _thing_urn_network = function() {
  */
 var _thing_urn_machine = function() {
     var hasher = crypto.createHash('md5');
-    hasher.update("some-machine-id");
+    hasher.update(machine_id);
 
     var parts = [ "urn", "iotdb", "thing" ];
     for (var ai in arguments) {
@@ -225,6 +239,7 @@ exports.id = {
     model_urn: model_urn,
     user_urn: user_urn,
     thing_urn: {
+        set: _set_ids,
         unique: _thing_urn_unique,
         unique_hash: _thing_urn_unique_hash,
         network_unique: _thing_urn_network,
