@@ -57,6 +57,17 @@ describe('test_queue', function() {
                 },
             });
         });
+        it('simple with coda and exception', function(done) {
+            var queue = new iotdb.Queue();
+            queue.add({
+                run: function(_queue, _qitem) {
+                    throw new Error("coda should still get called");
+                },
+                coda: function() {
+                    done();
+                },
+            });
+        });
         it('multiples', function(done) {
             var queue = new iotdb.Queue();
             var ran_first = false;
