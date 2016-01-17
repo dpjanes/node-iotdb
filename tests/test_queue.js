@@ -102,6 +102,7 @@ describe('test_queue', function() {
             queue.pause();
 
             var ran_first = false;
+            var ran_first_coda = false;
             var ran_second = false;
             queue.add({
                 id: "shared",
@@ -112,11 +113,16 @@ describe('test_queue', function() {
                     ran_first = true;
                     _queue.finished(_qitem);
                 },
+                coda: function() {
+                    // but this will when it's bumped
+                    ran_first_coda = true;
+                },
             });
             queue.add({
                 id: "shared",
                 run: function(_queue, _qitem) {
                     assert.ok(!ran_first);
+                    assert.ok(ran_first_coda);
                     assert.ok(!ran_second);
 
                     ran_second = true;
@@ -124,6 +130,7 @@ describe('test_queue', function() {
                 },
                 coda: function() {
                     assert.ok(!ran_first);
+                    assert.ok(ran_first_coda);
                     assert.ok(ran_second);
 
                     done();
