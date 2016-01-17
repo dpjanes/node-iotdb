@@ -176,7 +176,7 @@ Attribute.prototype.first = function (iri, otherwise) {
 /**
  *  Return as a list, compacted
  */
-Attribute.prototype.first = function (iri, otherwise) {
+Attribute.prototype.as_list = function (iri, otherwise) {
     var self = this;
 
     if (arguments.length < 2) {
@@ -329,6 +329,10 @@ Attribute.prototype._validate_description = function (_value) {
 Attribute.prototype.help = function (_value) {
     var self = this;
 
+    if (arguments.length === 0) {
+        return _.ld.first(self, constants.iot_help, null);
+    }
+
     self._validate_help(_value);
 
     return self.property_value(constants.iot_help, _value);
@@ -453,7 +457,7 @@ Attribute.prototype.unit = function (unit_iri) {
     var self = this;
 
     if (arguments.length === 0) {
-        return self.first(constants.iot_unit, _.ld.compact(constants.iot_null));
+        return self.first(constants.iot_unit, null);
     }
 
     unit_iri = _.ld.expand(unit_iri, "iot-unit:");
@@ -465,50 +469,6 @@ Attribute.prototype.unit = function (unit_iri) {
 Attribute.prototype._validate_unit = function (unit_iri) {
     if (!_.is.AbsoluteURL(unit_iri)) {
         throw new Error("Attribute.unit: key_iri must expand to a IRI, not: " + unit_iri);
-    }
-};
-
-/**
- *  What is this Attribute measuring?
- *
- *  @param {string} IRI
- *  The measuring IRI.
- *
- *  @return {this}
- *  @depreciated
- */
-Attribute.prototype.measuring = function (iri) {
-    var self = this;
-
-    iri = _.ld.expand(iri);
-    self._validate_measuring(iri);
-
-    return self.property_value(constants.iot_measuring, iri);
-};
-
-Attribute.prototype._validate_measuring = function (iri) {
-    if (!_.is.AbsoluteURL(iri)) {
-        throw new Error("Attribute.measuring: key_iri must expand to a IRI, not: " + iri);
-    }
-};
-
-/**
- *  Specify the arithmetic precision, i.e. the number
- *  of places past the decimal point that count
- */
-Attribute.prototype.arithmetic_precision = function (places) {
-    var self = this;
-
-    self._validate_arithmetic_precision(places);
-
-    return self.property_value(_.ld.expand("iot:arithmetic-precision"), places);
-};
-
-Attribute.prototype._validate_arithmetic_precision = function (places) {
-    if (!_.is.Integer(places)) {
-        throw new Error("Attribute.arithmetic_precision: places must be an integer, not: " + places);
-    } else if (places < 0) {
-        throw new Error("Attribute.arithmetic_precision: places must be 0 or greater, not: " + places);
     }
 };
 
@@ -540,20 +500,6 @@ Attribute.prototype._validate_vector = function (name) {
 };
 
 /**
- *  Specify the "iot:unit-multiplier" of this attribute. Whatever
- *  the current value of this attribute is, it's "real" value should
- *  be considered to be multiplied by this number.
- *
- *  @param {number} unit-multiplier
- *  The multiplier.
- *
- *  @return {this}
- */
-Attribute.prototype.unit_multiplier = function (multiplier) {
-    return this.property_value(_.ld.expand("iot:unit-multiplier"), multiplier);
-};
-
-/**
  *  If a string, it must be one of the following values
  *
  *  @param {array} values
@@ -566,7 +512,7 @@ Attribute.prototype.enumeration = function (values) {
     var self = this;
 
     if (arguments.length === 0) {
-        return self.list(constants.iot_enumeration, null);
+        return self.as_list(constants.iot_enumeration, null);
     }
 
     self._validate_enumeration(values);
@@ -597,7 +543,7 @@ Attribute.prototype.type = function (type_iri) {
     var self = this;
 
     if (arguments.length === 0) {
-        return self.first(constants.iot_enumeration, null);
+        return self.first(constants.iot_type, _.ld.compact(constants.iot_null));
     }
 
     type_iri = _.ld.expand(type_iri, "iot:");
@@ -1172,126 +1118,3 @@ exports.make = function (purpose, code, name) {
     }
     return attribute;
 };
-
-/**
- *  Make an "instantaneous" Attribute. 
- *
- *  @param {string} purpose
- *  See {@link make}
- *
- *  @return {Attribute}
- *  a new attribute
- */
-/*
-exports.make_null = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot:type", "iot:type.null");
-};
-*/
-
-/**
- *  Make an Attribute that expects a <code>boolean<code> as a value.
- *
- *  @param {string} purpose
- *  See {@link make}
- *
- *  @return {Attribute}
- *  a new attribute
- */
-/*
-exports.make_boolean = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot:type", "iot:type.boolean");
-};
-*/
-
-/**
- *  Make an Attribute that expects a <code>integer<code> as a value.
- *
- *  @param {string} purpose
- *  See {@link make}
- *
- *  @return {Attribute}
- *  a new attribute
- */
-/*
-exports.make_integer = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot:type", "iot:type.integer");
-};
-*/
-
-/**
- *  Make an Attribute that expects a <code>make_number<code> as a value.
- *
- *  @param {string} purpose
- *  See {@link make}
- *
- *  @return {Attribute}
- *  a new attribute
- */
-/*
-exports.make_number = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot:type", "iot:type.number");
-};
-
-exports.make_unit = function (purpose, code, name) {
-    return exports
-        .make(purpose, code, name)
-        .property("iot:type", "iot:type.number")
-        .unit("iot-unit:math.fraction.unit")
-        .minimum(0)
-        .maximum(1);
-};
-
-exports.make_percent = function (purpose, code, name) {
-    return exports
-        .make(purpose, code, name)
-        .property("iot:type", "iot:type.number")
-        .unit("iot-unit:math.fraction.percent")
-        .minimum(0)
-        .maximum(100);
-};
-*/
-
-/**
- *  Make an Attribute that expects a <code>string<code> as a value.
- *
- *  @param {string} purpose
- *  See {@link make}
- *
- *  @return {Attribute}
- *  a new attribute
- */
-/*
-exports.make_string = function (purpose, code, name) {
-    return exports.make(purpose, code, name).property("iot:type", "iot:type.string");
-};
-
-exports.make_iri = function (purpose, code, name) {
-    return exports.make(purpose, code, name)
-        .property("iot:type", "iot:type.string")
-        .format(":format.iri");
-};
-
-exports.make_datetime = function (purpose, code, name) {
-    return exports.make(purpose, code, name)
-        .property("iot:type", "iot:type.string")
-        .format("iot:format.datetime");
-};
-
-exports.make_date = function (purpose, code, name) {
-    return exports.make(purpose, code, name)
-        .property("iot:type", "iot:type.string")
-        .format("iot:format.date");
-};
-
-exports.make_time = function (purpose, code, name) {
-    return exports.make(purpose, code, name)
-        .property("iot:type", "iot:type.string")
-        .format("iot:format.time");
-};
-
-exports.make_color = function (purpose, code, name) {
-    return exports.make(purpose, code, name)
-        .property("iot:type", "iot:type.string")
-        .format("iot:format.color");
-};
-*/
