@@ -634,7 +634,6 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
                 method: "_filter_test",
                 cause: "bad query in the test dictionary",
                 query_key: query_key,
-                query_values: query_values,
             }, "bad match request");
             return false;
         }
@@ -657,7 +656,6 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
                 method: "_filter_test",
                 query_band: query_band,
                 query_key: query_key,
-                query_values: query_values,
             }, "function not implemented (yet)");
 
             return false;
@@ -667,7 +665,6 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
                 cause: "programming error - this should never happen",
                 query_band: query_band,
                 query_key: query_key,
-                query_values: query_values,
             }, "bad band");
 
             return false;

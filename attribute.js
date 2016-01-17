@@ -159,6 +159,8 @@ Attribute.prototype._validate_code = function (code) {
  *  Return the first value, compacted
  */
 Attribute.prototype.first = function (iri, otherwise) {
+    var self = this;
+
     if (arguments.length < 2) {
         otherwise = null;
     }
@@ -169,12 +171,14 @@ Attribute.prototype.first = function (iri, otherwise) {
     }
 
     return _.ld.compact(result);
-}
+};
 
 /**
  *  Return as a list, compacted
  */
 Attribute.prototype.first = function (iri, otherwise) {
+    var self = this;
+
     if (arguments.length < 2) {
         otherwise = null;
     }
@@ -185,7 +189,7 @@ Attribute.prototype.first = function (iri, otherwise) {
     }
 
     return _.ld.compact(result);
-}
+};
 
 /**
  *  Define the purpose of this Attribute, typically

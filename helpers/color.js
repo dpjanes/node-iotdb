@@ -315,7 +315,7 @@ Color.prototype.set_hsb = function (hue100, saturation100, brightness360) {
 	saturation100 /= 100;
 	brightness360 /= 100;
 	
-	if(saturation100 == 0) {
+	if(saturation100 === 0) {
 		// Achromatic (grey)
 		r = g = b = brightness360;
 		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
@@ -366,7 +366,7 @@ Color.prototype.set_hsb = function (hue100, saturation100, brightness360) {
 	}
 	
     this.set_rgb_1(r, g, b);
-}
+};
 
 Color.prototype.get_hex = function () {
     var self = this;
