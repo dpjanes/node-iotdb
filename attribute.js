@@ -135,7 +135,7 @@ Attribute.prototype._get_code = function () {
         return code.replace(/^.*#/, "");
     }
 
-    return undefined;
+    return null;
 };
 
 Attribute.prototype._set_code = function (code) {

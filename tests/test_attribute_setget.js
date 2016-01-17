@@ -59,6 +59,42 @@ describe('test_attribute_rgb', function(){
             });
         });
     });
+    describe('code', function() {
+        it('default', function() {
+            var a = attribute
+                .make_string("value");
+
+            assert.strictEqual(a.code(), "value");
+        });
+        it('default - with no @id', function() {
+            var a = attribute
+                .make_string("value");
+
+            assert.strictEqual(a.code(), "value");
+
+            delete a["@id"]
+            assert.strictEqual(a.code(), "value");
+
+            a[constants.iot_purpose] = _.ld.expand("iot-purpose:on");
+            assert.strictEqual(a.code(), "on");
+        });
+        it('default - with no @id or purpose', function() {
+            var a = attribute
+                .make_string("value");
+
+            delete a["@id"]
+            delete a[constants.iot_purpose];
+
+            assert.strictEqual(a.code(), null);
+        });
+        it('set', function() {
+            var a = attribute
+                .make_string("value")
+                .code("blablabla");
+
+            assert.strictEqual(a.code(), "blablabla");
+        });
+    });
     describe('non-IRI strings', function() {
         describe('name', function() {
             it('single value', function() {
@@ -280,6 +316,13 @@ describe('test_attribute_rgb', function(){
 
                 assert.strictEqual(a.maximum(), expect);
             });
+            it('bad value', function() {
+                assert.throws(function() {
+                    var a = attribute
+                        .make_string("value")
+                        .minimum("hello, world");
+                }, Error);
+            });
         });
         describe('iot:minimum', function() {
             it('default value', function() {
@@ -295,6 +338,13 @@ describe('test_attribute_rgb', function(){
                     .minimum(expect);
 
                 assert.strictEqual(a.minimum(), expect);
+            });
+            it('bad value', function() {
+                assert.throws(function() {
+                    var a = attribute
+                        .make_string("value")
+                        .maximum("hello, world");
+                }, Error);
             });
         });
         describe('iot:purpose', function() {
