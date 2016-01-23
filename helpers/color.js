@@ -268,6 +268,9 @@ Color.prototype.set_rgb_255 = function (r, g, b) {
     return self;
 };
 
+/**
+ *  HSL 
+ */
 Color.prototype.set_hsl = function (h, s, l) {
     var self = this;
 
@@ -294,79 +297,108 @@ Color.prototype.set_hsl = function (h, s, l) {
  *  Code from
  *  http://snipplr.com/view.php?codeview&id=14590
  */
-Color.prototype.set_hsb = function (hue100, saturation100, brightness360) {
+Color.prototype.set_hsb = function (hue360, saturation100, brightness100) {
 	var r, g, b;
 	var i;
 	var f, p, q, t;
 
-    if ((hue100 === undefined) || (saturation100 === undefined) || (brightness360 === undefined)) {
+    if ((hue360 === undefined) || (saturation100 === undefined) || (brightness100 === undefined)) {
         return;
     }
 	
 	// Make sure our arguments stay in-range
-	hue100 = Math.max(0, Math.min(360, hue100));
+	hue360 = Math.max(0, Math.min(360, hue360));
 	saturation100 = Math.max(0, Math.min(100, saturation100));
-	brightness360 = Math.max(0, Math.min(100, brightness360));
+	brightness100 = Math.max(0, Math.min(100, brightness100));
 	
 	// We accept saturation and value arguments from 0 to 100 because that'saturation100
 	// how Photoshop represents those values. Internally, however, the
 	// saturation and value are calculated from a range of 0 to 1. We make
 	// That conversion here.
 	saturation100 /= 100;
-	brightness360 /= 100;
+	brightness100 /= 100;
 	
 	if(saturation100 === 0) {
 		// Achromatic (grey)
-		r = g = b = brightness360;
+		r = g = b = brightness100;
 		return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 	}
 	
-	hue100 /= 60; // sector 0 to 5
-	i = Math.floor(hue100);
-	f = hue100 - i; // factorial part of hue100
-	p = brightness360 * (1 - saturation100);
-	q = brightness360 * (1 - saturation100 * f);
-	t = brightness360 * (1 - saturation100 * (1 - f));
+	hue360 /= 60; // sector 0 to 5
+	i = Math.floor(hue360);
+	f = hue360 - i; // factorial part of hue360
+	p = brightness100 * (1 - saturation100);
+	q = brightness100 * (1 - saturation100 * f);
+	t = brightness100 * (1 - saturation100 * (1 - f));
 
 	switch(i) {
 		case 0:
-			r = brightness360;
+			r = brightness100;
 			g = t;
 			b = p;
 			break;
 			
 		case 1:
 			r = q;
-			g = brightness360;
+			g = brightness100;
 			b = p;
 			break;
 			
 		case 2:
 			r = p;
-			g = brightness360;
+			g = brightness100;
 			b = t;
 			break;
 			
 		case 3:
 			r = p;
 			g = q;
-			b = brightness360;
+			b = brightness100;
 			break;
 			
 		case 4:
 			r = t;
 			g = p;
-			b = brightness360;
+			b = brightness100;
 			break;
 			
 		default: // case 5:
-			r = brightness360;
+			r = brightness100;
 			g = p;
 			b = q;
 	}
 	
     this.set_rgb_1(r, g, b);
 };
+
+// http://stackoverflow.com/a/17243070/96338
+Color.prototype.get_hsb = function () {
+    var self = this;
+
+    var r = self.r * 255;
+    var g = self.g * 255;
+    var b = self.b * 255;
+
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var d = max - min;
+    var h;
+    var s = (max === 0 ? 0 : d / max);
+    var b = max / 255;
+
+    switch (max) {
+        case min: h = 0; break;
+        case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+        case g: h = (b - r) + d * 2; h /= 6 * d; break;
+        case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    }
+
+    return {
+        hue360: Math.round(h * 360),
+        saturation100: s * 100,
+        brightness100: b * 100,
+    };
+}
 
 Color.prototype.get_hex = function () {
     var self = this;

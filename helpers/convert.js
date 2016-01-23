@@ -56,6 +56,28 @@ var conversions = [
         },
     },
     {
+        from: 'iot-unit:temperature.si.kelvin',
+        to: 'iot-unit:temperature.si.mired',
+        convert: function(paramd) {
+            if (!paramd.value) {
+                return 0;
+            }
+
+            return 1000000.0 / paramd.value;
+        },
+    },
+    {
+        from: 'iot-unit:temperature.si.mired',
+        to: 'iot-unit:temperature.si.kelvin',
+        convert: function(paramd) {
+            if (!paramd.value) {
+                return 0;
+            }
+
+            return 1000000.0 / paramd.value;
+        },
+    },
+    {
         from: 'iot-unit:math.fraction.percent',
         to: 'iot-unit:math.fraction.unit',
         convert: function(paramd) {
