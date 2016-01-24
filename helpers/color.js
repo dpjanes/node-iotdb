@@ -382,23 +382,23 @@ Color.prototype.get_hsb = function () {
     var max = Math.max(r, g, b);
     var min = Math.min(r, g, b);
     var d = max - min;
-    var h;
-    var s = (max === 0 ? 0 : d / max);
-    var b = max / 255;
+    var hue;
+    var saturation = (max === 0 ? 0 : d / max);
+    var brightness = max / 255;
 
     switch (max) {
-        case min: h = 0; break;
-        case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
-        case g: h = (b - r) + d * 2; h /= 6 * d; break;
-        case b: h = (r - g) + d * 4; h /= 6 * d; break;
+        case min: hue = 0; break;
+        case r: hue = (g - b) + d * (g < b ? 6: 0); hue /= 6 * d; break;
+        case g: hue = (b - r) + d * 2; hue /= 6 * d; break;
+        case b: hue = (r - g) + d * 4; hue /= 6 * d; break;
     }
 
     return {
-        hue360: Math.round(h * 360),
-        saturation100: s * 100,
-        brightness100: b * 100,
+        hue360: Math.round(hue * 360),
+        saturation100: saturation * 100,
+        brightness100: brightness * 100,
     };
-}
+};
 
 Color.prototype.get_hex = function () {
     var self = this;

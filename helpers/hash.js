@@ -54,7 +54,18 @@ var sha512 = function () {
     return _hash('sha512', arguments);
 };
 
+var short = function(av) {
+    var hasher = crypto.createHash("md5");
+    for (var ai in av) {
+        var a = av[ai];
+        hasher.update("" + a);
+    }
+
+    return hasher.digest("base64").substring(0, 12);
+};
+
 exports.hash = {
+    short: short,
     md5: md5,
     sha1: sha1,
     sha256: sha256,

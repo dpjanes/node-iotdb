@@ -24,6 +24,7 @@
 
 "use strict";
 
+var unirest = require('unirest');
 var os = require('os');
 var _ = require('../helpers');
 
@@ -77,8 +78,24 @@ var _mac = function() {
     });
 };
 
+var externalv4 = function(callback) {
+    unirest
+        .get('https://diagnostic.opendns.com/myip')
+        .end(function (response) {
+            if (response.error) {
+                return callback(response.error);
+            }
+
+            callback(null, response.body.trim());
+        });
+};
+
 exports.net = {
     ipv4: _ipv4,
     ipv6: _ipv6,
     mac: _mac,
+
+    external: {
+        ipv4: externalv4,
+    }
 };
