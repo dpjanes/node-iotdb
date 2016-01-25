@@ -96,6 +96,7 @@ var ModelMaker = function (_code) {
     this.__description = null;
     this.__help = null;
     this.__facets = [];
+    this.__propertyd = {}
 };
 
 /**
@@ -207,12 +208,7 @@ ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
     } else if (key_iri === constants.iot_facet) {
         self.facet(value);
     } else {
-        logger.error({
-            method: "property_value",
-            key: key_iri,
-            value: value,
-            cause: "IOTDB error - this can be ignored for now",
-        }, "setting property/values on Models not supported - yet");
+        _.ld.add(self.__propertyd, key_iri, value);
     }
 
     return this;
@@ -440,7 +436,8 @@ ModelMaker.prototype.make = function () {
         this.__help = self.__help;
         this.__scratchd = {};
         this.__push_keys = [];
-        this.__facets = self.__facets;
+        this.__facets = _.shallowCopy(self.__facets);
+        this.__propertyd = _.shallowCopy(self.__propertyd);
 
         this.__callbacksd = {};
         this._transaction = null;

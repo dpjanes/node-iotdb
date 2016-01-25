@@ -364,6 +364,12 @@ Model.prototype.jsonld = function (paramd) {
         rd[constants.iot_facet] = facet;
     }
 
+    // model properties
+    for (var pkey in self.__propertyd) {
+        var pvalue = self.__propertyd[pkey];
+        rd[pkey] = pvalue;
+    }
+
     // attributes
     var ads = [];
     var attributes = self.attributes();
