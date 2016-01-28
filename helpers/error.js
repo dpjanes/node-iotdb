@@ -36,6 +36,17 @@ var message = function(error, otherwise) {
     }
 };
 
+var code = function(error, otherwise) {
+    if (error && error.code) {
+        return error.code;
+    } else if (otherwise) {
+        return otherwise;
+    } else {
+        return 500;
+    }
+};
+
 exports.error = {
     message: message,
+    code: code,
 };

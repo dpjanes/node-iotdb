@@ -96,7 +96,7 @@ var ModelMaker = function (_code) {
     this.__description = null;
     this.__help = null;
     this.__facets = [];
-    this.__propertyd = {}
+    this.__propertyd = {};
 };
 
 /**
@@ -182,8 +182,13 @@ ModelMaker.prototype.facet = function (_value) {
 
     if (_.is.Array(_value)) {
         _value.map(function (v) {
+            if (!_.is.String(v)) {
+                throw new Error("facet must be a String or Array of String");
+            }
             self.__facets.push(_.ld.expand(v, "iot-facet:"));
         });
+    } else if (!_.is.String(_value)) {
+        throw new Error("facet must be a String or Array of String");
     } else if (_value.match(/^:.*[.]/)) {
         var parts = _value.split(".");
         for (var pi = 0; pi < parts.length; pi++) {
@@ -436,7 +441,7 @@ ModelMaker.prototype.make = function () {
         this.__help = self.__help;
         this.__scratchd = {};
         this.__push_keys = [];
-        this.__facets = _.shallowCopy(self.__facets);
+        this.__facets = self.__facets;
         this.__propertyd = _.shallowCopy(self.__propertyd);
 
         this.__callbacksd = {};

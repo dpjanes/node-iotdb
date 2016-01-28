@@ -188,6 +188,16 @@ Model.prototype.facet = function () {
 };
 
 /**
+ */
+Model.prototype.model_first = function (key_iri, otherwise) {
+    return _.ld.first(this.__propertyd, _.ld.expand(key_iri), otherwise);
+};
+
+Model.prototype.model_list = function (key_iri, otherwise) {
+    return _.ld.list(this.__propertyd, _.ld.expand(key_iri), otherwise);
+};
+
+/**
  *  0.6
  *  - now takes an argument and will return one
  *    of istate/ostate/meta/model to be more
