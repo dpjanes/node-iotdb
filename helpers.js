@@ -370,4 +370,4 @@ exports.oneof = function (module) {
     return m;
 };
 
-exports.noop = function() {};
+exports.noop = function () {};
