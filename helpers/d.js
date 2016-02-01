@@ -247,17 +247,41 @@ var shallow_compose = function () {
     return d;
 };
 
+var shallow_clone = function (oldObj) {
+    var newObj = {};
+    for (var i in oldObj) {
+        if (oldObj.hasOwnProperty(i)) {
+            newObj[i] = oldObj[i];
+        }
+    }
+    return newObj;
+};
+
+var deep_clone = function (oldObj) {
+    var newObj = oldObj;
+    if (oldObj && typeof oldObj === 'object') {
+        newObj = Object.prototype.toString.call(oldObj) === "[object Array]" ? [] : {};
+        for (var i in oldObj) {
+            newObj[i] = exports.deepCopy(oldObj[i]);
+        }
+    }
+    return newObj;
+};
+
 exports.d = {
     get: get,
     set: set,
     transform: transform,
-    smart_extend: smart_extend,
+    smart_extend: smart_extend, // depreciate this usage
     json: json,
     compose: {
         shallow: shallow_compose,
         smart: smart_extend,
     },
-
+    clone: {
+        shallow: shallow_clone,
+        deep: deep_clone,
+    },
     is: {
         superset: function(a, b) {
             return d_contains_d(a, b);

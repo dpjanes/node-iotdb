@@ -714,12 +714,17 @@ Model.prototype._update_ostate = function (band, updated, paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {
+        add_timestamp: true,
         check_timestamp: true,
         set_timestamp: true,
         notify: true,
         validate: true,
         force: false,
     });
+
+    if (paramd.add_timestamp) {
+        updated = _.timestamp.add(updated);
+    }
 
     if (paramd.check_timestamp && !_.timestamp.check.values(self._otimestamp, updated["@timestamp"])) {
         return;
