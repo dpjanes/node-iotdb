@@ -26,9 +26,9 @@ var iotdb = require('iotdb');
 var _ = iotdb._;
 var bunyan = iotdb.bunyan;
 
-var logger = bunyan.createLogger({
-    name: 'homestar-test',
-    module: 'TestBridge',
+var logger = iotdb.logger({
+    name: 'node-iotdb',
+    module: 'tests/instrument/homestar-test/TestBridge',
 });
 
 /**

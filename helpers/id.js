@@ -227,4 +227,3 @@ exports.id = {
     to_underscore_case: identifier_to_underscore_case,
     slugify: slugify,
 };
-

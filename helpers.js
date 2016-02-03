@@ -42,6 +42,7 @@ var modules = [
     require('./helpers/timestamp'),
     require('./helpers/error'),
     require('./helpers/convert'),
+    require('./helpers/random'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
@@ -218,15 +219,6 @@ exports.equals = function (a, b) {
     return exports.isEqual(a, b);
 };
 
-/* --- random stuff --- */
-exports.randint = function (n) {
-    return Math.floor(Math.random() * n);
-};
-
-exports.choose = function (vs) {
-    return vs[exports.randint(vs.length)];
-};
-
 /**
  *  Make sure a 'paramd' is properly set up. That is,
  *  that it's a dictionary and if any values in defaultd
@@ -345,6 +337,7 @@ var _format = function (template, valueds) {
 
 /**
  */
+/*
 exports.uid = function (len) {
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -359,7 +352,9 @@ exports.uid = function (len) {
 
     return buf.join('');
 };
+*/
 
+/*
 var oneofd = {};
 exports.oneof = function (module) {
     var m = oneofd[module];
@@ -373,5 +368,6 @@ exports.oneof = function (module) {
 
     return m;
 };
+*/
 
 exports.noop = function () {};
