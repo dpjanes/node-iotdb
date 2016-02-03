@@ -237,7 +237,6 @@ exports.Queue = require('./queue').FIFOQueue;
 exports.helpers = _;
 exports._ = _;
 exports.cfg = cfg;
-exports.bunyan = bunyan;
 exports.logger = function () {
     return bunyan.createLogger.apply(bunyan.createLogger, arguments);
 };
