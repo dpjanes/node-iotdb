@@ -45,7 +45,7 @@ var _exit_cleanup = function (paramd, err) {
     if (!((err === 0) && (paramd.from === "exit"))) {
         logger.info({
             method: "_exit_cleanup",
-            paramd: paramd,
+            from: paramd.from,
             err: err
         }, "start");
     }
@@ -70,6 +70,10 @@ var _exit_cleanup = function (paramd, err) {
 };
 
 var setup_exit = function (iot) {
+    if (!iot) {
+        throw new Error("setup_exit: iot is a required argument");
+    }
+
     process.on('exit', function (error) {
         _exit_cleanup({
             iot: iot,
@@ -78,6 +82,7 @@ var setup_exit = function (iot) {
     });
     process.on('SIGINT', function (error) {
         _exit_cleanup({
+            iot: iot,
             from: 'SIGINT',
             exit: true,
             cleanup: true

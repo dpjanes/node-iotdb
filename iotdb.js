@@ -64,7 +64,7 @@ var IOT = function (initd) {
         meta_dir: ".iotdb/meta",
     });
 
-    exit.setup();
+    exit.setup(self);
 
     self._setup_events();
     self._setup_things();
