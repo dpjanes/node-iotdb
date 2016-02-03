@@ -69,6 +69,10 @@ Things.prototype._reset = function () {
 Things.prototype.things = function (model_code) {
     var self = this;
 
+    if (!_.is.Empty(model_code)) {
+        model_code =  _.id.to_dash_case(model_code);
+    }
+
     // the result
     var things = new thing_array.ThingArray({
         persist: true,

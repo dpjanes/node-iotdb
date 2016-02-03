@@ -167,6 +167,7 @@ IOT.prototype.discover = function (modeld, initd) {
  *  Tons of work needed here
  *  XXX - deletable?
  */
+/*
 IOT.prototype.meta_save = function (t) {
     var self = this;
 
@@ -211,6 +212,7 @@ IOT.prototype.meta_save = function (t) {
         }
     }
 };
+ */
 
 /**
  *  Kind of an arbitrary key / values store.
