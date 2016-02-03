@@ -92,12 +92,11 @@ IOT.prototype._setup_exit = function () {
 };
 
 /**
- *  self._things is the singleton Things manager
  */
 IOT.prototype._setup_things = function () {
     var self = this;
 
-    self._things = things.things();
+    self._things = new things.Things();
 
     self.things().on_thing(function (thing) {
         self.emit("thing", thing);

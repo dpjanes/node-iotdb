@@ -21,7 +21,6 @@ require('./instrument/iotdb');
 describe('test_connect', function() {
     describe('connect', function() {
         describe('clean setup', function() {
-            /*
             it('no arguments', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.connect();
@@ -43,7 +42,6 @@ describe('test_connect', function() {
 
                 assert.strictEqual(things.length, 0);
             });
-            */
         });
     });
 });

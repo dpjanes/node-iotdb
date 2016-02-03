@@ -20,6 +20,7 @@ require('./instrument/iotdb');
 
 describe('test_things', function() {
     describe('constructor', function() {
+            /*
         it('global', function() {
             var t = things.things();
             t._reset();
@@ -31,6 +32,7 @@ describe('test_things', function() {
             var t2 = things.things();
             assert.strictEqual(t, t2);
         });
+         */
         it('new', function() {
             var t = new things.Things();
             t._reset();

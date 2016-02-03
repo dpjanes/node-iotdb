@@ -396,6 +396,8 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
 /**
  *  Will callback when ready. If already ready,
  *  will just callback;
+ *
+ *  DELETE ME
  */
 Things.prototype.when_ready = function (callback) {
     process.nextTick(function () {
@@ -442,7 +444,6 @@ Things.prototype.disconnect = function () {
 
 /**
  *  Singleton
- */
 var _things;
 
 var things = function () {
@@ -452,9 +453,12 @@ var things = function () {
 
     return _things;
 }
+ */
 
 /*
  *  API
  */
 exports.Things = Things;
+/*
 exports.things = things;
+*/

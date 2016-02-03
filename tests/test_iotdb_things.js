@@ -41,41 +41,28 @@ describe('test_iotdb', function() {
             });
         });
         describe('setup with Thing existing', function() {
-            /*
-            it('no arguments', function(done) {
+            it('connected', function(done) {
                 var iot = new iotdb.IOT()
 
                 var ts = iot.connect("Test");
                 ts.on("thing", function() {
-                    var things = iot.things();
-
-                    assert.strictEqual(things.length, 1);
+                    assert.strictEqual(iot.things().length, 1);
+                    assert.strictEqual(iot.things("Test").length, 1);
+                    assert.strictEqual(iot.things("NotATest").length, 0);
+                    done();
                 });
             });
-            it('valid model code argument', function() {
+            it('invalid', function(done) {
                 var iot = new iotdb.IOT()
 
-                var ts = iot.connect("Test");
-                ts.on("thing", function() {
-                    var things = iot.things("Test");
-
-                    assert.strictEqual(things.length, 1);
-                });
+                var ts = iot.connect("NotATest");
+                setTimeout(function() {
+                    assert.strictEqual(iot.things().length, 0);
+                    assert.strictEqual(iot.things("Test").length, 0);
+                    assert.strictEqual(iot.things("NotATest").length, 0);
+                    done();
+                }, 250);
             });
-            */
-            /*
-            it('invalid model code argument', function() {
-                var iot = new iotdb.IOT()
-
-                var ts = iot.connect("Test");
-                console.log("INVALID", ts.length);
-                ts.on("thing", function() {
-                    var things = iot.things("NotATest");
-
-                    assert.strictEqual(things.length, 0);
-                });
-            });
-             */
         });
     });
 });
