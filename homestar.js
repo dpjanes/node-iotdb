@@ -26,37 +26,11 @@
 
 var _ = require('./helpers');
 
-
-/**
- *  Really HomeStar related, but having them in 
- *  IOTDB makes debugging projects a lot easier
- */
-var _group_default = "My Cookbook";
-var _cookbook_name = _group_default;
-var _cookbook_id;
-
-var recipe = function (initd) {
-    if (_cookbook_name && !initd.group) {
-        initd.group = _cookbook_name;
-    }
-    if (_cookbook_id && !initd.cookbook_id) {
-        initd.cookbook_id = _cookbook_id;
-    }
-
-    exports.iot().data("recipe", initd);
-};
-
-var cookbook = function (cookbook_name, cookbook_id) {
-    if (cookbook_name) {
-        _cookbook_name = cookbook_name;
-    } else {
-        _cookbook_name = _group_default;
-    }
-
-    if (cookbook_id) {
-        _cookbook_id = cookbook_id;
-    }
-};
+var bunyan = require('bunyan');
+var logger = bunyan.createLogger({
+    name: 'iotdb',
+    module: 'homestar',
+});
 
 /**
  *  At a minimum, this will run everything
@@ -64,7 +38,7 @@ var cookbook = function (cookbook_name, cookbook_id) {
  */
 var load_recipes = function (initd) {
     try {
-        exports.module('iotdb-recipes').load_recipes(initd);
+        require('iotdb-recipes').load_recipes(initd);
     } catch (x) {
         logger.error({
             method: "load_recipes",
@@ -78,6 +52,6 @@ var load_recipes = function (initd) {
 /**
  *  API
  */
-exports.recipe = recipe;
-exports.cookbook = cookbook;
+exports.recipe = _.noop;
+exports.cookbook = _.noop;
 exports.load_recipes = load_recipes;

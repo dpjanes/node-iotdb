@@ -41,8 +41,7 @@ var things = require('./things');
 var thing_array = require('./thing_array');
 var cfg = require('./cfg');
 var _ = require('./helpers');
-
-var _shutting_down = false;
+var exit = require('./exit');
 
 /**
  *  Manage things, bridges and connections to the
@@ -65,9 +64,11 @@ var IOT = function (initd) {
         meta_dir: ".iotdb/meta",
     });
 
+    exit.setup();
+
     self._setup_events();
-    self._setup_exit();
     self._setup_things();
+
 };
 util.inherits(IOT, events.EventEmitter);
 
@@ -76,19 +77,6 @@ IOT.prototype._setup_events = function () {
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
-};
-
-IOT.prototype._setup_exit = function () {
-    var self = this;
-
-    process.on('exit', self._exit_cleanup.bind(self, {
-        from: 'exit'
-    }));
-    process.on('SIGINT', self._exit_cleanup.bind(self, {
-        from: 'SIGINT',
-        exit: true,
-        cleanup: true
-    }));
 };
 
 /**
@@ -101,39 +89,6 @@ IOT.prototype._setup_things = function () {
     self.things().on_thing(function (thing) {
         self.emit("thing", thing);
     });
-};
-
-IOT.prototype._exit_cleanup = function (paramd, err) {
-    var self = this;
-
-    _shutting_down = true;
-
-    if (!((err === 0) && (paramd.from === "exit"))) {
-        logger.info({
-            method: "_exit_cleanup",
-            paramd: paramd,
-            err: err
-        }, "start");
-    }
-
-    var time_wait = 0;
-    if (paramd.cleanup) {
-        time_wait = self._things.disconnect();
-    }
-
-    if (paramd.exit) {
-        if (time_wait === 0) {
-            console.log("### calling process.exit(0) - good-bye!");
-            process.exit(0);
-        } else {
-            // console.log("# IOT._exit_cleanup: exiting in", time_wait / 1000.0);
-            logger.info({
-                method: "_exit_cleanup",
-                exiting_in: time_wait / 1000.0
-            }, "delaying exit");
-            setTimeout(process.exit, time_wait);
-        }
-    }
 };
 
 /**
@@ -219,6 +174,7 @@ IOT.prototype.meta_save = function (t) {
  *  This class doesn't use it but it's very
  *  handy for clients.
  */
+/*
 IOT.prototype.data = function (key, d) {
     var self = this;
 
@@ -254,14 +210,13 @@ IOT.prototype.data = function (key, d) {
         throw new Error("IOT.data: the value must always be an object");
     }
 };
+ */
 
 /*
  *  API
  */
 exports.IOT = IOT;
-exports.shutting_down = function () {
-    return _shutting_down;
-};
+exports.shutting_down = exit.shutting_down;
 
 exports.attribute = require('./attribute');
 for (var key in exports.attribute) {
@@ -301,6 +256,8 @@ exports.Keystore = keystore.Keystore;
 var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
+
+/*
 exports.module = function (name) {
     var m = modules.modules().module(name);
     if (m) {
@@ -313,6 +270,7 @@ exports.module = function (name) {
 
     return require(name);
 };
+*/
 
 /**
  *  Metadata related to this controller & session
