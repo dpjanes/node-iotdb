@@ -106,5 +106,28 @@ describe('test_hash', function() {
             assert.strictEqual(result, expect);
         });
     });
+    describe('short', function() {
+        it('empty', function() {
+            var value = "";
+            var result = _.hash.short(value);
+            var expect = '1B2M2Y8AsgTp';
+
+            assert.strictEqual(result, expect);
+        });
+        it('string', function() {
+            var value = "now is the time for all";
+            var result = _.hash.short(value);
+            var expect = 'l0ihq6+yoJe+';
+
+            assert.strictEqual(result, expect);
+        });
+        it('complex', function() {
+            var value = [ "now is the time", "for all" ];
+            var result = _.hash.short(value);
+            var expect = 'qOpBe4vslmIG';
+
+            assert.strictEqual(result, expect);
+        });
+    });
 });
 
