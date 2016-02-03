@@ -156,7 +156,7 @@ Things.prototype.discover = function (modeld, initd, metad) {
     }
 
     // run when ready
-    self.when_ready(function () {
+    process.nextTick(function () {
         self._discover(modeld);
     });
 
@@ -393,18 +393,6 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
     }
 };
 
-/**
- *  Will callback when ready. If already ready,
- *  will just callback;
- *
- *  DELETE ME
- */
-Things.prototype.when_ready = function (callback) {
-    process.nextTick(function () {
-        callback();
-    });
-};
-
 /*
  */
 Things.prototype.disconnect = function () {
@@ -441,24 +429,7 @@ Things.prototype.disconnect = function () {
     return max_wait;
 };
 
-
-/**
- *  Singleton
-var _things;
-
-var things = function () {
-    if (!_things) {
-        _things = new Things();
-    }
-
-    return _things;
-}
- */
-
 /*
  *  API
  */
 exports.Things = Things;
-/*
-exports.things = things;
-*/

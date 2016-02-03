@@ -20,6 +20,29 @@ require('./instrument/iotdb');
 
 describe('test_connect', function() {
     describe('connect', function() {
+        describe('globals', function() {
+            it('no arguments', function() {
+                iotdb.instance = null;
+                var things = iotdb.connect();
+
+                assert.strictEqual(things.length, 0);
+            });
+            it('valid model code argument', function(done) {
+                iotdb.instance = null;
+                var things = iotdb.connect("Test");
+
+                things.on("thing", function() {
+                    assert.strictEqual(things.length, 1);
+                    done();
+                });
+            });
+            it('invalid model code argument', function() {
+                iotdb.instance = null;
+                var things = iotdb.connect("NotATest");
+
+                assert.strictEqual(things.length, 0);
+            });
+        });
         describe('clean setup', function() {
             it('no arguments', function() {
                 var iot = new iotdb.IOT()

@@ -20,6 +20,26 @@ require('./instrument/iotdb');
 
 describe('test_iotdb', function() {
     describe('things', function() {
+        describe('global', function() {
+            it('no arguments', function() {
+                iotdb.instance = null;
+                var things = iotdb.things();
+
+                assert.strictEqual(things.length, 0);
+            });
+            it('valid model code argument', function() {
+                iotdb.instance = null;
+                var things = iotdb.things("Test");
+
+                assert.strictEqual(things.length, 0);
+            });
+            it('invalid model code argument', function() {
+                iotdb.instance = null;
+                var things = iotdb.things("NotATest");
+
+                assert.strictEqual(things.length, 0);
+            });
+        });
         describe('clean setup', function() {
             it('no arguments', function() {
                 var iot = new iotdb.IOT()

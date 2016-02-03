@@ -342,53 +342,11 @@ exports.controller_meta = function () {
  *  Really HomeStar related, but having them in 
  *  IOTDB makes debugging projects a lot easier
  */
-var _group_default = "My Cookbook";
-var _cookbook_name = _group_default;
-var _cookbook_id;
+var homestar = require('./homestar');
 
-var recipe = function (initd) {
-    if (_cookbook_name && !initd.group) {
-        initd.group = _cookbook_name;
-    }
-    if (_cookbook_id && !initd.cookbook_id) {
-        initd.cookbook_id = _cookbook_id;
-    }
-
-    exports.iot().data("recipe", initd);
-};
-
-var cookbook = function (cookbook_name, cookbook_id) {
-    if (cookbook_name) {
-        _cookbook_name = cookbook_name;
-    } else {
-        _cookbook_name = _group_default;
-    }
-
-    if (cookbook_id) {
-        _cookbook_id = cookbook_id;
-    }
-};
-
-/**
- *  At a minimum, this will run everything
- *  in iotdb-recipes
- */
-var load_recipes = function (initd) {
-    try {
-        exports.module('iotdb-recipes').load_recipes(initd);
-    } catch (x) {
-        logger.error({
-            method: "load_recipes",
-            error: _.error.message(x),
-            cause: "likely you need to do $ homestar install iotdb-recipes",
-            stack: x.stack,
-        }, "recipes could not be initialized");
-    }
-};
-
-exports.load_recipes = load_recipes;
-exports.recipe = recipe;
-exports.cookbook = cookbook;
+exports.load_recipes = homestar.load_recipes;
+exports.recipe = homestar.recipe;
+exports.cookbook = homestar.cookbook;
 
 /**
  *  Users
