@@ -272,7 +272,7 @@ ModelMaker.prototype.attribute = function (attribute) {
     attribute.property_value(constants.iot_actuator, is_actuator);
 
     /* do not copy nested values */
-    attribute = _.deepCopy(attribute);
+    attribute = _.d.clone.deep(attribute);
     for (var akey in attribute) {
         var avalue = attribute[akey];
         if (!_.is.Array(avalue) && _.is.Object(avalue) && !_.is.Function(avalue)) {
@@ -322,7 +322,7 @@ ModelMaker.prototype.i = function (code, attribute) {
     }
 
     return this.attribute(
-        _.deepCopy(attribute)
+        _.d.clone.deep(attribute)
         .code(code)
         .name(name || code)
         .reading()
@@ -341,7 +341,7 @@ ModelMaker.prototype.o = function (code, attribute) {
     }
 
     return this.attribute(
-        _.deepCopy(attribute)
+        _.d.clone.deep(attribute)
         .code(code)
         .name(name || code)
         .control()
@@ -365,7 +365,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
 
     if (out_code === in_code) {
         this.attribute(
-            _.deepCopy(attribute)
+            _.d.clone.deep(attribute)
             .code(in_code)
             .name(name || in_code)
             .reading()
@@ -373,13 +373,13 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         );
     } else {
         this.attribute(
-            _.deepCopy(attribute)
+            _.d.clone.deep(attribute)
             .code(in_code)
             .name(name || in_code)
             .reading()
         );
         this.attribute(
-            _.deepCopy(attribute)
+            _.d.clone.deep(attribute)
             .code(out_code)
             .name(name || out_code)
             .control()
@@ -442,7 +442,7 @@ ModelMaker.prototype.make = function () {
         this.__scratchd = {};
         this.__push_keys = [];
         this.__facets = self.__facets;
-        this.__propertyd = _.shallowCopy(self.__propertyd);
+        this.__propertyd = _.d.clone.shallow(self.__propertyd);
 
         this.__callbacksd = {};
         this._transaction = null;
@@ -453,7 +453,7 @@ ModelMaker.prototype.make = function () {
         for (var ai in self.__attributes) {
             var in_attribute = self.__attributes[ai];
 
-            var out_attribute = _.deepCopy(in_attribute);
+            var out_attribute = _.d.clone.deep(in_attribute);
             out_attribute._aid = aid++;
             out_attribute._ivalue = null;
             out_attribute._ichanged = false;

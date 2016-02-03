@@ -27,28 +27,28 @@ describe('test_attribute_setup', function(){
             assert.deepEqual(a["@type"], d["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_boolean;
 
             var a = attribute.make_boolean("value").reading()
             assert.deepEqual(a["@type"], e["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_integer;
 
             var a = attribute.make_integer("value").reading()
             assert.deepEqual(a["@type"], e["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_number;
 
             var a = attribute.make_number("value").reading()
             assert.deepEqual(a["@type"], e["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_string;
 
             var a = attribute.make_string("value").reading()
@@ -60,7 +60,7 @@ describe('test_attribute_setup', function(){
         d[iot_purpose] = _.ld.expand("iot-purpose:on");
         d["@id"] = "#on";
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_boolean;
 
             var a = attribute.make_boolean("on").reading()
@@ -68,21 +68,21 @@ describe('test_attribute_setup', function(){
             assert.deepEqual(a["@type"], e["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_integer;
 
             var a = attribute.make_integer("on").reading()
             assert.deepEqual(a["@type"], e["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_number;
 
             var a = attribute.make_number("on").reading()
             assert.deepEqual(a["@type"], e["@type"]);
         }
         {
-            var e = _.deepCopy(d);
+            var e = _.d.clone.deep(d);
             e[constants.iot_type] = constants.iot_string;
 
             var a = attribute.make_string("on").reading()

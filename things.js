@@ -131,7 +131,7 @@ Things.prototype.discover = function (modeld, initd, metad) {
             throw new Error("expected *.model_code to be a string");
         }
 
-        modeld = _.deepCopy(modeld);
+        modeld = _.d.clone.deep(modeld);
         modeld.model_code = _.id.to_dash_case(modeld.model_code);
     } else {
         throw new Error("expected undefined|null|string|dictionary");

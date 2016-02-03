@@ -24,7 +24,7 @@ ModelMaker.prototype.i = function (code, attribute) {
     }
 
     return this.attribute(
-        _.deepCopy(attribute)
+        _.d.clone.deep(attribute)
         .code(code)
         .name(name || code)
         .reading()
@@ -40,7 +40,7 @@ ModelMaker.prototype.o = function (code, attribute) {
     }
 
     return this.attribute(
-        _.deepCopy(attribute)
+        _.d.clone.deep(attribute)
         .code(code)
         .name(name || code)
         .control()
@@ -61,7 +61,7 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
 
     if (out_code === in_code) {
         this.attribute(
-            _.deepCopy(attribute)
+            _.d.clone.deep(attribute)
             .code(in_code)
             .name(name || in_code)
             .reading()
@@ -69,13 +69,13 @@ ModelMaker.prototype.io = function (out_code, in_code, attribute) {
         );
     } else {
         this.attribute(
-            _.deepCopy(attribute)
+            _.d.clone.deep(attribute)
             .code(in_code)
             .name(name || in_code)
             .reading()
         );
         this.attribute(
-            _.deepCopy(attribute)
+            _.d.clone.deep(attribute)
             .code(out_code)
             .name(name || out_code)
             .control()

@@ -134,23 +134,6 @@ var each = exports.each = exports.forEach = function (obj, iterator, context) {
     }
 };
 
-// Create a (shallow-cloned) duplicate of an object.
-/*
-exports.clone = function (obj) {
-    if (!exports.isObject(obj)) return obj;
-    return exports.isArray(obj) ? obj.slice() : exports.extend({}, obj);
-};
-*/
-
-// Invokes interceptor with the obj, and then returns obj.
-// The primary purpose of this method is to "tap into" a method chain, in
-// order to perform operations on intermediate results within the chain.
-/*
-exports.tap = function (obj, interceptor) {
-    interceptor(obj);
-    return obj;
-};
-*/
 
 
 // Shortcut function for checking if an object has a given property directly
@@ -163,6 +146,7 @@ exports.has = function (obj, key) {
  *  The next three functions courtesy
  *  http://geniuscarrier.com/copy-object-in-javascript/
  */
+/*
 exports.shallowCopy = function (oldObj) {
     var newObj = {};
     for (var i in oldObj) {
@@ -172,7 +156,9 @@ exports.shallowCopy = function (oldObj) {
     }
     return newObj;
 };
+*/
 
+/*
 exports.deepCopy = function (oldObj) {
     var newObj = oldObj;
     if (oldObj && typeof oldObj === 'object') {
@@ -183,7 +169,9 @@ exports.deepCopy = function (oldObj) {
     }
     return newObj;
 };
+*/
 
+/*
 exports.mix = function () {
     var i, j, newObj = {};
     for (i = 0; i < arguments.length; i++) {
@@ -195,6 +183,7 @@ exports.mix = function () {
     }
     return newObj;
 };
+*/
 
 /**
  *  Return the proper keys of a dictionary

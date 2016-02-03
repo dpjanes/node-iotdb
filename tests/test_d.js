@@ -180,17 +180,17 @@ describe('test_d:', function() {
                 assert.ok(_.d.is.superset({}, {}));
             });
             it('superset - same', function() {
-                var ad = _.deepCopy(d1d);
-                var bd = _.deepCopy(d1d);
+                var ad = _.d.clone.deep(d1d);
+                var bd = _.d.clone.deep(d1d);
 
                 assert.ok(_.d.is.superset(ad, bd));
                 assert.ok(_.d.is.superset(bd, ad));
             });
             it('superset - different', function() {
-                var ad = _.deepCopy(d1d);
+                var ad = _.d.clone.deep(d1d);
                 ad["something"] = "else";
 
-                var bd = _.deepCopy(d1d);
+                var bd = _.d.clone.deep(d1d);
 
                 assert.ok(_.d.is.superset(ad, bd));
                 assert.ok(!_.d.is.superset(bd, ad));
@@ -205,17 +205,17 @@ describe('test_d:', function() {
                 assert.ok(_.d.is.subset({}, {}));
             });
             it('subset - same', function() {
-                var ad = _.deepCopy(d1d);
-                var bd = _.deepCopy(d1d);
+                var ad = _.d.clone.deep(d1d);
+                var bd = _.d.clone.deep(d1d);
 
                 assert.ok(_.d.is.subset(ad, bd));
                 assert.ok(_.d.is.subset(bd, ad));
             });
             it('subset - different', function() {
-                var ad = _.deepCopy(d1d);
+                var ad = _.d.clone.deep(d1d);
                 ad["something"] = "else";
 
-                var bd = _.deepCopy(d1d);
+                var bd = _.d.clone.deep(d1d);
 
                 assert.ok(!_.d.is.subset(ad, bd));
                 assert.ok(_.d.is.subset(bd, ad));
@@ -346,7 +346,7 @@ describe('test_d:', function() {
             assert.ok(_.is.Equal(od, d1d));
         });
         it('call - dirty', function() {
-            var sd = _.deepCopy(d1d);
+            var sd = _.d.clone.deep(d1d);
             sd["function"] = function() {};
             sd["nan"] = NaN;
             sd["undefined"] = undefined;
@@ -354,7 +354,7 @@ describe('test_d:', function() {
             assert.ok(_.is.Equal(od, d1d));
         });
         it('call - dirty subdictionary', function() {
-            var sd = _.deepCopy(d1d);
+            var sd = _.d.clone.deep(d1d);
             var ssd = {};
             ssd["function"] = function() {};
             ssd["nan"] = NaN;
@@ -363,13 +363,13 @@ describe('test_d:', function() {
             sd["sub"] = ssd;
             var od = _.d.json(sd);
 
-            var xd = _.deepCopy(d1d);
+            var xd = _.d.clone.deep(d1d);
             xd["sub"] = { "good": "times" };
 
             assert.ok(_.is.Equal(od, xd));
         });
         it('call - dirty array', function() {
-            var sd = _.deepCopy(d1d);
+            var sd = _.d.clone.deep(d1d);
             var ssd = {};
             ssd["function"] = function() {};
             ssd["nan"] = NaN;
@@ -378,7 +378,7 @@ describe('test_d:', function() {
             sd["sub"] = [ "hi", ssd, "there" ];
             var od = _.d.json(sd);
 
-            var xd = _.deepCopy(d1d);
+            var xd = _.d.clone.deep(d1d);
             xd["sub"] = [ "hi", { "good": "times" }, "there" ];
 
             assert.ok(_.is.Equal(od, xd));
@@ -463,7 +463,7 @@ describe('test_d:', function() {
             assert.ok(_.is.Equal(od, xd));
         });
         it('call - filter', function() {
-            var sd = _.deepCopy(d1d);
+            var sd = _.d.clone.deep(d1d);
             sd["array0"] = [ "a", 0, "b", 1, "c", 2 ];
             var od = _.d.transform(sd, {
                 filter: function(value) {

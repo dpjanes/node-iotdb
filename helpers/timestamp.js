@@ -115,7 +115,7 @@ var add_timestamp = function(d, paramd)  {
     } else if (d[paramd.key]) {
         return d;
     } else {
-        d = _.shallowCopy(d);
+        d = _.d.clone.shallow(d);
         d[paramd.key] = _.timestamp.make();
 
         return d;

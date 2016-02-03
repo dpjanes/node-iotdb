@@ -216,7 +216,7 @@ var smart_extend = function (od) {
             var ovalue = od[key];
 
             if ((ovalue === null) || (ovalue === undefined)) {
-                od[key] = _.deepCopy(xvalue);
+                od[key] = _.d.clone.deep(xvalue);
             } else if (_.isObject(ovalue) && _.isObject(xvalue)) {
                 smart_extend(ovalue, xvalue);
             } else {
@@ -262,7 +262,7 @@ var deep_clone = function (oldObj) {
     if (oldObj && typeof oldObj === 'object') {
         newObj = Object.prototype.toString.call(oldObj) === "[object Array]" ? [] : {};
         for (var i in oldObj) {
-            newObj[i] = exports.deepCopy(oldObj[i]);
+            newObj[i] = deep_clone(oldObj[i]);
         }
     }
     return newObj;

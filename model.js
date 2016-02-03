@@ -1737,7 +1737,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
             is_reachable = bridge_instance.reachable() ? true : false;
 
             if (pulld) {
-                pulld = _.deepCopy(pulld);
+                pulld = _.d.clone.deep(pulld);
 
                 // mappings can be attached to bindings to make enumerations better
                 if (mapping !== undefined) {
