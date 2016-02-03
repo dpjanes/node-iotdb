@@ -350,18 +350,8 @@ exports.cookbook = homestar.cookbook;
 
 /**
  *  Users
- *  Sorry no real docs. By default everything is open. 
- *  HomeStar changes these to do user authentication. 
- *  Transporters are the biggest clients of this interface
  */
-exports.users = {
-    owner: function () {
-        return null;
-    },
-    authorize: function (authd, callback) {
-        return callback(null, true);
-    },
-};
+exports.users = require('./users');
 
 /**
  *  Singleton
@@ -391,6 +381,4 @@ exports.things = function () {
 /**
  *  Windows compatibility
  */
-if (!process.env.HOME && process.env.USERPROFILE) {
-    process.env.HOME = process.env.USERPROFILE;
-}
+require("./windows");
