@@ -49,7 +49,7 @@ describe('test_helpers_identifier:', function(){
         for (var ii in inputs) {
             gots.push(_.id.to_camel_case(inputs[ii]))
         }
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
     });
     it('underscore_case', function(){
         var expects = [ 'uuid',
@@ -70,7 +70,7 @@ describe('test_helpers_identifier:', function(){
         for (var ii in inputs) {
             gots.push(_.id.to_underscore_case(inputs[ii]))
         }
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
     });
     it('dash-case', function(){
         var expects = [ 'uuid',
@@ -91,7 +91,7 @@ describe('test_helpers_identifier:', function(){
         for (var ii in inputs) {
             gots.push(_.id.to_dash_case(inputs[ii]))
         }
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
 
     });
     it('illegals', function(){

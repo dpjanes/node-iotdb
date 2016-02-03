@@ -27,7 +27,7 @@ var ind_1 = {
 describe('test_d_transform:', function(){
     it('no transform', function(){
         var outd = _.d.transform(ind_1);
-        assert.ok(_.equals(outd, ind_1));
+        assert.ok(_.is.Equal(outd, ind_1));
     });
     it('uppercase keys', function(){
         var outd = _.d.transform(ind_1, {
@@ -41,7 +41,7 @@ describe('test_d_transform:', function(){
           STRING: 'Hello, World',
           ARRAY: [ 1, 2, 3, 4 ],
           DICTIONARY: { A: 'b' } };
-        assert.ok(_.equals(outd, expectd));
+        assert.ok(_.is.Equal(outd, expectd));
     });
     it('keys beginning with a or d', function(){
         var outd = _.d.transform(ind_1, {
@@ -54,7 +54,7 @@ describe('test_d_transform:', function(){
             },
         });
         var expectd = { array: [ 1, 2, 3, 4 ], dictionary: { a: 'b' } };
-        assert.ok(_.equals(outd, expectd));
+        assert.ok(_.is.Equal(outd, expectd));
     });
     it('uppercase values', function(){
         var outd = _.d.transform(ind_1, {
@@ -72,6 +72,6 @@ describe('test_d_transform:', function(){
             string: 'HELLO, WORLD',
             array: [ 1, 2, 3, 4 ],
             dictionary: { a: 'B' } }
-        assert.ok(_.equals(outd, expectd));
+        assert.ok(_.is.Equal(outd, expectd));
     });
 })

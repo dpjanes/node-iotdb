@@ -29,7 +29,7 @@ describe('test_thing_set:', function(){
             .make();
         var t = new T();
         t._clear_ostate = function() {};
-        assert.ok(_.equals({ on: null, intensity: null }, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: null, intensity: null }, t.state("ostate")))
         t.set('on', true);
         assert.ok(_.d.is.subset({ on: true, intensity: null }, t.state("ostate")))
         t.set('on', false);
@@ -52,11 +52,11 @@ describe('test_thing_set:', function(){
 
         // turn off validation
         t.start({ validate: false });
-        assert.ok(_.equals({ on: null}, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: null}, t.state("ostate")))
         t.set('on', 1);
-        assert.ok(_.equals({ on: 1}, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: 1}, t.state("ostate")))
         t.end()
-        assert.ok(_.equals({ on: 1}, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: 1}, t.state("ostate")))
     });
     */
     /* NO MORE TRANSACTIONS
@@ -68,11 +68,11 @@ describe('test_thing_set:', function(){
 
         // turn on validation
         t.start({ validate: true });
-        assert.ok(_.equals({ on: null}, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: null}, t.state("ostate")))
         t.set('on', 1);
-        assert.ok(_.equals({ on: true}, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: true}, t.state("ostate")))
         t.end()
-        assert.ok(_.equals({ on: true}, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: true}, t.state("ostate")))
     });
     */
     it('set - semantic', function(){

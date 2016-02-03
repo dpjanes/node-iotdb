@@ -74,6 +74,7 @@ exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
  *  @module helpers
  */
 
+/*
 // Establish the object that gets returned to break out of a loop iteration.
 var breaker = {};
 
@@ -110,7 +111,7 @@ var
     nativeIsArray = Array.isArray,
     nativeKeys = Object.keys,
     nativeBind = FuncProto.bind;
-
+ */
 
 // Collection Functions
 // --------------------
@@ -118,6 +119,7 @@ var
 // The cornerstone, an `each` implementation, aka `forEach`.
 // Handles objects with the built-in `forEach`, arrays, and raw objects.
 // Delegates to **ECMAScript 5**'s native `forEach` if available.
+/*
 var each = exports.each = exports.forEach = function (obj, iterator, context) {
     if (obj == null) return;
     if (nativeForEach && obj.forEach === nativeForEach) {
@@ -133,14 +135,17 @@ var each = exports.each = exports.forEach = function (obj, iterator, context) {
         }
     }
 };
+ */
 
 
 
 // Shortcut function for checking if an object has a given property directly
 // on itself (in other words, not on a prototype).
+/*
 exports.has = function (obj, key) {
     return hasOwnProperty.call(obj, key);
 };
+ */
 
 /*
  *  The next three functions courtesy
@@ -188,6 +193,7 @@ exports.mix = function () {
 /**
  *  Return the proper keys of a dictionary
  */
+/*
 exports.keys = function (d) {
     var keys = [];
 
@@ -199,14 +205,17 @@ exports.keys = function (d) {
 
     return keys;
 };
+ */
 
 /**
  *  Return true iff everthing a === b, in a deep
  *  and "pythonic" sense
  */
+/*
 exports.equals = function (a, b) {
     return exports.isEqual(a, b);
 };
+ */
 
 /**
  *  Make sure a 'paramd' is properly set up. That is,
@@ -223,6 +232,9 @@ exports.equals = function (a, b) {
  *  @param {dictionary}
  *  The paramd to use, not necessarily the one passed in
  */
+exports.defaults = require('./helpers/d').d.compose.shallow;
+
+/*
 exports.defaults = function (paramd) {
     if (!paramd) {
         paramd = {}
@@ -239,6 +251,7 @@ exports.defaults = function (paramd) {
 
     return paramd;
 };
+*/
 
 /**
  *  Django(-ish) string formatting. Can take

@@ -50,74 +50,74 @@ describe('test_cfg', function(){
   describe('cfg_find', function(){
     it('all files in a directory', function(){
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/a.json', 'data/cfg1/b.js', 'data/cfg1/c.json' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1")))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1:data/cfg3")))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, [ "data/cfg1" ])))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, [ "data/cfg1", "data/cfg3" ])))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1")))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1:data/cfg3")))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, [ "data/cfg1" ])))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, [ "data/cfg1", "data/cfg3" ])))
     })
     it('expansion', function(){
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/a.json', 'data/cfg1/b.js', 'data/cfg1/c.json' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "$TEST_DATA/cfg1")))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg3")))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, [ "$TEST_DATA/cfg1" ])))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, [ "$TEST_DATA/cfg1", "$TEST_DATA/cfg3" ])))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "$TEST_DATA/cfg1")))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg3")))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, [ "$TEST_DATA/cfg1" ])))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, [ "$TEST_DATA/cfg1", "$TEST_DATA/cfg3" ])))
     })
     it('.max', function(){
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/a.json', ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 2 })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 2 })))
 
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/a.json', 'data/cfg1/b.js', 'data/cfg1/c.json' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 4 })))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 10 })))
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 0 })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 4 })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 10 })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", null, { max: 0 })))
     })
     it('.dotfiles', function(){
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/a.json', 'data/cfg1/b.js', 'data/cfg1/c.json' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", null, { dotfiles: false })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", null, { dotfiles: false })))
 
         var expects = [
             'data/cfg1/.d', 'data/cfg1/.d.js', 'data/cfg1/.d.json', 'data/cfg1/a.js',
             'data/cfg1/a.json', 'data/cfg1/b.js', 'data/cfg1/c.json' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", null, { dotfiles: true })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", null, { dotfiles: true })))
     })
     it('name', function(){
         var expects = [ 'data/cfg1/a.js' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", "a.js")))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", "a.js")))
 
         var expects = [ ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", "doesnotexist.js")))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", "doesnotexist.js")))
     })
     it('regex', function(){
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/b.js'  ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", /[.]js$/)))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", /[.]js$/)))
 
         var expects = [ 'data/cfg1/.d.js', 'data/cfg1/a.js', 'data/cfg1/b.js'  ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", /[.]js$/, { dotfiles: true })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", /[.]js$/, { dotfiles: true })))
 
         var expects = [ 'data/cfg1/.d.js' ]
-        assert.ok(_.equals(expects, cfg.cfg_find(envd, "data/cfg1", /[.]js$/, { dotfiles: true, max: 1 })))
+        assert.ok(_.is.Equal(expects, cfg.cfg_find(envd, "data/cfg1", /[.]js$/, { dotfiles: true, max: 1 })))
     })
     it('all up - multiple directories', function(){
         var expects = [ 'data/cfg1/a.js', 'data/cfg1/b.js', 'data/cfg2/b.js', 'data/cfg2/e.js' ]
         var gots = cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg2", /[.]js$/)
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
 
         var expects = [ 'data/cfg1/b.js', 'data/cfg2/b.js', ]
         var gots = cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg2", "b.js")
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
 
         var expects = [ 'data/cfg1/b.js' ]
         var gots = cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg2", "b.js", { max: 1 })
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
 
         var expects = [ 'data/cfg1/.d.js' ]
         var gots = cfg.cfg_find(envd, "$TEST_DATA/cfg1:$TEST_DATA/cfg2", /[.]js$/, { max: 1, dotfiles: true })
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
     })
     it('search subdirectories', function(){
         var expects = [ 'data/cfg3/sub1/file1.txt', 'data/cfg3/sub2/file2.txt' ];
         var gots = cfg.cfg_find(envd, "data/cfg3//")
-        assert.ok(_.equals(expects, gots))
+        assert.ok(_.is.Equal(expects, gots))
     })
   })
   describe('cfg_load_json', function(){
@@ -128,10 +128,10 @@ describe('test_cfg', function(){
             if (paramd.doc) {
                 if (paramd.filename == 'data/cfg1/a.json') {
                     var expect = { "name": "a.json" }
-                    assert.ok(_.equals(expect, paramd.doc))
+                    assert.ok(_.is.Equal(expect, paramd.doc))
                 } else if (paramd.filename == 'data/cfg1/c.json') {
                     var expect = { "name": "c.json", "data": [ 1, 2, 3 ] }
-                    assert.ok(_.equals(expect, paramd.doc))
+                    assert.ok(_.is.Equal(expect, paramd.doc))
                 } else {
                     assert.ok(false);
                 }

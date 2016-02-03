@@ -81,8 +81,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), true);
 
         // state 
-        assert.ok(_.equals({ value: true }, m.state("ostate")));
-        assert.ok(_.equals({ value: null }, m.state("istate")));
+        assert.ok(_.is.Equal({ value: true }, m.state("ostate")));
+        assert.ok(_.is.Equal({ value: null }, m.state("istate")));
     });
     */
     /* NO MORE TRANSACTIONS
@@ -101,8 +101,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), true);
 
         // state 
-        assert.ok(_.equals({ value: true }, m.state("istate")))
-        assert.ok(_.equals({ value: null }, m.state("ostate")))
+        assert.ok(_.is.Equal({ value: true }, m.state("istate")))
+        assert.ok(_.is.Equal({ value: null }, m.state("ostate")))
     });
     */
   });
@@ -120,8 +120,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), null);
 
         /* state */
-        assert.ok(_.equals({ value: null }, m.state("ostate")));
-        assert.ok(_.equals({ value: null }, m.state("istate")));
+        assert.ok(_.is.Equal({ value: null }, m.state("ostate")));
+        assert.ok(_.is.Equal({ value: null }, m.state("istate")));
     });
     /* NO MORE TRANSACTIONS
     it('multivalue - ivalue and ovalue priority', function(){
@@ -137,8 +137,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), 2);
 
         // state
-        assert.ok(_.equals({ value: 2 }, m.state("istate")));
-        assert.ok(_.equals({ value: 1 }, m.state("ostate")));
+        assert.ok(_.is.Equal({ value: 2 }, m.state("istate")));
+        assert.ok(_.is.Equal({ value: 1 }, m.state("ostate")));
     });
     */
   });

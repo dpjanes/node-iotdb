@@ -27,7 +27,7 @@ describe('test_thing_setup:', function(){
         var T = model.make_model('T')
             .make();
         var t = new T();
-        assert.ok(_.equals({}, t.state("ostate")))
+        assert.ok(_.is.Equal({}, t.state("ostate")))
     });
     it('single attribute setup', function(){
         var T = model.make_model('T')
