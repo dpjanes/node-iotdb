@@ -27,6 +27,11 @@
 
 var _ = require("../helpers");
 
+// NodeJS dependency loop workaround
+if (!_.each) {
+    _.each = require('underscore').each;
+}
+
 /**
  *  Slash-path oriented
  */

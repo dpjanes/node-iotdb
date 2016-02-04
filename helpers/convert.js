@@ -24,7 +24,10 @@
 
 "use strict";
 
-var _ = require("../helpers");
+var _ = {
+    is: require("./is").is,
+    d: require("./d").d,
+};
 
 var conversions = [
     {
@@ -44,16 +47,7 @@ var conversions = [
     {
         from: 'iot-unit:temperature.si.celsius',
         to: 'iot-unit:temperature.si.kelvin',
-        convert: function(paramd) {
-            return paramd.value + 273.15;
-        },
-    },
-    {
-        from: 'iot-unit:temperature.si.kelvin',
-        to: 'iot-unit:temperature.si.celsius',
-        convert: function(paramd) {
-            return paramd.value - 273.15;
-        },
+        add: 273.15,
     },
     {
         from: 'iot-unit:temperature.si.kelvin',
@@ -78,28 +72,59 @@ var conversions = [
         },
     },
     {
-        from: 'iot-unit:math.fraction.percent',
-        to: 'iot-unit:math.fraction.unit',
-        convert: function(paramd) {
-            return paramd.value / 100;
-        },
-    },
-    {
         from: 'iot-unit:math.fraction.unit',
         to: 'iot-unit:math.fraction.percent',
-        convert: function(paramd) {
-            return paramd.value * 100;
-        },
+        multiply: 100,
+    },
+    {
+        from: 'iot-unit:length.imperial.feet',
+        to: 'iot-unit:length.imperial.inch',
+        multiply: 12,
+    },
+    {
+        from: 'iot-unit:length.imperial.yard',
+        to: 'iot-unit:length.imperial.feet',
+        multiply: 3,
+    },
+    {
+        from: 'iot-unit:length.imperial.mile',
+        to: 'iot-unit:length.imperial.feet',
+        multiply: 5280,
+    },
+    {
+        from: 'iot-unit:length.us.mile',
+        to: 'iot-unit:length.imperial.mile',
+        multiply: 0.999998,
+    },
+    {
+        from: 'iot-unit:length.imperial.nautical-mile',
+        to: 'iot-unit:length.si.meter',
+        multiply: 1852,
+    },
+    {
+        from: 'iot-unit:length.si.meter',
+        to: 'iot-unit:length.imperial.inch',
+        multiply: 39.3701,
     },
 ];
 
 /**
+ *  This will return a path of conversion
+ *  to convert from <from> to <to>
  */
-var _find = function(from, to) {
+var _find = function(from, to, froms) {
     var ci;
     var cd;
 
-    // first
+    // stop loops!
+    if (froms.indexOf(from) !== -1) {
+        return;
+    }
+
+    froms = froms.slice();
+    froms.push(from);
+
+    // matches right away
     for (ci in conversions) {
         cd = conversions[ci];
         if ((cd.from !== from) || (cd.to !== to)) {
@@ -109,14 +134,14 @@ var _find = function(from, to) {
         return [ cd ];
     }
 
-    // search
+    // do a depth-first search
     for (ci in conversions) {
         cd = conversions[ci];
         if (cd.from !== from) {
             continue;
         }
 
-        var nds = _find(cd.to, to);
+        var nds = _find(cd.to, to, froms);
         if (nds) {
             nds.splice(0, 0, cd);
             return nds;
@@ -124,47 +149,160 @@ var _find = function(from, to) {
     }
 };
 
+
+/**
+ *  This will "do the right thing" for add and multiply.
+ *  It will also add an inverse function
+ */
+var _massage = function(cd) {
+    if (cd._massaged) {
+        return;
+    }
+
+    cd._massaged = true;
+
+    if (cd.add) {
+        cd.convert = function(paramd) {
+            return paramd.value + cd.add;
+        };
+
+        var id = _.d.clone.shallow(cd);
+        id.from = cd.to;
+        id.to = cd.from;
+        id._inverse = true;
+        id.convert = function(paramd) {
+            return paramd.value - cd.add;
+        };
+
+        conversions.push(id);
+    } else if (cd.multiply) {
+        cd.convert = function(paramd) {
+            return paramd.value * cd.multiply;
+        };
+
+        var id = _.d.clone.shallow(cd);
+        id.from = cd.to;
+        id.to = cd.from;
+        id._inverse = true;
+        id.convert = function(paramd) {
+            return paramd.value / cd.multiply;
+        };
+
+        conversions.push(id);
+    }
+}
+
+/**
+ *  This will one time massage everything
+ */
+var _massaged = false;
+var _massage_all = function() {
+    if (_massaged) {
+        return;
+    }
+    _massaged = true;
+    conversions.map(_massage);
+};
+
+/**
+ *  It's just horrible
+ */
+var _fixed = function(value, p) {
+    var xvalue = value.toExponential();
+    var xmatch = xvalue.match(/^(.*)e(.*)$/)
+    // var mantissa = parseFloat(xmatch[1]);
+    var exponent = parseInt(xmatch[2]);
+    if (exponent < 0) {
+        p -= exponent;
+    }
+
+    return parseFloat(value.toFixed(p));
+}
+
 /**
  */
 var convert = function(paramd) {
-    paramd = _.defaults(paramd, {
+    paramd = _.d.compose.shallow(paramd, {
         precision: true,
         original: paramd.value,
+        from_power: 0,
+        to_power: 0,
     });
+
+    /*
+    if (paramd.precision === true) {
+        var ivalue = Math.round(paramd.value);
+        if (ivalue === 0) {
+            paramd.precision = 3;
+        } else {
+            paramd.precision = 3 + ("" + ivalue).length;
+        }
+    }
+    */
+
+    var result;
+
+    // powers
+    var from_match = paramd.from.match(/^(iot-unit:[^.]*[.][^.]*[.][^.]*)[.](-?\d+)/)
+    if (from_match) {
+        paramd.from = from_match[1];
+        paramd.from_power = parseInt(from_match[2]);
+    }
+
+    var to_match = paramd.to.match(/^(iot-unit:[^.]*[.][^.]*[.][^.]*)[.](-?\d+)/)
+    if (to_match) {
+        paramd.to = to_match[1];
+        paramd.to_power = parseInt(to_match[2]);
+    }
 
     // no conversion
     if (paramd.from === paramd.to) {
-        return paramd.value;
-    }
+        result = paramd.value;
+    } else {
+        _massage_all();
 
-    // find a conversion
-    var cds = _find(paramd.from, paramd.to);
-    if (!cds) {
-        throw new Error("no conversion found from '" + paramd.from + "' to '" + paramd.to + "'");
-    }
-
-    // convert
-    cds.map(function(cd) {
-        paramd.value = cd.convert(paramd);
-    });
-
-    if (paramd.precision === true) {
-        var p = 0;
-
-        var source = "" + paramd.original;
-        var dotx = source.indexOf('.');
-        if (dotx !== -1) {
-            p = source.length - dotx - 1;
+        // find a conversion
+        var cds = _find(paramd.from, paramd.to, []);
+        if (!cds) {
+            return null;
+            // throw new Error("no conversion found from '" + paramd.from + "' to '" + paramd.to + "'");
         }
 
-        return parseFloat(paramd.value.toFixed(Math.max(p, 3)));
-    } else if (_.is.Number(paramd.precision)) { 
-        return parseFloat(paramd.value.toFixed(paramd.precision));
-    } else {
-        return paramd.value;
-    }
-};
+        // console.log("conversions", cds);
 
+        // convert
+        cds.map(function(cd) {
+            // console.log("OLD", paramd.value);
+            paramd.value = cd.convert(paramd);
+            // console.log("NEW", paramd.value);
+        });
+
+        if (paramd.precision === true) {
+            var p = 0;
+
+            var source = "" + paramd.original;
+            var dotx = source.indexOf('.');
+            if (dotx !== -1) {
+                p = source.length - dotx - 1;
+            }
+
+            result = _fixed(paramd.value, Math.max(p, 3));
+        } else if (_.is.Number(paramd.precision)) { 
+            result = _fixed(paramd.value, paramd.precision);
+        } else {
+            result = paramd.value;
+        }
+    }
+
+    if (paramd.from_power !== 0) {
+        result *= Math.pow(10, paramd.from_power)
+    }
+    if (paramd.to_power !== 0) {
+        result *= Math.pow(10, -paramd.to_power)
+    }
+
+    return result;
+};
 /**
  */
 var add = function(paramd) {
@@ -178,3 +316,13 @@ exports.convert = {
     convert: convert,
     add: add,
 };
+
+/*
+var r = convert({
+    from: 'iot-unit:length.si.meter',
+    to: 'iot-unit:length.imperial.nautical-mile',
+    value: 1,
+    precision: 1
+});
+console.log(r);
+*/

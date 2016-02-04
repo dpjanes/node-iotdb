@@ -11,24 +11,22 @@
 var assert = require("assert")
 var _ = require("../helpers")
 
-var iotdb = require("../iotdb");
-
 describe('test_queue', function() {
     describe('constructor', function() {
         it('no arguments', function() {
-            var queue = new iotdb.Queue();
+            var queue = new _.q.Queue();
 
             assert.strictEqual(queue.name, "unnamed-queue");
             assert.strictEqual(queue.qn, 1);
         });
         it('with name', function() {
-            var queue = new iotdb.Queue("my-queue");
+            var queue = new _.q.Queue("my-queue");
 
             assert.strictEqual(queue.name, "my-queue");
             assert.strictEqual(queue.qn, 1);
         });
         it('with name and paramd', function() {
-            var queue = new iotdb.Queue("my-queue", {
+            var queue = new _.q.Queue("my-queue", {
                 qn: 4,
             });
 
@@ -38,7 +36,7 @@ describe('test_queue', function() {
     });
     describe('add', function() {
         it('simple', function(done) {
-            var queue = new iotdb.Queue();
+            var queue = new _.q.Queue();
             queue.add({
                 run: function(_queue, _qitem) {
                     _queue.finished(_qitem);
@@ -47,7 +45,7 @@ describe('test_queue', function() {
             });
         });
         it('simple with coda', function(done) {
-            var queue = new iotdb.Queue();
+            var queue = new _.q.Queue();
             queue.add({
                 run: function(_queue, _qitem) {
                     _queue.finished(_qitem);
@@ -58,7 +56,7 @@ describe('test_queue', function() {
             });
         });
         it('simple with coda and exception', function(done) {
-            var queue = new iotdb.Queue();
+            var queue = new _.q.Queue();
             queue.add({
                 run: function(_queue, _qitem) {
                     throw new Error("coda should still get called");
@@ -69,7 +67,7 @@ describe('test_queue', function() {
             });
         });
         it('multiples', function(done) {
-            var queue = new iotdb.Queue();
+            var queue = new _.q.Queue();
             var ran_first = false;
             var ran_second = false;
             queue.add({
@@ -98,7 +96,7 @@ describe('test_queue', function() {
             });
         });
         it('multiples with same id', function(done) {
-            var queue = new iotdb.Queue();
+            var queue = new _.q.Queue();
             queue.pause();
 
             var ran_first = false;

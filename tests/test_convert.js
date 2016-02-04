@@ -175,9 +175,7 @@ describe('test_convert', function() {
                     value: 295.372,
                 };
 
-                assert.throws(function() {
-                    _.convert.convert(value);
-                }, Error);
+                assert.strictEqual(_.convert.convert(value), null);
             });
             it('to', function() {
                 var value = {
@@ -186,9 +184,16 @@ describe('test_convert', function() {
                     value: 295.372,
                 };
 
-                assert.throws(function() {
-                    _.convert.convert(value);
-                }, Error);
+                assert.strictEqual(_.convert.convert(value), null);
+            });
+            it('to', function() {
+                var value = {
+                    from: 'iot-unit:temperature.si.kelvin',
+                    to: 'iot-unit:temperature.imperial.xxx',
+                    value: 295.372,
+                };
+
+                assert.strictEqual(_.convert.convert(value), null);
             });
         });
         describe('precision', function() {

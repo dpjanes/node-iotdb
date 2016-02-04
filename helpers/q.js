@@ -1,5 +1,5 @@
 /*
- *  queue.js
+ *  q.js
  *
  *  David Janes
  *  IOTDB.org
@@ -25,7 +25,7 @@
 var bunyan = require('bunyan');
 var logger = bunyan.createLogger({
     name: 'iotdb',
-    module: 'queue',
+    module: 'helpers/queue',
 });
 
 /**
@@ -207,5 +207,24 @@ FIFOQueue.prototype.run = function () {
     }
 };
 
+/**
+ *  Single copy of a queue, by name. This is great
+ *  where you need to make sure all instances of 
+ *  a class do things one at a time
+ */
+var _queued = {};
+var queue = function (name) {
+    var queue = _queued[name];
+    if (!queue) {
+        queue = new FIFOQueue(name);
+        _queued[name] = queue
+    }
+
+    return queue;
+}
+
 /* --- API --- */
-exports.FIFOQueue = FIFOQueue;
+exports.q = {
+    queue: queue,
+    Queue: FIFOQueue,
+};

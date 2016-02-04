@@ -43,6 +43,7 @@ var modules = [
     require('./helpers/error'),
     require('./helpers/convert'),
     require('./helpers/random'),
+    require('./helpers/q'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
@@ -51,18 +52,7 @@ for (var mi in modules) {
     }
 }
 
-var _queued = {};
-exports.Queue = require('./queue').FIFOQueue;
-exports.queue = function (name) {
-    var queue = _queued[name];
-    if (!queue) {
-        queue = new exports.Queue(name);
-        _queued[name] = queue
-    }
-
-    return queue;
-}
-
+exports.queue = require('./helpers/q').q.queue;
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 exports.defaults = require('./helpers/d').d.compose.shallow;
 exports.noop = function () {};
