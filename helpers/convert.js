@@ -76,36 +76,6 @@ var conversions = [
         to: 'iot-unit:math.fraction.percent',
         multiply: 100,
     },
-    {
-        from: 'iot-unit:length.imperial.feet',
-        to: 'iot-unit:length.imperial.inch',
-        multiply: 12,
-    },
-    {
-        from: 'iot-unit:length.imperial.yard',
-        to: 'iot-unit:length.imperial.feet',
-        multiply: 3,
-    },
-    {
-        from: 'iot-unit:length.imperial.mile',
-        to: 'iot-unit:length.imperial.feet',
-        multiply: 5280,
-    },
-    {
-        from: 'iot-unit:length.us.mile',
-        to: 'iot-unit:length.imperial.mile',
-        multiply: 0.999998,
-    },
-    {
-        from: 'iot-unit:length.imperial.nautical-mile',
-        to: 'iot-unit:length.si.meter',
-        multiply: 1852,
-    },
-    {
-        from: 'iot-unit:length.si.meter',
-        to: 'iot-unit:length.imperial.inch',
-        multiply: 39.3701,
-    },
 ];
 
 /**
