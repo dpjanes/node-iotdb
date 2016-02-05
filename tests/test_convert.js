@@ -260,5 +260,192 @@ describe('test_convert', function() {
                 assert.strictEqual(result, expect);
             });
         });
+        describe('powers', function() {
+            describe('known UOM', function() {
+                it('0', function() {
+                    var value = {
+                        from: 'iot-unit:temperature.si.celsius.0',
+                        to: 'iot-unit:temperature.si.kelvin.0',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 306.15);
+                });
+                it('positive from', function() {
+                    var value = {
+                        from: 'iot-unit:temperature.si.celsius.1',
+                        to: 'iot-unit:temperature.si.kelvin.0',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 306.15 * 10);
+                });
+                it('positive to', function() {
+                    var value = {
+                        from: 'iot-unit:temperature.si.celsius.0',
+                        to: 'iot-unit:temperature.si.kelvin.3',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 306.15 / 1000);
+                });
+                it('negative from', function() {
+                    var value = {
+                        from: 'iot-unit:temperature.si.celsius.-1',
+                        to: 'iot-unit:temperature.si.kelvin.0',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 306.15 / 10);
+                });
+                it('negative to', function() {
+                    var value = {
+                        from: 'iot-unit:temperature.si.celsius.0',
+                        to: 'iot-unit:temperature.si.kelvin.-2',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 306.15 * 100);
+                });
+            });
+            describe('unknown UOM', function() {
+                it('existing', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a',
+                        to: 'iot-unit:test.powers.a',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33);
+                });
+                it('0 from', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a.0',
+                        to: 'iot-unit:test.powers.a',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33);
+                });
+                it('0 to', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a',
+                        to: 'iot-unit:test.powers.a.0',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33);
+                });
+                it('positive from', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a.3',
+                        to: 'iot-unit:test.powers.a',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33 * 1000);
+                });
+                it('positive to', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a',
+                        to: 'iot-unit:test.powers.a.2',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33 / 100);
+                });
+                it('negative from', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a.-3',
+                        to: 'iot-unit:test.powers.a',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33 / 1000);
+                });
+                it('negative to', function() {
+                    var value = {
+                        from: 'iot-unit:test.powers.a',
+                        to: 'iot-unit:test.powers.a.-2',
+                        value: 33,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 33 * 100);
+                });
+            });
+        });
+        describe('add', function() {
+            describe('function', function() {
+                _.convert.add({
+                    from: 'iot-unit:test.add-function.a',
+                    to: 'iot-unit:test.add-function.b',
+                    convert: function(paramd) {
+                        return 21;
+                    }
+                });
+
+                it('from/to', function() {
+                    var value = {
+                        from: 'iot-unit:test.add-function.a',
+                        to: 'iot-unit:test.add-function.b',
+                        value: 295.372,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 21);
+                });
+            });
+            describe('add', function() {
+                _.convert.add({
+                    from: 'iot-unit:test.add-add.a',
+                    to: 'iot-unit:test.add-add.b',
+                    add: 21,
+                });
+
+                it('forward', function() {
+                    var value = {
+                        from: 'iot-unit:test.add-add.a',
+                        to: 'iot-unit:test.add-add.b',
+                        value: 0,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 21);
+                });
+                it('reverse', function() {
+                    var value = {
+                        to: 'iot-unit:test.add-add.a',
+                        from: 'iot-unit:test.add-add.b',
+                        value: 0,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), -21);
+                });
+            });
+            describe('multiply', function() {
+                _.convert.add({
+                    from: 'iot-unit:test.add-multiply.a',
+                    to: 'iot-unit:test.add-multiply.b',
+                    multiply: 21,
+                });
+
+                it('forward', function() {
+                    var value = {
+                        from: 'iot-unit:test.add-multiply.a',
+                        to: 'iot-unit:test.add-multiply.b',
+                        value: 1,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 21);
+                });
+                it('reverse', function() {
+                    var value = {
+                        to: 'iot-unit:test.add-multiply.a',
+                        from: 'iot-unit:test.add-multiply.b',
+                        value: 21,
+                    };
+
+                    assert.strictEqual(_.convert.convert(value), 1);
+                });
+            });
+        });
     });
 });
