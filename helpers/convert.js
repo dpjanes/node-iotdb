@@ -303,10 +303,20 @@ var convert = function(paramd) {
 
     return result;
 };
+
 /**
  */
 var add = function(paramd) {
-    conversions.push(paramd);
+    if (_.is.Array(paramd)) {
+        paramd.map(add);
+    } else if (_.is.Object(paramd)) {
+        var cd = _.d.clone.shallow(paramd);
+        _massage(cd);
+
+        conversions.push(cd);
+    } else {
+        throw new Error("_.convert.add: unexpected argument type: " + paramd);
+    }
 };
 
 /**
