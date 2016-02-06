@@ -145,9 +145,12 @@ Bridge.prototype._validate_push = function (pushd, done) {
     if (!_.is.Dictionary(pushd)) {
         throw new Error("Bridge.push: 'pushd' should be a Dictionary, not: " + pushd);
     }
+
+    /* UNCOMMENT WHEN MODULES ARE FIXED
     if (!_.is.Function(done)) {
         throw new Error("Bridge.push: 'done' should be a Function, not: " + done);
     }
+    */
 };
 
 /**

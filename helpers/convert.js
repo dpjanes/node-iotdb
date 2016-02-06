@@ -125,6 +125,8 @@ var _find = function(from, to, froms) {
  *  It will also add an inverse function
  */
 var _massage = function(cd) {
+    var id;
+
     if (cd._massaged) {
         return;
     }
@@ -136,7 +138,7 @@ var _massage = function(cd) {
             return paramd.value + cd.add;
         };
 
-        var id = _.d.clone.shallow(cd);
+        id = _.d.clone.shallow(cd);
         id.from = cd.to;
         id.to = cd.from;
         id._inverse = true;
@@ -150,7 +152,7 @@ var _massage = function(cd) {
             return paramd.value * cd.multiply;
         };
 
-        var id = _.d.clone.shallow(cd);
+        id = _.d.clone.shallow(cd);
         id.from = cd.to;
         id.to = cd.from;
         id._inverse = true;
@@ -160,7 +162,7 @@ var _massage = function(cd) {
 
         conversions.push(id);
     }
-}
+};
 
 /**
  *  This will one time massage everything
@@ -179,7 +181,7 @@ var _massage_all = function() {
  */
 var _fixed = function(value, p) {
     var xvalue = value.toExponential();
-    var xmatch = xvalue.match(/^(.*)e(.*)$/)
+    var xmatch = xvalue.match(/^(.*)e(.*)$/);
     // var mantissa = parseFloat(xmatch[1]);
     var exponent = parseInt(xmatch[2]);
     if (exponent < 0) {
@@ -187,7 +189,7 @@ var _fixed = function(value, p) {
     }
 
     return parseFloat(value.toFixed(p));
-}
+};
 
 /**
  */
@@ -213,13 +215,13 @@ var convert = function(paramd) {
     var result;
 
     // powers
-    var from_match = paramd.from.match(/^(iot-unit:[^.]*[.][^.]*[.][^.]*)[.](-?\d+)/)
+    var from_match = paramd.from.match(/^(iot-unit:[^.]*[.][^.]*[.][^.]*)[.](-?\d+)/);
     if (from_match) {
         paramd.from = from_match[1];
         paramd.from_power = parseInt(from_match[2]);
     }
 
-    var to_match = paramd.to.match(/^(iot-unit:[^.]*[.][^.]*[.][^.]*)[.](-?\d+)/)
+    var to_match = paramd.to.match(/^(iot-unit:[^.]*[.][^.]*[.][^.]*)[.](-?\d+)/);
     if (to_match) {
         paramd.to = to_match[1];
         paramd.to_power = parseInt(to_match[2]);
@@ -265,10 +267,10 @@ var convert = function(paramd) {
     }
 
     if (paramd.from_power !== 0) {
-        result *= Math.pow(10, paramd.from_power)
+        result *= Math.pow(10, paramd.from_power);
     }
     if (paramd.to_power !== 0) {
-        result *= Math.pow(10, -paramd.to_power)
+        result *= Math.pow(10, -paramd.to_power);
     }
 
     return result;
@@ -296,13 +298,3 @@ exports.convert = {
     convert: convert,
     add: add,
 };
-
-/*
-var r = convert({
-    from: 'iot-unit:length.si.meter',
-    to: 'iot-unit:length.imperial.nautical-mile',
-    value: 1,
-    precision: 1
-});
-console.log(r);
-*/

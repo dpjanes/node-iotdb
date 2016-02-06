@@ -217,11 +217,11 @@ var queue = function (name) {
     var queue = _queued[name];
     if (!queue) {
         queue = new FIFOQueue(name);
-        _queued[name] = queue
+        _queued[name] = queue;
     }
 
     return queue;
-}
+};
 
 /* --- API --- */
 exports.q = {
