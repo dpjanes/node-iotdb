@@ -170,75 +170,11 @@ Things.prototype.discover = function (modeld, initd, metad) {
 Things.prototype._discover = function (modeld) {
     var self = this;
 
-    if (modeld.bridge && modeld.model_code) {
-        self._discover_bridge(modeld);
-    } else if (modeld.model_code) {
+    if (modeld.model_code) {
         self._discover_model(modeld);
     } else {
         self._discover_all(modeld);
     }
-};
-
-/**
- *  If modeld.bridge, we follow this code path. 
- *  This makes an adhoc binding, specific for this discovery.
- */
-Things.prototype._discover_bridge = function (modeld) {
-    var self = this;
-
-    var binding;
-    var model;
-    var bridge;
-
-    /* discover the model (in another binding) */
-    var bindings = modules().bindings();
-    for (var bi in bindings) {
-        binding = bindings[bi];
-        if (modeld.model_code && (modeld.model_code !== binding.model_code)) {
-            continue;
-        }
-
-        model = binding.model;
-        break;
-    };
-
-    if (!model) {
-        logger.error({
-            method: "_discover",
-            modeld: modeld,
-            cause: "maybe this Model is not added to IOTDB yet?",
-        }, "did not find any matching Models");
-        return;
-    }
-
-    /* discover the bridge */
-    var bridge_name = _.id.to_dash_case(modeld.bridge);
-    var bridges = modules().bridges();
-    for (var bi in bridges) {
-        var b = bridges[bi];
-        if (bridge_name === b.bridge_name) {
-            bridge = b;
-            break;
-        }
-    }
-
-    if (!bridge) {
-        logger.error({
-            method: "_discover",
-            modeld: modeld,
-            cause: "maybe this Bridge has not not been added to IOTDB yet?",
-        }, "did not find any matching Bridge");
-        return;
-    }
-
-    /* make a new binding, specifically for this Bridge/Model combination */
-    binding = {
-        bridge: bridge,
-        model: model,
-        connectd: modeld.connectd,
-    };
-
-    self._discover_binding(modeld, binding);
 };
 
 /**

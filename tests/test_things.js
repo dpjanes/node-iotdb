@@ -106,23 +106,58 @@ describe('test_things', function() {
 
             assert.strictEqual(model_code, "test");
         });
-        it('bad argument', function() {
-            var t = new things.Things();
-            t._reset();
-            
-            assert.throws(function() {
-                var model_code = t.discover(123);
-            }, Error);
+        describe('bad', function() {
+            it('bad argument', function() {
+                var t = new things.Things();
+                t._reset();
+                
+                assert.throws(function() {
+                    var model_code = t.discover(123);
+                }, Error);
+            });
+            it('bad model code', function() {
+                var t = new things.Things();
+                t._reset();
+                
+                assert.throws(function() {
+                    var model_code = t.discover({
+                        model: 123,
+                    });
+                }, Error);
+            });
+            it('bad second argument', function() {
+                var t = new things.Things();
+                t._reset();
+                
+                assert.throws(function() {
+                    var model_code = t.discover({
+                        model: "ModelCode",
+                    }, 1234);
+                }, Error);
+            });
+            it('bad third argument', function() {
+                var t = new things.Things();
+                t._reset();
+                
+                assert.throws(function() {
+                    var model_code = t.discover({
+                        model: "ModelCode",
+                    }, {}, 1234);
+                }, Error);
+            });
         });
-        it('bad model code', function() {
-            var t = new things.Things();
-            t._reset();
-            
-            assert.throws(function() {
+        /*
+        describe('discover_bridge', function() {
+            it('simple', function() {
+                var t = new things.Things();
+                t._reset();
+                
                 var model_code = t.discover({
-                    model: 123,
+                    model: "Test",
+                    bridge: "test-bridge",
                 });
-            }, Error);
+            });
         });
+        */
     });
 });
