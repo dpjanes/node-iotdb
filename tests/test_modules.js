@@ -70,12 +70,13 @@ describe('test_modules', function() {
             assert.strictEqual(binding.bridge.module_name, 'homestar-test');
             assert.strictEqual(binding.bridge.bridge_name, 'test-bridge');
         });
-        it('returns same object', function() {
+        it('returns same bindings', function() {
             var m = modules.modules();
             var bindings1 = m.bindings();
             var bindings2 = m.bindings();
 
-            assert.strictEqual(bindings1, bindings2);
+            // note no longer strict equal
+            assert.deepEqual(bindings1, bindings2);
         });
 
     });

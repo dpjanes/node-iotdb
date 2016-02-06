@@ -179,6 +179,7 @@ ThingArray.prototype.is_persist = function () {
  *  Things added will be run through the
  *  Transmogrifier.
  */
+/*
 ThingArray.prototype.transmogrify = function (transmogrifier) {
     var self = this;
 
@@ -200,6 +201,7 @@ ThingArray.prototype.transmogrify = function (transmogrifier) {
 
     return new_array;
 };
+*/
 
 /**
  *  @param {string} key - if used, only the latest command
@@ -233,6 +235,20 @@ ThingArray.prototype._persist_command = function (f, av, key) {
 
     self._persistds.push(persistd);
 };
+
+/**
+ *  Apply the command to everything in the ThingArray
+ *  right now.
+ */
+ThingArray.prototype._apply_command = function (f, av) {
+    var self = this;
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        f.apply(item, Array.prototype.slice.call(av));
+    }
+};
+
 
 /**
  */
@@ -411,6 +427,27 @@ ThingArray.prototype.connect = function (modeld) {
 };
 
 /**
+ *  Call {@link Thing#update Model.disconnect} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.disconnect = function () {
+    /*
+    var self = this;
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        item.update.apply(item, Array.prototype.slice.call(arguments));
+    }
+     */
+
+    self._appy_command(model.Model.prototype.disconnect, arguments);
+    self._persist_command(model.Model.prototype.disconnect, arguments, KEY_SETTER);
+
+    return self;
+};
+
+/**
  *  Call {@link Thing#set Model.set} on
  *  every item in the ThingArray.
  *
@@ -418,11 +455,15 @@ ThingArray.prototype.connect = function (modeld) {
  */
 ThingArray.prototype.set = function () {
     var self = this;
+
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.set.apply(item, Array.prototype.slice.call(arguments));
     }
+    */
 
+    self._apply_command(model.Model.prototype.set, arguments); // NO!!!, KEY_SETTER);
     self._persist_command(model.Model.prototype.set, arguments); // NO!!!, KEY_SETTER);
 
     return self;
@@ -436,11 +477,15 @@ ThingArray.prototype.set = function () {
  */
 ThingArray.prototype.update = function () {
     var self = this;
+
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.update.apply(item, Array.prototype.slice.call(arguments));
     }
+     */
 
+    self._apply_command(model.Model.prototype.update, arguments, KEY_SETTER);
     self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
 
     return self;
@@ -455,11 +500,14 @@ ThingArray.prototype.update = function () {
 ThingArray.prototype.pull = function () {
     var self = this;
 
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.pull.apply(item, Array.prototype.slice.call(arguments));
     }
+    */
 
+    self._apply_command(model.Model.prototype.pull, arguments);
     self._persist_command(model.Model.prototype.pull, arguments);
 
     return self;
@@ -479,6 +527,7 @@ ThingArray.prototype.tag = function () {
         item.tag.apply(item, Array.prototype.slice.call(arguments));
     }
 
+    self._apply_command(model.Model.prototype.tag, arguments);
     self._persist_command(model.Model.prototype.tag, arguments);
 
     return self;
@@ -498,11 +547,14 @@ ThingArray.prototype.on = function (what, callback) {
         return self;
     }
 
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.on.apply(item, Array.prototype.slice.call(arguments));
     }
+     */
 
+    self._apply_command(model.Model.prototype.on, arguments);
     self._persist_command(model.Model.prototype.on, arguments);
 
     return self;
@@ -512,17 +564,23 @@ ThingArray.prototype.on = function (what, callback) {
  *  Call {@link Thing#on Model.on_change} on
  *  every item in the ThingArray.
  *
+ *  DEPRECIATE
+ *
  *  @return {this}
  */
 ThingArray.prototype.on_change = function () {
     var self = this;
+
+    /*
     var av = arguments;
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.on_change.apply(item, Array.prototype.slice.call(av));
     }
+     */
 
+    self._apply_command(model.Model.prototype.on_change, arguments);
     self._persist_command(model.Model.prototype.on_change, arguments);
 
     return self;
@@ -532,17 +590,23 @@ ThingArray.prototype.on_change = function () {
  *  Call {@link Thing#on Model.on_meta} on
  *  every item in the ThingArray.
  *
+ *  DEPRECIATE
+ *
  *  @return {this}
  */
 ThingArray.prototype.on_meta = function () {
     var self = this;
+
+    /*
     var av = arguments;
 
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.on_meta.apply(item, Array.prototype.slice.call(av));
     }
+     */
 
+    self._apply_command(model.Model.prototype.on_meta, arguments);
     self._persist_command(model.Model.prototype.on_meta, arguments);
 
     return self;

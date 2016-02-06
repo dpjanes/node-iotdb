@@ -1639,10 +1639,11 @@ Model.prototype.find = function (find_key, paramd) {
 /**
  *  Return a Transmogrified version of this Thing.
  */
+/*
 Model.prototype.transmogrify = function (transmogrifier) {
     return transmogrifier.transmogrify(this);
 };
-
+ */
 
 var metad = {};
 
