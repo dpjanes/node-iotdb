@@ -276,21 +276,6 @@ ThingArray.prototype.splice = function (index, howmany, add1) {
     return self;
 };
 
-/**
- *  Return true iff thing is in this
- */
-ThingArray.prototype.contains = function (thing) {
-    var self = this;
-
-    if (!thing) {
-        return false;
-    } else if (_.is.Thing(thing)) {
-        return false;
-    } else {
-        return thing[self.array_id] = self;
-    }
-};
-
 var _merger = function (srcs, out_items) {
     var o;
     var oi;
@@ -437,6 +422,7 @@ ThingArray.prototype.connect = function (modeld) {
  *  @return {this}
  */
 ThingArray.prototype.disconnect = function () {
+    var self = this;
     /*
     var self = this;
     for (var ii = 0; ii < self.length; ii++) {
@@ -547,19 +533,26 @@ ThingArray.prototype.on = function (what, callback) {
     var self = this;
 
     if (what === "thing") {
-        self.on_thing(callback);
-        return self;
+        return self._on_thing(callback);
     }
-
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.on.apply(item, Array.prototype.slice.call(arguments));
-    }
-     */
 
     self._apply_command(model.Model.prototype.on, arguments);
     self._persist_command(model.Model.prototype.on, arguments);
+
+    return self;
+};
+
+ThingArray.prototype._on_thing = function (callback) {
+    var self = this;
+
+    for (var ii = 0; ii < self.length; ii++) {
+        var item = self[ii];
+        callback(item);
+    }
+
+    events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function (thing) {
+        callback(thing);
+    });
 
     return self;
 };
@@ -598,43 +591,17 @@ ThingArray.prototype.on_change = function () {
  *
  *  @return {this}
  */
+/*
 ThingArray.prototype.on_meta = function () {
     var self = this;
-
-    /*
-    var av = arguments;
-
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.on_meta.apply(item, Array.prototype.slice.call(av));
-    }
-     */
 
     self._apply_command(model.Model.prototype.on_meta, arguments);
     self._persist_command(model.Model.prototype.on_meta, arguments);
 
     return self;
 };
+*/
 
-/**
- *  The callback will be called whenever a new thing is added to this array
- *
- *  @return {this}
- */
-ThingArray.prototype.on_thing = function (callback) {
-    var self = this;
-
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        callback(item);
-    }
-
-    events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function (thing) {
-        callback(thing);
-    });
-
-    return self;
-};
 
 /**
  *  Call {@link Thing#update Model.meta} on
@@ -643,6 +610,8 @@ ThingArray.prototype.on_thing = function (callback) {
  *
  *  @return
  */
+/*
+ *  WILL BE REPLACED BY map()
 ThingArray.prototype.metas = function (paramd) {
     var self = this;
     paramd = _.defaults(paramd, {});
@@ -656,6 +625,7 @@ ThingArray.prototype.metas = function (paramd) {
 
     return metas;
 };
+*/
 
 /**
  *  Return the number of things that can be reached
@@ -858,7 +828,7 @@ ThingArray.prototype.with_name = function (name) {
 
 ThingArray.prototype.with_zone = function (name) {
     return this.filter({
-        "meta:schema:name": name
+        "meta:schema:zone": name
     });
 };
 
@@ -891,10 +861,12 @@ ThingArray.prototype.with_model = function (model) {
     });
 };
 
+/*
 ThingArray.prototype.after = function (delay, f) {
     var self = this;
 
     setTimeout(f, delay, self);
 };
+*/
 
 exports.ThingArray = ThingArray;

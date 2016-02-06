@@ -86,7 +86,8 @@ IOT.prototype._setup_things = function () {
 
     self._things = new things.Things();
 
-    self.things().on_thing(function (thing) {
+    // consider deleting this code
+    self.things().on("thing", function (thing) {
         self.emit("thing", thing);
     });
 };
