@@ -1,5 +1,5 @@
 /*
- *  Test.js
+ *  TestMissingBridge.js
  *
  *  David Janes
  *  IOTDB

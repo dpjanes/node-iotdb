@@ -1,5 +1,5 @@
 /*
- *  TestRenamed.js
+ *  TestNoDiscover.js
  *
  *  David Janes
  *  IOTDB
@@ -9,7 +9,8 @@
 var iotdb = require("iotdb");
 
 exports.binding = {
-    model_code: "TestRenamed",
+    model_code: "TestNoDiscover",
+    discover: false,
     bridge: require('../TestBridge').Bridge,
     model: require('./Test.json'),
 };
