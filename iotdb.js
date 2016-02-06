@@ -338,4 +338,4 @@ exports.things = function () {
 /**
  *  Windows compatibility
  */
-require("./windows");
+require("./windows").setup();

@@ -24,6 +24,12 @@
 
 "use strict";
 
-if (!process.env.HOME && process.env.USERPROFILE) {
-    process.env.HOME = process.env.USERPROFILE;
-}
+var setup = function() {
+    if (!process.env.HOME && process.env.USERPROFILE) {
+        process.env.HOME = process.env.USERPROFILE;
+    }
+};
+
+/**
+ */
+exports.setup = setup;
