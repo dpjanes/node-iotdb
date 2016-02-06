@@ -85,7 +85,7 @@ Bridge.prototype.discover = function () {
     logger.error({
         method: "discover",
         cause: "likely subclass is not finished",
-        bridge: self.name(),
+        bridge: this.name(),
     }, "not implemented");
 };
 
@@ -96,6 +96,7 @@ Bridge.prototype.discover = function () {
  *  to be used for real.
  */
 Bridge.prototype.connect = function (connectd) {
+    this._validate_connect(connectd);
     logger.error({
         method: "connect",
         cause: "likely subclass is not finished",
@@ -118,7 +119,7 @@ Bridge.prototype.disconnect = function () {
     logger.error({
         method: "disconnect",
         cause: "likely subclass is not finished",
-        bridge: self.name(),
+        bridge: this.name(),
     }, "not implemented");
 };
 
@@ -129,17 +130,23 @@ Bridge.prototype.disconnect = function () {
  *  <p>
  *  Send data to whatever you're taking to.
  */
-Bridge.prototype.push = function (pushd) {
+Bridge.prototype.push = function (pushd, done) {
+    this._validate_push(pushd, done);
     logger.error({
         method: "push",
         cause: "likely subclass is not finished",
         bridge: this.name(),
     }, "not implemented");
+
+    done();
 };
 
-Bridge.prototype._validate_push = function (pushd) {
+Bridge.prototype._validate_push = function (pushd, done) {
     if (!_.is.Dictionary(pushd)) {
         throw new Error("Bridge.push: 'pushd' should be a Dictionary, not: " + pushd);
+    }
+    if (!_.is.Function(done)) {
+        throw new Error("Bridge.push: 'done' should be a Function, not: " + done);
     }
 };
 
@@ -200,8 +207,6 @@ Bridge.prototype.reachable = function () {
  *  listed and displayed to the user.
  */
 Bridge.prototype.configure = function (app) {
-    var self = this;
-
     this._validate_configure(app);
 };
 
@@ -220,12 +225,6 @@ Bridge.prototype.discovered = function (bridge) {
     throw new Error("Bridge.discovered not implemented");
 };
 
-Bridge.prototype._validate_discovered = function (bridge) {
-    if (!_.is.Bridge(bridge)) {
-        throw new Error("Bridge.discovered: 'bridge' should be a Bridge, not: " + bridge);
-    }
-};
-
 /**
  *  INSTANCE
  *  <p>
@@ -233,12 +232,6 @@ Bridge.prototype._validate_discovered = function (bridge) {
  */
 Bridge.prototype.pulled = function (pulld) {
     throw new Error("Bridge.pulled not implemented");
-};
-
-Bridge.prototype._validate_pulled = function (pulld) {
-    if (!_.is.Dictionary(pulld)) {
-        throw new Error("Bridge.pulled: 'pulld' should be a Dictionary, not: " + pulld);
-    }
 };
 
 /*

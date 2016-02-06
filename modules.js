@@ -219,7 +219,7 @@ Modules.prototype.bindings = function () {
     var keystore = require('iotdb').keystore();
 
     var bs = [];
-    self._bindings.map(function(binding) {
+    self._bindings.map(function (binding) {
         if (keystore.get("/enabled/modules/" + binding.bridge.module_name, true)) {
             bs.push(binding);
         }
