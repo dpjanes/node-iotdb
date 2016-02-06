@@ -41,7 +41,7 @@ var random_integer = function (n) {
 };
 
 var choose = function (vs) {
-    return vs[exports.randint(vs.length)];
+    return vs[random_integer(vs.length)];
 };
 
 exports.random = {
