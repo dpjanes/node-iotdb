@@ -89,7 +89,11 @@ ThingArray.prototype._isThingArray = true;
 /**
  */
 ThingArray.prototype.first = function () {
-    return this[0];
+    if (this.length) {
+        return this[0];
+    } else {
+        return null;
+    }
 };
 
 /**
