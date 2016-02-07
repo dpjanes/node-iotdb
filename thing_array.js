@@ -63,7 +63,6 @@ var ThingArray = function (paramd) {
 
     self.array_id = '__thing_array_' + array_id++;
     self.length = 0;
-    self.transaction_depth = 0;
     self._things = null;
 
     /*
@@ -227,7 +226,7 @@ ThingArray.prototype._persist_command = function (f, av, key) {
     /*
      *  If not in a transaction, there can only be one Setter
      */
-    if ((self.transaction_depth === 0) && (key === KEY_SETTER)) {
+    if (key === KEY_SETTER) {
         for (var pi = 0; pi < self._persistds.length; pi++) {
             var _persistd = self._persistds[pi];
             if (_persistd.key === KEY_SETTER) {
@@ -431,8 +430,8 @@ ThingArray.prototype.disconnect = function () {
     }
      */
 
-    self._appy_command(model.Model.prototype.disconnect, arguments);
-    self._persist_command(model.Model.prototype.disconnect, arguments, KEY_SETTER);
+    self._apply_command(model.Model.prototype.disconnect, arguments);
+    self._persist_command(model.Model.prototype.disconnect, arguments);
 
     return self;
 };
@@ -453,8 +452,8 @@ ThingArray.prototype.set = function () {
     }
     */
 
-    self._apply_command(model.Model.prototype.set, arguments); // NO!!!, KEY_SETTER);
-    self._persist_command(model.Model.prototype.set, arguments); // NO!!!, KEY_SETTER);
+    self._apply_command(model.Model.prototype.set, arguments, KEY_SETTER);
+    self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
 
     return self;
 };

@@ -61,6 +61,11 @@ describe('test_bridge_wrapper', function(){
                 }, 10);
             });
             wrapper.on("state", function(bridge, state) {
+                // at beginning ... initial pull
+                if (_.is.Empty(state)) {
+                    return;
+                }
+
                 assert.ok(_.is.Bridge(bridge));
                 assert.ok(state.value === 234);
                 done();

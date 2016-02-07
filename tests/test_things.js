@@ -159,5 +159,26 @@ describe('test_things', function() {
             });
         });
         */
+        describe('disconnect', function() {
+            it('nothing connected', function() {
+                var t = new things.Things();
+                t._reset();
+                t.disconnect();
+            });
+            it('something connected', function(done) {
+                var t = new things.Things();
+                t._reset();
+                
+                var ts = t.connect({
+                    model: "Test",
+                });
+
+                ts.on("thing", function() {
+                    t.disconnect();
+                    done();
+                });
+
+            });
+        });
     });
 });

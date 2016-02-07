@@ -33,6 +33,16 @@ var _make_thing = function(callback) {
 };
 
 var _make_no_things = function(callback) {
+    var t = new things.Things();
+    t._reset();
+    
+    var ts = t.connect("NoThingTest", {}, {
+        "schema:name": "The Thing Name",
+        "schema:description": "My Thing",
+        "iot:tag": [ "a", "b", "c" ],
+        "iot:thing-number": 32,
+    });
+    callback(ts);
 };
 
 describe("test_thing_array", function() {
@@ -75,6 +85,105 @@ describe("test_thing_array", function() {
             _make_thing(function(ts) {
                 ts.first().reachable = function() { return false };
                 assert.strictEqual(ts.reachable(), 0);
+            });
+        });
+    });
+    describe("set", function() {
+        it("with no things", function() {
+            _make_no_things(function(ts) {
+                ts.set(":on", true);
+            });
+        });
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                var thing = ts.first()
+                thing.on("istate", function() {
+                    done();
+                });
+                ts.set(":on", true);
+            });
+        });
+    });
+    describe("update", function() {
+        it("with no things", function() {
+            _make_no_things(function(ts) {
+                ts.update("ostate", {
+                    "on": true,
+                });
+            });
+        });
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                var thing = ts.first()
+                thing.on("istate", function() {
+                    done();
+                });
+                ts.update("ostate", {
+                    "on": true,
+                });
+            });
+        });
+    });
+    describe("pull", function() {
+        it("with no things", function() {
+            _make_no_things(function(ts) {
+                ts.pull();
+            });
+        });
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                var thing = ts.first()
+                thing.on("istate", function() {
+                    done();
+                });
+                // not a real API, just for testing
+                thing.bridge_instance.istate.on = true;
+                ts.pull();
+            });
+        });
+    });
+    describe("disconnect", function() {
+        it("with no things", function() {
+            _make_no_things(function(ts) {
+                ts.disconnect();
+            });
+        });
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                var thing = ts.first()
+                assert.ok(thing.reachable());
+
+                ts.disconnect();
+                process.nextTick(function (){
+                    assert.ok(!thing.reachable());
+                    done();
+                });
+            });
+        });
+    });
+    describe("on", function() {
+        it("with no things", function() {
+            _make_no_things(function(ts) {
+                ts.on("on", function() {
+                    assert.ok(false);
+                });
+                ts.set(":on", true);
+            });
+        });
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                var thing = ts.first()
+                ts.on("on", function(t, attribute, value) {
+                    if (!value) {
+                        return;
+                    }
+                    done();
+                });
+
+                // called 3 times, for initialization, istate and ostate
+                // so we use the bridge instance
+                // ts.set(":on", true);
+                thing.bridge_instance.test_pull({ on: true });
             });
         });
     });

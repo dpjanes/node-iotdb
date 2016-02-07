@@ -49,6 +49,7 @@ var TestBridge = function (initd, native) {
 
     if (self.native) {
         self.queue = _.queue("TestBridge");
+        self.istate = {};
     }
 };
 
@@ -156,7 +157,7 @@ TestBridge.prototype.push = function (pushd, done) {
         // if you set "id", new pushes will unqueue old pushes with the same id
         // id: self.number, 
         run: function () {
-            self._pushd(pushd);
+            self._push(pushd);
             self.queue.finished(qitem);
         },
         coda: function() {
@@ -171,7 +172,10 @@ TestBridge.prototype.push = function (pushd, done) {
  *  consider just moving this up into push
  */
 TestBridge.prototype._push = function (pushd) {
+    var self = this;
     if (pushd.on !== undefined) {
+        self.istate.on = pushd.on;
+        self.pull();
     }
 };
 
@@ -183,6 +187,8 @@ TestBridge.prototype.pull = function () {
     if (!self.native) {
         return;
     }
+
+    self.pulled(self.istate);
 };
 
 /* --- state --- */
@@ -236,7 +242,8 @@ TestBridge.prototype.test_meta = function () {
 TestBridge.prototype.test_pull = function (stated) {
     var self = this;
 
-    self.pulled(stated);
+    self.istate = _.d.compose.shallow(stated, self.istate);
+    self.pulled(self.istate);
 };
 
 /*
