@@ -78,7 +78,7 @@ var ThingArray = function (paramd) {
     }
 
     events.EventEmitter.call(self);
-    this.setMaxListeners(128); // hmmm, or bigger?
+    this.setMaxListeners(0);
 };
 
 ThingArray.prototype = new Array(); // jshint ignore:line
@@ -532,11 +532,15 @@ ThingArray.prototype.on = function (what, callback) {
     var self = this;
 
     if (what === "thing") {
-        return self._on_thing(callback);
+        self._on_thing(callback);
+    } else if ((what === EVENT_THING_NEW) || (what === EVENT_THING_PUSHED) || (what === EVENT_THINGS_CHANGED)) {
+        events.EventEmitter.prototype.on.call(self, what, function (thing) {
+            callback(thing);
+        });
+    } else {
+        self._apply_command(model.Model.prototype.on, arguments);
+        self._persist_command(model.Model.prototype.on, arguments);
     }
-
-    self._apply_command(model.Model.prototype.on, arguments);
-    self._persist_command(model.Model.prototype.on, arguments);
 
     return self;
 };
@@ -682,7 +686,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
 
         if (query_band === "meta") {
             var query_values = _.ld.expand(_.ld.list(queryd, query_key, []));
-            var thing_values = _.ld.list(thing_state, query_inner_key, []);
+            var thing_values = _.ld.expand(_.ld.list(thing_state, query_inner_key, []));
 
             var intersection = _.intersection(query_values, thing_values);
             if (intersection.length === 0) {
@@ -827,7 +831,7 @@ ThingArray.prototype.with_name = function (name) {
 
 ThingArray.prototype.with_zone = function (name) {
     return this.filter({
-        "meta:schema:zone": name
+        "meta:iot:zone": name
     });
 };
 
@@ -848,24 +852,5 @@ ThingArray.prototype.with_facet = function (facet) {
         "meta:iot:facet": facet,
     });
 };
-
-ThingArray.prototype.with_model = function (model) {
-    var iot = require('./iotdb').iot();
-
-    var modeld = {};
-    iot._clarify_model(modeld, model);
-
-    return this.filter({
-        "_code": _.id.to_dash_cash(modeld.model_code),
-    });
-};
-
-/*
-ThingArray.prototype.after = function (delay, f) {
-    var self = this;
-
-    setTimeout(f, delay, self);
-};
-*/
 
 exports.ThingArray = ThingArray;

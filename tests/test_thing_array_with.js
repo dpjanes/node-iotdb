@@ -25,6 +25,8 @@ var _make_thing = function(callback) {
         "schema:name": "The Thing Name",
         "schema:description": "My Thing",
         "iot:tag": [ "a", "b", "c" ],
+        "iot:zone": [ "Glasgow Place", "Second Floor", "Bedroom" ],
+        "iot:facet": [ "iot-facet:switch", "iot-facet:lighting", "iot-facet:something" ],
         "iot:thing-number": 32,
     });
     ts.on("thing", function() {
@@ -135,6 +137,98 @@ describe('test_thing_array', function() {
             it('not matching with array', function() {
                 _make_thing(function(ts) {
                     var ms = ts.with_tag([ "e", "f", "g" ]);
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+        });
+        describe('with_zone', function() {
+            it('matching', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_zone("Glasgow Place");
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('matching with array', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_zone([ "Glasgow Place", "Second Floor", "Bedroom"]);
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('matching with array with some non matching items', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_zone([ "Bedroom", "d", "e"]);
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('not matching', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_zone("e");
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+            it('not matching with array', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_zone([ "e", "f", "g" ]);
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+        });
+        describe('with_facet', function() {
+            it('matching', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_facet("iot-facet:switch");
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('matching with array', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_facet([ "iot-facet:switch", "iot-facet:lighting", "iot-facet:something"]);
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('matching with array with some non matching items', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_facet([ "iot-facet:something", "d", "e"]);
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('not matching', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_facet("e");
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+            it('not matching with array', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.with_facet([ "e", "f", "g" ]);
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+        });
+        describe('with_zone', function() {
+            it('matching', function() {
+                _make_thing(function(ts) {
+                    var thing = ts.first();
+                    var ms = ts.with_id(thing.thing_id());
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('not matching', function() {
+                _make_thing(function(ts) {
+                    var thing = ts.first();
+                    var ms = ts.with_id("notathingid");
 
                     assert.strictEqual(ms.length, 0);
                 });

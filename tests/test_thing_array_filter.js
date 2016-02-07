@@ -25,6 +25,7 @@ var _make_thing = function(callback) {
         "schema:name": "The Thing Name",
         "schema:description": "My Thing",
         "iot:tag": [ "a", "b", "c" ],
+        "iot:zone": [ "a", "b", "c" ],
         "iot:thing-number": 32,
     });
     ts.on("thing", function() {
@@ -171,6 +172,53 @@ describe('test_thing_array', function() {
                 _make_thing(function(ts) {
                     var ms = ts.filter({
                         "meta:iot:tag": [ "e", "f", ],
+                    });
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+        });
+        describe('meta:iot:zone', function() {
+            it('matching', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.filter({
+                        "meta:iot:zone": "a",
+                    });
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('matching with array', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.filter({
+                        "meta:iot:zone": [ "a", "b", "c"],
+                    });
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('matching with array with some non matching items', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.filter({
+                        "meta:iot:zone": [ "c", "d", "e"],
+                    });
+
+                    assert.strictEqual(ms.length, 1);
+                });
+            });
+            it('not matching', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.filter({
+                        "meta:iot:zone": "e",
+                    });
+
+                    assert.strictEqual(ms.length, 0);
+                });
+            });
+            it('not matching with array', function() {
+                _make_thing(function(ts) {
+                    var ms = ts.filter({
+                        "meta:iot:zone": [ "e", "f", ],
                     });
 
                     assert.strictEqual(ms.length, 0);

@@ -14,6 +14,7 @@ var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
 var things = require("../things");
+var thing_array = require("../thing_array");
 
 require('./instrument/iotdb');
 
@@ -184,6 +185,205 @@ describe("test_thing_array", function() {
                 // so we use the bridge instance
                 // ts.set(":on", true);
                 thing.bridge_instance.test_pull({ on: true });
+            });
+        });
+    });
+    describe("push", function() {
+        it("good", function() {
+            _make_thing(function(ts1) {
+                var thing1 = ts1.first();
+                var ts2 = new thing_array.ThingArray();
+                ts2.push(thing1);
+                var thing2 = ts2.first();
+
+                assert.strictEqual(ts1.length, 1);
+                assert.strictEqual(ts2.length, 1);
+                assert.strictEqual(thing1, thing2);
+            });
+        });
+        it("double push", function() {
+            _make_thing(function(ts1) {
+                var thing1 = ts1.first();
+                var ts2 = new thing_array.ThingArray();
+                ts2.push(thing1);
+                ts2.push(thing1);
+                var thing2 = ts2.first();
+
+                assert.strictEqual(ts1.length, 1);
+                assert.strictEqual(ts2.length, 1);
+                assert.strictEqual(thing1, thing2);
+            });
+        });
+        describe("bad push", function() {
+            it("boolean", function() {
+                assert.throws(function() {
+                    var ts = new thing_array.ThingArray();
+                    ts.push(false);
+                }, Error);
+            });
+            it("string", function() {
+                assert.throws(function() {
+                    var ts = new thing_array.ThingArray();
+                    ts.push("hello");
+                }, Error);
+            });
+            it("dictionary", function() {
+                assert.throws(function() {
+                    var ts = new thing_array.ThingArray();
+                    ts.push({ a: 1 });
+                }, Error);
+            });
+        });
+        describe("emits", function() {
+            it("pushed:0 new:0", function(done) {
+                _make_thing(function(ts1) {
+                    var got_pushed = false;
+                    var got_new = false;
+                    var got_changed = false;
+
+                    var ts2 = new thing_array.ThingArray();
+                    ts2.on('EVENT_THING_NEW', function() {
+                        got_new = true;
+                    });
+                    ts2.on('EVENT_THING_PUSHED', function() {
+                        got_pushed = true;
+                    });
+                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                        got_changed = true;
+                    });
+
+                    ts2.push(ts1.first(), {
+                        emit_pushed: false,
+                        emit_new: false,
+                    })
+
+                    process.nextTick(function() {
+                        assert.ok(!got_pushed);
+                        assert.ok(!got_new);
+                        assert.ok(!got_changed);
+                        done();
+                    });
+                });
+            });
+            it("pushed:1 new:0", function(done) {
+                _make_thing(function(ts1) {
+                    var got_pushed = false;
+                    var got_new = false;
+                    var got_changed = false;
+
+                    var ts2 = new thing_array.ThingArray();
+                    ts2.on('EVENT_THING_NEW', function() {
+                        got_new = true;
+                    });
+                    ts2.on('EVENT_THING_PUSHED', function() {
+                        got_pushed = true;
+                    });
+                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                        got_changed = true;
+                    });
+
+                    ts2.push(ts1.first(), {
+                        emit_pushed: true,
+                        emit_new: false,
+                    })
+
+                    process.nextTick(function() {
+                        assert.ok(got_pushed);
+                        assert.ok(!got_new);
+                        assert.ok(got_changed);
+                        done();
+                    });
+                });
+            });
+            it("pushed:0 new:1", function(done) {
+                _make_thing(function(ts1) {
+                    var got_pushed = false;
+                    var got_new = false;
+                    var got_changed = false;
+
+                    var ts2 = new thing_array.ThingArray();
+                    ts2.on('EVENT_THING_NEW', function() {
+                        got_new = true;
+                    });
+                    ts2.on('EVENT_THING_PUSHED', function() {
+                        got_pushed = true;
+                    });
+                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                        got_changed = true;
+                    });
+
+                    ts2.push(ts1.first(), {
+                        emit_pushed: false,
+                        emit_new: true,
+                    })
+
+                    process.nextTick(function() {
+                        assert.ok(!got_pushed);
+                        assert.ok(got_new);
+                        assert.ok(got_changed);
+                        done();
+                    });
+                });
+            });
+            it("default", function(done) {
+                _make_thing(function(ts1) {
+                    var got_pushed = false;
+                    var got_new = false;
+                    var got_changed = false;
+
+                    var ts2 = new thing_array.ThingArray();
+                    ts2.on('EVENT_THING_NEW', function() {
+                        got_new = true;
+                    });
+                    ts2.on('EVENT_THING_PUSHED', function() {
+                        got_pushed = true;
+                    });
+                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                        got_changed = true;
+                    });
+
+                    ts2.push(ts1.first(), {
+                        emit_pushed: true,
+                        emit_new: true,
+                    })
+
+                    process.nextTick(function() {
+                        assert.ok(got_pushed);
+                        assert.ok(got_new);
+                        assert.ok(got_changed);
+                        done();
+                    });
+                });
+            });
+            it("pushed:1 new:1", function(done) {
+                _make_thing(function(ts1) {
+                    var got_pushed = false;
+                    var got_new = false;
+                    var got_changed = false;
+
+                    var ts2 = new thing_array.ThingArray();
+                    ts2.on('EVENT_THING_NEW', function() {
+                        got_new = true;
+                    });
+                    ts2.on('EVENT_THING_PUSHED', function() {
+                        got_pushed = true;
+                    });
+                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                        got_changed = true;
+                    });
+
+                    ts2.push(ts1.first(), {
+                        emit_pushed: true,
+                        emit_new: true,
+                    })
+
+                    process.nextTick(function() {
+                        assert.ok(got_pushed);
+                        assert.ok(got_new);
+                        assert.ok(got_changed);
+                        done();
+                    });
+                });
             });
         });
     });
