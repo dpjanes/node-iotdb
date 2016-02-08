@@ -43,7 +43,7 @@ var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED';
 
 var KEY_TAG = 'TAG';
 var KEY_SETTER = 'SETTER';
-var PRE_KEYS = [ KEY_TAG, ];
+var PRE_KEYS = [KEY_TAG, ];
 var array_id = 0;
 
 /**
@@ -111,7 +111,9 @@ ThingArray.prototype.map = function (f) {
         if (r !== undefined) {
             rs.push(r);
         }
-    };
+    }
+
+    return rs;
 };
 
 /**
@@ -153,7 +155,7 @@ ThingArray.prototype.push = function (thing, paramd) {
         emit_new: true
     });
 
-    thing[self.array_id] = self;    // TD: see if this is still necessary
+    thing[self.array_id] = self; // TD: see if this is still necessary
     Array.prototype.push.call(self, thing);
 
     // event dispatch
@@ -191,7 +193,7 @@ ThingArray.prototype._persist_post = function (thing) {
         return;
     }
 
-    self._persistds.map(function(pd) {
+    self._persistds.map(function (pd) {
         if (PRE_KEYS.indexOf(pd.key) !== -1) {
             return;
         }
@@ -207,7 +209,7 @@ ThingArray.prototype._persist_pre = function (thing) {
         return;
     }
 
-    self._persistds.map(function(pd) {
+    self._persistds.map(function (pd) {
         if (PRE_KEYS.indexOf(pd.key) === -1) {
             return;
         }
@@ -252,7 +254,7 @@ ThingArray.prototype._persist_command = function (f, av, key) {
 ThingArray.prototype._apply_command = function (f, av) {
     var self = this;
 
-    self.map(function(thing) {
+    self.map(function (thing) {
         f.apply(thing, Array.prototype.slice.call(av));
     });
 };
@@ -488,7 +490,7 @@ ThingArray.prototype.pull = function () {
 ThingArray.prototype.tag = function () {
     var self = this;
 
-    self.map(function(thing) {
+    self.map(function (thing) {
         thing.tag.apply(thing, Array.prototype.slice.call(arguments));
     });
 
@@ -557,9 +559,9 @@ ThingArray.prototype.reachable = function () {
     var self = this;
     var count = 0;
 
-    self.map(function(thing) {
+    self.map(function (thing) {
         if (thing.reachable()) {
-            count ++;
+            count++;
         }
     });
 
@@ -618,7 +620,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
             if (query_inner_key === "tag") {
                 if (!_.ld.intersects(thing.initd, "tag", query_values)) {
                     return false;
-                };
+                }
             } else {
                 return false;
             }
@@ -657,7 +659,7 @@ ThingArray.prototype.filter = function (d) {
         persist: persist
     });
 
-    self.map(function(thing) {
+    self.map(function (thing) {
         if (self._filter_test(d, thing)) {
             out_items.push(thing);
         }

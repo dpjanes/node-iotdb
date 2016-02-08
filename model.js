@@ -1675,10 +1675,7 @@ Model.prototype.tag = function (tag) {
 };
 
 Model.prototype._validate_tag = function (tag) {
-    if (_.is.Undefined(tag)) {
-    } else if (_.is.String(tag)) {
-    } else if (_.is.ArrayOfString(tag)) {
-    } else {
+    if (_.is.Undefined(tag)) {} else if (_.is.String(tag)) {} else if (_.is.ArrayOfString(tag)) {} else {
         throw new Error("Model.tag: 'tag' must be a String, Array of String or undefined");
     }
 };
@@ -1694,9 +1691,7 @@ Model.prototype.has_tag = function (tag) {
 Model.prototype._validate_has_tag = function (tag) {
     var self = this;
 
-    if (_.is.String(tag)) {
-    } else if (_.is.ArrayOfString(tag)) {
-    } else {
+    if (_.is.String(tag)) {} else if (_.is.ArrayOfString(tag)) {} else {
         throw new Error("Model.tag: 'has_tag' must be a String, Array of String");
     }
 };

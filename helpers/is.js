@@ -153,7 +153,7 @@ var _ArrayOfX = function(vs, test) {
     }
 
     return true;
-}
+};
 
 var isArrayOfString = function(o) {
     return _ArrayOfX(o, isString);

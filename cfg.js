@@ -98,9 +98,7 @@ exports.cfg_find = function (envd, paths, name, paramd) {
 
         for (var fi in files) {
             var file = files[fi];
-            if ((file === ".") || (file === "..")) {
-                continue;
-            } else if (!paramd.dotfiles && (file.substring(0, 1) === ".")) {
+            if (!paramd.dotfiles && (file.substring(0, 1) === ".")) {
                 continue;
             }
 
@@ -176,6 +174,34 @@ exports.cfg_find = function (envd, paths, name, paramd) {
     return results;
 };
 
+var _work = function (filenames, callback, worker) {
+    var first_doc = null;
+
+    for (var fi in filenames) {
+        var cd = {
+            filename: filenames[fi],
+            end: fi === filenames.length - 1,
+        };
+
+        try {
+            cd.doc = worker(cd);
+
+            if (first_doc === null) {
+                first_doc = cd.doc;
+            }
+        } catch (x) {
+            cd.error = "exception reading file";
+            cd.exception = x;
+        }
+
+        if (callback(cd)) {
+            break;
+        }
+    }
+
+    return first_doc;
+};
+
 /**
  *  Load JSON files and call the callback
  *
@@ -196,37 +222,11 @@ exports.cfg_find = function (envd, paths, name, paramd) {
  *  The first document successfully read
  */
 exports.cfg_load_json = function (filenames, callback) {
-    var first_doc = null;
-
-    if (!filenames.length) {} else {
-        for (var fi in filenames) {
-            try {
-                var filename = filenames[fi];
-                var doc = node_fs.readFileSync(filename, {
-                    encoding: 'utf8'
-                });
-                var r = callback({
-                    doc: JSON.parse(doc),
-                    filename: filename
-                });
-
-                if (first_doc === null) {
-                    first_doc = doc;
-                }
-                if (r) {
-                    break;
-                }
-            } catch (x) {
-                callback({
-                    error: "exception reading file",
-                    exception: x,
-                    filename: filename
-                });
-            }
-        }
-    }
-
-    return first_doc;
+    return _work(filenames, callback, function (cd) {
+        cd.doc = JSON.parse(node_fs.readFileSync(cd.filename, {
+            encoding: 'utf8'
+        }));
+    });
 };
 
 /**
@@ -252,42 +252,16 @@ exports.cfg_load_json = function (filenames, callback) {
  *  The first document successfully read
  */
 exports.cfg_load_file = function (filenames, encoding, callback) {
-    var first_doc = null;
-
     if (_.is.Function(encoding)) {
         callback = encoding;
         encoding = "utf-8";
     }
 
-    if (!filenames.length) {} else {
-        for (var fi in filenames) {
-            try {
-                var filename = filenames[fi];
-                var doc = node_fs.readFileSync(filename, {
-                    encoding: encoding
-                });
-                var r = callback({
-                    doc: doc,
-                    filename: filename
-                });
-
-                if (first_doc === null) {
-                    first_doc = doc;
-                }
-                if (r) {
-                    break;
-                }
-            } catch (x) {
-                callback({
-                    error: "exception reading file",
-                    exception: x,
-                    filename: filename
-                });
-            }
-        }
-    }
-
-    return first_doc;
+    return _work(filenames, callback, function (cd) {
+        cd.doc = node_fs.readFileSync(cd.filename, {
+            encoding: encoding
+        });
+    });
 };
 
 /**
@@ -313,44 +287,9 @@ exports.cfg_load_file = function (filenames, encoding, callback) {
  *  The first document successfully read
  */
 exports.cfg_load_js = function (filenames, callback) {
-    var first_doc = null;
-
-    if (!filenames.length) {} else {
-        for (var fi in filenames) {
-            try {
-                var filename = filenames[fi];
-                /*
-                if (!filename.match(/^([.]\/|[.][.]\/|\/)/)) {
-                    filename = "./" + filename;
-                }
-                 */
-                if (!node_path.isAbsolute(filename)) {
-                    filename = node_path.join(process.cwd(), filename);
-                }
-
-                var doc = require(filename);
-                var r = callback({
-                    doc: doc,
-                    filename: filename
-                });
-
-                if (first_doc === null) {
-                    first_doc = doc;
-                }
-                if (r) {
-                    break;
-                }
-            } catch (x) {
-                callback({
-                    error: "exception reading file",
-                    exception: x,
-                    filename: filename
-                });
-            }
-        }
-    }
-
-    return first_doc;
+    return _work(filenames, callback, function (cd) {
+        cd.doc = require(node_path.resolve(cd.filename));
+    });
 };
 
 /**
