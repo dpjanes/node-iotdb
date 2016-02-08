@@ -255,13 +255,6 @@ ThingArray.prototype._apply_command = function (f, av) {
     self.map(function(thing) {
         f.apply(thing, Array.prototype.slice.call(av));
     });
-
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        f.apply(item, Array.prototype.slice.call(av));
-    }
-    */
 };
 
 
@@ -434,13 +427,6 @@ ThingArray.prototype.connect = function (modeld) {
  */
 ThingArray.prototype.disconnect = function () {
     var self = this;
-    /*
-    var self = this;
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.update.apply(item, Array.prototype.slice.call(arguments));
-    }
-     */
 
     self._apply_command(model.Model.prototype.disconnect, arguments);
     self._persist_command(model.Model.prototype.disconnect, arguments);
@@ -457,13 +443,6 @@ ThingArray.prototype.disconnect = function () {
 ThingArray.prototype.set = function () {
     var self = this;
 
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.set.apply(item, Array.prototype.slice.call(arguments));
-    }
-    */
-
     self._apply_command(model.Model.prototype.set, arguments, KEY_SETTER);
     self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
 
@@ -479,13 +458,6 @@ ThingArray.prototype.set = function () {
 ThingArray.prototype.update = function () {
     var self = this;
 
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.update.apply(item, Array.prototype.slice.call(arguments));
-    }
-     */
-
     self._apply_command(model.Model.prototype.update, arguments, KEY_SETTER);
     self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
 
@@ -500,13 +472,6 @@ ThingArray.prototype.update = function () {
  */
 ThingArray.prototype.pull = function () {
     var self = this;
-
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.pull.apply(item, Array.prototype.slice.call(arguments));
-    }
-    */
 
     self._apply_command(model.Model.prototype.pull, arguments);
     self._persist_command(model.Model.prototype.pull, arguments);
@@ -526,13 +491,6 @@ ThingArray.prototype.tag = function () {
     self.map(function(thing) {
         thing.tag.apply(thing, Array.prototype.slice.call(arguments));
     });
-
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.tag.apply(item, Array.prototype.slice.call(arguments));
-    }
-     */
 
     self._apply_command(model.Model.prototype.tag, arguments, KEY_TAG);
     self._persist_command(model.Model.prototype.tag, arguments, KEY_TAG);
@@ -568,13 +526,6 @@ ThingArray.prototype._on_thing = function (callback) {
 
     self.map(callback);
 
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        callback(item);
-    }
-     */
-
     events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function (thing) {
         callback(thing);
     });
@@ -593,64 +544,11 @@ ThingArray.prototype._on_thing = function (callback) {
 ThingArray.prototype.on_change = function () {
     var self = this;
 
-    /*
-    var av = arguments;
-
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        item.on_change.apply(item, Array.prototype.slice.call(av));
-    }
-     */
-
     self._apply_command(model.Model.prototype.on_change, arguments);
     self._persist_command(model.Model.prototype.on_change, arguments);
 
     return self;
 };
-
-/**
- *  Call {@link Thing#on Model.on_meta} on
- *  every item in the ThingArray.
- *
- *  DEPRECIATE
- *
- *  @return {this}
- */
-/*
-ThingArray.prototype.on_meta = function () {
-    var self = this;
-
-    self._apply_command(model.Model.prototype.on_meta, arguments);
-    self._persist_command(model.Model.prototype.on_meta, arguments);
-
-    return self;
-};
-*/
-
-
-/**
- *  Call {@link Thing#update Model.meta} on
- *  every item in the ThingArray and return
- *  the result as an Array
- *
- *  @return
- */
-/*
- *  WILL BE REPLACED BY map()
-ThingArray.prototype.metas = function (paramd) {
-    var self = this;
-    paramd = _.defaults(paramd, {});
-
-    var metas = [];
-
-    for (var ii = 0; ii < self.length; ii++) {
-        var item = self[ii];
-        metas.push(item.state("meta"));
-    }
-
-    return metas;
-};
-*/
 
 /**
  *  Return the number of things that can be reached
@@ -664,14 +562,6 @@ ThingArray.prototype.reachable = function () {
             count ++;
         }
     });
-    
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        if (self[ii].reachable()) {
-            count += 1;
-        }
-    }
-    */
 
     return count;
 };
@@ -726,7 +616,9 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
             }
         } else if (query_band === "transient") {
             if (query_inner_key === "tag") {
-                return _.ld.intersects(thing.initd, "tag", query_values);
+                if (!_.ld.intersects(thing.initd, "tag", query_values)) {
+                    return false;
+                };
             } else {
                 return false;
             }
@@ -770,16 +662,6 @@ ThingArray.prototype.filter = function (d) {
             out_items.push(thing);
         }
     });
-
-    /*
-    for (var ii = 0; ii < self.length; ii++) {
-        var thing = self[ii];
-
-        if (self._filter_test(d, thing)) {
-            out_items.push(thing);
-        }
-    }
-    */
 
     if (out_items.length === 0) {
         // console.log("# ThingArray.filter: warning - nothing matched", d)
