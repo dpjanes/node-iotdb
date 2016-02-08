@@ -126,10 +126,10 @@ var ld_intersection = function (d, key, values) {
 
     var existing = d[key];
     if (existing === undefined) {
-        return [];
+        existing = [];
     } else if (_.is.Array(existing)) {
     } else {
-        existing = [];
+        existing = [ existing ];
     }
 
     return _.intersection(existing, values);

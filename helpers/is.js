@@ -159,6 +159,14 @@ var isArrayOfString = function(o) {
     return _ArrayOfX(o, isString);
 };
 
+var isArrayOfDictionary = function(o) {
+    return _ArrayOfX(o, isDictionary);
+};
+
+var isArrayOfObject = function(o) {
+    return _ArrayOfX(o, isObject);
+};
+
 exports.is = {
     // IOTDB classes
     Thing: isThing,
@@ -193,4 +201,6 @@ exports.is = {
 
     // aggregates
     ArrayOfString: isArrayOfString,
+    ArrayOfObject: isArrayOfObject,
+    ArrayOfDictionary: isArrayOfDictionary,
 };

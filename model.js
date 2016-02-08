@@ -153,12 +153,6 @@ Model.prototype.make = function (paramd) {
 
 /**
  */
-Model.prototype.isa = function (classf) {
-    return classf === this.__make;
-};
-
-/**
- */
 Model.prototype.code = function () {
     return this.__code;
 };
@@ -1685,7 +1679,7 @@ Model.prototype.has_tag = function (tag) {
 
     self._validate_has_tag(tag);
 
-    return _.ld.intersects(this.initd, "tag", tag);
+    return _.ld.intersects(self.initd, "tag", tag);
 };
 
 Model.prototype._validate_has_tag = function (tag) {
