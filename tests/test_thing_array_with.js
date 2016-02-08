@@ -24,7 +24,6 @@ var _make_thing = function(callback) {
     var ts = t.connect("Test", {}, {
         "schema:name": "The Thing Name",
         "schema:description": "My Thing",
-        "iot:tag": [ "a", "b", "c" ],
         "iot:zone": [ "Glasgow Place", "Second Floor", "Bedroom" ],
         "iot:facet": [ "iot-facet:switch", "iot-facet:lighting", "iot-facet:something" ],
         "iot:thing-number": 32,
@@ -102,43 +101,6 @@ describe('test_thing_array', function() {
                     var ms = ts.with_number("32");
 
                     assert.strictEqual(ms.length, 1);
-                });
-            });
-        });
-        describe('with_tag', function() {
-            it('matching', function() {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag("a");
-
-                    assert.strictEqual(ms.length, 1);
-                });
-            });
-            it('matching with array', function() {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag([ "a", "b", "c"]);
-
-                    assert.strictEqual(ms.length, 1);
-                });
-            });
-            it('matching with array with some non matching items', function() {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag([ "c", "d", "e"]);
-
-                    assert.strictEqual(ms.length, 1);
-                });
-            });
-            it('not matching', function() {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag("e");
-
-                    assert.strictEqual(ms.length, 0);
-                });
-            });
-            it('not matching with array', function() {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag([ "e", "f", "g" ]);
-
-                    assert.strictEqual(ms.length, 0);
                 });
             });
         });

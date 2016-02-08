@@ -117,6 +117,28 @@ var _ld_contains = function (d, key, value) {
     }
 };
 
+var ld_intersection = function (d, key, values) {
+    if ((d === null) || (d === undefined)) {
+        return [];
+    } else if (!_.is.Object(d)) {
+        throw new Error("expected Object");
+    }
+
+    var existing = d[key];
+    if (existing === undefined) {
+        return [];
+    } else if (_.is.Array(existing)) {
+    } else {
+        existing = [];
+    }
+
+    return _.intersection(existing, values);
+};
+
+var ld_intersects = function (d, key, values) {
+    return ld_intersection(d, key, values).length > 0;
+};
+
 var _ld_remove = function (d, key, values) {
     if ((d === null) || (d === undefined)) {
         return;
@@ -364,4 +386,7 @@ exports.ld = {
     contains: _ld_contains,
     remove: _ld_remove,
     add: _ld_add,
+
+    intersects: ld_intersects,
+    intersection: ld_intersection,
 };

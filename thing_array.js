@@ -41,7 +41,9 @@ var EVENT_THING_NEW = 'EVENT_THING_NEW';
 var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED';
 var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED';
 
+var KEY_TAG = 'TAG';
 var KEY_SETTER = 'SETTER';
+var PRE_KEYS = [ KEY_TAG, ];
 var array_id = 0;
 
 /**
@@ -96,6 +98,23 @@ ThingArray.prototype.first = function () {
 };
 
 /**
+ *  This will apply the function to every element
+ *  of the ThingArray. If non-undefined is returned,
+ *  this will be placed in result array.
+ */
+ThingArray.prototype.map = function (f) {
+    var self = this;
+    var rs = [];
+    for (var ti = 0; ti < self.length; ti++) {
+        var t = self[ti];
+        var r = f(t);
+        if (r !== undefined) {
+            rs.push(r);
+        }
+    };
+};
+
+/**
  *  Add a new thing to this ThingArray.
  */
 ThingArray.prototype.push = function (thing, paramd) {
@@ -125,19 +144,19 @@ ThingArray.prototype.push = function (thing, paramd) {
         }
     }
 
-    /*
-     */
+    //  
+    self._persist_pre(thing);
+
+    // actual add
     paramd = _.defaults(paramd, {
         emit_pushed: true,
         emit_new: true
     });
 
-    thing[self.array_id] = self;
+    thing[self.array_id] = self;    // TD: see if this is still necessary
     Array.prototype.push.call(self, thing);
 
-    /*
-     *  event dispatch
-     */
+    // event dispatch
     var changed = false;
     if (paramd.emit_pushed) {
         self.emit(EVENT_THING_PUSHED, thing);
@@ -152,20 +171,8 @@ ThingArray.prototype.push = function (thing, paramd) {
         self.things_changed();
     }
 
-    /*
-     *  Do persistent commands.
-     *  [Always within a transaction] - not right now
-     */
-    if ((self._persistds != null) && (self._persistds.length > 0)) {
-        // thing.start();
-
-        for (var pi in self._persistds) {
-            var pd = self._persistds[pi];
-            pd.f.apply(thing, Array.prototype.slice.call(pd.av));
-        }
-
-        // thing.end();
-    }
+    // 
+    self._persist_post(thing);
 
     return self;
 };
@@ -177,39 +184,38 @@ ThingArray.prototype.is_persist = function () {
     return this._persistds != null;
 };
 
-/**
- *  Return a Transmogrified ThingArray. All
- *  Things added will be run through the
- *  Transmogrifier.
- */
-/*
-ThingArray.prototype.transmogrify = function (transmogrifier) {
+ThingArray.prototype._persist_post = function (thing) {
     var self = this;
 
-    // new array, just like this one
-    var new_array = new ThingArray({
-        persist: self.is_persist(),
-    });
-
-    // all things added to the new array are transmogrified
-    new_array.___push = new_array.push;
-    new_array.push = function (thing) {
-        new_array.___push(transmogrifier.transmogrify(thing));
-    };
-
-    // add things from the old array
-    for (var ti = 0; ti < self.length; ti++) {
-        new_array.push(self[ti]);
+    if (_.is.Empty(self._persistds)) {
+        return;
     }
 
-    return new_array;
-};
-*/
+    self._persistds.map(function(pd) {
+        if (PRE_KEYS.indexOf(pd.key) !== -1) {
+            return;
+        }
 
-/**
- *  @param {string} key - if used, only the latest command
- *  will be persisted with this key
- */
+        pd.f.apply(thing, Array.prototype.slice.call(pd.av));
+    });
+};
+
+ThingArray.prototype._persist_pre = function (thing) {
+    var self = this;
+
+    if (_.is.Empty(self._persistds)) {
+        return;
+    }
+
+    self._persistds.map(function(pd) {
+        if (PRE_KEYS.indexOf(pd.key) === -1) {
+            return;
+        }
+
+        pd.f.apply(thing, Array.prototype.slice.call(pd.av));
+    });
+};
+
 ThingArray.prototype._persist_command = function (f, av, key) {
     var self = this;
 
@@ -246,10 +252,16 @@ ThingArray.prototype._persist_command = function (f, av, key) {
 ThingArray.prototype._apply_command = function (f, av) {
     var self = this;
 
+    self.map(function(thing) {
+        f.apply(thing, Array.prototype.slice.call(av));
+    });
+
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         f.apply(item, Array.prototype.slice.call(av));
     }
+    */
 };
 
 
@@ -511,13 +523,19 @@ ThingArray.prototype.pull = function () {
 ThingArray.prototype.tag = function () {
     var self = this;
 
+    self.map(function(thing) {
+        thing.tag.apply(thing, Array.prototype.slice.call(arguments));
+    });
+
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         item.tag.apply(item, Array.prototype.slice.call(arguments));
     }
+     */
 
-    self._apply_command(model.Model.prototype.tag, arguments);
-    self._persist_command(model.Model.prototype.tag, arguments);
+    self._apply_command(model.Model.prototype.tag, arguments, KEY_TAG);
+    self._persist_command(model.Model.prototype.tag, arguments, KEY_TAG);
 
     return self;
 };
@@ -548,10 +566,14 @@ ThingArray.prototype.on = function (what, callback) {
 ThingArray.prototype._on_thing = function (callback) {
     var self = this;
 
+    self.map(callback);
+
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var item = self[ii];
         callback(item);
     }
+     */
 
     events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function (thing) {
         callback(thing);
@@ -637,11 +659,19 @@ ThingArray.prototype.reachable = function () {
     var self = this;
     var count = 0;
 
+    self.map(function(thing) {
+        if (thing.reachable()) {
+            count ++;
+        }
+    });
+    
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         if (self[ii].reachable()) {
             count += 1;
         }
     }
+    */
 
     return count;
 };
@@ -666,10 +696,11 @@ ThingArray.prototype.things_changed = function () {
 /* --- */
 
 ThingArray.prototype._filter_test = function (queryd, thing) {
+    var self = this;
     var meta = thing.meta();
 
     for (var query_key in queryd) {
-        var match = query_key.match(/^(meta|model|istate|ostate):(.+)$/);
+        var match = query_key.match(/^(meta|model|istate|ostate|transient):(.+)$/);
         if (!match) {
             logger.error({
                 method: "_filter_test",
@@ -681,15 +712,22 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
 
         var query_band = match[1];
         var query_inner_key = match[2];
-
-        var thing_state = thing.state(query_band);
+        var query_values = _.ld.list(queryd, query_key, []);
 
         if (query_band === "meta") {
-            var query_values = _.ld.expand(_.ld.list(queryd, query_key, []));
+            query_values = _.ld.expand(query_values);
+
+            var thing_state = thing.state(query_band);
             var thing_values = _.ld.expand(_.ld.list(thing_state, query_inner_key, []));
 
             var intersection = _.intersection(query_values, thing_values);
             if (intersection.length === 0) {
+                return false;
+            }
+        } else if (query_band === "transient") {
+            if (query_inner_key === "tag") {
+                return _.ld.intersects(thing.initd, "tag", query_values);
+            } else {
                 return false;
             }
         } else if ((query_band === "ostate") || (query_band === "istate") || (query_band === "model")) {
@@ -727,6 +765,13 @@ ThingArray.prototype.filter = function (d) {
         persist: persist
     });
 
+    self.map(function(thing) {
+        if (self._filter_test(d, thing)) {
+            out_items.push(thing);
+        }
+    });
+
+    /*
     for (var ii = 0; ii < self.length; ii++) {
         var thing = self[ii];
 
@@ -734,6 +779,7 @@ ThingArray.prototype.filter = function (d) {
             out_items.push(thing);
         }
     }
+    */
 
     if (out_items.length === 0) {
         // console.log("# ThingArray.filter: warning - nothing matched", d)
@@ -843,7 +889,7 @@ ThingArray.prototype.with_number = function (number) {
 
 ThingArray.prototype.with_tag = function (tag) {
     return this.filter({
-        "meta:iot:tag": tag
+        "transient:tag": tag
     });
 };
 

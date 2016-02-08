@@ -24,10 +24,10 @@ var _make_thing = function(callback) {
     var ts = t.connect("Test", {}, {
         "schema:name": "The Thing Name",
         "schema:description": "My Thing",
-        "iot:tag": [ "a", "b", "c" ],
         "iot:zone": [ "a", "b", "c" ],
         "iot:thing-number": 32,
     });
+    ts.tag([ "a", "b", "c" ]);
     ts.on("thing", function() {
         callback(ts);
     });
@@ -131,11 +131,11 @@ describe('test_thing_array', function() {
                 });
             });
         });
-        describe('meta:iot:tag', function() {
+        describe('transient:tag', function() {
             it('matching', function() {
                 _make_thing(function(ts) {
                     var ms = ts.filter({
-                        "meta:iot:tag": "a",
+                        "transient:tag": "a",
                     });
 
                     assert.strictEqual(ms.length, 1);
@@ -144,7 +144,7 @@ describe('test_thing_array', function() {
             it('matching with array', function() {
                 _make_thing(function(ts) {
                     var ms = ts.filter({
-                        "meta:iot:tag": [ "a", "b", "c"],
+                        "transient:tag": [ "a", "b", "c"],
                     });
 
                     assert.strictEqual(ms.length, 1);
@@ -153,7 +153,7 @@ describe('test_thing_array', function() {
             it('matching with array with some non matching items', function() {
                 _make_thing(function(ts) {
                     var ms = ts.filter({
-                        "meta:iot:tag": [ "c", "d", "e"],
+                        "transient:tag": [ "c", "d", "e"],
                     });
 
                     assert.strictEqual(ms.length, 1);
@@ -162,7 +162,7 @@ describe('test_thing_array', function() {
             it('not matching', function() {
                 _make_thing(function(ts) {
                     var ms = ts.filter({
-                        "meta:iot:tag": "e",
+                        "transient:tag": "e",
                     });
 
                     assert.strictEqual(ms.length, 0);
@@ -171,7 +171,7 @@ describe('test_thing_array', function() {
             it('not matching with array', function() {
                 _make_thing(function(ts) {
                     var ms = ts.filter({
-                        "meta:iot:tag": [ "e", "f", ],
+                        "transient:tag": [ "e", "f", ],
                     });
 
                     assert.strictEqual(ms.length, 0);

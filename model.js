@@ -294,21 +294,6 @@ Model.prototype.attributes = function () {
     return self.__attributes;
 };
 
-/**
- *  Tags are for locally identitfying devices
- */
-Model.prototype.has_tag = function (tag) {
-    return _.ld.contains(this.initd, "tag", tag);
-};
-
-Model.prototype._validate_has_tag = function (tag) {
-    var self = this;
-
-    if (!_.is.String(tag)) {
-        throw new Error("Model.has_tag: 'tag' must be a String, not: " + tag);
-    }
-};
-
 
 /**
  *  Return the JSON-LD version of this thing
@@ -1679,14 +1664,40 @@ Model.prototype.meta = function () {
 Model.prototype.tag = function (tag) {
     var self = this;
 
-    assert.ok(_.is.String(tag));
+    self._validate_tag(tag);
 
-    _.ld.add(self.initd, "tag", tag);
+    if (tag === undefined) {
+        return _.ld.list(self.initd, "tag", []);
+    } else {
+        _.ld.add(self.initd, "tag", tag);
+        return self;
+    }
 };
 
 Model.prototype._validate_tag = function (tag) {
-    if (!_.is.String(tag)) {
-        throw new Error("Model.tag: 'tag' must be a String");
+    if (_.is.Undefined(tag)) {
+    } else if (_.is.String(tag)) {
+    } else if (_.is.ArrayOfString(tag)) {
+    } else {
+        throw new Error("Model.tag: 'tag' must be a String, Array of String or undefined");
+    }
+};
+
+Model.prototype.has_tag = function (tag) {
+    var self = this;
+
+    self._validate_has_tag(tag);
+
+    return _.ld.intersects(this.initd, "tag", tag);
+};
+
+Model.prototype._validate_has_tag = function (tag) {
+    var self = this;
+
+    if (_.is.String(tag)) {
+    } else if (_.is.ArrayOfString(tag)) {
+    } else {
+        throw new Error("Model.tag: 'has_tag' must be a String, Array of String");
     }
 };
 

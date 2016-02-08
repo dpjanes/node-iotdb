@@ -141,6 +141,24 @@ var _isNaN = function (obj) {
     return isNumber(obj) && isNaN(obj);
 };
 
+var _ArrayOfX = function(vs, test) {
+    if (!Array.isArray(vs)) {
+        return false;
+    }
+
+    for (var vi in vs) {
+        if (!test(vs[vi])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+var isArrayOfString = function(o) {
+    return _ArrayOfX(o, isString);
+};
+
 exports.is = {
     // IOTDB classes
     Thing: isThing,
@@ -172,4 +190,7 @@ exports.is = {
     String: isString,
     Undefined: isUndefined,
     NaN: _isNaN,
+
+    // aggregates
+    ArrayOfString: isArrayOfString,
 };

@@ -25,7 +25,6 @@ var _make_thing = function(callback) {
     var ts = t.connect("Test", {}, {
         "schema:name": "The Thing Name",
         "schema:description": "My Thing",
-        "iot:tag": [ "a", "b", "c" ],
         "iot:thing-number": 32,
     });
     ts.on("thing", function() {
@@ -40,7 +39,6 @@ var _make_no_things = function(callback) {
     var ts = t.connect("NoThingTest", {}, {
         "schema:name": "The Thing Name",
         "schema:description": "My Thing",
-        "iot:tag": [ "a", "b", "c" ],
         "iot:thing-number": 32,
     });
     callback(ts);
