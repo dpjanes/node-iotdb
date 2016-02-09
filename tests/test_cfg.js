@@ -165,6 +165,8 @@ describe('test_cfg', function () {
                     }
                 } else if (paramd.error) {
                     assert.strictEqual(paramd.filename, "does.not.exist")
+                } else {
+                    assert.ok(false);
                 }
             })
             done();
@@ -177,14 +179,14 @@ describe('test_cfg', function () {
             filenames.push(".");
             filenames.push("..");
             cfg.cfg_load_file(filenames, function (paramd) {
-                if (paramd.doc) {
-                    assert.ok(paramd.doc);
-                } else if (paramd.error) {
+                if (paramd.error) {
                     if ((paramd.filename === ".") || (paramd.filename === "..") || (paramd.filename === "does.not.exist")) {
                         return;
                     }
 
                     assert.ok(!paramd.filename);
+                } else {
+                    assert.ok(paramd.doc);
                 }
             })
             done()
@@ -195,14 +197,14 @@ describe('test_cfg', function () {
             var filenames = cfg.cfg_find({}, "data/cfg1", /[.]js$/)
             filenames.push("does.not.exist")
             cfg.cfg_load_js(filenames, function (paramd) {
-                if (paramd.doc) {
-                    assert.ok(paramd.doc);
-                } else if (paramd.error) {
+                if (paramd.error) {
                     if (paramd.filename === "does.not.exist") {
                         return;
                     }
 
                     assert.ok(!paramd.filename);
+                } else {
+                    assert.ok(paramd.doc);
                 }
             })
             done()

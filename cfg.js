@@ -184,7 +184,7 @@ var _work = function (filenames, callback, worker) {
         };
 
         try {
-            cd.doc = worker(cd);
+            worker(cd);
 
             if (first_doc === null) {
                 first_doc = cd.doc;
