@@ -177,26 +177,35 @@ ModelMaker.prototype.product = function (value) {
 
 /**
  */
-ModelMaker.prototype.facet = function (_value) {
+ModelMaker.prototype.facet = function (facets) {
     var self = this;
+    var facet_prefix = _.ld.expand("iot-facet:");
 
-    if (_.is.Array(_value)) {
-        _value.map(function (v) {
-            if (!_.is.String(v)) {
-                throw new Error("facet must be a String or Array of String");
-            }
-            self.__facets.push(_.ld.expand(v, "iot-facet:"));
-        });
-    } else if (!_.is.String(_value)) {
-        throw new Error("facet must be a String or Array of String");
-    } else if (_value.match(/^:.*[.]/)) {
-        var parts = _value.split(".");
-        for (var pi = 0; pi < parts.length; pi++) {
-            var sub = parts.slice(0, pi + 1).join(".");
-            self.__facets.push(_.ld.expand(sub, "iot-facet:"));
+    
+    var _add_inner = function(facet) {
+        if (self.__facets.indexOf(facet) !== -1) {
+            return;
         }
+
+        self.__facets.push(facet);
+    };
+
+    var _add_outer = function(facet) {
+        facet = _.ld.expand(facet, "iot-facet:");
+        if (facet.indexOf(facet_prefix) !== 0) {
+            _add_inner(facet);
+        } else {
+            var parts = facet.split(".");
+            for (var pi = 1; pi < parts.length; pi++) {
+                _add_inner(parts.slice(0, pi + 1).join("."));
+            }
+        }
+    };
+
+    if (_.is.Array(facets)) {
+        facets.map(_add_outer);
     } else {
-        self.__facets.push(_.ld.expand(_value, "iot-facet:"));
+        _add_outer(facets);
     }
 
     return this;
