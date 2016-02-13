@@ -29,6 +29,7 @@ var band = require("./band");
 var Band = function (thing, d) {
     var self = this;
 
+    self._band = "model";
     self._thing = thing;
     self._d = d;
 };
