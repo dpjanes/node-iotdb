@@ -44,6 +44,7 @@ var modules = [
     require('./helpers/convert'),
     require('./helpers/random'),
     require('./helpers/q'),
+    require('./helpers/version'),
 ];
 for (var mi in modules) {
     var module = modules[mi];

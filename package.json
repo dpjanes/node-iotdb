@@ -4,10 +4,11 @@
         "url": "https://github.com/dpjanes/node-iotdb/issues"
     }, 
     "dependencies": {
-        "bunyan": "~1.5.1", 
+        "bunyan": "~1.6.0", 
         "canonical-json": "~0.0.4", 
         "node-uuid": "~1.4.7", 
-        "prompt": "~0.2.14", 
+        "prompt": "~1.0.0", 
+        "semver": "~5.1.0", 
         "underscore": "~1.8.3", 
         "unirest": "~0.4.2"
     }, 
