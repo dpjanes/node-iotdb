@@ -22,22 +22,25 @@
 
 "use strict";
 
+var events = require('events');
+var util = require('util');
+
 var _ = require("../helpers");
 
 var Band = function () {
-    var self = this;
-
-    self._band = null;
-    self._thing = null;
-    self._d = null;
-    self._timestamp = null;
 };
 
-Band.prototype._init = function(thing, d) {
+util.inherits(Band, events.EventEmitter);
+
+Band.prototype._init = function(thing, d, band) {
     var self = this;
 
     self._thing = thing;
     self._d = d;
+    self._band = band;
+    self._timestamp = null;
+
+    events.EventEmitter.call(self);
 };
 
 Band.prototype.set = function(key, value) {
@@ -86,7 +89,7 @@ Band.prototype.update = function(updated, paramd) {
             }
 
             return key;
-        };
+        },
     });
 
     var is_changed = false;

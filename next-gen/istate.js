@@ -27,11 +27,7 @@ var _ = require("../helpers");
 var band = require("./band");
 
 var Band = function (thing, d) {
-    var self = this;
-
-    self._band = "istate";
-    self._thing = thing;
-    self._d = d;
+    this._init(thing, d, "istate");
 };
 
 Band.prototype = new band.Band();

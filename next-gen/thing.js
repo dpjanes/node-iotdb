@@ -22,10 +22,13 @@
 
 "use strict";
 
+var events = require('events');
+var util = require('util');
+
 var _ = require("../helpers");
 
-var InputBand = require("./input").Band;
-var OutputBand = require("./output").Band;
+var InputBand = require("./istate").Band;
+var OutputBand = require("./ostate").Band;
 var ModelBand = require("./model").Band;
 var MetaBand = require("./meta").Band;
 
@@ -43,7 +46,11 @@ var Thing = function (initd) {
     self._bandd.istate = new InputBand(self, self._initd.istate);
     self._bandd.ostate = new OutputBand(self, self._initd.ostate);
     self._bandd.meta = new MetaBand(self, self._initd.meta);
+
+    events.EventEmitter.call(self);
 };
+
+util.inherits(Thing, events.EventEmitter);
 
 Thing.prototype.band = function(band_name) {
     return self._bandd[band_name] || null;
