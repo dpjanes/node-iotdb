@@ -43,9 +43,9 @@ var Thing = function (initd) {
 
     self._bandd = {};
     self._bandd.model = new ModelBand(self, self._initd.model);
+    self._bandd.meta = new MetaBand(self, self._initd.meta);
     self._bandd.istate = new InputBand(self, self._initd.istate);
     self._bandd.ostate = new OutputBand(self, self._initd.ostate);
-    self._bandd.meta = new MetaBand(self, self._initd.meta);
 
     events.EventEmitter.call(self);
 };
