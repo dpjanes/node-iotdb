@@ -181,8 +181,8 @@ ModelMaker.prototype.facet = function (facets) {
     var self = this;
     var facet_prefix = _.ld.expand("iot-facet:");
 
-    
-    var _add_inner = function(facet) {
+
+    var _add_inner = function (facet) {
         if (self.__facets.indexOf(facet) !== -1) {
             return;
         }
@@ -190,7 +190,7 @@ ModelMaker.prototype.facet = function (facets) {
         self.__facets.push(facet);
     };
 
-    var _add_outer = function(facet) {
+    var _add_outer = function (facet) {
         facet = _.ld.expand(facet, "iot-facet:");
         if (facet.indexOf(facet_prefix) !== 0) {
             _add_inner(facet);

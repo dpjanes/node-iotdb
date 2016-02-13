@@ -1348,7 +1348,7 @@ Model.prototype._do_notifies = function (attributed) {
     var self = this;
     var any = false;
 
-    var _do_notifies_attribute = function (attribute) {
+    var _do_notifies_attribute = function (attribute_key, attribute) {
         any = true;
 
         var attribute_value = null;
@@ -1370,7 +1370,7 @@ Model.prototype._do_notifies = function (attributed) {
     };
 
     for (var attribute_key in attributed) {
-        _do_notifies_attribute(attributed[attribute_key]);
+        _do_notifies_attribute(attribute_key, attributed[attribute_key]);
     }
 
     // levels of hackdom here
