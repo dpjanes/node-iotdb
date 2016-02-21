@@ -366,6 +366,9 @@ describe('test_d:', function() {
             var xd = _.d.clone.deep(d1d);
             xd["sub"] = { "good": "times" };
 
+            // console.log("OD", od);
+            // console.log("XD", xd);
+
             assert.ok(_.is.Equal(od, xd));
         });
         it('call - dirty array', function() {

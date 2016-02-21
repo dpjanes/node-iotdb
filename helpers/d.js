@@ -180,15 +180,6 @@ var json = function (xvalue) {
         return undefined;
     } else if (_.is.NaN(xvalue)) {
         return undefined;
-    } else if (_.is.Dictionary(xvalue)) {
-        var nd = {};
-        _.mapObject(xvalue, function(o, key) {
-            var n = json(o);
-            if (n !== undefined) {
-                nd[key] = n;
-            }
-        });
-        return nd;
     } else if (_.is.Array(xvalue)) {
         var ns = [];
         xvalue.map(function(o) {
@@ -198,6 +189,15 @@ var json = function (xvalue) {
             }
         });
         return ns;
+    } else if (_.is.Object(xvalue)) {
+        var nd = {};
+        _.mapObject(xvalue, function(o, key) {
+            var n = json(o);
+            if (n !== undefined) {
+                nd[key] = n;
+            }
+        });
+        return nd;
     } else {
         return xvalue;
     }
