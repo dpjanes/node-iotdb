@@ -87,14 +87,20 @@ var set = function(keystored, key, value) {
  */
 var transform = function(o, paramd) {
     paramd = _.defaults(paramd, {
-        key: function(key) {
+        key: function(key, value, paramd) {
             return key;
         },
-        value: function(value) {
+        value: function(value, paramd) {
             return value;
         },
-        filter: function(value) {
+        filter: function(value, paramd) {
             return (value !== undefined);
+        },
+        pre: function(value, paramd) {
+            return value;
+        },
+        post: function(value, paramd) {
+            return value;
         },
     });
 
@@ -114,33 +120,31 @@ var transform = function(o, paramd) {
             var ovd = v;
             var nvd = {};
             for (var ovkey in ovd) {
-                var nvkey = paramd.key(ovkey, paramd);
+                var ovvalue = ovd[ovkey];
+
+                var nvkey = paramd.key(ovkey, ovvalue, paramd);
                 if (nvkey === undefined) {
                     continue;
                 }
 
-                var ovvalue = ovd[ovkey];
-                var nvvalue = _transform(ovvalue, paramd);
+                var nparamd = _.d.clone.shallow(paramd);
+                nparamd._key = ovvalue;
+
+                var nvvalue = _transform(ovvalue, nparamd);
                 if (paramd.filter(nvvalue)) {
                     nvd[nvkey] = nvvalue;
                 }
             }
             return nvd;
         } else {
-            return paramd.value(v);
+            return paramd.value(v, paramd);
         }
     };
 
 
-    if (paramd.pre) {
-        o = paramd.pre(o);
-    }
-
+    o = paramd.pre(o, paramd);
     o = _transform(o, paramd);
-
-    if (paramd.post) {
-        o = paramd.post(o);
-    }
+    o = paramd.post(o, paramd);
 
     return o;
 };

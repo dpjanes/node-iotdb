@@ -27,6 +27,7 @@
 var crypto = require('crypto');
 var path = require('path');
 var url = require('url');
+var node_uuid = require('node-uuid');
 
 var canonical_json = require('canonical-json');
 var _ = require("../helpers");
@@ -213,6 +214,22 @@ var slugify = function (identifier) {
     return identifier;
 };
 
+var obscure = function (value) {
+    if (_.is.String(value)) {
+        value = "" + value;
+    }
+
+    return value.replace(/./g, "*");
+};
+
+var iotdb = function(prefix, remainder) {
+    if (remainder === undefined) {
+        remainder = node_uuid.v4();
+    }
+
+    return "urn:iotdb:" + prefix + ":" + remainder;
+};
+
 exports.id = {
     user_urn: user_urn,
     thing_urn: {
@@ -226,4 +243,9 @@ exports.id = {
     to_dash_case: identifier_to_dash_case,
     to_underscore_case: identifier_to_underscore_case,
     slugify: slugify,
+    obscure: obscure,
+    uuid: {
+        v4: node_uuid.v4,
+        iotdb: iotdb,
+    },
 };
