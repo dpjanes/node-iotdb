@@ -4,7 +4,7 @@
         "url": "https://github.com/dpjanes/node-iotdb/issues"
     }, 
     "dependencies": {
-        "bunyan": "~1.6.0", 
+        "bunyan": "~1.7.1", 
         "canonical-json": "~0.0.4", 
         "node-uuid": "~1.4.7", 
         "prompt": "~1.0.0", 
@@ -15,13 +15,13 @@
     "description": "IOTDB.org", 
     "devDependencies": {
         "grunt": "~0.4.5", 
-        "grunt-contrib-jshint": "~0.12.0", 
-        "grunt-contrib-nodeunit": "~0.4.1", 
-        "grunt-contrib-uglify": "~0.11.1", 
-        "grunt-contrib-watch": "~0.6.1", 
+        "grunt-contrib-jshint": "~1.0.0", 
+        "grunt-contrib-nodeunit": "~1.0.0", 
+        "grunt-contrib-uglify": "~1.0.0", 
+        "grunt-contrib-watch": "~1.0.0", 
         "grunt-jsbeautifier": "~0.2.10", 
         "jshint-stylish": "~2.1.0", 
-        "load-grunt-tasks": "~3.4.0", 
+        "load-grunt-tasks": "~3.4.1", 
         "request": "~2.69.0"
     }, 
     "homepage": "https://iotdb.org", 
@@ -47,5 +47,5 @@
         "cover": "istanbul cover _mocha tests", 
         "test": "grunt"
     }, 
-    "version": "0.13.1"
+    "version": "0.13.2"
 }
