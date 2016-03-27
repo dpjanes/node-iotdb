@@ -145,11 +145,16 @@ var update_timestamp = function(d, paramd)  {
     }
 };
 
+var epoch = function() {
+    return "1970-01-01T00:00:00.000Z"
+};
+
 exports.timestamp = {
     make: timestamp,
     advance: advance,
     add: add_timestamp,
     update: update_timestamp,
+    epoch: epoch,
     check: {
         dictionary: check_dictionary,
         values: check_values,

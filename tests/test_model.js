@@ -76,14 +76,14 @@ describe('test_model', function(){
         it('ostate', function(){
             var t1 = new T();
             var got = t1.state("ostate");
-            var expect = { on: null, brightness: null };
+            var expect = { on: null, brightness: null, "@timestamp": _.timestamp.epoch(), };
 
             assert.deepEqual(got, expect);
         });
         it('istate', function(){
             var t1 = new T();
             var got = t1.state("istate");
-            var expect = { on: null };  // because brightness is not a reading
+            var expect = { on: null, "@timestamp": _.timestamp.epoch(), };  // because brightness is not a reading
 
             assert.deepEqual(got, expect);
         });

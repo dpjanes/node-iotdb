@@ -29,7 +29,7 @@ describe('test_thing_set:', function(){
             .make();
         var t = new T();
         t._clear_ostate = function() {};
-        assert.ok(_.is.Equal({ on: null, intensity: null }, t.state("ostate")))
+        assert.ok(_.is.Equal({ on: null, intensity: null, "@timestamp": _.timestamp.epoch(), }, t.state("ostate")))
         t.set('on', true);
         assert.ok(_.d.is.subset({ on: true, intensity: null }, t.state("ostate")))
         t.set('on', false);

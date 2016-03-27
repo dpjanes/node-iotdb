@@ -474,11 +474,11 @@ ModelMaker.prototype.make = function () {
         }
 
         this._ichanged = false;
-        this._itimestamp = null;
+        this._itimestamp = _.timestamp.epoch();
 
         this._pushes = 0;
         this._ochanged = false;
-        this._otimestamp = null;
+        this._otimestamp = _.timestamp.epoch();
 
         this._reachable = true;
     };

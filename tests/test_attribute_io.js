@@ -120,8 +120,8 @@ describe('test_attribute_io:', function(){
         assert.strictEqual(m.get("value"), null);
 
         /* state */
-        assert.ok(_.is.Equal({ value: null }, m.state("ostate")));
-        assert.ok(_.is.Equal({ value: null }, m.state("istate")));
+        assert.ok(_.is.Equal({ value: null, "@timestamp": _.timestamp.epoch(), }, m.state("ostate")));
+        assert.ok(_.is.Equal({ value: null, "@timestamp": _.timestamp.epoch(), }, m.state("istate")));
     });
     /* NO MORE TRANSACTIONS
     it('multivalue - ivalue and ovalue priority', function(){
