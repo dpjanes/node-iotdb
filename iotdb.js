@@ -295,6 +295,11 @@ exports.controller_meta = function () {
     return metad;
 };
 
+_.id.thing_urn.set({
+    machine_id: exports.keystore().get("/machine_id", null),
+});
+
+
 /**
  *  Really HomeStar related, but having them in 
  *  IOTDB makes debugging projects a lot easier

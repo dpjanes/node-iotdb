@@ -32,6 +32,7 @@ var node_uuid = require('node-uuid');
 var canonical_json = require('canonical-json');
 var _ = require("../helpers");
 
+var random = require("./random");
 
 var _safe = function(component) {
     return encodeURIComponent(component).replace('%', '$');
@@ -214,6 +215,10 @@ var slugify = function (identifier) {
     return identifier;
 };
 
+
+/**
+ *  Replace everything with "*"
+ */
 var obscure = function (value) {
     if (_.is.String(value)) {
         value = "" + value;
@@ -222,9 +227,14 @@ var obscure = function (value) {
     return value.replace(/./g, "*");
 };
 
+/**
+ *  Return an iotdb style urn:iotdb:<prefix>:<remainder>.
+ *  If remainder is not specified, we'll get a YouTube
+ *  style ID
+ */
 var iotdb = function(prefix, remainder) {
     if (remainder === undefined) {
-        remainder = node_uuid.v4();
+        remainder = random.short();
     }
 
     return "urn:iotdb:" + prefix + ":" + remainder;
@@ -247,5 +257,13 @@ exports.id = {
     uuid: {
         v4: node_uuid.v4,
         iotdb: iotdb,
+    },
+    globals: {
+        machine_id: function() {
+            return machine_id;
+        },
+        network_id: function() {
+            return network_id;
+        },
     },
 };

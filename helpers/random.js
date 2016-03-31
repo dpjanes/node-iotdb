@@ -44,6 +44,17 @@ var choose = function (vs) {
     return vs[random_integer(vs.length)];
 };
 
+var short = function (vs) {
+    var hasher = crypto.createHash("sha512");
+    hasher.update("" + Math.random());
+
+    var v = hasher.digest("base64").substring(0, 8);
+    v = v.replace(/\//g, '_');
+    v = v.replace(/[+]/g, '-');
+
+    return v;
+};
+
 exports.random = {
     id: generate_id,
     integer: random_integer,
