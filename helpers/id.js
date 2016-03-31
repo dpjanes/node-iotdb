@@ -32,7 +32,7 @@ var node_uuid = require('node-uuid');
 var canonical_json = require('canonical-json');
 var _ = require("../helpers");
 
-var random = require("./random");
+var random = require("./random").random;
 
 var _safe = function(component) {
     return encodeURIComponent(component).replace('%', '$');

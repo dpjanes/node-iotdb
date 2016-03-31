@@ -59,4 +59,5 @@ exports.random = {
     id: generate_id,
     integer: random_integer,
     choose: choose,
+    short: short,
 };
