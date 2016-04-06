@@ -255,6 +255,9 @@ exports.Keystore = keystore.Keystore;
 var modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
+exports.use = function(module_name, module) {
+    modules.modules().use(module_name, module);
+};
 
 /*
 exports.module = function (name) {

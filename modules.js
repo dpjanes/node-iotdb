@@ -61,6 +61,36 @@ Modules.prototype.modules = function () {
     return _.values(this._moduled);
 };
 
+/**
+ *  Manually add another module
+ */
+Modules.prototype.use = function (module_name, module) {
+    if (!module) {
+        module = require(module_name);
+    }
+
+    self._moduled[module_name] = module
+    self._load_bridges();
+
+    if (module.setup) {
+        var iotdb = require('./iotdb');
+
+        try {
+            module.setup(iotdb);
+        } catch (x) {
+            logger.error({
+                method: "use",
+                module_name: module_name,
+                exception: x,
+                cause: "likely the module has a bad setup function",
+                error: _.error.message(x),
+                stack: x.stack,
+            }, "unexpected exception running module.setup");
+            process.exit(1);
+        }
+    }
+};
+
 Modules.prototype._load = function () {
     var self = this;
 
