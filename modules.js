@@ -65,6 +65,8 @@ Modules.prototype.modules = function () {
  *  Manually add another module
  */
 Modules.prototype.use = function (module_name, module) {
+    var self = this;
+
     if (!module) {
         module = require(module_name);
     }
