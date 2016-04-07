@@ -47,5 +47,5 @@
         "cover": "istanbul cover _mocha tests", 
         "test": "grunt"
     }, 
-    "version": "0.13.7"
+    "version": "0.13.8"
 }
