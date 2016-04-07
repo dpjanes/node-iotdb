@@ -34,8 +34,7 @@ var util = require('util');
 var fs = require('fs');
 var path = require('path');
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'keystore',
 });

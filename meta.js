@@ -26,8 +26,7 @@ var _ = require("./helpers.js");
 var constants = require("./constants.js");
 var assert = require("assert");
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'meta',
 });

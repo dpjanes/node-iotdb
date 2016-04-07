@@ -35,8 +35,7 @@ var model_maker = require("./model_maker");
 var constants = require("./constants");
 var iotdb = require("./iotdb");
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'model',
 });

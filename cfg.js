@@ -28,8 +28,7 @@ var _ = require('./helpers');
 var node_path = require('path');
 var node_fs = require('fs');
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'cfg',
 });

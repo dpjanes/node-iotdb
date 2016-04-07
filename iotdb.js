@@ -31,8 +31,7 @@ var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'IOT',
 });
@@ -237,9 +236,7 @@ exports.make_model_from_jsonld = exports.model.make_model_from_jsonld;
 exports.helpers = _;
 exports._ = _;
 exports.cfg = cfg;
-exports.logger = function () {
-    return bunyan.createLogger.apply(bunyan.createLogger, arguments);
-};
+exports.logger = _.logger.logger;
 
 var bridge = require('./bridge');
 exports.Bridge = bridge.Bridge;

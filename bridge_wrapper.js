@@ -27,8 +27,7 @@ var _ = require('./helpers');
 var events = require('events');
 var util = require('util');
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'bridge_wrapper',
 });

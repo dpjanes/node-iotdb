@@ -29,8 +29,7 @@ var events = require('events');
 var util = require('util');
 var assert = require('assert');
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'thing_array',
 });

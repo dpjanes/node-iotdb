@@ -45,6 +45,7 @@ var modules = [
     require('./helpers/random'),
     require('./helpers/q'),
     require('./helpers/version'),
+    require('./helpers/logger'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
