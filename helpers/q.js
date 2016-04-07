@@ -22,8 +22,7 @@
 
 "use strict";
 
-var bunyan = require('bunyan');
-var logger = bunyan.createLogger({
+var logger = require("./logger").logger.logger({
     name: 'iotdb',
     module: 'helpers/queue',
 });

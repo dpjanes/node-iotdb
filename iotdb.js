@@ -115,103 +115,6 @@ IOT.prototype.discover = function (modeld, initd) {
     return this;
 };
 
-/**
- *  Persist all changes to metadata.
- *  <p>
- *  Tons of work needed here
- *  XXX - deletable?
- */
-/*
-IOT.prototype.meta_save = function (t) {
-    var self = this;
-
-    if (!self.initd.meta_dir) {
-        logger.error({
-            method: "meta_save"
-        }, "no initd.meta_dir");
-        return;
-    }
-
-    var meta_dir = cfg.cfg_expand(self.envd, self.initd.meta_dir);
-    try {
-        fs.mkdirSync(meta_dir);
-    } catch (err) {}
-
-    var _persist = function (thing) {
-        if (!thing) {
-            return;
-        }
-
-        var meta = thing.meta();
-        if (_.is.Empty(meta.updated)) {
-            return;
-        }
-
-        var thing_id = thing.thing_id();
-        var file_meta = path.join(meta_dir, thing_id.replace(/^.*:/, '') + ".json");
-        fs.writeFileSync(file_meta, JSON.stringify(meta.updated, null, 2) + "\n");
-
-        logger.error({
-            method: "meta_save",
-            file: file_meta,
-            thing_id: thing_id,
-        }, "no initd.meta_dir");
-    };
-
-    if (t) {
-        _persist(t);
-    } else {
-        for (var thing_id in self.thing_instanced) {
-            _persist(self.thing_instanced[thing_id]);
-        }
-    }
-};
- */
-
-/**
- *  Kind of an arbitrary key / values store.
- *  This is both a setter and getter.
- *  This class doesn't use it but it's very
- *  handy for clients.
- */
-/*
-IOT.prototype.data = function (key, d) {
-    var self = this;
-
-    if (self.datadsd === undefined) {
-        self.datadsd = {};
-    }
-
-    if (d === undefined) {
-        return self.datadsd[key];
-    } else if (_.isObject(d)) {
-        var datads = self.datadsd[key];
-        if (datads === undefined) {
-            datads = self.datadsd[key] = [];
-        }
-
-        var found = false;
-        if (d.id !== undefined) {
-            for (var di in datads) {
-                if (datads[di].id === d.id) {
-                    datads.splice(di, 1, d);
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!found) {
-            datads.push(d);
-        }
-
-        return self;
-    } else {
-        throw new Error("IOT.data: the value must always be an object");
-    }
-};
- */
-
 /*
  *  API
  */
@@ -222,13 +125,6 @@ exports.attribute = require('./attribute');
 for (var key in exports.attribute) {
     exports[key] = exports.attribute[key];
 }
-
-/*
-exports.definitions = require('./definitions');
-for (var key in exports.definitions.attribute) {
-    exports[key] = exports.definitions.attribute[key];
-}
-*/
 
 exports.model = require('./model');
 exports.make_model = exports.model.make_model;
@@ -255,21 +151,6 @@ exports.Modules = modules.Modules;
 exports.use = function(module_name, module) {
     modules.modules().use(module_name, module);
 };
-
-/*
-exports.module = function (name) {
-    var m = modules.modules().module(name);
-    if (m) {
-        return m;
-    }
-
-    if (name === 'bunyan') {
-        return bunyan;
-    }
-
-    return require(name);
-};
-*/
 
 /**
  *  Metadata related to this controller & session
