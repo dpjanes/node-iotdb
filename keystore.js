@@ -25,19 +25,50 @@
 
 "use strict";
 
-var _ = require('./helpers');
+const _ = require('./helpers');
 
-var cfg = require('./cfg');
+const cfg = require('./cfg');
 
-var events = require('events');
-var util = require('util');
-var fs = require('fs');
-var path = require('path');
+const events = require('events');
+const util = require('util');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const process = require('process');
 
-var logger = require("./helpers/logger").logger.logger({
+const logger = require("./helpers/logger").logger.logger({
     name: 'iotdb',
     module: 'keystore',
 });
+
+/**
+ *  Return every folder from CWD to / that has a ".iotdb" folder in it
+ */
+const _paths = function() {
+    const paths = [];
+    var current = process.cwd();
+
+    while (true) {
+        var iotdb_folder = path.join(current, ".iotdb");
+
+        try {
+            var stbuf = fs.statSync(iotdb_folder);
+            if (stbuf.isDirectory()) {
+                paths.push(iotdb_folder);
+            }
+        } catch (x) {
+        }
+
+        var next = path.normalize(path.join(current, ".."));
+        if (next === current) {
+            break;
+        }
+
+        current = next;
+    }
+
+    return paths;
+};
 
 var Keystore = function (paramd) {
     var self = this;
@@ -45,7 +76,7 @@ var Keystore = function (paramd) {
     self.paramd = _.defaults(paramd, {
         root: "/",
         keystore: "keystore.json",
-        path: [".iotdb", "$HOME/.iotdb", ],
+        path: _paths(), // [".iotdb", "$HOME/.iotdb", ],
         makedirs: true,
     })
     self.d = {}
