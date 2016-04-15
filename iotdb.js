@@ -161,23 +161,27 @@ var iot_controller_session = _.ld.expand('iot:controller.session-timestamp');
 var controller_machine;
 var controller_session = _.timestamp.make();
 
+var machine_id;
+(function() {
+    const keystore = exports.keystore();
+
+    controller_machine = keystore.get("/homestar/runner/keys/homestar/key", null);
+    if (!controller_machine) {
+        controller_machine = keystore.get("/machine_id", null);
+    }
+})();
+
 exports.controller_meta = function () {
-    var metad = {};
+    const metad = {};
 
     metad[iot_controller_session] = controller_session;
-
-    if (controller_machine === undefined) {
-        controller_machine = exports.keystore().get("/machine_id", null);
-    }
-    if (controller_machine) {
-        metad[iot_controller_machine] = controller_machine;
-    }
+    metad[iot_controller_machine] = controller_machine;
 
     return metad;
 };
 
 _.id.thing_urn.set({
-    machine_id: exports.keystore().get("/machine_id", null),
+    machine_id: controller_machine,
 });
 
 
