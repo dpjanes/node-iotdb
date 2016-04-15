@@ -212,13 +212,31 @@ Model.prototype.state = function (band) {
         return self._state_meta();
     } else if (band === "model") {
         return self._state_model();
+    } else if (band === "connection") {
+        return self._state_connection();
     } else {
         logger.warn({
             method: "get",
             band: band,
-        }, "band is usually istate/ostate/model/meta");
+        }, "band is usually istate/ostate/model/meta/connection");
         return null;
     }
+};
+
+Model.prototype._state_connection = function () {
+    var self = this;
+
+    var stated = {};
+    
+    if (self.bridge_instance && self.bridge_instance.reachable()) {
+        stated["iot:reachable"] = true;
+    } else {
+        stated["iot:reachable"] = false;
+    }
+
+    _.extend(stated, iotdb.controller_meta());
+
+    return _.ld.compact(stated);
 };
 
 Model.prototype._state_istate = function () {

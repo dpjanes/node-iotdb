@@ -175,7 +175,10 @@ exports.controller_meta = function () {
     const metad = {};
 
     metad[iot_controller_session] = controller_session;
-    metad[iot_controller_machine] = controller_machine;
+
+    if (controller_machine) {
+        metad[iot_controller_machine] = controller_machine;
+    }
 
     return metad;
 };
