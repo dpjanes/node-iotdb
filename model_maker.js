@@ -479,7 +479,9 @@ ModelMaker.prototype.make = function () {
         this._ochanged = false;
         this._otimestamp = _.timestamp.epoch();
 
-        this._reachable = true;
+        this._ctimestamp = _.timestamp.epoch();
+
+        this._reachable = null;
     };
 
     new_thing.prototype = new model.Model();

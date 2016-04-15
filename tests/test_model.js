@@ -94,7 +94,6 @@ describe('test_model', function(){
                 'iot:thing-id': null,
                 'iot:model-id': 't',
                 'iot:facet': [ 'iot-facet:switch', 'iot-facet:lighting' ],
-                'iot:reachable': false,
             };
 
             assert.ok(_.d.is.superset(got, subset));

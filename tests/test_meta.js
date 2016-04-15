@@ -33,18 +33,24 @@ var fake_thing = {
 
     meta_changed: function() {
     },
+
+    reset: function() {
+        fake_thing._metad = null;
+    },
 };
 
 
 /* --- tests --- */
 describe('test_meta:', function(){
     it('constructor', function(){
+        fake_thing.reset();
         /* not a real test but let's get the ball rolling */
         var meta = new Meta(fake_thing);
         assert.strictEqual(meta.thing, fake_thing);
         assert.ok(_.isEmpty(meta._updated));
     });
     it('initial timestamp', function() {
+        fake_thing.reset();
         /* timestamp should initially be blank */
         var meta = new Meta(fake_thing);
         var timestamp = meta.get('@timestamp');
@@ -62,6 +68,7 @@ describe('test_meta:', function(){
     });
         */
     it('update timestamp - no paramd', function() {
+        fake_thing.reset();
         /* timestamp should be blank */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -86,6 +93,7 @@ describe('test_meta:', function(){
     });
         */
     it('update timestamp - conflict: ind:no, update:no', function() {
+        fake_thing.reset();
         /* if no timestamps at all, take the new */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -99,6 +107,7 @@ describe('test_meta:', function(){
         assert.equal(meta.get('key'), 'new-value');
     });
     it('update timestamp - conflict: ind:yes, update:no', function() {
+        fake_thing.reset();
         /* ignore update if no new timestamp but there is an old one */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -115,6 +124,7 @@ describe('test_meta:', function(){
         assert.equal(meta.get('key'), 'old-value');
     });
     it('update timestamp - conflict: ind:no, update:yes', function() {
+        fake_thing.reset();
         /* update if new one has timestamp and old doesn't */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -129,6 +139,7 @@ describe('test_meta:', function(){
         assert.equal(meta.get('key'), 'new-value');
     });
     it('update timestamp - conflict: ind:TS_1, update:TS_2', function() {
+        fake_thing.reset();
         /* update if newer */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -144,6 +155,7 @@ describe('test_meta:', function(){
         assert.equal(meta.get('key'), 'new-value');
     });
     it('update timestamp - conflict: ind:TS_2, update:TS_1', function() {
+        fake_thing.reset();
         /* no update if older */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -162,6 +174,7 @@ describe('test_meta:', function(){
         assert.equal(meta.get('key'), 'old-value');
     });
     it('update timestamp - conflict: ind:TS_2, update:TS_2', function() {
+        fake_thing.reset();
         /* no update if the same timestamp */
         var meta = new Meta(fake_thing);
         meta.update({
@@ -180,6 +193,7 @@ describe('test_meta:', function(){
         assert.equal(meta.get('key'), 'old-value');
     });
     it('update timestamp - conflict + set_timestamp', function() {
+        fake_thing.reset();
         /* timestamp should take the value, not the current time */
         var meta = new Meta(fake_thing);
         meta.update({

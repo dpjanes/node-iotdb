@@ -46,6 +46,7 @@ var VERBOSE = true;
 var EVENT_THINGS_CHANGED = "things_changed";
 var EVENT_THING_CHANGED = "state";
 var EVENT_META_CHANGED = "meta";
+var EVENT_CONNECTION_CHANGED = "connection";
 
 
 /**
@@ -1264,6 +1265,14 @@ Model.prototype.meta_changed = function () {
     this.__emitter.emit(EVENT_META_CHANGED, true);
 };
 
+Model.prototype.connection_changed = function () {
+    if (iotdb.shutting_down()) {
+        return;
+    }
+
+    this.__emitter.emit(EVENT_CONNECTION_CHANGED, true);
+};
+
 Model.prototype.thing_id = function () {
     return this._thing_id;
 };
@@ -1743,18 +1752,30 @@ var reachabled = {};
  *  Note it's OK if we're already bound - this will just replace it
  */
 Model.prototype.bind_bridge = function (bridge_instance) {
-    var self = this;
-    var is_reachable = bridge_instance.reachable() ? true : false;
+    const self = this;
 
     self._validate_bind_bridge(bridge_instance);
+
+    const _reachable_changed = function(is_reachable) {
+        if (reachabled[self._thing_id] === is_reachable) {
+            return;
+        }
+
+        reachabled[self._thing_id] = is_reachable;
+
+        self._ctimestamp = _.timestamp.make();
+        self.connection_changed();
+    };
 
     self.bridge_instance = bridge_instance;
     if (self.bridge_instance) {
         var mapping = self.bridge_instance.binding.mapping;
         self.bridge_instance.pulled = function (pulld) {
-            is_reachable = bridge_instance.reachable() ? true : false;
+            _reachable_changed(bridge_instance.reachable() ? true : false);
 
-            if (pulld) {
+            if (!pulld) {
+                // pontetially we could implement metadata evolution
+            } else {
                 pulld = _.d.clone.deep(pulld);
 
                 // mappings can be attached to bindings to make enumerations better
@@ -1790,17 +1811,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
                 }
 
                 self.update("istate", pulld, paramd);
-            } else {
-                // note the doesn't account for other meta changes sigh - real hack, fix
-                if (reachabled[self._thing_id] !== is_reachable) {
-                    // console.log("WAS", reachabled[self._thing_id], "IS", is_reachable);
-                    reachabled[self._thing_id] = is_reachable;
-
-                    self.meta()._updated["@timestamp"] = _.timestamp.make();
-
-                    self.meta_changed();
-                }
-            }
+            } 
         };
 
         var bmetad = bridge_instance.meta();
@@ -1816,7 +1827,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
         }
     }
 
-    reachabled[self._thing_id] = is_reachable;
+    _reachable_changed(bridge_instance.reachable() ? true : false);
     self.meta_changed();
 
     return self;

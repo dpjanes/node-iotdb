@@ -47,19 +47,20 @@ var machine_id;
 
 /**
  *  Return the metadata
- *
- *
  */
 Meta.prototype.state = function () {
     var self = this;
 
-    var metad = {};
-    metad[constants.iot_thing_id] = self.thing.thing_id();
-    metad[constants.iot_model_id] = self.thing.code();
-    metad[constants.schema_name] = self.thing.name;
+    if (!self.thing._metad) {
+        self.thing._metad = {};
+    }
+
+    self.thing._metad[constants.iot_thing_id] = self.thing.thing_id();
+    self.thing._metad[constants.iot_model_id] = self.thing.code();
+    self.thing._metad[constants.schema_name] = self.thing.name;
 
     if (self.thing.__facets) {
-        metad[constants.iot_facet] = self.thing.__facets;
+        self.thing._metad[constants.iot_facet] = self.thing.__facets;
     }
 
     if (self.thing.bridge_instance) {
@@ -68,24 +69,24 @@ Meta.prototype.state = function () {
             delete bmetad[constants.iot_thing_id];
             delete bmetad[constants.iot_thing];
 
-            _.extend(metad, bmetad);
+            _.extend(self.thing._metad, bmetad);
         }
 
         // binding metadata
         if (self.thing.bridge_instance.binding && self.thing.bridge_instance.binding.metad) {
-            _.extend(metad, _.ld.expand(self.thing.bridge_instance.binding.metad));
+            _.extend(self.thing._metad, _.ld.expand(self.thing.bridge_instance.binding.metad));
         }
 
         // bridge reachable
-        metad[constants.iot_reachable] = self.thing.bridge_instance.reachable() ? true : false;
+        // metad[constants.iot_reachable] = self.thing.bridge_instance.reachable() ? true : false;
     } else {
-        metad[constants.iot_reachable] = false;
+        // metad[constants.iot_reachable] = false;
     }
 
-    _.extend(metad, self._updated);
-    _.extend(metad, require('iotdb').controller_meta());
+    _.extend(self.thing._metad, self._updated);
+    // _.extend(metad, require('iotdb').controller_meta());
 
-    return metad;
+    return self.thing._metad;
 };
 
 /**
