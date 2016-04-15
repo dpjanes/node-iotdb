@@ -52,7 +52,9 @@ Meta.prototype.state = function () {
     var self = this;
 
     if (!self.thing._metad) {
-        self.thing._metad = {};
+        self.thing._metad = {
+            "@timestamp": _.timestamp.epoch(),
+        };
     }
 
     self.thing._metad[constants.iot_thing_id] = self.thing.thing_id();

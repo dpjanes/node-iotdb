@@ -227,7 +227,11 @@ Model.prototype.state = function (band) {
 Model.prototype._state_connection = function () {
     var self = this;
 
-    var stated = {};
+    var stated = {}
+
+    if (self._ctimestamp) {
+        stated["@timestamp"] = self._ctimestamp;
+    }
     
     if (self.bridge_instance && self.bridge_instance.reachable()) {
         stated["iot:reachable"] = true;
