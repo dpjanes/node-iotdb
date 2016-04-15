@@ -110,21 +110,21 @@ describe('test_hash', function() {
         it('empty', function() {
             var value = "";
             var result = _.hash.short(value);
-            var expect = '1B2M2Y8AsgTp';
+            var expect = '1B2M2Y8A';
 
             assert.strictEqual(result, expect);
         });
         it('string', function() {
             var value = "now is the time for all";
             var result = _.hash.short(value);
-            var expect = 'l0ihq6+yoJe+';
+            var expect = 'l0ihq6-y';
 
             assert.strictEqual(result, expect);
         });
         it('complex', function() {
             var value = [ "now is the time", "for all" ];
             var result = _.hash.short(value);
-            var expect = 'qOpBe4vslmIG';
+            var expect = 'qOpBe4vs';
 
             assert.strictEqual(result, expect);
         });
