@@ -1788,7 +1788,14 @@ Model.prototype.bind_bridge = function (bridge_instance) {
         var bmetad = bridge_instance.meta();
         var thing_id = bmetad['iot:thing-id'] || bmetad['iot:thing'];
 
-        self._thing_id = thing_id + ":" + self.code();
+        // if we have this, we can make canonical thing ids
+        var runner_id = iotdb.keystore().get("/homestar/runner/keys/homestar/key", null);
+        if (runner_id) {
+            runner_id = runner_id.replace(/^.*:/, '');
+            self._thing_id = _.id.uuid.iotdb("t", runner_id + ":" + _.hash.short(thing_id + ":" + self.code()));
+        } else {
+            self._thing_id = thing_id + ":" + self.code();
+        }
     }
 
     reachabled[self._thing_id] = is_reachable;

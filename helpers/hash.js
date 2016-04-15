@@ -61,7 +61,11 @@ var short = function(av) {
         hasher.update("" + a);
     }
 
-    return hasher.digest("base64").substring(0, 12);
+    var v = hasher.digest("base64").substring(0, 8);
+    v = v.replace(/\//g, '_');
+    v = v.replace(/[+]/g, '-');
+
+    return v;
 };
 
 exports.hash = {
