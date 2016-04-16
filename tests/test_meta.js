@@ -54,7 +54,7 @@ describe('test_meta:', function(){
         /* timestamp should initially be blank */
         var meta = new Meta(fake_thing);
         var timestamp = meta.get('@timestamp');
-        assert.strictEqual(timestamp, undefined);
+        assert.strictEqual(timestamp, _.timestamp.epoch());
     });
         /* timestamp should be later than when we started */
         /*
@@ -75,7 +75,7 @@ describe('test_meta:', function(){
             'key': 'value',
         });
         var timestamp = meta.get('@timestamp');
-        assert.strictEqual(timestamp, undefined);
+        assert.strictEqual(timestamp, _.timestamp.epoch());
     });
         /* timestamp should be later than when we started */
         /*

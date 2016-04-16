@@ -216,7 +216,7 @@ var smart_extend = function (od) {
     }
 
     _.each(Array.prototype.slice.call(arguments, 1), function (xd) {
-        if (!_.isObject(xd)) {
+        if (!_.is.Dictionary(xd)) {
             return;
         }
 
@@ -226,7 +226,7 @@ var smart_extend = function (od) {
 
             if ((ovalue === null) || (ovalue === undefined)) {
                 od[key] = _.d.clone.deep(xvalue);
-            } else if (_.isObject(ovalue) && _.isObject(xvalue)) {
+            } else if (_.is.Dictionary(ovalue) && _.is.Dictionary(xvalue)) {
                 smart_extend(ovalue, xvalue);
             } else {
                 od[key] = xvalue;

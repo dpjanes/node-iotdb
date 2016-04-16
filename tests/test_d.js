@@ -334,6 +334,55 @@ describe('test_d:', function() {
 
             assert.ok(_.is.Equal(srcd, xd));
         });
+        describe('arrays', function() {
+            it('add array', function() {
+                var srcd = {
+                    "A": "b",
+                };
+                var upd = {
+                    "B": [ "a", "c", "c" ],
+                };
+                var xd = {
+                    "A": "b",
+                    "B": [ "a", "c", "c" ],
+                };
+                _.d.smart_extend(srcd, upd);
+
+                assert.ok(_.is.Equal(srcd, xd));
+            });
+            it('replace value with array', function() {
+                var srcd = {
+                    "A": "b",
+                    "B": 1,
+                };
+                var upd = {
+                    "B": [ "a", "c", "c" ],
+                };
+                var xd = {
+                    "A": "b",
+                    "B": [ "a", "c", "c" ],
+                };
+                _.d.smart_extend(srcd, upd);
+
+                assert.ok(_.is.Equal(srcd, xd));
+            });
+            it('replace array with array', function() {
+                var srcd = {
+                    "A": "b",
+                    "B": [ "1", "2" ],
+                };
+                var upd = {
+                    "B": [ "a", "c", "c" ],
+                };
+                var xd = {
+                    "A": "b",
+                    "B": [ "a", "c", "c" ],
+                };
+                _.d.smart_extend(srcd, upd);
+
+                assert.ok(_.is.Equal(srcd, xd));
+            });
+        });
     });
     describe('json', function() {
         it('call - empty', function() {
