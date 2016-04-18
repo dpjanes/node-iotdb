@@ -59,7 +59,7 @@ Meta.prototype.state = function () {
 
     self.thing._metad[constants.iot_thing_id] = self.thing.thing_id();
     self.thing._metad[constants.iot_model_id] = self.thing.code();
-    self.thing._metad[constants.schema_name] = self.thing.name;
+    self.thing._metad[constants.schema_name] = self.thing.name();
 
     if (self.thing.__facets) {
         self.thing._metad[constants.iot_facet] = self.thing.__facets;
