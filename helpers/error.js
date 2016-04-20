@@ -46,7 +46,12 @@ var code = function(error, otherwise) {
     }
 };
 
+var group = function(error, otherwise) {
+    return Math.floor(code(error, otherwise) / 100);
+};
+
 exports.error = {
     message: message,
     code: code,
+    group: group
 };

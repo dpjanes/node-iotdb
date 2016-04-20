@@ -155,8 +155,8 @@ exports.use = function(module_name, module) {
 /**
  *  Metadata related to this controller & session
  */
-var iot_controller_machine = _.ld.expand('iot:controller.machine-id');
-var iot_controller_session = _.ld.expand('iot:controller.session-timestamp');
+var iot_controller_machine = _.ld.expand('iot:runner.id');
+var iot_controller_session = _.ld.expand('iot:runner.timestamp');
 
 var controller_machine;
 var controller_session = _.timestamp.make();
