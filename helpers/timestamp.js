@@ -107,7 +107,8 @@ var check_dictionary = function(od, nd, paramd)  {
  */
 var add_timestamp = function(d, paramd)  {
     paramd = _.defaults(paramd, {
-        key: '@timestamp'
+        key: '@timestamp',
+        timestamp: _.timestamp.make(),
     });
 
     if ((d === null) || !_.is.Object(d)) {
@@ -116,7 +117,7 @@ var add_timestamp = function(d, paramd)  {
         return d;
     } else {
         d = _.d.clone.shallow(d);
-        d[paramd.key] = _.timestamp.make();
+        d[paramd.key] = paramd.timestamp;
 
         return d;
     }

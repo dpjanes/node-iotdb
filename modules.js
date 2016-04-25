@@ -62,6 +62,9 @@ Modules.prototype.modules = function () {
 
 /**
  *  Manually add another module
+ *
+ *  <Module>.use is like setup, except that it is only
+ *  called if you explicitly use use().
  */
 Modules.prototype.use = function (module_name, module) {
     var self = this;
@@ -73,22 +76,49 @@ Modules.prototype.use = function (module_name, module) {
     self._moduled[module_name] = module
     self._load_bridges();
 
-    if (module.setup) {
-        var iotdb = require('./iotdb');
+    self._use_setup(module_name, module);
+    self._use_use(module_name, module);
+};
 
-        try {
-            module.setup(iotdb);
-        } catch (x) {
-            logger.error({
-                method: "use",
-                module_name: module_name,
-                exception: x,
-                cause: "likely the module has a bad setup function",
-                error: _.error.message(x),
-                stack: x.stack,
-            }, "unexpected exception running module.setup");
-            process.exit(1);
-        }
+Modules.prototype._use_setup = function (module_name, module) {
+    if (!module.setup) {
+        return;
+    }
+
+    var iotdb = require('./iotdb');
+
+    try {
+        module.setup(iotdb);
+    } catch (x) {
+        logger.error({
+            method: "use",
+            module_name: module_name,
+            exception: x,
+            cause: "likely the module has a bad setup function",
+            error: _.error.message(x),
+            stack: x.stack,
+        }, "unexpected exception running module.setup");
+        process.exit(1);
+    }
+};
+
+Modules.prototype._use_use = function (module_name, module) {
+    if (!module.use) {
+        return;
+    }
+
+    try {
+        module.use();
+    } catch (x) {
+        logger.error({
+            method: "use",
+            module_name: module_name,
+            exception: x,
+            cause: "likely the module has a bad setup function",
+            error: _.error.message(x),
+            stack: x.stack,
+        }, "unexpected exception running module.use");
+        process.exit(1);
     }
 };
 

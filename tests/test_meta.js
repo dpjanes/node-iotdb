@@ -27,6 +27,10 @@ var fake_thing = {
         return "urn:iotdb:thing:fake_thing:1"
     },
 
+    name: function() {
+        return "";
+    },
+
     code: function() {
         return "fake";
     },
