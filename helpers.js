@@ -58,3 +58,13 @@ exports.queue = require('./helpers/q').q.queue;
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 exports.defaults = require('./helpers/d').d.compose.shallow;
 exports.noop = function () {};
+exports.make_done = function (done) {
+    return function(value) {
+        done(null, value);
+    };
+};
+exports.make_error = function (done) {
+    return function(error) {
+        done(error);
+    };
+};
