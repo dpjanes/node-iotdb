@@ -159,8 +159,18 @@ Model.prototype.code = function () {
 
 /**
  */
-Model.prototype.name = function () {
-    return this.__name;
+Model.prototype.name = function (name) {
+    const self = this;
+    
+    if (name) {
+        self.update("meta", {
+            "schema:name": name,
+        });
+
+        return self;
+    }
+
+    return _.ld.first(self.state("meta"), "schema:name");
 };
 
 /**
@@ -176,9 +186,50 @@ Model.prototype.help = function () {
 };
 
 /**
+ *  @depreciated
  */
 Model.prototype.facet = function () {
     return this.__facets;
+};
+
+/**
+ */
+Model.prototype.facets = function (facets) {
+    const self = this;
+
+    if (facets) {
+        if (!_.is.Array(facets)) {
+            facets = [ facets ];
+        }
+
+        self.update("meta", {
+            "iot:facet": _.ld.expand(facets),
+        });
+
+        return self;
+    } else {
+        return _.ld.compact(_.ld.list(self.state("meta"), "iot:facet"));
+    }
+};
+
+/**
+ */
+Model.prototype.zones = function (zones) {
+    const self = this;
+
+    if (zones) {
+        if (!_.is.Array(zones)) {
+            zones = [ zones ];
+        }
+
+        self.update("meta", {
+            "iot:zone": zone,
+        });
+
+        return self;
+    } else {
+        return _.ld.list(self.state("meta"), "iot:zone");
+    }
 };
 
 /**
