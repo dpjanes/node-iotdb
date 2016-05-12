@@ -10,7 +10,8 @@
         "prompt": "~1.0.0", 
         "semver": "~5.1.0", 
         "underscore": "~1.8.3", 
-        "unirest": "~0.5.0"
+        "unirest": "~0.5.0", 
+        "url-join": "~1.1.0"
     }, 
     "description": "IOTDB.org", 
     "devDependencies": {
@@ -47,5 +48,5 @@
         "cover": "istanbul cover _mocha tests", 
         "test": "grunt"
     }, 
-    "version": "0.14.1"
+    "version": "0.14.2"
 }
