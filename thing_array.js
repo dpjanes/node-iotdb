@@ -436,6 +436,57 @@ ThingArray.prototype.disconnect = function () {
 };
 
 /**
+ *  Call {@link Thing#update Model.name} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.name = function (name) {
+    var self = this;
+
+    assert(_.is.String(name));
+
+    self._apply_command(model.Model.prototype.name, arguments);
+    self._persist_command(model.Model.prototype.name, arguments);
+
+    return self;
+};
+
+/**
+ *  Call {@link Thing#update Model.zones} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.zones = function (zones) {
+    var self = this;
+
+    assert(_.is.String(zones) || _.is.Array(zones));
+
+    self._apply_command(model.Model.prototype.zones, arguments);
+    self._persist_command(model.Model.prototype.zones, arguments);
+
+    return self;
+};
+
+/**
+ *  Call {@link Thing#update Model.facets} on
+ *  every item in the ThingArray.
+ *
+ *  @return {this}
+ */
+ThingArray.prototype.facets = function (facets) {
+    var self = this;
+
+    assert(_.is.String(facets) || _.is.Array(facets));
+
+    self._apply_command(model.Model.prototype.facets, arguments);
+    self._persist_command(model.Model.prototype.facets, arguments);
+
+    return self;
+};
+
+/**
  *  Call {@link Thing#set Model.set} on
  *  every item in the ThingArray.
  *

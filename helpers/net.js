@@ -25,6 +25,7 @@
 "use strict";
 
 var unirest = require('unirest');
+var url_join = require('url-join');
 var os = require('os');
 var _ = require('../helpers');
 
@@ -90,6 +91,19 @@ var externalv4 = function(callback) {
         });
 };
 
+/**
+ *  This is to replace globally using url-join
+ *  because it does strange things when you
+ *  request a leading "/"
+ */
+var join = function(first) {
+    if (first === "/") {
+        return "/" + url_join.apply(url_join, [].splice.call(arguments, 1));
+    } else {
+        return url_join.apply(url_join, [].splice.call(arguments, 0));
+    }
+}
+
 exports.net = {
     ipv4: _ipv4,
     ipv6: _ipv6,
@@ -97,5 +111,9 @@ exports.net = {
 
     external: {
         ipv4: externalv4,
-    }
+    },
+
+    url: {
+        join: url_join,
+    },
 };

@@ -41,7 +41,7 @@ var logger = require("./helpers/logger").logger.logger({
 });
 
 var Things = function (paramd) {
-    var self = this;
+    const self = this;
 
     self.paramd = _.defaults(paramd, {});
     self._thingd = {};
@@ -66,7 +66,7 @@ Things.prototype._reset = function () {
  *  Return all things that we know about
  */
 Things.prototype.things = function (model_code) {
-    var self = this;
+    const self = this;
 
     if (!_.is.Empty(model_code)) {
         model_code = _.id.to_dash_case(model_code);
@@ -100,13 +100,14 @@ Things.prototype.things = function (model_code) {
 /**
  */
 Things.prototype.connect = function (modeld, initd, metad) {
-    return this.things(this.discover(modeld, initd, metad));
+    // return this.things(this.discover(modeld, initd, metad));
+    return this.discover(modeld, initd, metad);
 };
 
 /**
  */
 Things.prototype.discover = function (modeld, initd, metad) {
-    var self = this;
+    const self = this;
 
     logger.info({
         method: "connect",
@@ -154,32 +155,38 @@ Things.prototype.discover = function (modeld, initd, metad) {
         modeld["meta"] = metad;
     }
 
-    // run when ready
-    process.nextTick(function () {
-        self._discover(modeld);
+    // new in 0.15
+    const things = new thing_array.ThingArray({
+        persist: true,
+        things: self,
     });
 
-    return modeld.model_code;
+    // run when ready
+    process.nextTick(function () {
+        self._discover(things, modeld);
+    });
+
+    return things; // modeld.model_code;
 };
 
 /**
  *  This does the actual work of discovery, which 
  *  is delegated off to two different subfunctions
  */
-Things.prototype._discover = function (modeld) {
-    var self = this;
+Things.prototype._discover = function (things, modeld) {
+    const self = this;
 
     if (modeld.model_code) {
-        self._discover_model(modeld);
+        self._discover_model(things, modeld);
     } else {
-        self._discover_all(modeld);
+        self._discover_all(things, modeld);
     }
 };
 
 /**
  */
-Things.prototype._discover_model = function (modeld) {
-    var self = this;
+Things.prototype._discover_model = function (things, modeld) {
+    const self = this;
 
     var bindings = modules().bindings();
     for (var bi in bindings) {
@@ -188,7 +195,7 @@ Things.prototype._discover_model = function (modeld) {
             continue;
         }
 
-        self._discover_binding(modeld, binding);
+        self._discover_binding(things, modeld, binding);
         return;
     };
 
@@ -201,8 +208,8 @@ Things.prototype._discover_model = function (modeld) {
 
 /**
  */
-Things.prototype._discover_all = function (modeld) {
-    var self = this;
+Things.prototype._discover_all = function (things, modeld) {
+    const self = this;
 
     var bindings = modules().bindings();
     for (var bi in bindings) {
@@ -211,15 +218,15 @@ Things.prototype._discover_all = function (modeld) {
             continue;
         }
 
-        self._discover_binding(modeld, binding);
+        self._discover_binding(things, modeld, binding);
     };
 };
 
 /**
  *  This does the connect for a particular binding
  */
-Things.prototype._discover_binding = function (modeld, binding) {
-    var self = this;
+Things.prototype._discover_binding = function (things, modeld, binding) {
+    const self = this;
 
     logger.info({
         method: "_discover_binding",
@@ -234,7 +241,7 @@ Things.prototype._discover_binding = function (modeld, binding) {
     self._bridge_exemplars.push(bridge_exemplar);
 
     bridge_exemplar.discovered = function (bridge_instance) {
-        self._discover_binding_bridge(modeld, binding, bridge_exemplar, bridge_instance);
+        self._discover_binding_bridge(things, modeld, binding, bridge_exemplar, bridge_instance);
     };
 
     // and kick off the discovery … later
@@ -256,8 +263,8 @@ Things.prototype._discover_binding = function (modeld, binding) {
  *      - see if exiting one is reachable?
  *      - if it isn't, replace the bridge with this one
  */
-Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_exemplar, bridge_instance) {
-    var self = this;
+Things.prototype._discover_binding_bridge = function (things, modeld, binding, bridge_exemplar, bridge_instance) {
+    const self = this;
 
     if (require('iotdb').shutting_down()) {
         return;
@@ -307,8 +314,12 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
         var connectd = _.defaults(binding.connectd, {});
         bridge_instance.connect(connectd)
 
+        // add to the list of things we have built up for this connect
+        things.push(thing);
+
         // tell the world
         self.emit("thing", thing);
+
     } else if (thing.reachable()) {
         // don't replace reachable things
         return;
@@ -331,7 +342,7 @@ Things.prototype._discover_binding_bridge = function (modeld, binding, bridge_ex
 /*
  */
 Things.prototype.disconnect = function () {
-    var self = this;
+    const self = this;
 
     var max_wait = 0;
 

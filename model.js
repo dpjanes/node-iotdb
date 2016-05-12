@@ -223,7 +223,7 @@ Model.prototype.zones = function (zones) {
         }
 
         self.update("meta", {
-            "iot:zone": zone,
+            "iot:zone": zones,
         });
 
         return self;
@@ -702,8 +702,8 @@ Model.prototype._update_istate = function (band, updated, paramd) {
             }
         }
 
-
-        if (attribute._ivalue === attribute_value) {
+        if (attribute.is_type_null()) {
+        } else if (attribute._ivalue === attribute_value) {
             continue;
         }
 
@@ -813,12 +813,10 @@ Model.prototype._update_ostate = function (band, updated, paramd) {
             }
         }
 
-        if (attribute._ovalue === attribute_value) {
-            if (paramd.force) {
-                push_attributes.push(attribute);
-            }
-
-            continue;
+        if (attribute.force) {
+        } else if (attribute.is_type_null()) {
+        } else if (attribute._ovalue === attribute_value) {
+            continue
         }
 
         attribute._ovalue = attribute_value;
@@ -845,6 +843,10 @@ Model.prototype._update_ostate = function (band, updated, paramd) {
 
         if (paramd.notify) {
             // callbacks for individual attributes
+        /*
+         *  As of IOTDB 0.15 we no longer emit attribute changes for ostate,
+         *  only for istate. You can still listen to "ostate" for changes
+         *
             changed_attributes.map(function (attribute) {
                 var callbacks = self.__callbacksd[attribute.code()];
                 if (!callbacks) {
@@ -857,6 +859,7 @@ Model.prototype._update_ostate = function (band, updated, paramd) {
                     });
                 });
             });
+        */
 
             // callbacks for _state_
             process.nextTick(function () {
@@ -1004,9 +1007,13 @@ Model.prototype._clear_ostate = function () {
 Model.prototype._update_meta = function (band, updated, paramd) {
     var self = this;
 
-    self.meta().update(updated, {
-        check_timestamp: paramd.check_timestamp,
+    paramd = _.defaults(paramd, {
+        check_timestamp: false,
+        set_timestamp: true,
+        notify: true,
     });
+
+    self.meta().update(updated, paramd);
 };
 
 /**
@@ -1070,7 +1077,7 @@ Model.prototype.set = function (find_key, new_value) {
 
     var update_paramd = {
         check_timestamp: false,
-        force: rd.attribute.is_type_null(),
+        // force: rd.attribute.is_type_null(), // no longer needed - update checks
     };
 
     self.update("ostate", updated, update_paramd);
@@ -1313,14 +1320,20 @@ Model.prototype._validate_on_meta = function (callback) {
  *  Send a notification that the metadata has been changed
  */
 Model.prototype.meta_changed = function () {
+    const self = this;
+
     if (iotdb.shutting_down()) {
         return;
     }
 
-    this.__emitter.emit(EVENT_META_CHANGED, true);
+    process.nextTick(function() {
+        self.__emitter.emit(EVENT_META_CHANGED, true);
+    });
 };
 
 Model.prototype.connection_changed = function () {
+    const self = this;
+
     if (iotdb.shutting_down()) {
         return;
     }
@@ -1827,7 +1840,7 @@ Model.prototype.bind_bridge = function (bridge_instance) {
         var mapping = self.bridge_instance.binding.mapping;
         self.bridge_instance.pulled = function (pulld) {
             _reachable_changed(bridge_instance.reachable() ? true : false);
-
+            
             if (!pulld) {
                 // pontetially we could implement metadata evolution
             } else {
