@@ -114,6 +114,6 @@ exports.net = {
     },
 
     url: {
-        join: url_join,
+        join: join,
     },
 };
