@@ -31,6 +31,7 @@ var InputBand = require("./istate").Band;
 var OutputBand = require("./ostate").Band;
 var ModelBand = require("./model").Band;
 var MetaBand = require("./meta").Band;
+var ConnectionBand = require("./connection").Band;
 
 var Thing = function (initd) {
     var self = this;
@@ -39,11 +40,13 @@ var Thing = function (initd) {
         istate: {},
         ostate: {},
         meta: {},
+        connection: {},
     });
 
     self._bandd = {};
     self._bandd.model = new ModelBand(self, self._initd.model);
     self._bandd.meta = new MetaBand(self, self._initd.meta);
+    self._bandd.connection = new ConnectionBand(self, self._initd.connection);
     self._bandd.istate = new InputBand(self, self._initd.istate);
     self._bandd.ostate = new OutputBand(self, self._initd.ostate);
 
