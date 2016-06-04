@@ -22,19 +22,19 @@
 
 "use strict";
 
-var events = require('events');
-var util = require('util');
+const events = require('events');
+const util = require('util');
 
-var _ = require("../helpers");
+const _ = require("../helpers");
 
-var InputBand = require("./istate").Band;
-var OutputBand = require("./ostate").Band;
-var ModelBand = require("./model").Band;
-var MetaBand = require("./meta").Band;
-var ConnectionBand = require("./connection").Band;
+const InputBand = require("./istate").Band;
+const OutputBand = require("./ostate").Band;
+const ModelBand = require("./model").Band;
+const MetaBand = require("./meta").Band;
+const ConnectionBand = require("./connection").Band;
 
-var Thing = function (initd) {
-    var self = this;
+const Thing = function (initd) {
+    const self = this;
     self._initd = _.d.compose.shallow(initd, {
         model: {},
         istate: {},

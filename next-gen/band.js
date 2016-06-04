@@ -22,18 +22,18 @@
 
 "use strict";
 
-var events = require('events');
-var util = require('util');
+const events = require('events');
+const util = require('util');
 
-var _ = require("../helpers");
+const _ = require("../helpers");
 
-var Band = function () {
+const Band = function () {
 };
 
 util.inherits(Band, events.EventEmitter);
 
 Band.prototype._init = function(thing, d, band) {
-    var self = this;
+    const self = this;
 
     self._thing = thing;
     self._d = d;
@@ -44,7 +44,7 @@ Band.prototype._init = function(thing, d, band) {
 };
 
 Band.prototype.set = function(key, value) {
-    var self = this;
+    const self = this;
 
     var ud = {};
     ud[key] = value;

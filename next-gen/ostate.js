@@ -22,11 +22,11 @@
 
 "use strict";
 
-var _ = require("../helpers");
+const _ = require("../helpers");
 
-var band = require("./band");
+const band = require("./band");
 
-var Band = function (thing, d) {
+const Band = function (thing, d) {
     this._init(thing, d, "ostate");
 };
 
