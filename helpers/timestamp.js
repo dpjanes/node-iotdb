@@ -64,7 +64,7 @@ var check_values = function(otimestamp, ntimestamp) {
         return true;
     } else if (!ntimestamp && otimestamp) {
         return false;
-    } else if (ntimestamp <= otimestamp) {
+    } else if (ntimestamp < otimestamp) {
         return false;
     } else {
         return true;
@@ -80,7 +80,7 @@ var check_values = function(otimestamp, ntimestamp) {
  *  1) if neither has a timestamp, the 'nd' wins
  *  2) if one has a timestamp, that one wins
  *  3) if both have a timestamp, only update if 'nd'
- *     is later than the current value
+ *     is later than OR equal to the current value
  */
 var check_dictionary = function(od, nd, paramd)  {
     if ((od === null) || !_.is.Object(od)) {
