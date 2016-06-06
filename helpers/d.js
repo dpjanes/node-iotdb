@@ -61,6 +61,36 @@ var get = function(keystored, key, otherwise) {
 };
 
 /**
+ */
+var first = function(keystored, key, otherwise) {
+    var value = get(keystored, key, undefined);
+    if (value === undefined) {
+        return otherwise;
+    } else if (_.is.Array(value)) {
+        if (value.length) {
+            return value[0];
+        } else {
+            return otherwise;
+        }
+    } else {
+        return value;
+    }
+};
+
+/**
+ */
+var list = function(keystored, key, otherwise) {
+    var value = get(keystored, key, undefined);
+    if (value === undefined) {
+        return otherwise;
+    } else if (_.is.Array(value)) {
+        return value;
+    } else {
+        return [ value ];
+    }
+};
+
+/**
  *  Slash-path oriented
  */
 var set = function(keystored, key, value) {
@@ -279,6 +309,8 @@ var deep_clone = function (oldObj) {
 
 exports.d = {
     get: get,
+    first: first,
+    list: list,
     set: set,
     transform: transform,
     smart_extend: smart_extend, // depreciate this usage

@@ -135,7 +135,7 @@ Modules.prototype._load_master = function () {
 
     self._moduled = {}
 
-    var moduled = require('iotdb').keystore().get("modules");
+    var moduled = require('./iotdb').keystore().get("modules");
     for (var module_name in moduled) {
         var module_folder = moduled[module_name];
         try {
