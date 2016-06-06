@@ -222,6 +222,7 @@ var _ld_compact = function (v, paramd) {
         json: true,     // only JSON-friendly
         scrub: false,   // only with ':' in key
         jsonld: false,  // only with ':' in key or starting with '@'
+        safe: [ "schema:name", "schema:descripion", "iot:help", ],
     });
 
     if (_.is.Array(v)) {
@@ -241,6 +242,8 @@ var _ld_compact = function (v, paramd) {
         var ovd = v;
         var nvd = {};
         for (var ovkey in ovd) {
+            var nvkey = _ld_compact(ovkey, paramd);
+
             if (paramd.jsonld) {
                 if (ovkey.indexOf(':') !== -1) {
                 } else if (ovkey.match(/^@/)) {
@@ -257,11 +260,15 @@ var _ld_compact = function (v, paramd) {
             if (ovkey === "@context") {
                 nvd[ovkey] = ovvalue;
                 continue;
+            } 
+
+            if (paramd.safe.indexOf(nvkey) !== -1) {
+                nvd[nvkey] = ovvalue;
+                continue;
             }
 
             var nvvalue = _ld_compact(ovvalue, paramd);
             if (nvvalue !== undefined) {
-                var nvkey = _ld_compact(ovkey, paramd);
                 nvd[nvkey] = nvvalue;
             }
         }

@@ -194,7 +194,7 @@ describe('test_meta:', function(){
             check_timestamp: true,
             set_timestamp: true,
         });
-        assert.equal(meta.get('key'), 'old-value');
+        assert.equal(meta.get('key'), 'new-value');
     });
     it('update timestamp - conflict + set_timestamp', function() {
         fake_thing.reset();
