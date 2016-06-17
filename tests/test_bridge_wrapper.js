@@ -24,34 +24,34 @@ var homestar_test = require("./instrument/homestar-test");
 describe('test_bridge_wrapper', function(){
     describe('make_wrap', function(){
         it('works as expected', function() {
-            var wrapper = iotdb.make_wrap("Test", homestar_test.bindings);
+            var wrapper = _.bridge.wrap("Test", homestar_test.bindings);
             assert.ok(wrapper);
         });
         it('fails as expected', function() {
-            var wrapper = iotdb.make_wrap("DoesNotExist", homestar_test.bindings);
+            var wrapper = _.bridge.wrap("DoesNotExist", homestar_test.bindings);
             assert.ok(!wrapper);
         });
     });
     describe('core', function(){
         it('constructs without issue', function() {
-            var wrapper = _.bridge_wrapper(test.binding);
+            var wrapper = _.bridge.make(test.binding);
         });
         it('emits thing', function(done) {
-            var wrapper = _.bridge_wrapper(test.binding);
+            var wrapper = _.bridge.make(test.binding);
             wrapper.on("thing", function(thing) {
                 assert.ok(_.is.Thing(thing));
                 done();
             });
         });
         it('emits bridge', function(done) {
-            var wrapper = _.bridge_wrapper(test.binding);
+            var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
                 done();
             });
         });
         it('emits state', function(done) {
-            var wrapper = _.bridge_wrapper(test.binding);
+            var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
                 setInterval(function() {
@@ -73,7 +73,7 @@ describe('test_bridge_wrapper', function(){
             });
         });
         it('emits meta', function(done) {
-            var wrapper = _.bridge_wrapper(test.binding);
+            var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
                 setInterval(function() {
@@ -87,7 +87,7 @@ describe('test_bridge_wrapper', function(){
             });
         });
         it('emits disconnected', function(done) {
-            var wrapper = _.bridge_wrapper(test.binding);
+            var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
                 setInterval(function() {

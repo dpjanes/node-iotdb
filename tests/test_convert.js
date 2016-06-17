@@ -175,7 +175,7 @@ describe('test_convert', function() {
                     value: 295.372,
                 };
 
-                assert.strictEqual(_.convert.convert(value), null);
+                assert.strictEqual(_.convert.convert(value), undefined);
             });
             it('to', function() {
                 var value = {
@@ -184,7 +184,7 @@ describe('test_convert', function() {
                     value: 295.372,
                 };
 
-                assert.strictEqual(_.convert.convert(value), null);
+                assert.strictEqual(_.convert.convert(value), undefined);
             });
             it('to', function() {
                 var value = {
@@ -193,7 +193,7 @@ describe('test_convert', function() {
                     value: 295.372,
                 };
 
-                assert.strictEqual(_.convert.convert(value), null);
+                assert.strictEqual(_.convert.convert(value), undefined);
             });
         });
         describe('precision', function() {

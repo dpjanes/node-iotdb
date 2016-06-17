@@ -34,8 +34,9 @@ var fs = require('fs');
 var things = require('./things');
 var thing_array = require('./thing_array');
 var cfg = require('./cfg');
-var _ = require('./helpers');
 var exit = require('./exit');
+
+var _ = require('./helpers');
 
 /**
  *  Manage things, bridges and connections to the
@@ -131,10 +132,6 @@ exports.logger = _.logger.logger;
 
 var bridge = require('./bridge');
 exports.Bridge = bridge.Bridge;
-
-var bridge_wrapper = require('./bridge_wrapper');
-exports.bridge_wrapper = bridge_wrapper.bridge_wrapper;
-exports.make_wrap = bridge_wrapper.make_wrap;
 
 var keystore = require('./keystore');
 exports.keystore = keystore.keystore;

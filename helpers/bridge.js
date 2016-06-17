@@ -1,5 +1,5 @@
 /*
- *  bridge_wrapper.js
+ *  bridge.js
  *
  *  David Janes
  *  IOT.org
@@ -22,12 +22,12 @@
 
 "use strict";
 
-var _ = require('iotdb-helpers');
+const _ = require('iotdb-helpers');
 
-var events = require('events');
-var util = require('util');
+const events = require('events');
+const util = require('util');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'bridge_wrapper',
 });
@@ -41,7 +41,7 @@ var logger = _.logger.make({
  *  but sometimes this is helpful, especially if
  *  you just want to use the moduels stand-alone
  */
-var BridgeWrapper = function (binding, initd) {
+const BridgeWrapper = function (binding, initd) {
     var self = this;
     events.EventEmitter.call(self);
 
@@ -71,7 +71,7 @@ var BridgeWrapper = function (binding, initd) {
         /* now make a model */
         var model_class = binding.model;
         if (!_.is.Model(model_class)) {
-            model_class = require('./model').make_model_from_jsonld(model_class);
+            model_class = require('../model').make_model_from_jsonld(model_class);
         }
 
         var model_instance = new model_class();
@@ -111,7 +111,7 @@ util.inherits(BridgeWrapper, events.EventEmitter);
 /**
  *  Explicitly given a binding, make a Bridge Wrapper
  */
-exports.bridge_wrapper = function (binding, initd) {
+const bridge_wrapper = function (binding, initd) {
     return new BridgeWrapper(binding, initd);
 };
 
@@ -119,7 +119,7 @@ exports.bridge_wrapper = function (binding, initd) {
  *  Finds a Model by name in a list of bindings,
  *  then wraps it
  */
-exports.make_wrap = function (name, bindings, initd) {
+const make_wrap = function (name, bindings, initd) {
     var model_code = _.id.to_dash_case(name);
     for (var bi in bindings) {
         var binding = bindings[bi];
@@ -129,7 +129,7 @@ exports.make_wrap = function (name, bindings, initd) {
 
         var model_class = binding.model;
         if (!_.is.Model(model_class)) {
-            model_class = require('./model').make_model_from_jsonld(model_class);
+            model_class = require('../model').make_model_from_jsonld(model_class);
         }
 
         var model_instance = new model_class();
@@ -137,6 +137,14 @@ exports.make_wrap = function (name, bindings, initd) {
             continue;
         }
 
-        return exports.bridge_wrapper(binding, initd);
+        return bridge_wrapper(binding, initd);
     }
+};
+
+/**
+ *  API
+ */
+exports.bridge = {
+    make: bridge_wrapper,
+    wrap: make_wrap,
 };

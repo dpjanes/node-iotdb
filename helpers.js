@@ -29,6 +29,7 @@ const _ = require("iotdb-helpers");
 const local_modules = [
     require('./helpers/is'),
     require('./helpers/version'),
+    require('./helpers/bridge'),
 ];
 local_modules.map(local_module => {
     _.mapObject(local_module, ( local_value, local_name ) => {
@@ -36,7 +37,8 @@ local_modules.map(local_module => {
     });
 });
 
-_.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
 _.noop = () => {};
 _.make_done = (done) => (value) => done(null, value);
 _.make_error = (done) => (error) => done(error);
+
+module.exports = _;

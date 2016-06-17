@@ -24,6 +24,8 @@
 
 "use strict";
 
+const _ = require("iotdb-helpers");
+
 exports.is = {
     Thing: (o) => o && o._isThing,
     Model: (o) => o && o._isModel,
@@ -31,4 +33,5 @@ exports.is = {
     Transport: (o) => o && o._isTransport,
     Transporter: (o) => o && o._isTransport,
     Bridge: (o) => o && o._isBridge,
+    FindKey: (o) => _.is.String(o) || _.is.Dictionary(o),
 };
