@@ -26,7 +26,7 @@
 
 var _ = require('./helpers');
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'homestar',
 });

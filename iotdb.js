@@ -31,11 +31,6 @@ var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var logger = require("./helpers/logger").logger.logger({
-    name: 'iotdb',
-    module: 'IOT',
-});
-
 var things = require('./things');
 var thing_array = require('./thing_array');
 var cfg = require('./cfg');

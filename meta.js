@@ -26,7 +26,7 @@ var _ = require("./helpers.js");
 var constants = require("./constants.js");
 var assert = require("assert");
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'meta',
 });

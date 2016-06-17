@@ -36,7 +36,7 @@ const path = require('path');
 const os = require('os');
 const process = require('process');
 
-const logger = require("./helpers/logger").logger.logger({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'keystore',
 });

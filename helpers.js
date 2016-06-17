@@ -28,24 +28,30 @@ var crypto = require('crypto');
 var node_url = require('url');
 var path = require('path');
 
-exports.underscore = require('underscore')
+var _ = require("iotdb-helpers");
+
+_.mapObject(_, ( value, key ) => {
+    exports[key] = value;
+});
+
+// exports.underscore = require('underscore')
 
 var modules = [
-    exports.underscore,
-    require('./helpers/ld'),
-    require('./helpers/id'),
-    require('./helpers/d'),
-    require('./helpers/hash'),
+    // exports.underscore,
+    // require('./helpers/ld'),
+    // require('./helpers/id'),
+    // require('./helpers/d'),
+    // require('./helpers/hash'),
     require('./helpers/is'),
-    require('./helpers/net'),
-    require('./helpers/color'),
-    require('./helpers/timestamp'),
-    require('./helpers/error'),
-    require('./helpers/convert'),
-    require('./helpers/random'),
-    require('./helpers/q'),
+    // require('./helpers/net'),
+    // require('./helpers/color'),
+    // require('./helpers/timestamp'),
+    // require('./helpers/error'),
+    // require('./helpers/convert'),
+    // require('./helpers/random'),
+    // require('./helpers/q'),
     require('./helpers/version'),
-    require('./helpers/logger'),
+    // require('./helpers/logger'),
 ];
 for (var mi in modules) {
     var module = modules[mi];
@@ -54,9 +60,9 @@ for (var mi in modules) {
     }
 }
 
-exports.queue = require('./helpers/q').q.queue;
+exports.queue = _.q.queue; // require('./helpers/q').q.queue;
 exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
-exports.defaults = require('./helpers/d').d.compose.shallow;
+exports.defaults = _.d.compose.shallow; // require('./helpers/d').d.compose.shallow;
 exports.noop = function () {};
 exports.make_done = function (done) {
     return function(value) {

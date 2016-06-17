@@ -35,7 +35,7 @@ var thing_array = require('./thing_array');
 var events = require('events');
 var util = require('util');
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'things',
 });

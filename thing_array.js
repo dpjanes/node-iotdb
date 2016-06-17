@@ -29,7 +29,7 @@ var events = require('events');
 var util = require('util');
 var assert = require('assert');
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'thing_array',
 });

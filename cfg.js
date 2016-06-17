@@ -28,7 +28,7 @@ var _ = require('./helpers');
 var node_path = require('path');
 var node_fs = require('fs');
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'cfg',
 });

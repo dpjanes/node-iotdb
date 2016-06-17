@@ -35,7 +35,7 @@ var model_maker = require("./model_maker");
 var constants = require("./constants");
 var iotdb = require("./iotdb");
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'model',
 });

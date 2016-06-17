@@ -26,12 +26,14 @@
 
 "use strict";
 
+var _ = require("iotdb-helpers");
+
 var events = require('events');
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
 
-var logger = require("./helpers/logger").logger.logger({
+var logger = _.logger.make({
     name: 'iotdb',
     module: 'exit',
 });
