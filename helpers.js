@@ -24,53 +24,19 @@
 
 "use strict";
 
-var crypto = require('crypto');
-var node_url = require('url');
-var path = require('path');
+const _ = require("iotdb-helpers");
 
-var _ = require("iotdb-helpers");
-
-_.mapObject(_, ( value, key ) => {
-    exports[key] = value;
+const local_modules = [
+    require('./helpers/is'),
+    require('./helpers/version'),
+];
+local_modules.map(local_module => {
+    _.mapObject(local_module, ( local_value, local_name ) => {
+        _[local_name] = _.d.compose.shallow(local_value, _[local_name]);
+    });
 });
 
-// exports.underscore = require('underscore')
-
-var modules = [
-    // exports.underscore,
-    // require('./helpers/ld'),
-    // require('./helpers/id'),
-    // require('./helpers/d'),
-    // require('./helpers/hash'),
-    require('./helpers/is'),
-    // require('./helpers/net'),
-    // require('./helpers/color'),
-    // require('./helpers/timestamp'),
-    // require('./helpers/error'),
-    // require('./helpers/convert'),
-    // require('./helpers/random'),
-    // require('./helpers/q'),
-    require('./helpers/version'),
-    // require('./helpers/logger'),
-];
-for (var mi in modules) {
-    var module = modules[mi];
-    for (var key in module) {
-        exports[key] = module[key];
-    }
-}
-
-exports.queue = _.q.queue; // require('./helpers/q').q.queue;
-exports.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
-exports.defaults = _.d.compose.shallow; // require('./helpers/d').d.compose.shallow;
-exports.noop = function () {};
-exports.make_done = function (done) {
-    return function(value) {
-        done(null, value);
-    };
-};
-exports.make_error = function (done) {
-    return function(error) {
-        done(error);
-    };
-};
+_.bridge_wrapper = require('./bridge_wrapper').bridge_wrapper;
+_.noop = () => {};
+_.make_done = (done) => (value) => done(null, value);
+_.make_error = (done) => (error) => done(error);

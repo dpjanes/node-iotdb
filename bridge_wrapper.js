@@ -22,7 +22,7 @@
 
 "use strict";
 
-var _ = require('./helpers');
+var _ = require('iotdb-helpers');
 
 var events = require('events');
 var util = require('util');

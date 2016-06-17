@@ -22,11 +22,10 @@
 
 "use strict";
 
+const semver = require('semver');
+const _ = require("iotdb-helpers");
 
-var semver = require('semver');
-var _ = require("../helpers");
-
-var _die = function(error, paramd) {
+const _die = function(error, paramd) {
     if (!error) {
         return;
     }
@@ -51,7 +50,7 @@ var _die = function(error, paramd) {
     process.exit(1);
 };
 
-var _check = function(paramd, callback) {
+const _check = function(paramd, callback) {
     if (!paramd.version) {
         return callback(null, null);
     }
@@ -63,7 +62,7 @@ var _check = function(paramd, callback) {
     return callback(null, null);
 };
 
-var check_node = function (callback) {
+const check_node = function (callback) {
     _check({
         message: "Bad Node.JS Version",
         version: process.versions.node,
