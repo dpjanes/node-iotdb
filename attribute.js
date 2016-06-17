@@ -89,7 +89,7 @@ attribute.make_number()
  *  @constructor
  */
 const Attribute = function () {
-    var self = this;
+    const self = this;
 
     self['@type'] = constants.iot_Attribute;
 };
@@ -113,7 +113,7 @@ const Attribute = function () {
  *  this
  */
 Attribute.prototype.code = function (code) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self._get_code();
@@ -124,7 +124,7 @@ Attribute.prototype.code = function (code) {
 
 
 Attribute.prototype._get_code = function () {
-    var self = this;
+    const self = this;
 
     var code = self['@id'];
     if (code === undefined) {
@@ -138,7 +138,7 @@ Attribute.prototype._get_code = function () {
 };
 
 Attribute.prototype._set_code = function (code) {
-    var self = this;
+    const self = this;
 
     self._validate_code(code);
 
@@ -158,7 +158,7 @@ Attribute.prototype._validate_code = function (code) {
  *  Return the first value, compacted
  */
 Attribute.prototype.first = function (iri, otherwise) {
-    var self = this;
+    const self = this;
 
     if (arguments.length < 2) {
         otherwise = null;
@@ -176,7 +176,7 @@ Attribute.prototype.first = function (iri, otherwise) {
  *  Return as a list, compacted
  */
 Attribute.prototype.as_list = function (iri, otherwise) {
-    var self = this;
+    const self = this;
 
     if (arguments.length < 2) {
         otherwise = null;
@@ -205,7 +205,7 @@ Attribute.prototype.as_list = function (iri, otherwise) {
  *  this
  */
 Attribute.prototype.purpose = function (purpose_iri) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_purpose);
@@ -268,7 +268,7 @@ Attribute.prototype.is_sensor = function () {
  *  this
  */
 Attribute.prototype.name = function (_value) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return _.ld.first(self, constants.schema_name, null);
@@ -298,7 +298,7 @@ Attribute.prototype._validate_name = function (_value) {
  *  this
  */
 Attribute.prototype.description = function (_value) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return _.ld.first(self, constants.schema_description, null);
@@ -326,7 +326,7 @@ Attribute.prototype._validate_description = function (_value) {
  *  this
  */
 Attribute.prototype.help = function (_value) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return _.ld.first(self, constants.iot_help, null);
@@ -359,7 +359,7 @@ Attribute.prototype._validate_help = function (_value) {
  *  this
  */
 Attribute.prototype.property = function (key_iri, value_iri, paramd) {
-    var self = this;
+    const self = this;
 
     key_iri = _.ld.expand(key_iri);
     value_iri = _.ld.expand(value_iri);
@@ -389,7 +389,7 @@ Attribute.prototype._validate_property = function (key_iri, value_iri, paramd) {
  *  this
  */
 Attribute.prototype.property_value = function (key_iri, value, paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {
         array: true
@@ -424,7 +424,7 @@ Attribute.prototype._validate_property_value = function (key_iri, value, paramd)
  *  Make this a List
  */
 Attribute.prototype.list = function () {
-    var self = this;
+    const self = this;
     self.property_value("iot:type", constants.iot_list);
     return self;
 };
@@ -433,7 +433,7 @@ Attribute.prototype.list = function () {
  *  Make this a Set
  */
 Attribute.prototype.set = function () {
-    var self = this;
+    const self = this;
     self.property_value("iot:type", constants.iot_set);
     return self;
 };
@@ -453,7 +453,7 @@ Attribute.prototype.set = function () {
  *  @return {this}
  */
 Attribute.prototype.unit = function (unit_iri) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_unit, null);
@@ -481,7 +481,7 @@ Attribute.prototype._validate_unit = function (unit_iri) {
  *
  */
 Attribute.prototype.vector = function (name) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_vector, null);
@@ -508,7 +508,7 @@ Attribute.prototype._validate_vector = function (name) {
  *  this
  */
 Attribute.prototype.enumeration = function (values) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.as_list(constants.iot_enumeration, null);
@@ -539,7 +539,7 @@ Attribute.prototype._validate_enumeration = function (values) {
  *  @return {this}
  */
 Attribute.prototype.type = function (type_iri) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_type, _.ld.compact(constants.iot_null));
@@ -578,7 +578,7 @@ Attribute.prototype.is_type_null = function () {
  *  @return {this}
  */
 Attribute.prototype.format = function (format_iri) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_format, null);
@@ -605,7 +605,7 @@ Attribute.prototype._validate_format = function (format_iri) {
  *  @return {this}
  */
 Attribute.prototype.minimum = function (value) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_minimum, null);
@@ -631,7 +631,7 @@ Attribute.prototype._validate_minimum = function (value) {
  *  @return {this}
  */
 Attribute.prototype.maximum = function (value) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         return self.first(constants.iot_maximum, null);
@@ -699,7 +699,7 @@ Attribute.prototype.make = function () {
  *
  */
 Attribute.prototype.validate = function (paramd) {
-    var self = this;
+    const self = this;
 
     var iot_types = _.ld.list(self, constants.iot_type, []);
 
@@ -741,7 +741,7 @@ Attribute.prototype.validate = function (paramd) {
  *  Validate a value
  */
 Attribute.prototype.validate_value = function (value) {
-    var self = this;
+    const self = this;
     var paramd;
 
     var iot_types = _.ld.list(self, constants.iot_type, []);
@@ -806,7 +806,7 @@ Attribute.prototype.validate_value = function (value) {
 
 /* --- internal validation --- */
 Attribute.prototype._format = function (value, formats, paramd) {
-    var self = this;
+    const self = this;
     var known = false;
     var otherwise;
     var new_value;
@@ -938,7 +938,7 @@ Attribute.prototype._bounded = function (value, min, max) {
 };
 
 Attribute.prototype._convert = function (value, types) {
-    var self = this;
+    const self = this;
     if (value === undefined) {
         return self._default(value, types);
     } else if (_.is.Boolean(value)) {
@@ -1039,7 +1039,7 @@ Attribute.prototype._convert_number = function (value, types) {
 };
 
 Attribute.prototype._convert_string = function (value, types) {
-    var self = this;
+    const self = this;
     if (VERBOSE) {
         logger.debug("is-a-string", value, "wants-to-be", types);
     }

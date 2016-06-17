@@ -41,7 +41,7 @@ const logger = _.logger.make({
 });
 
 const Modules = function (paramd) {
-    var self = this;
+    const self = this;
 
     self.paramd = _.defaults(paramd, {})
 
@@ -67,7 +67,7 @@ Modules.prototype.modules = function () {
  *  called if you explicitly use use().
  */
 Modules.prototype.use = function (module_name, module) {
-    var self = this;
+    const self = this;
 
     if (!module) {
         module = require(module_name);
@@ -123,7 +123,7 @@ Modules.prototype._use_use = function (module_name, module) {
 };
 
 Modules.prototype._load = function () {
-    var self = this;
+    const self = this;
 
     self._load_master();
     self._load_bridges();
@@ -131,7 +131,7 @@ Modules.prototype._load = function () {
 };
 
 Modules.prototype._load_master = function () {
-    var self = this;
+    const self = this;
 
     self._moduled = {}
 
@@ -160,7 +160,7 @@ Modules.prototype._load_master = function () {
 };
 
 Modules.prototype._load_bridges = function () {
-    var self = this;
+    const self = this;
 
     self._bridges = [];
 
@@ -194,7 +194,7 @@ Modules.prototype.module = function (module_name) {
  *  There is one Bridge per Module (maybe more in the future).
  */
 Modules.prototype.bridges = function () {
-    var self = this;
+    const self = this;
 
     return self._bridges;
 };
@@ -205,7 +205,7 @@ Modules.prototype.bridges = function () {
  *  name except for debug purposes
  */
 Modules.prototype.bridge = function (module_name) {
-    var self = this;
+    const self = this;
 
     var module = self._moduled[module_name];
     if (!module) {
@@ -216,7 +216,7 @@ Modules.prototype.bridge = function (module_name) {
 };
 
 Modules.prototype.bindings = function () {
-    var self = this;
+    const self = this;
 
     if (self._bindings === undefined) {
         self._bindings = [];
@@ -290,7 +290,7 @@ Modules.prototype.bindings = function () {
 };
 
 Modules.prototype._load_setup = function () {
-    var self = this;
+    const self = this;
     var iotdb = require('./iotdb');
 
     for (var module_name in self._moduled) {

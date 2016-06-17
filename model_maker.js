@@ -110,7 +110,7 @@ const ModelMaker = function (_code) {
  *  @return {this}
  */
 ModelMaker.prototype.code = function (_code) {
-    var self = this;
+    const self = this;
 
     self.__code = _.id.to_dash_case(_code);
 
@@ -128,7 +128,7 @@ ModelMaker.prototype.code = function (_code) {
  *  this
  */
 ModelMaker.prototype.name = function (value) {
-    var self = this;
+    const self = this;
 
     self.__name = value;
 
@@ -144,7 +144,7 @@ ModelMaker.prototype.name = function (value) {
  *  @return {this}
  */
 ModelMaker.prototype.description = function (value) {
-    var self = this;
+    const self = this;
 
     self.__description = value;
 
@@ -161,7 +161,7 @@ ModelMaker.prototype.description = function (value) {
  *  @return {this}
  */
 ModelMaker.prototype.help = function (value) {
-    var self = this;
+    const self = this;
 
     self.__help = value;
 
@@ -177,7 +177,7 @@ ModelMaker.prototype.product = function (value) {
 /**
  */
 ModelMaker.prototype.facet = function (facets) {
-    var self = this;
+    const self = this;
     var facet_prefix = _.ld.expand("iot-facet:");
 
 
@@ -211,7 +211,7 @@ ModelMaker.prototype.facet = function (facets) {
 };
 
 ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
-    var self = this;
+    const self = this;
 
     key_iri = _.ld.expand(key_iri);
     if (key_iri === constants.schema_name) {
@@ -237,7 +237,7 @@ ModelMaker.prototype.property_value = function (key_iri, value, paramd) {
  *  @return {this}
  */
 ModelMaker.prototype.attribute = function (attribute) {
-    var self = this;
+    const self = this;
 
     var code = attribute.code();
     var oa = self.__attributed[code];
@@ -299,7 +299,7 @@ ModelMaker.prototype.attribute = function (attribute) {
  */
 /*
 ModelMaker.prototype.action = function (purpose, xd) {
-    var self = this;
+    const self = this;
 
     purpose = _.ld.compact(purpose);
 
@@ -424,7 +424,7 @@ let aid = 0;
  *  the class function for the Thing
  */
 ModelMaker.prototype.make = function () {
-    var self = this;
+    const self = this;
 
     if (!self.__code) {
         throw new Error("ModelMaker.make: 'code' must be defined");

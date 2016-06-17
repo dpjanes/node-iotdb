@@ -71,7 +71,7 @@ const _paths = function() {
 };
 
 const Keystore = function (paramd) {
-    var self = this;
+    const self = this;
 
     self.paramd = _.defaults(paramd, {
         root: "/",
@@ -90,7 +90,7 @@ const Keystore = function (paramd) {
 util.inherits(Keystore, events.EventEmitter);
 
 Keystore.prototype._normalize_key = function (key) {
-    var self = this;
+    const self = this;
 
     if (!key.match(/^\//)) {
         key = self.paramd.root.replace('/*$', '') + '/' + key;
@@ -100,7 +100,7 @@ Keystore.prototype._normalize_key = function (key) {
 };
 
 Keystore.prototype._load = function () {
-    var self = this;
+    const self = this;
     self.d = {};
 
     var filenames = cfg.cfg_find(cfg.cfg_envd(), self.paramd.path, "keystore.json");
@@ -135,7 +135,7 @@ Keystore.prototype._load = function () {
 /**
  */
 Keystore.prototype.get = function (key, otherwise) {
-    var self = this;
+    const self = this;
 
     key = self._normalize_key(key);
 
@@ -145,7 +145,7 @@ Keystore.prototype.get = function (key, otherwise) {
 /**
  */
 Keystore.prototype.set = function (key, value) {
-    var self = this;
+    const self = this;
 
     key = self._normalize_key(key);
 
@@ -157,7 +157,7 @@ Keystore.prototype.set = function (key, value) {
 /**
  */
 Keystore.prototype.save = function (key, value, paramd) {
-    var self = this;
+    const self = this;
 
     key = self._normalize_key(key);
     paramd = _.defaults(paramd, {

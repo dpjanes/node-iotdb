@@ -49,7 +49,7 @@ const _ = require('./helpers');
  *  @constructor
  */
 const IOT = function (initd) {
-    var self = this;
+    const self = this;
 
     if (exports.instance == null) {
         exports.instance = self;
@@ -68,7 +68,7 @@ const IOT = function (initd) {
 util.inherits(IOT, events.EventEmitter);
 
 IOT.prototype._setup_events = function () {
-    var self = this;
+    const self = this;
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
@@ -77,7 +77,7 @@ IOT.prototype._setup_events = function () {
 /**
  */
 IOT.prototype._setup_things = function () {
-    var self = this;
+    const self = this;
 
     self._things = new things.Things();
 

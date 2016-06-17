@@ -252,7 +252,7 @@ Model.prototype.model_list = function (key_iri, otherwise) {
  *  - state is constructed on the fly
  */
 Model.prototype.state = function (band) {
-    var self = this;
+    const self = this;
 
     self._validate_state(band);
 
@@ -276,7 +276,7 @@ Model.prototype.state = function (band) {
 };
 
 Model.prototype._state_connection = function () {
-    var self = this;
+    const self = this;
 
     var stated = {}
 
@@ -296,7 +296,7 @@ Model.prototype._state_connection = function () {
 };
 
 Model.prototype._state_istate = function () {
-    var self = this;
+    const self = this;
 
     var state = {};
     var attributes = self.attributes();
@@ -317,7 +317,7 @@ Model.prototype._state_istate = function () {
 };
 
 Model.prototype._state_ostate = function () {
-    var self = this;
+    const self = this;
 
     var state = {};
     var attributes = self.attributes();
@@ -335,19 +335,19 @@ Model.prototype._state_ostate = function () {
 };
 
 Model.prototype._state_meta = function () {
-    var self = this;
+    const self = this;
 
     return _.ld.compact(self.meta().state());
 };
 
 Model.prototype._state_model = function () {
-    var self = this;
+    const self = this;
 
     return _.ld.compact(self.jsonld());
 };
 
 Model.prototype._validate_state = function (band) {
-    var self = this;
+    const self = this;
 
     if (!_.is.String(band)) {
         throw new Error("Model.state: 'band' must be a String, not: " + band);
@@ -357,7 +357,7 @@ Model.prototype._validate_state = function (band) {
 /**
  */
 Model.prototype.attributes = function () {
-    var self = this;
+    const self = this;
     return self.__attributes;
 };
 
@@ -376,7 +376,7 @@ Model.prototype.attributes = function () {
  *  JSON-LD dictionary
  */
 Model.prototype.jsonld = function (paramd) {
-    var self = this;
+    const self = this;
     var key;
     var value;
     var cd;
@@ -473,7 +473,7 @@ Model.prototype.jsonld = function (paramd) {
 };
 
 Model.prototype.iotql = function (paramd) {
-    var self = this;
+    const self = this;
     var jsonld = _.ld.compact(self.jsonld(paramd));
     var keys = [
         "schema:name",
@@ -579,7 +579,7 @@ Model.prototype.iotql = function (paramd) {
  *  The current value in the state
  */
 Model.prototype.get = function (find_key) {
-    var self = this;
+    const self = this;
 
     self._validate_get(find_key);
 
@@ -623,7 +623,7 @@ Model.prototype._validate_get = function (find_key) {
 /**
  */
 Model.prototype.update = function (band, updated, paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {});
 
@@ -657,7 +657,7 @@ Model.prototype._validate_update = function (band, updated, paramd) {
  *  of Thing as far as we know
  */
 Model.prototype._update_istate = function (band, updated, paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {
         check_timestamp: true,
@@ -763,7 +763,7 @@ Model.prototype._update_istate = function (band, updated, paramd) {
  *  like the Thing to become.
  */
 Model.prototype._update_ostate = function (band, updated, paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {
         add_timestamp: true,
@@ -888,7 +888,7 @@ Model.prototype._update_ostate = function (band, updated, paramd) {
  *  @protected
  */
 Model.prototype._push_attributes = function (attributes) {
-    var self = this;
+    const self = this;
 
     if (!self.bridge_instance) {
         logger.error({
@@ -983,7 +983,7 @@ Model.prototype._push_attributes = function (attributes) {
 };
 
 Model.prototype._clear_ostate = function () {
-    var self = this;
+    const self = this;
 
     var changed = false;
 
@@ -1005,7 +1005,7 @@ Model.prototype._clear_ostate = function () {
 };
 
 Model.prototype._update_meta = function (band, updated, paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {
         check_timestamp: false,
@@ -1036,7 +1036,7 @@ Model.prototype._update_meta = function (band, updated, paramd) {
  *  The value to set
  */
 Model.prototype.set = function (find_key, new_value) {
-    var self = this;
+    const self = this;
 
     // too common to allow exceptions to be thrown, but don't like it
     if (new_value === undefined) {
@@ -1097,7 +1097,7 @@ Model.prototype._validate_set = function (find_key, new_value) {
  *  arguments, it will return the definition of everything as a dictionary
  */
 Model.prototype.explain = function (find_key, paramd) {
-    var self = this;
+    const self = this;
 
     if (arguments.length === 0) {
         find_key = null;
@@ -1111,7 +1111,7 @@ Model.prototype.explain = function (find_key, paramd) {
 };
 
 Model.prototype._explain_all = function (paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {
         write: true,
@@ -1153,7 +1153,7 @@ Model.prototype._explain_all = function (paramd) {
 };
 
 Model.prototype._explain_one = function (find_key, paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {
         set: true,
@@ -1195,7 +1195,7 @@ Model.prototype._explain_one = function (find_key, paramd) {
  *  this
  */
 Model.prototype.on = function (find_key, callback) {
-    var self = this;
+    const self = this;
     var attribute_key = null;
     var callbacks = null;
 
@@ -1274,7 +1274,7 @@ Model.prototype._validate_on = function (find_key, callback) {
  *
  */
 Model.prototype.on_change = function (callback) {
-    var self = this;
+    const self = this;
 
     self._validate_on_change(callback);
 
@@ -1295,7 +1295,7 @@ Model.prototype._validate_on_change = function (callback) {
  *  On metadata change (including reachablity)
  */
 Model.prototype.on_meta = function (callback) {
-    var self = this;
+    const self = this;
 
     self._validate_on_meta(callback);
 
@@ -1352,7 +1352,7 @@ Model.prototype.thing_id = function () {
  *  @return {this}
  */
 Model.prototype.pull = function () {
-    var self = this;
+    const self = this;
 
     if (self.bridge_instance) {
         self.bridge_instance.pull();
@@ -1380,7 +1380,7 @@ Model.prototype.pull = function () {
  *  @protected
  */
 Model.prototype._do_push = function (attribute, immediate) {
-    var self = this;
+    const self = this;
 
     if (!self._transaction || immediate) {
         var attributed = {};
@@ -1409,7 +1409,7 @@ Model.prototype._do_push = function (attribute, immediate) {
  *  @protected
  */
 Model.prototype._do_notify = function (attribute, immediate) {
-    var self = this;
+    const self = this;
 
     if (!self._transaction || immediate) {
         var attributed = {};
@@ -1439,7 +1439,7 @@ Model.prototype._do_notify = function (attribute, immediate) {
  *  @protected
  */
 Model.prototype._do_notifies = function (attributed) {
-    var self = this;
+    const self = this;
     var any = false;
 
     var _do_notifies_attribute = function (attribute_key, attribute) {
@@ -1477,7 +1477,7 @@ Model.prototype._do_notifies = function (attributed) {
  *  This does istate/ostate notifications
  */
 Model.prototype._do_notifies_istate = function (attributed) {
-    var self = this;
+    const self = this;
 
 
     for (var attribute_key in attributed) {
@@ -1490,7 +1490,7 @@ Model.prototype._do_notifies_istate = function (attributed) {
 };
 
 Model.prototype._do_notifies_ostate = function (attributed) {
-    var self = this;
+    const self = this;
 
     // console.log("DPJ._do_notifies_ostate: START CHECK NOTIFIES");
 
@@ -1508,7 +1508,7 @@ Model.prototype._do_notifies_ostate = function (attributed) {
 };
 
 Model.prototype._do_notifies_send = function () {
-    var self = this;
+    const self = this;
 
     if (self._ichanged) {
         self._ichanged = false;
@@ -1567,7 +1567,7 @@ Model.prototype._do_notifies_send = function () {
  *  @protected
  */
 Model.prototype.find = function (find_key, paramd) {
-    var self = this;
+    const self = this;
     var d;
     var attribute;
 
@@ -1729,7 +1729,7 @@ const metad = {};
  *  it's worth.
  */
 Model.prototype.meta = function () {
-    var self = this;
+    const self = this;
 
     if (self.__meta_thing === undefined) {
         self.__meta_thing = metad[self._thing_id];
@@ -1750,7 +1750,7 @@ Model.prototype.meta = function () {
  *  @param {string} tag
  */
 Model.prototype.tag = function (tag) {
-    var self = this;
+    const self = this;
 
     self._validate_tag(tag);
 
@@ -1769,7 +1769,7 @@ Model.prototype._validate_tag = function (tag) {
 };
 
 Model.prototype.has_tag = function (tag) {
-    var self = this;
+    const self = this;
 
     self._validate_has_tag(tag);
 
@@ -1777,7 +1777,7 @@ Model.prototype.has_tag = function (tag) {
 };
 
 Model.prototype._validate_has_tag = function (tag) {
-    var self = this;
+    const self = this;
 
     if (_.is.String(tag)) {} else if (_.is.ArrayOfString(tag)) {} else {
         throw new Error("Model.tag: 'has_tag' must be a String, Array of String");
@@ -1787,7 +1787,7 @@ Model.prototype._validate_has_tag = function (tag) {
 /**
  */
 Model.prototype.reachable = function () {
-    var self = this;
+    const self = this;
 
     if (self.bridge_instance) {
         return self.bridge_instance.reachable();
@@ -1800,7 +1800,7 @@ Model.prototype.reachable = function () {
  *  Disconnect this Model
  */
 Model.prototype.disconnect = function () {
-    var self = this;
+    const self = this;
     var wait = 0;
 
     if (self.bridge_instance) {

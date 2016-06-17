@@ -58,7 +58,7 @@ let array_id = 0;
  *  @constructor
  */
 const ThingArray = function (paramd) {
-    var self = this;
+    const self = this;
 
     paramd = _.defaults(paramd, {});
 
@@ -102,7 +102,7 @@ ThingArray.prototype.first = function () {
  *  this will be placed in result array.
  */
 ThingArray.prototype.map = function (f) {
-    var self = this;
+    const self = this;
     var rs = [];
     for (var ti = 0; ti < self.length; ti++) {
         var t = self[ti];
@@ -119,7 +119,7 @@ ThingArray.prototype.map = function (f) {
  *  Add a new thing to this ThingArray.
  */
 ThingArray.prototype.push = function (thing, paramd) {
-    var self = this;
+    const self = this;
 
     if (!_.is.Thing(thing)) {
         logger.fatal({
@@ -186,7 +186,7 @@ ThingArray.prototype.is_persist = function () {
 };
 
 ThingArray.prototype._persist_post = function (thing) {
-    var self = this;
+    const self = this;
 
     if (_.is.Empty(self._persistds)) {
         return;
@@ -202,7 +202,7 @@ ThingArray.prototype._persist_post = function (thing) {
 };
 
 ThingArray.prototype._persist_pre = function (thing) {
-    var self = this;
+    const self = this;
 
     if (_.is.Empty(self._persistds)) {
         return;
@@ -218,7 +218,7 @@ ThingArray.prototype._persist_pre = function (thing) {
 };
 
 ThingArray.prototype._persist_command = function (f, av, key) {
-    var self = this;
+    const self = this;
 
     if (self._persistds === null) {
         return;
@@ -251,7 +251,7 @@ ThingArray.prototype._persist_command = function (f, av, key) {
  *  right now.
  */
 ThingArray.prototype._apply_command = function (f, av) {
-    var self = this;
+    const self = this;
 
     self.map(function (thing) {
         f.apply(thing, Array.prototype.slice.call(av));
@@ -262,7 +262,7 @@ ThingArray.prototype._apply_command = function (f, av) {
 /**
  */
 ThingArray.prototype.splice = function (index, howmany, add1) {
-    var self = this;
+    const self = this;
 
     // sorry
     assert.ok(add1 === undefined);
@@ -339,7 +339,7 @@ const _merger = function (srcs, out_items) {
  *  Merge another array into this one
  */
 ThingArray.prototype.merge = function (new_items) {
-    var self = this;
+    const self = this;
 
     /*
      *  Merge (XXX: not sure if should always be persist)
@@ -407,7 +407,7 @@ ThingArray.prototype.merge = function (new_items) {
  *  @return {this}
  */
 ThingArray.prototype.connect = function (modeld) {
-    var self = this;
+    const self = this;
 
     if (self._things) {
         return self.merge(self._things.connect(modeld));
@@ -427,7 +427,7 @@ ThingArray.prototype.connect = function (modeld) {
  *  @return {this}
  */
 ThingArray.prototype.disconnect = function () {
-    var self = this;
+    const self = this;
 
     self._apply_command(model.Model.prototype.disconnect, arguments);
     self._persist_command(model.Model.prototype.disconnect, arguments);
@@ -442,7 +442,7 @@ ThingArray.prototype.disconnect = function () {
  *  @return {this}
  */
 ThingArray.prototype.name = function (name) {
-    var self = this;
+    const self = this;
 
     assert(_.is.String(name));
 
@@ -459,7 +459,7 @@ ThingArray.prototype.name = function (name) {
  *  @return {this}
  */
 ThingArray.prototype.zones = function (zones) {
-    var self = this;
+    const self = this;
 
     assert(_.is.String(zones) || _.is.Array(zones));
 
@@ -476,7 +476,7 @@ ThingArray.prototype.zones = function (zones) {
  *  @return {this}
  */
 ThingArray.prototype.facets = function (facets) {
-    var self = this;
+    const self = this;
 
     assert(_.is.String(facets) || _.is.Array(facets));
 
@@ -493,7 +493,7 @@ ThingArray.prototype.facets = function (facets) {
  *  @return {this}
  */
 ThingArray.prototype.set = function () {
-    var self = this;
+    const self = this;
 
     self._apply_command(model.Model.prototype.set, arguments, KEY_SETTER);
     self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
@@ -508,7 +508,7 @@ ThingArray.prototype.set = function () {
  *  @return {this}
  */
 ThingArray.prototype.update = function () {
-    var self = this;
+    const self = this;
 
     self._apply_command(model.Model.prototype.update, arguments, KEY_SETTER);
     self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
@@ -523,7 +523,7 @@ ThingArray.prototype.update = function () {
  *  @return {this}
  */
 ThingArray.prototype.pull = function () {
-    var self = this;
+    const self = this;
 
     self._apply_command(model.Model.prototype.pull, arguments);
     self._persist_command(model.Model.prototype.pull, arguments);
@@ -538,7 +538,7 @@ ThingArray.prototype.pull = function () {
  *  @return {this}
  */
 ThingArray.prototype.tag = function () {
-    var self = this;
+    const self = this;
 
     self.map(function (thing) {
         thing.tag.apply(thing, Array.prototype.slice.call(arguments));
@@ -557,7 +557,7 @@ ThingArray.prototype.tag = function () {
  *  @return {this}
  */
 ThingArray.prototype.on = function (what, callback) {
-    var self = this;
+    const self = this;
 
     if (what === "thing") {
         self._on_thing(callback);
@@ -574,7 +574,7 @@ ThingArray.prototype.on = function (what, callback) {
 };
 
 ThingArray.prototype._on_thing = function (callback) {
-    var self = this;
+    const self = this;
 
     self.map(callback);
 
@@ -594,7 +594,7 @@ ThingArray.prototype._on_thing = function (callback) {
  *  @return {this}
  */
 ThingArray.prototype.on_change = function () {
-    var self = this;
+    const self = this;
 
     self._apply_command(model.Model.prototype.on_change, arguments);
     self._persist_command(model.Model.prototype.on_change, arguments);
@@ -606,7 +606,7 @@ ThingArray.prototype.on_change = function () {
  *  Return the number of things that can be reached
  */
 ThingArray.prototype.reachable = function () {
-    var self = this;
+    const self = this;
     var count = 0;
 
     self.map(function (thing) {
@@ -623,7 +623,7 @@ ThingArray.prototype.reachable = function () {
  *  This will bring all downstream ThingArrays into order
  */
 ThingArray.prototype.things_changed = function () {
-    var self = this;
+    const self = this;
 
     logger.trace({
         method: "things_changed",
@@ -638,7 +638,7 @@ ThingArray.prototype.things_changed = function () {
 /* --- */
 
 ThingArray.prototype._filter_test = function (queryd, thing) {
-    var self = this;
+    const self = this;
     var meta = thing.meta();
 
     for (var query_key in queryd) {
@@ -700,7 +700,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
 /**
  */
 ThingArray.prototype.filter = function (d) {
-    var self = this;
+    const self = this;
     var persist = self.is_persist();
     var o;
     var oi;

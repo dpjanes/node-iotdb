@@ -41,7 +41,7 @@ const logger = _.logger.make({
  *  </ul>
  */
 const Bridge = function () {
-    var self = this;
+    const self = this;
 
     self.initd = {};
     self.native = null;

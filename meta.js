@@ -37,7 +37,7 @@ const logger = _.logger.make({
  *  Typically this comes from IOTDB
  */
 const Meta = function (thing) {
-    var self = this;
+    const self = this;
 
     self.thing = thing;
     self._updated = {};
@@ -49,7 +49,7 @@ var machine_id;
  *  Return the metadata
  */
 Meta.prototype.state = function () {
-    var self = this;
+    const self = this;
 
     if (!self.thing._metad) {
         self.thing._metad = {
@@ -101,7 +101,7 @@ Meta.prototype.state = function () {
  *  The value to return if the key is not for
  */
 Meta.prototype.get = function (key, otherwise) {
-    var self = this;
+    const self = this;
 
     key = _.ld.expand(key);
 
@@ -125,7 +125,7 @@ Meta.prototype.get = function (key, otherwise) {
  *  Value to set (should be simple or an Array of simple). Not expanded.
  */
 Meta.prototype.set = function (key, value) {
-    var self = this;
+    const self = this;
 
     key = _.ld.expand(key);
     if (key === constants.iot_reachable) {
@@ -150,7 +150,7 @@ Meta.prototype.set = function (key, value) {
  *  Timestamp-conflict - see helpers/d.js
  */
 Meta.prototype.update = function (ind, paramd) {
-    var self = this;
+    const self = this;
     var in_timestamp = ind["@timestamp"];
 
     if (!_.is.Dictionary(ind)) {
