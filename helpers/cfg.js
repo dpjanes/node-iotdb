@@ -24,7 +24,8 @@
 
 "use strict";
 
-const _ = require('./helpers');
+const _ = require("iotdb-helpers");
+
 const node_path = require('path');
 const node_fs = require('fs');
 
@@ -46,18 +47,15 @@ const logger = _.logger.make({
  *  @return {string}
  *  the string with replacements done
  */
-exports.cfg_expand = function (envd, string) {
+const cfg_expand = function (string) {
     return string.replace(/[$]([A-Za-z_0-9]+)/g, function (match, variable) {
-        var replace = envd[variable];
+        var replace = process.env[variable];
         return replace ? replace : "";
     });
 };
 
 /**
  *  Look for files along a series of paths
- *
- *  @param {dictionary} envd
- *  keys & values for substitution
  *
  *  @param {array|string} paths
  *  directories to look at (will use {@link cfg_expand} substitution).
@@ -77,7 +75,7 @@ exports.cfg_expand = function (envd, string) {
  *  Return files beginning with '.' in the results (default: false).
  *  Note that '.' and '..' are never returned
  */
-exports.cfg_find = function (envd, paths, name, paramd) {
+const cfg_find = function (paths, name, paramd) {
     paramd = _.defaults(paramd, {
         max: 0,
         expand: true,
@@ -146,7 +144,7 @@ exports.cfg_find = function (envd, paths, name, paramd) {
         var path = paths[pi];
 
         if (paramd.expand) {
-            path = exports.cfg_expand(envd, path);
+            path = cfg_expand(path);
         }
 
         try {
@@ -220,7 +218,7 @@ const _work = function (filenames, callback, worker) {
  *  @return
  *  The first document successfully read
  */
-exports.cfg_load_json = function (filenames, callback) {
+const cfg_load_json = function (filenames, callback) {
     return _work(filenames, callback, function (cd) {
         cd.doc = JSON.parse(node_fs.readFileSync(cd.filename, {
             encoding: 'utf8'
@@ -250,7 +248,7 @@ exports.cfg_load_json = function (filenames, callback) {
  *  @return
  *  The first document successfully read
  */
-exports.cfg_load_file = function (filenames, encoding, callback) {
+const cfg_load_file = function (filenames, encoding, callback) {
     if (_.is.Function(encoding)) {
         callback = encoding;
         encoding = "utf-8";
@@ -285,60 +283,21 @@ exports.cfg_load_file = function (filenames, encoding, callback) {
  *  @return
  *  The first document successfully read
  */
-exports.cfg_load_js = function (filenames, callback) {
+const cfg_load_js = function (filenames, callback) {
     return _work(filenames, callback, function (cd) {
         cd.doc = require(node_path.resolve(cd.filename));
     });
 };
 
 /**
- *  Return a reasonable env for IOTDB. Values are
- *  taken from (in order of priority):
- *  <ol>
- *  <li>argument <code>envd<code></li>
- *  <li>process.env</code>
- *  <li>algorithmically</li>
- *  </ol>
- *  <p>
- *  The algorithmic values are
- *  <ul>
- *  <li>IOTDB_CFG: configuration directory (usually <code>~/.iotdb</code>)</li>
- *  <li>IOTDB_INSTALL: where IOTDB Node libraries are installed</li>
- *  <li>IOTDB_PROJECT: the CWD by default</li>
- *  </ul>
- *
- *  @paramd {dictionary|undefined} envd
- *  OPTIONAL values for envd
- *
- *  @return {dictionary}
- *  The envd
+ *  API
  */
-exports.cfg_envd = function (envd) {
-    envd = _.defaults(envd, {});
-
-    for (var key in process.env) {
-        var value = process.env[key];
-        if (!envd[key] && _.is.String(value)) {
-            envd[key] = value;
-        }
-    }
-
-    // Windows sometimes doesn't habe $HOME? Issue #5
-    if (!envd.IOTDB_CFG && process.env['HOME']) {
-        envd.IOTDB_CFG = node_path.join(process.env['HOME'], ".iotdb");
-    }
-
-    if (!envd.IOTDB_INSTALL) {
-        envd.IOTDB_INSTALL = __dirname;
-    }
-
-    if (!envd.IOTDB_PROJECT) {
-        envd.IOTDB_PROJECT = node_path.dirname(process.argv[1]);
-    }
-
-    if (!envd.IOTDB_USER) {
-        envd.IOTDB_USER = "nobody";
-    }
-
-    return envd;
+exports.cfg = {
+    expand: cfg_expand,
+    find: cfg_find,
+    load: {
+        json: cfg_load_json,
+        file: cfg_load_file,
+        js: cfg_load_js,
+    },
 };

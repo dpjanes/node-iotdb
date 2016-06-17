@@ -27,7 +27,6 @@
 
 const _ = require('./helpers');
 
-const cfg = require('./cfg');
 const model = require('./model');
 
 const events = require('events');

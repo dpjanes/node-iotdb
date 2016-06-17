@@ -29,7 +29,6 @@
 const _ = require('./helpers');
 const modules = require("./modules").modules;
 
-const cfg = require('./cfg');
 const thing_array = require('./thing_array');
 
 const events = require('events');

@@ -27,6 +27,7 @@
 const _ = require("iotdb-helpers");
 
 const local_modules = [
+    require('./helpers/cfg'),
     require('./helpers/is'),
     require('./helpers/version'),
     require('./helpers/bridge'),

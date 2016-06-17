@@ -27,8 +27,6 @@
 
 const _ = require('./helpers');
 
-const cfg = require('./cfg');
-
 const events = require('events');
 const util = require('util');
 const fs = require('fs');
@@ -103,7 +101,7 @@ Keystore.prototype._load = function () {
     const self = this;
     self.d = {};
 
-    var filenames = cfg.cfg_find(cfg.cfg_envd(), self.paramd.path, "keystore.json");
+    var filenames = _.cfg.find(self.paramd.path, "keystore.json");
     filenames.reverse();
 
     if (filenames.length === 0) {
@@ -113,7 +111,7 @@ Keystore.prototype._load = function () {
 
     var count = 0;
 
-    cfg.cfg_load_json(filenames, function (paramd) {
+    _.cfg.load.json(filenames, function (paramd) {
         if (paramd.error) {
             logger.error({
                 method: "_load",
@@ -178,7 +176,7 @@ Keystore.prototype.save = function (key, value, paramd) {
 
     // load keystore
     var d = {};
-    cfg.cfg_load_json([filename], function (paramd) {
+    _.cfg.load.json([filename], function (paramd) {
         for (var pd in paramd.doc) {
             d[pd] = paramd.doc[pd];
         }

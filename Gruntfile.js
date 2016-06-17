@@ -21,16 +21,8 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: [
-                    'attribute.js',
-                    'cfg.js',
-                    'iotdb.js',
-                    'meta.js',
-                    'model.js',
-                    'model_maker.js',
-                    'queue.js',
-                    'thing_array.js',
-                    'helpers/*.js',
-                    'bin/iotdb',
+                    '*.js',
+                    'helpers/*.js'
                 ]
             },
             test: {
@@ -54,9 +46,7 @@ module.exports = function (grunt) {
         jsbeautifier: {
             files: [
                 '*.js',
-                'libs/*.js',
-                'stores/*.js',
-                'transmogrifiers/*.js',
+                'helpers/*.js'
             ],
             options: {
                 js: {
