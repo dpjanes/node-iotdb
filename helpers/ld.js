@@ -222,7 +222,7 @@ var _ld_compact = function (v, paramd) {
         json: true,     // only JSON-friendly
         scrub: false,   // only with ':' in key
         jsonld: false,  // only with ':' in key or starting with '@'
-        safe: [ "schema:name", "schema:descripion", "iot:help", ],
+        safe: [ "schema:name", "schema:description", "iot:help", ],
     });
 
     if (_.is.Array(v)) {

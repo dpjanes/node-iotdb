@@ -36,6 +36,13 @@ if (!_.each) {
  *  Slash-path oriented
  */
 var get = function(keystored, key, otherwise) {
+    if (!keystored) {
+        return otherwise;
+    }
+    if (!key) {
+        return otherwise;
+    }
+
     var d = keystored;
     var subkeys = key.replace(/^\/*/, '').split('/');
     var lastkey = subkeys[subkeys.length - 1];
