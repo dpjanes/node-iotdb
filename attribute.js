@@ -22,17 +22,17 @@
 
 "use strict";
 
-var _ = require("./helpers");
-var constants = require("./constants");
+const _ = require("./helpers");
+const constants = require("./constants");
 
-var assert = require("assert");
+const assert = require("assert");
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'attribute',
 });
 
-var VERBOSE = false;
+const VERBOSE = false;
 
 /* --- setup section --- */
 /**
@@ -88,7 +88,7 @@ attribute.make_number()
  *  <hr />
  *  @constructor
  */
-var Attribute = function () {
+const Attribute = function () {
     var self = this;
 
     self['@type'] = constants.iot_Attribute;
@@ -906,8 +906,8 @@ Attribute.prototype._format_rgb = function (value, otherwise) {
     return value;
 };
 
-var iso_tz_re = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/;
-var iso_notz_re = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/;
+const iso_tz_re = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))/;
+const iso_notz_re = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/;
 
 /**
  *  Very generous inputs, strict ISO output

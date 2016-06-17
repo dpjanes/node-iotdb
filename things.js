@@ -26,21 +26,21 @@
 
 "use strict";
 
-var _ = require('./helpers');
-var modules = require("./modules").modules;
+const _ = require('./helpers');
+const modules = require("./modules").modules;
 
-var cfg = require('./cfg');
-var thing_array = require('./thing_array');
+const cfg = require('./cfg');
+const thing_array = require('./thing_array');
 
-var events = require('events');
-var util = require('util');
+const events = require('events');
+const util = require('util');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'things',
 });
 
-var Things = function (paramd) {
+const Things = function (paramd) {
     const self = this;
 
     self.paramd = _.defaults(paramd, {});

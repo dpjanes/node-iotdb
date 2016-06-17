@@ -22,22 +22,22 @@
 
 "use strict";
 
-var _ = require("./helpers");
-var attribute = require("./attribute");
-var model = require("./model");
-var constants = require("./constants");
+const _ = require("./helpers");
+const attribute = require("./attribute");
+const model = require("./model");
+const constants = require("./constants");
 
-var events = require('events');
-var util = require('util');
-var assert = require('assert');
+const events = require('events');
+const util = require('util');
+const assert = require('assert');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'model_maker',
 });
 
 /* --- constants --- */
-var VERBOSE = true;
+const VERBOSE = true;
 
 /**
  *  A class for making {@link Thing Things}.
@@ -61,7 +61,7 @@ var VERBOSE = true;
  *  Really, this is it:
  *
  *  <pre>
-var HueLight = model.make_model('HueLight')
+const HueLight = model.make_model('HueLight')
     .attribute(attribute.make_boolean("on"))
     .attribute(
         attribute.make_string("color")
@@ -86,7 +86,7 @@ var HueLight = model.make_model('HueLight')
  *
  *  @constructor
  */
-var ModelMaker = function (_code) {
+const ModelMaker = function (_code) {
     this.__attributed = {};
     this.__attributes = [];
     this.__code = (_code !== undefined) ? _.id.to_dash_case(_code) : null;
@@ -404,7 +404,7 @@ ModelMaker.prototype.vector = function (attribute_codes) {
 };
  */
 
-var aid = 0;
+let aid = 0;
 
 /**
  *  The last function you MUST to call when creating

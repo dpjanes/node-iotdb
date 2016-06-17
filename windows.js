@@ -24,7 +24,7 @@
 
 "use strict";
 
-var setup = function () {
+const setup = function () {
     if (!process.env.HOME && process.env.USERPROFILE) {
         process.env.HOME = process.env.USERPROFILE;
     }

@@ -26,17 +26,17 @@
 
 "use strict";
 
-var events = require('events');
-var util = require('util');
-var path = require('path');
-var fs = require('fs');
+const events = require('events');
+const util = require('util');
+const path = require('path');
+const fs = require('fs');
 
-var things = require('./things');
-var thing_array = require('./thing_array');
-var cfg = require('./cfg');
-var exit = require('./exit');
+const things = require('./things');
+const thing_array = require('./thing_array');
+const cfg = require('./cfg');
+const exit = require('./exit');
 
-var _ = require('./helpers');
+const _ = require('./helpers');
 
 /**
  *  Manage things, bridges and connections to the
@@ -48,7 +48,7 @@ var _ = require('./helpers');
  *
  *  @constructor
  */
-var IOT = function (initd) {
+const IOT = function (initd) {
     var self = this;
 
     if (exports.instance == null) {
@@ -130,14 +130,14 @@ exports._ = _;
 exports.cfg = cfg;
 exports.logger = _.logger.logger;
 
-var bridge = require('./bridge');
+const bridge = require('./bridge');
 exports.Bridge = bridge.Bridge;
 
-var keystore = require('./keystore');
+const keystore = require('./keystore');
 exports.keystore = keystore.keystore;
 exports.Keystore = keystore.Keystore;
 
-var modules = require('./modules');
+const modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
 exports.use = function(module_name, module) {
@@ -147,11 +147,11 @@ exports.use = function(module_name, module) {
 /**
  *  Metadata related to this controller & session
  */
-var iot_controller_machine = _.ld.expand('iot:runner.id');
-var iot_controller_session = _.ld.expand('iot:runner.timestamp');
+const iot_controller_machine = _.ld.expand('iot:runner.id');
+const iot_controller_session = _.ld.expand('iot:runner.timestamp');
 
 var controller_machine;
-var controller_session = _.timestamp.make();
+const controller_session = _.timestamp.make();
 
 var machine_id;
 (function() {
@@ -184,7 +184,7 @@ _.id.thing_urn.set({
  *  Really HomeStar related, but having them in 
  *  IOTDB makes debugging projects a lot easier
  */
-var homestar = require('./homestar');
+const homestar = require('./homestar');
 
 exports.load_recipes = homestar.load_recipes;
 exports.recipe = homestar.recipe;

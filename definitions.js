@@ -24,7 +24,7 @@
 
 "use strict";
 
-var iotdb = require('./iotdb')
+const iotdb = require('./iotdb')
 
 if (0) {
     /*

@@ -70,7 +70,7 @@ const _paths = function() {
     return paths;
 };
 
-var Keystore = function (paramd) {
+const Keystore = function (paramd) {
     var self = this;
 
     self.paramd = _.defaults(paramd, {
@@ -216,7 +216,7 @@ var _keystore;
 
 /**
  */
-var keystore = function () {
+const keystore = function () {
     if (!_keystore) {
         _keystore = new Keystore();
     }

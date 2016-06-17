@@ -25,22 +25,22 @@
 
 "use strict";
 
-var _ = require('./helpers');
+const _ = require('./helpers');
 
-var cfg = require('./cfg');
-var model = require('./model');
+const cfg = require('./cfg');
+const model = require('./model');
 
-var events = require('events');
-var util = require('util');
-var fs = require('fs');
-var path = require('path');
+const events = require('events');
+const util = require('util');
+const fs = require('fs');
+const path = require('path');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'modules',
 });
 
-var Modules = function (paramd) {
+const Modules = function (paramd) {
     var self = this;
 
     self.paramd = _.defaults(paramd, {})
@@ -319,7 +319,7 @@ var _modules;
 
 /**
  */
-var modules = function () {
+const modules = function () {
     if (!_modules) {
         _modules = new Modules();
     }

@@ -24,11 +24,11 @@
 
 "use strict";
 
-var _ = require('./helpers');
-var node_path = require('path');
-var node_fs = require('fs');
+const _ = require('./helpers');
+const node_path = require('path');
+const node_fs = require('fs');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'cfg',
 });
@@ -173,7 +173,7 @@ exports.cfg_find = function (envd, paths, name, paramd) {
     return results;
 };
 
-var _work = function (filenames, callback, worker) {
+const _work = function (filenames, callback, worker) {
     var first_doc = null;
 
     for (var fi in filenames) {

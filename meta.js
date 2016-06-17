@@ -22,11 +22,11 @@
 
 "use strict";
 
-var _ = require("./helpers.js");
-var constants = require("./constants.js");
-var assert = require("assert");
+const _ = require("./helpers.js");
+const constants = require("./constants.js");
+const assert = require("assert");
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'meta',
 });
@@ -36,7 +36,7 @@ var logger = _.logger.make({
  *  This represents the Thing data in the graph.
  *  Typically this comes from IOTDB
  */
-var Meta = function (thing) {
+const Meta = function (thing) {
     var self = this;
 
     self.thing = thing;

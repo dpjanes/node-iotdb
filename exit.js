@@ -26,21 +26,21 @@
 
 "use strict";
 
-var _ = require("iotdb-helpers");
+const _ = require("iotdb-helpers");
 
-var events = require('events');
-var util = require('util');
-var path = require('path');
-var fs = require('fs');
+const events = require('events');
+const util = require('util');
+const path = require('path');
+const fs = require('fs');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'exit',
 });
 
-var _shutting_down = false;
+let _shutting_down = false;
 
-var _exit_cleanup = function (paramd, err) {
+const _exit_cleanup = function (paramd, err) {
     _shutting_down = true;
 
     if (!((err === 0) && (paramd.from === "exit"))) {
@@ -70,7 +70,7 @@ var _exit_cleanup = function (paramd, err) {
     }
 };
 
-var setup_exit = function (iot) {
+const setup_exit = function (iot) {
     if (!iot) {
         throw new Error("setup_exit: iot is a required argument");
     }

@@ -22,31 +22,31 @@
 
 "use strict";
 
-var assert = require("assert");
-var url = require("url");
-var path = require("path");
-var fs = require("fs");
-var util = require("util");
+const assert = require("assert");
+const url = require("url");
+const path = require("path");
+const fs = require("fs");
+const util = require("util");
 
-var _ = require("./helpers");
-var attribute = require("./attribute");
-var meta_thing = require("./meta");
-var model_maker = require("./model_maker");
-var constants = require("./constants");
-var iotdb = require("./iotdb");
+const _ = require("./helpers");
+const attribute = require("./attribute");
+const meta_thing = require("./meta");
+const model_maker = require("./model_maker");
+const constants = require("./constants");
+const iotdb = require("./iotdb");
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'model',
 });
 
 /* --- constants --- */
-var VERBOSE = true;
+const VERBOSE = true;
 
-var EVENT_THINGS_CHANGED = "things_changed";
-var EVENT_THING_CHANGED = "state";
-var EVENT_META_CHANGED = "meta";
-var EVENT_CONNECTION_CHANGED = "connection";
+const EVENT_THINGS_CHANGED = "things_changed";
+const EVENT_THING_CHANGED = "state";
+const EVENT_META_CHANGED = "meta";
+const EVENT_CONNECTION_CHANGED = "connection";
 
 
 /**
@@ -58,7 +58,7 @@ var EVENT_CONNECTION_CHANGED = "connection";
  *  @return
  *  a new ModelMaker instance
  */
-var make_model = function (_name) {
+const make_model = function (_name) {
     return new model_maker.ModelMaker(_name);
 };
 
@@ -117,7 +117,7 @@ thing
  *
  *  @constructor
  */
-var Model = function () {};
+const Model = function () {};
 
 /**
  *  @callback Thing~subclass
@@ -1718,7 +1718,7 @@ Model.prototype.transmogrify = function (transmogrifier) {
 };
  */
 
-var metad = {};
+const metad = {};
 
 /**
  *  Return an object to access and
@@ -1814,7 +1814,7 @@ Model.prototype.disconnect = function () {
     return wait;
 };
 
-var reachabled = {};
+const reachabled = {};
 
 /**
  *  Note it's OK if we're already bound - this will just replace it
@@ -1907,7 +1907,7 @@ Model.prototype._validate_bind_bridge = function (bridge_instance) {
     }
 };
 
-var make_model_from_jsonld = function (d) {
+const make_model_from_jsonld = function (d) {
     var jsonld = _.ld.compact(d);
 
     if (jsonld["@type"] !== "iot:Model") {

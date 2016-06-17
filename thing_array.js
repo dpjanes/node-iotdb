@@ -22,28 +22,28 @@
 
 "use strict";
 
-var _ = require("./helpers");
-var attribute = require("./attribute");
-var model = require("./model");
-var events = require('events');
-var util = require('util');
-var assert = require('assert');
+const _ = require("./helpers");
+const attribute = require("./attribute");
+const model = require("./model");
+const events = require('events');
+const util = require('util');
+const assert = require('assert');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'thing_array',
 });
 
 /* --- constants --- */
-var VERBOSE = true;
-var EVENT_THING_NEW = 'EVENT_THING_NEW';
-var EVENT_THING_PUSHED = 'EVENT_THING_PUSHED';
-var EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED';
+const VERBOSE = true;
+const EVENT_THING_NEW = 'EVENT_THING_NEW';
+const EVENT_THING_PUSHED = 'EVENT_THING_PUSHED';
+const EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED';
 
-var KEY_TAG = 'TAG';
-var KEY_SETTER = 'SETTER';
-var PRE_KEYS = [KEY_TAG, ];
-var array_id = 0;
+const KEY_TAG = 'TAG';
+const KEY_SETTER = 'SETTER';
+const PRE_KEYS = [KEY_TAG, ];
+let array_id = 0;
 
 /**
  *  An array for holding {@link Thing}s. When the
@@ -57,7 +57,7 @@ var array_id = 0;
  *
  *  @constructor
  */
-var ThingArray = function (paramd) {
+const ThingArray = function (paramd) {
     var self = this;
 
     paramd = _.defaults(paramd, {});
@@ -281,7 +281,7 @@ ThingArray.prototype.splice = function (index, howmany, add1) {
     return self;
 };
 
-var _merger = function (srcs, out_items) {
+const _merger = function (srcs, out_items) {
     var o;
     var oi;
 

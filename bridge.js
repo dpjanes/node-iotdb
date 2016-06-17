@@ -22,10 +22,10 @@
 
 "use strict";
 
-var iotdb = require('./iotdb');
-var _ = require("./helpers");
+const iotdb = require('./iotdb');
+const _ = require("./helpers");
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'Bridge',
 });
@@ -40,7 +40,7 @@ var logger = _.logger.make({
  *  <li><code>pulled</code> - got new data
  *  </ul>
  */
-var Bridge = function () {
+const Bridge = function () {
     var self = this;
 
     self.initd = {};

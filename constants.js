@@ -20,7 +20,7 @@
  *  limitations under the License.
  */
 
-var _ = require("./helpers");
+const _ = require("./helpers");
 
 exports.schema_name = _.ld.expand("schema:name");
 exports.schema_description = _.ld.expand("schema:description");

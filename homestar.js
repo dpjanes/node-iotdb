@@ -24,9 +24,9 @@
 
 "use strict";
 
-var _ = require('./helpers');
+const _ = require('./helpers');
 
-var logger = _.logger.make({
+const logger = _.logger.make({
     name: 'iotdb',
     module: 'homestar',
 });
@@ -35,7 +35,7 @@ var logger = _.logger.make({
  *  At a minimum, this will run everything
  *  in iotdb-recipes
  */
-var load_recipes = function (initd) {
+const load_recipes = function (initd) {
     try {
         require('iotdb-recipes').load_recipes(initd);
     } catch (x) {
