@@ -31,7 +31,7 @@ const util = require('util');
 const path = require('path');
 const fs = require('fs');
 
-const things = require('./things');
+const thing_manager = require('./thing_manager');
 const thing_array = require('./thing_array');
 const exit = require('./exit');
 
@@ -78,10 +78,10 @@ IOT.prototype._setup_events = function () {
 IOT.prototype._setup_things = function () {
     const self = this;
 
-    self._things = new things.Things();
+    self._things = new thing_manager.ThingManager();
 
     // consider deleting this code
-    self.things().on("thing", function (thing) {
+    self._things.on("thing", function (thing) {
         self.emit("thing", thing);
     });
 };

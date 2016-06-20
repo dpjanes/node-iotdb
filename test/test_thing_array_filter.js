@@ -13,12 +13,12 @@ var sleep = require("sleep");
 var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
-var things = require("../things");
+var thing_manager = require("../thing_manager");
 
 require('./instrument/iotdb');
 
 var _make_thing = function(callback) {
-    var t = new things.Things();
+    var t = new thing_manager.ThingManager();
     t._reset();
     
     var ts = t.connect("Test", {}, {

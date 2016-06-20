@@ -13,8 +13,6 @@ var sleep = require("sleep");
 var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
-var things = require("../things");
-var keystore = require("../keystore");
 
 describe('test_users', function() {
     it('default owner', function() {

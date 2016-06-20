@@ -1,5 +1,5 @@
 /*
- *  things.js
+ *  thing_manager.js
  *
  *  David Janes
  *  IOTDB.org
@@ -39,7 +39,7 @@ const logger = _.logger.make({
     module: 'things',
 });
 
-const Things = function (paramd) {
+const ThingManager = function (paramd) {
     const self = this;
 
     self.paramd = _.defaults(paramd, {});
@@ -50,13 +50,13 @@ const Things = function (paramd) {
     this.setMaxListeners(0);
 };
 
-util.inherits(Things, events.EventEmitter);
+util.inherits(ThingManager, events.EventEmitter);
 
 
 /**
  *  This is for testing only
  */
-Things.prototype._reset = function () {
+ThingManager.prototype._reset = function () {
     this._thingd = {};
     this._bridge_exemplars = [];
 };
@@ -64,7 +64,7 @@ Things.prototype._reset = function () {
 /**
  *  Return all things that we know about
  */
-Things.prototype.things = function (model_code) {
+ThingManager.prototype.things = function (model_code) {
     const self = this;
 
     if (!_.is.Empty(model_code)) {
@@ -98,14 +98,14 @@ Things.prototype.things = function (model_code) {
 
 /**
  */
-Things.prototype.connect = function (modeld, initd, metad) {
+ThingManager.prototype.connect = function (modeld, initd, metad) {
     // return this.things(this.discover(modeld, initd, metad));
     return this.discover(modeld, initd, metad);
 };
 
 /**
  */
-Things.prototype.discover = function (modeld, initd, metad) {
+ThingManager.prototype.discover = function (modeld, initd, metad) {
     const self = this;
 
     logger.info({
@@ -172,7 +172,7 @@ Things.prototype.discover = function (modeld, initd, metad) {
  *  This does the actual work of discovery, which 
  *  is delegated off to two different subfunctions
  */
-Things.prototype._discover = function (things, modeld) {
+ThingManager.prototype._discover = function (things, modeld) {
     const self = this;
 
     if (modeld.model_code) {
@@ -184,7 +184,7 @@ Things.prototype._discover = function (things, modeld) {
 
 /**
  */
-Things.prototype._discover_model = function (things, modeld) {
+ThingManager.prototype._discover_model = function (things, modeld) {
     const self = this;
 
     var bindings = modules().bindings();
@@ -207,7 +207,7 @@ Things.prototype._discover_model = function (things, modeld) {
 
 /**
  */
-Things.prototype._discover_all = function (things, modeld) {
+ThingManager.prototype._discover_all = function (things, modeld) {
     const self = this;
 
     var bindings = modules().bindings();
@@ -224,7 +224,7 @@ Things.prototype._discover_all = function (things, modeld) {
 /**
  *  This does the connect for a particular binding
  */
-Things.prototype._discover_binding = function (things, modeld, binding) {
+ThingManager.prototype._discover_binding = function (things, modeld, binding) {
     const self = this;
 
     logger.info({
@@ -262,7 +262,7 @@ Things.prototype._discover_binding = function (things, modeld, binding) {
  *      - see if exiting one is reachable?
  *      - if it isn't, replace the bridge with this one
  */
-Things.prototype._discover_binding_bridge = function (things, modeld, binding, bridge_exemplar, bridge_instance) {
+ThingManager.prototype._discover_binding_bridge = function (things, modeld, binding, bridge_exemplar, bridge_instance) {
     const self = this;
 
     if (require('iotdb').shutting_down()) {
@@ -340,7 +340,7 @@ Things.prototype._discover_binding_bridge = function (things, modeld, binding, b
 
 /*
  */
-Things.prototype.disconnect = function () {
+ThingManager.prototype.disconnect = function () {
     const self = this;
 
     var max_wait = 0;
@@ -358,7 +358,7 @@ Things.prototype.disconnect = function () {
         }
     }
 
-    // shut down all the Things
+    // shut down all the ThingManager
     for (var thing_id in self._thingd) {
         var thing = self._thingd[thing_id];
         if (!thing.disconnect) {
@@ -377,4 +377,4 @@ Things.prototype.disconnect = function () {
 /*
  *  API
  */
-exports.Things = Things;
+exports.ThingManager = ThingManager;

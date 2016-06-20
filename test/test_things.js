@@ -13,7 +13,7 @@ var sleep = require("sleep");
 var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
-var things = require("../things");
+var thing_manager = require("../thing_manager");
 var keystore = require("../keystore");
 
 require('./instrument/iotdb');
@@ -34,7 +34,7 @@ describe('test_things', function() {
         });
          */
         it('new', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             var ts = t.things();
 
@@ -44,7 +44,7 @@ describe('test_things', function() {
     });
     describe('discover', function() {
         it('no argument', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             
             var model_code = t.discover();
@@ -52,7 +52,7 @@ describe('test_things', function() {
 //XXX            assert.strictEqual(model_code, undefined);
         });
         it('model:Test / string argument', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             
             var model_code = t.discover("Test");
@@ -60,7 +60,7 @@ describe('test_things', function() {
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('model:Test / string argument + dictionary', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             
             var model_code = t.discover("Test", {
@@ -70,7 +70,7 @@ describe('test_things', function() {
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('model:Test / dictionary', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             
             var model_code = t.discover({
@@ -81,7 +81,7 @@ describe('test_things', function() {
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('model:Test / dictionary (obsolete way)', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             
             var model_code = t.discover({
@@ -92,7 +92,7 @@ describe('test_things', function() {
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('multiple dictionaries', function() {
-            var t = new things.Things();
+            var t = new thing_manager.ThingManager();
             t._reset();
             
             var model_code = t.discover({
@@ -108,7 +108,7 @@ describe('test_things', function() {
         });
         describe('bad', function() {
             it('bad argument', function() {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 
                 assert.throws(function() {
@@ -116,7 +116,7 @@ describe('test_things', function() {
                 }, Error);
             });
             it('bad model code', function() {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 
                 assert.throws(function() {
@@ -126,7 +126,7 @@ describe('test_things', function() {
                 }, Error);
             });
             it('bad second argument', function() {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 
                 assert.throws(function() {
@@ -136,7 +136,7 @@ describe('test_things', function() {
                 }, Error);
             });
             it('bad third argument', function() {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 
                 assert.throws(function() {
@@ -149,7 +149,7 @@ describe('test_things', function() {
         /*
         describe('discover_bridge', function() {
             it('simple', function() {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 
                 var model_code = t.discover({
@@ -161,12 +161,12 @@ describe('test_things', function() {
         */
         describe('disconnect', function() {
             it('nothing connected', function() {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 t.disconnect();
             });
             it('something connected', function(done) {
-                var t = new things.Things();
+                var t = new thing_manager.ThingManager();
                 t._reset();
                 
                 var ts = t.connect({
