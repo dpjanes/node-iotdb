@@ -259,3 +259,4 @@ if (0) {
     attribute.sensor.string.water = iotdb.make_string(':sensor.water');
     attribute.sensor.string.humidity = iotdb.make_string(':sensor.humidity')
     */
+};

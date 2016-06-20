@@ -292,20 +292,11 @@ const make = function (initd) {
     /*
      */
     self.disconnect = function () {
-        var max_wait = 0;
-
-        // shut down all the Bridge Exemplars
-        for (var bei in _bridge_exemplars) {
-            var bridge_exemplar = _bridge_exemplars[bei];
-            if (!bridge_exemplar.disconnect) {
-                continue
-            }
-
-            var wait = bridge_exemplar.disconnect();
-            if (_.is.Number(wait)) {
-                max_wait = Math.max(wait, max_wait);
-            }
-        }
+        let max_wait = _bridge_exemplars
+            .filter(bx => bx.disconnect)
+            .map(bx => bx.disconnect())
+            .filter(wait => _.is.Number(wait))
+            .reduce(( sum, wait ) => sum + wait, 0);
 
         // shut down all the things
         for (var thing_id in _thingd) {
