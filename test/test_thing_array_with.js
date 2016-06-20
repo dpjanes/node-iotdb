@@ -18,7 +18,7 @@ var thing_manager = require("../thing_manager");
 require('./instrument/iotdb');
 
 var _make_thing = function(callback) {
-    var t = new thing_manager.ThingManager();
+    var t = thing_manager.make();
     t._reset();
     
     var ts = t.connect("Test", {}, {

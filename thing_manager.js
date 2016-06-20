@@ -378,3 +378,6 @@ ThingManager.prototype.disconnect = function () {
  *  API
  */
 exports.ThingManager = ThingManager;
+exports.make = function(paramd) {
+    return new ThingManager(paramd);
+}

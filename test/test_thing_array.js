@@ -19,7 +19,7 @@ var thing_array = require("../thing_array");
 require('./instrument/iotdb');
 
 var _make_thing = function(callback) {
-    var t = new thing_manager.ThingManager();
+    var t = thing_manager.make();
     t._reset();
     
     var ts = t.connect("Test", {}, {
@@ -33,7 +33,7 @@ var _make_thing = function(callback) {
 };
 
 var _make_no_things = function(callback) {
-    var t = new thing_manager.ThingManager();
+    var t = thing_manager.make();
     t._reset();
     
     var ts = t.connect("NoThingTest", {}, {

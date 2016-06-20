@@ -78,7 +78,7 @@ IOT.prototype._setup_events = function () {
 IOT.prototype._setup_things = function () {
     const self = this;
 
-    self._things = new thing_manager.ThingManager();
+    self._things = thing_manager.make();
 
     // consider deleting this code
     self._things.on("thing", function (thing) {
