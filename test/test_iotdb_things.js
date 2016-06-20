@@ -26,6 +26,7 @@ describe('test_iotdb', function() {
 
                 assert.strictEqual(things.length, 0);
             });
+            /*
             it('valid model code argument', function() {
                 iotdb.instance = null;
                 var things = iotdb.things("Test");
@@ -38,6 +39,7 @@ describe('test_iotdb', function() {
 
                 assert.strictEqual(things.length, 0);
             });
+            */
         });
         describe('clean setup', function() {
             it('no arguments', function() {
@@ -46,6 +48,7 @@ describe('test_iotdb', function() {
 
                 assert.strictEqual(things.length, 0);
             });
+            /*
             it('valid model code argument', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.things("Test");
@@ -58,6 +61,7 @@ describe('test_iotdb', function() {
 
                 assert.strictEqual(things.length, 0);
             });
+            */
         });
         describe('setup with Thing existing', function() {
             it('connected', function(done) {
@@ -66,8 +70,8 @@ describe('test_iotdb', function() {
                 var ts = iot.connect("Test");
                 ts.on("thing", function() {
                     assert.strictEqual(iot.things().length, 1);
-                    assert.strictEqual(iot.things("Test").length, 1);
-                    assert.strictEqual(iot.things("NotATest").length, 0);
+                    // assert.strictEqual(iot.things("Test").length, 1);
+                    // assert.strictEqual(iot.things("NotATest").length, 0);
                     done();
                 });
             });
@@ -77,8 +81,8 @@ describe('test_iotdb', function() {
                 var ts = iot.connect("NotATest");
                 setTimeout(function() {
                     assert.strictEqual(iot.things().length, 0);
-                    assert.strictEqual(iot.things("Test").length, 0);
-                    assert.strictEqual(iot.things("NotATest").length, 0);
+                    // assert.strictEqual(iot.things("Test").length, 0);
+                    // assert.strictEqual(iot.things("NotATest").length, 0);
                     done();
                 }, 250);
             });

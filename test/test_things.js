@@ -42,12 +42,12 @@ describe('test_things', function() {
             assert.strictEqual(ts.length, 0);
         });
     });
-    describe('discover', function() {
+    describe('connect', function() {
         it('no argument', function() {
             var t = thing_manager.make();
             t._reset();
             
-            var model_code = t.discover();
+            var model_code = t.connect();
 
 //XXX            assert.strictEqual(model_code, undefined);
         });
@@ -55,7 +55,7 @@ describe('test_things', function() {
             var t = thing_manager.make();
             t._reset();
             
-            var model_code = t.discover("Test");
+            var model_code = t.connect("Test");
 
 //XXX            assert.strictEqual(model_code, "test");
         });
@@ -63,7 +63,7 @@ describe('test_things', function() {
             var t = thing_manager.make();
             t._reset();
             
-            var model_code = t.discover("Test", {
+            var model_code = t.connect("Test", {
                 parameter: 123,
             });
 
@@ -73,7 +73,7 @@ describe('test_things', function() {
             var t = thing_manager.make();
             t._reset();
             
-            var model_code = t.discover({
+            var model_code = t.connect({
                 model_code: "Test",
                 parameter: 123,
             });
@@ -84,7 +84,7 @@ describe('test_things', function() {
             var t = thing_manager.make();
             t._reset();
             
-            var model_code = t.discover({
+            var model_code = t.connect({
                 model: "Test",
                 parameter: 123,
             });
@@ -95,7 +95,7 @@ describe('test_things', function() {
             var t = thing_manager.make();
             t._reset();
             
-            var model_code = t.discover({
+            var model_code = t.connect({
                 model: "Test",
             }, {
                 parameter: 123,
@@ -112,7 +112,7 @@ describe('test_things', function() {
                 t._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.discover(123);
+                    var model_code = t.connect(123);
                 }, Error);
             });
             it('bad model code', function() {
@@ -120,7 +120,7 @@ describe('test_things', function() {
                 t._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.discover({
+                    var model_code = t.connect({
                         model: 123,
                     });
                 }, Error);
@@ -130,7 +130,7 @@ describe('test_things', function() {
                 t._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.discover({
+                    var model_code = t.connect({
                         model: "ModelCode",
                     }, 1234);
                 }, Error);
@@ -140,7 +140,7 @@ describe('test_things', function() {
                 t._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.discover({
+                    var model_code = t.connect({
                         model: "ModelCode",
                     }, {}, 1234);
                 }, Error);
