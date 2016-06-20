@@ -73,7 +73,10 @@ const make = function (initd) {
     };
 
     /**
-     *  Find new things
+     *  Find new things. This is probably one 
+     *  of the most important functions! Can
+     *  be called with 0, 1, 2 or 3 arguments
+     *  depending on your mood.
      */
     self.connect = function (modeld, initd, metad) {
         logger.info({
@@ -81,7 +84,6 @@ const make = function (initd) {
             modeld: modeld,
         }, "called");
 
-        // validate arguments
         if (!modeld) {
             modeld = {};
         } else if (_.is.String(modeld)) {
@@ -104,7 +106,6 @@ const make = function (initd) {
             throw new Error("expected undefined|null|string|dictionary");
         }
 
-        // optional second dictionary - arguments to create
         if (initd !== undefined) {
             if (!_.is.Object(initd)) {
                 throw new Error("expected initd to be a Dictionary");
@@ -113,7 +114,6 @@ const make = function (initd) {
             modeld = _.defaults(modeld, initd);
         }
 
-        // optional third dictionary - metadata (something of a hack)
         if (metad !== undefined) {
             if (!_.is.Object(metad)) {
                 throw new Error("expected metad to be a Dictionary");
@@ -122,61 +122,40 @@ const make = function (initd) {
             modeld["meta"] = metad;
         }
 
-        // new in 0.15
         const things = new thing_array.ThingArray({
             persist: true,
             things: self,
         });
 
-        // run when ready
         process.nextTick(function () {
-            _discover(things, modeld);
+            if (modeld.model_code) {
+                _discover_model(things, modeld);
+            } else {
+                _discover_all(things, modeld);
+            }
         });
 
-        return things; // modeld.model_code;
-    };
-
-    /**
-     *  This does the actual work of discovery, which 
-     *  is delegated off to two different subfunctions
-     */
-    const _discover = function (things, modeld) {
-        if (modeld.model_code) {
-            _discover_model(things, modeld);
-        } else {
-            _discover_all(things, modeld);
-        }
+        return things; 
     };
 
     const _discover_model = function (things, modeld) {
-        var bindings = modules().bindings();
-        for (var bi in bindings) {
-            var binding = bindings[bi];
-            if (modeld.model_code !== binding.model_code) {
-                continue;
-            }
+        const any = modules().bindings()
+            .filter(binding => modeld.model_code === binding.model_code)
+            .find(binding => _discover_binding(things, modeld, binding));
 
-            _discover_binding(things, modeld, binding);
-            return;
-        };
-
-        logger.error({
-            method: "_discover",
-            modeld: modeld,
-            cause: "maybe self Model or it's binding are not added to IOTDB yet?",
-        }, "did not find any matching Models");
+        if (!any) {
+            logger.error({
+                method: "_discover",
+                modeld: modeld,
+                cause: "maybe self Model or it's binding are not added to IOTDB yet?",
+            }, "did not find any matching Models");
+        }
     };
 
     const _discover_all = function (things, modeld) {
-        var bindings = modules().bindings();
-        for (var bi in bindings) {
-            var binding = bindings[bi];
-            if (binding.discover === false) {
-                continue;
-            }
-
-            _discover_binding(things, modeld, binding);
-        };
+        modules().bindings()
+            .filter(binding => binding.discover !== false)
+            .map(binding => _discover_binding(things, modeld, binding));
     };
 
     const _discover_binding = function (things, modeld, binding) {
@@ -187,9 +166,9 @@ const make = function (initd) {
         }, "called");
 
         // initialize the bridge for self binding
-        var initd = _.defaults({}, modeld, binding.initd);
+        const initd = _.defaults({}, modeld, binding.initd);
 
-        var bridge_exemplar = new binding.bridge(initd);
+        const bridge_exemplar = new binding.bridge(initd);
         _bridge_exemplars.push(bridge_exemplar);
 
         bridge_exemplar.discovered = function (bridge_instance) {
@@ -200,6 +179,8 @@ const make = function (initd) {
         process.nextTick(function () {
             bridge_exemplar.discover();
         });
+
+        return true;
     };
 
     /**
@@ -229,8 +210,8 @@ const make = function (initd) {
 
         // bindings can ignore certatin discoveries 
         if (binding && binding.matchd) {
-            var bridge_meta = _.ld.compact(bridge_instance.meta());
-            var binding_meta = _.ld.compact(binding.matchd);
+            const bridge_meta = _.ld.compact(bridge_instance.meta());
+            const binding_meta = _.ld.compact(binding.matchd);
             if (!_.d.is.superset(bridge_meta, binding_meta)) {
                 if (bridge_exemplar.ignore) {
                     bridge_exemplar.ignore(bridge_instance);
@@ -244,12 +225,12 @@ const make = function (initd) {
         bridge_instance.binding = binding;
 
         // now make a model 
-        var model_instance = new binding.model();
+        const model_instance = new binding.model();
         model_instance.bind_bridge(bridge_instance);
 
         // is already being tracked? is it reachable if it is ?
-        var thing_id = model_instance.thing_id();
-        var thing = _thingd[thing_id];
+        const thing_id = model_instance.thing_id();
+        let thing = _thingd[thing_id];
 
         if (modeld.meta) {
             model_instance.update("meta", modeld.meta);
@@ -269,7 +250,6 @@ const make = function (initd) {
 
             // tell the world
             self.emit("thing", thing);
-
         } else if (thing.reachable()) {
             // don't replace reachable things
             return;
@@ -290,28 +270,22 @@ const make = function (initd) {
     };
 
     /*
+     *  Disconnect all the bridges and things,
+     *  returning the amount of time we should wait
+     *  before exiting
      */
-    self.disconnect = function () {
-        let max_wait = _bridge_exemplars
+    self.disconnect = () => {
+        const max_wait = _bridge_exemplars
             .filter(bx => bx.disconnect)
             .map(bx => bx.disconnect())
             .filter(wait => _.is.Number(wait))
             .reduce(( sum, wait ) => sum + wait, 0);
 
-        // shut down all the things
-        for (var thing_id in _thingd) {
-            var thing = _thingd[thing_id];
-            if (!thing.disconnect) {
-                continue
-            }
-
-            var wait = thing.disconnect();
-            if (_.is.Number(wait)) {
-                max_wait = Math.max(wait, max_wait);
-            }
-        }
-
-        return max_wait;
+        return _.values(_thingd)
+            .filter(thing => thing.disconnect)
+            .map(thing => thing.disconnect())
+            .filter(wait => _.is.Number(wait))
+            .reduce(( sum, wait ) => sum + wait, max_wait);
     };
 
     return self;
