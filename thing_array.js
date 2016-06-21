@@ -132,6 +132,15 @@ ThingArray.prototype.push = function (thing, paramd) {
      *  we do nothing. There may be a deeper bug
      *  causing this to happen, but I can't find it
      */
+    /*
+    if (self.filter(t => t === thing)) {
+        logger.error({
+            method: "push",
+            thing_id: thing.thing_id(),
+        }, "preventing same Thing from being pushed");
+        return;
+    }
+    */
     for (var ti = 0; ti < self.length; ti++) {
         var t = self[ti];
         if (t === thing) {
@@ -635,7 +644,7 @@ ThingArray.prototype.things_changed = function () {
 
 /* --- */
 
-ThingArray.prototype._filter_test = function (queryd, thing) {
+ThingArray.prototype._search_test = function (queryd, thing) {
     const self = this;
     var meta = thing.meta();
 
@@ -643,7 +652,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
         var match = query_key.match(/^(meta|model|istate|ostate|transient):(.+)$/);
         if (!match) {
             logger.error({
-                method: "_filter_test",
+                method: "_search_test",
                 cause: "bad query in the test dictionary",
                 query_key: query_key,
             }, "bad match request");
@@ -674,7 +683,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
             }
         } else if ((query_band === "ostate") || (query_band === "istate") || (query_band === "model")) {
             logger.error({
-                method: "_filter_test",
+                method: "_search_test",
                 query_band: query_band,
                 query_key: query_key,
             }, "function not implemented (yet)");
@@ -682,7 +691,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
             return false;
         } else {
             logger.error({
-                method: "_filter_test",
+                method: "_search_test",
                 cause: "programming error - this should never happen",
                 query_band: query_band,
                 query_key: query_key,
@@ -697,7 +706,7 @@ ThingArray.prototype._filter_test = function (queryd, thing) {
 
 /**
  */
-ThingArray.prototype.filter = function (d) {
+ThingArray.prototype.search = function (d) {
     const self = this;
     var persist = self.is_persist();
     var o;
@@ -708,13 +717,13 @@ ThingArray.prototype.filter = function (d) {
     });
 
     self.map(function (thing) {
-        if (self._filter_test(d, thing)) {
+        if (self._search_test(d, thing)) {
             out_items.push(thing);
         }
     });
 
     if (out_items.length === 0) {
-        // console.log("# ThingArray.filter: warning - nothing matched", d)
+        // console.log("# ThingArray.search: warning - nothing matched", d)
     }
 
     /*
@@ -741,7 +750,7 @@ ThingArray.prototype.filter = function (d) {
                 var thing = self[ii];
                 var thing_id = thing.thing_id();
 
-                if (!self._filter_test(d, thing)) {
+                if (!self._search_test(d, thing)) {
                     continue;
                 }
 
@@ -763,7 +772,7 @@ ThingArray.prototype.filter = function (d) {
                     continue;
                 }
 
-                // console.log("! ThingArray.filter/things_changed: remove old match", o.thing_id())
+                // console.log("! ThingArray.search/things_changed: remove old match", o.thing_id())
                 out_items.splice(oi--, 1);
                 is_updated = true;
             }
@@ -790,43 +799,43 @@ ThingArray.prototype.filter = function (d) {
 };
 
 ThingArray.prototype.with_id = function (id) {
-    return this.filter({
+    return this.search({
         "meta:iot:thing-id": id,
     });
 };
 
 ThingArray.prototype.with_code = function (code) {
-    return this.filter({
+    return this.search({
         "meta:iot:model-id": _.id.to_dash_case(code),
     });
 };
 
 ThingArray.prototype.with_name = function (name) {
-    return this.filter({
+    return this.search({
         "meta:schema:name": name
     });
 };
 
 ThingArray.prototype.with_zone = function (name) {
-    return this.filter({
+    return this.search({
         "meta:iot:zone": name
     });
 };
 
 ThingArray.prototype.with_number = function (number) {
-    return this.filter({
+    return this.search({
         "meta:iot:thing-number": parseInt(number)
     });
 };
 
 ThingArray.prototype.with_tag = function (tag) {
-    return this.filter({
+    return this.search({
         "transient:tag": tag
     });
 };
 
 ThingArray.prototype.with_facet = function (facet) {
-    return this.filter({
+    return this.search({
         "meta:iot:facet": facet,
     });
 };

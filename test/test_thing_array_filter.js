@@ -34,11 +34,11 @@ var _make_thing = function(callback) {
 };
 
 describe('test_thing_array', function() {
-    describe('filter', function() {
+    describe('search', function() {
         describe('meta:iot:model-id', function() {
             it('matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:model-id": "test",
                     });
 
@@ -47,7 +47,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:model-id": [ "test", "not-a-name", ],
                     });
 
@@ -56,7 +56,7 @@ describe('test_thing_array', function() {
             });
             it('not matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:model-id": "not-a-name",
                     });
 
@@ -67,7 +67,7 @@ describe('test_thing_array', function() {
         describe('meta:schema:name', function() {
             it('matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:schema:name": "The Thing Name",
                     });
 
@@ -76,7 +76,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:schema:name": [ "The Thing Name", "not-a-name", ],
                     });
 
@@ -85,7 +85,7 @@ describe('test_thing_array', function() {
             });
             it('not matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:schema:name": "not-a-name",
                     });
 
@@ -96,7 +96,7 @@ describe('test_thing_array', function() {
         describe('meta:iot:thing-number', function() {
             it('matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:thing-number": 32,
                     });
 
@@ -105,7 +105,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:thing-number": [ 32, 21, ],
                     });
 
@@ -114,7 +114,7 @@ describe('test_thing_array', function() {
             });
             it('not matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:thing-number": 21,
                     });
 
@@ -123,7 +123,7 @@ describe('test_thing_array', function() {
             });
             it('not matching with string argument that looks like it should match', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:thing-number": "32",
                     });
 
@@ -134,7 +134,7 @@ describe('test_thing_array', function() {
         describe('transient:tag', function() {
             it('matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "transient:tag": "a",
                     });
 
@@ -143,7 +143,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "transient:tag": [ "a", "b", "c"],
                     });
 
@@ -152,7 +152,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array with some non matching items', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "transient:tag": [ "c", "d", "e"],
                     });
 
@@ -161,7 +161,7 @@ describe('test_thing_array', function() {
             });
             it('not matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "transient:tag": "e",
                     });
 
@@ -170,7 +170,7 @@ describe('test_thing_array', function() {
             });
             it('not matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "transient:tag": [ "e", "f", ],
                     });
 
@@ -181,7 +181,7 @@ describe('test_thing_array', function() {
         describe('meta:iot:zone', function() {
             it('matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:zone": "a",
                     });
 
@@ -190,7 +190,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:zone": [ "a", "b", "c"],
                     });
 
@@ -199,7 +199,7 @@ describe('test_thing_array', function() {
             });
             it('matching with array with some non matching items', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:zone": [ "c", "d", "e"],
                     });
 
@@ -208,7 +208,7 @@ describe('test_thing_array', function() {
             });
             it('not matching', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:zone": "e",
                     });
 
@@ -217,7 +217,7 @@ describe('test_thing_array', function() {
             });
             it('not matching with array', function() {
                 _make_thing(function(ts) {
-                    var ms = ts.filter({
+                    var ms = ts.search({
                         "meta:iot:zone": [ "e", "f", ],
                     });
 
