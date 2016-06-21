@@ -145,7 +145,6 @@ const make = function() {
             key: key
         };
 
-         // there can only be one Setter
         if (key === KEY_SETTER) {
             _persistds = _persistds.filter(p => p.key !== key);
         }
@@ -247,33 +246,6 @@ const make = function() {
 
         srcs.map(src => 
             events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, () => _merger(srcs, out_items)));
-
-
-/*
-        var _on_things_changed = function () {
-            logger.trace({
-                method: "merge/_on_things_changed",
-                in_array_1: srcs[0]._array_id,
-                in_array_2: srcs[1]._array_id,
-                out_array: out_items._array_id,
-            }, "called");
-
-            _merger(srcs, out_items);
-        };
-
-        for (var si in srcs) {
-            var src = srcs[si];
-
-            events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, _on_things_changed);
-        }
-
-        logger.info({
-            method: "merge",
-            in_array_1: srcs[0]._array_id,
-            in_array_2: srcs[1]._array_id,
-            out_array: out_items._array_id,
-        }, "merged array");
-        */
 
         return out_items;
     };
@@ -437,15 +409,9 @@ const make = function() {
      *  Return the number of things that can be reached
      */
     self.reachable = function () {
-        var count = 0;
-
-        self.map(function (thing) {
-            if (thing.reachable()) {
-                count++;
-            }
-        });
-
-        return count;
+        return self
+            .map((thing) => thing.reachable() ? 1 : 0)
+            .reduce(( sum, reachable ) => sum + reachable, 0);
     };
 
     /**
