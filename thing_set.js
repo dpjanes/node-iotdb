@@ -138,7 +138,7 @@ const make = function() {
             .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
     };
 
-    const _persist_command = function (f, av, key) {
+    const _persist = function (f, av, key) {
         var persistd = {
             f: f,
             av: av,
@@ -153,13 +153,14 @@ const make = function() {
         _persistds.push(persistd);
     };
 
-    /**
-     *  Apply the command to everything in the ThingArray right now.
-     */
-    self._apply_command = function (f, av) {
-        self.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
-    };
+    const _apply = (f, av) => self.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
 
+    const _apply_persist = (f, av, key) => {
+        _apply(f, av);
+        _persist(f, av, key);
+
+        return self;
+    };
 
     /**
      */
@@ -236,13 +237,7 @@ const make = function() {
      *  Merge another array into self one
      */
     self.merge = function (new_items) {
-
-        /*
-         *  Merge (XXX: not sure if should always be persist)
-         */
-        var out_items = make({
-            persist: true
-        });
+        var out_items = make()
         var srcs = [
             self,
             new_items
@@ -250,10 +245,11 @@ const make = function() {
 
         _merger(srcs, out_items);
 
+        srcs.map(src => 
+            events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, () => _merger(srcs, out_items)));
 
-        /*
-         *  Persist the merging
-         */
+
+/*
         var _on_things_changed = function () {
             logger.trace({
                 method: "merge/_on_things_changed",
@@ -277,6 +273,7 @@ const make = function() {
             in_array_2: srcs[1]._array_id,
             out_array: out_items._array_id,
         }, "merged array");
+        */
 
         return out_items;
     };
@@ -314,10 +311,7 @@ const make = function() {
      *  @return {self}
      */
     self.disconnect = function () {
-        self._apply_command(model.Model.prototype.disconnect, arguments);
-        _persist_command(model.Model.prototype.disconnect, arguments);
-
-        return self;
+        return _apply_persist(model.Model.prototype.disconnect, arguments);
     };
 
     /**
@@ -329,10 +323,7 @@ const make = function() {
     self.name = function (name) {
         assert(_.is.String(name));
 
-        self._apply_command(model.Model.prototype.name, arguments);
-        _persist_command(model.Model.prototype.name, arguments);
-
-        return self;
+        return _apply_persist(model.Model.prototype.name, arguments);
     };
 
     /**
@@ -344,10 +335,7 @@ const make = function() {
     self.zones = function (zones) {
         assert(_.is.String(zones) || _.is.Array(zones));
 
-        self._apply_command(model.Model.prototype.zones, arguments);
-        _persist_command(model.Model.prototype.zones, arguments);
-
-        return self;
+        return _apply_persist(model.Model.prototype.zones, arguments);
     };
 
     /**
@@ -359,10 +347,7 @@ const make = function() {
     self.facets = function (facets) {
         assert(_.is.String(facets) || _.is.Array(facets));
 
-        self._apply_command(model.Model.prototype.facets, arguments);
-        _persist_command(model.Model.prototype.facets, arguments);
-
-        return self;
+        return _apply_persist(model.Model.prototype.facets, arguments);
     };
 
     /**
@@ -372,10 +357,7 @@ const make = function() {
      *  @return {self}
      */
     self.set = function () {
-        self._apply_command(model.Model.prototype.set, arguments, KEY_SETTER);
-        _persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
-
-        return self;
+        return _apply_persist(model.Model.prototype.set, arguments, KEY_SETTER);
     };
 
     /**
@@ -385,10 +367,7 @@ const make = function() {
      *  @return {self}
      */
     self.update = function () {
-        self._apply_command(model.Model.prototype.update, arguments, KEY_SETTER);
-        _persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
-
-        return self;
+        return _apply_persist(model.Model.prototype.update, arguments, KEY_SETTER);
     };
 
     /**
@@ -398,10 +377,7 @@ const make = function() {
      *  @return {self}
      */
     self.pull = function () {
-        self._apply_command(model.Model.prototype.pull, arguments);
-        _persist_command(model.Model.prototype.pull, arguments);
-
-        return self;
+        return _apply_persist(model.Model.prototype.pull, arguments);
     };
 
     /**
@@ -411,10 +387,7 @@ const make = function() {
      *  @return {self}
      */
     self.tag = function () {
-        self._apply_command(model.Model.prototype.tag, arguments, KEY_TAG);
-        _persist_command(model.Model.prototype.tag, arguments, KEY_TAG);
-
-        return self;
+        return _apply_persist(model.Model.prototype.tag, arguments, KEY_TAG);
     };
 
     /**
@@ -431,8 +404,8 @@ const make = function() {
                 callback(thing);
             });
         } else {
-            self._apply_command(model.Model.prototype.on, arguments);
-            _persist_command(model.Model.prototype.on, arguments);
+            _apply(model.Model.prototype.on, arguments);
+            _persist(model.Model.prototype.on, arguments);
         }
 
         return self;
@@ -457,10 +430,7 @@ const make = function() {
      *  @return {self}
      */
     self.on_change = function () {
-        self._apply_command(model.Model.prototype.on_change, arguments);
-        _persist_command(model.Model.prototype.on_change, arguments);
-
-        return self;
+        return _apply_persist(model.Model.prototype.on_change, arguments);
     };
 
     /**
