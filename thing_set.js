@@ -57,12 +57,12 @@ const ThingArray = function() {
     self.length = 0;
     self._array_id = '__thing_set_' + array_id++;
     self._persistds = [];
+    self._underlying = [];
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
 };
 
-ThingArray.prototype = new Array(); // jshint ignore:line
 util.inherits(ThingArray, events.EventEmitter);
 ThingArray.prototype._isThingArray = true;
 
@@ -71,7 +71,7 @@ const make = () => new ThingArray();
 /**
  */
 ThingArray.prototype.any = function () {
-    return this.length ? this[0] : null;
+    return this._underlying.length ? this._underlying[0] : null;
 };
 
 /**
@@ -82,8 +82,8 @@ ThingArray.prototype.any = function () {
 ThingArray.prototype.map = function (f) {
     const self = this;
     var rs = [];
-    for (var ti = 0; ti < self.length; ti++) {
-        var t = self[ti];
+    for (var ti = 0; ti < self._underlying.length; ti++) {
+        var t = self._underlying[ti];
         var r = f(t);
         if (r !== undefined) {
             rs.push(r);
@@ -95,8 +95,8 @@ ThingArray.prototype.map = function (f) {
 
 ThingArray.prototype.forEach = function (f) {
     const self = this;
-    for (var ti = 0; ti < self.length; ti++) {
-        f(self[ti]);
+    for (var ti = 0; ti < self._underlying.length; ti++) {
+        f(self._underlying[ti]);
     }
 };
 
@@ -104,8 +104,8 @@ ThingArray.prototype.filter = function (f) {
     const self = this;
 
     var rs = [];
-    for (var ti = 0; ti < self.length; ti++) {
-        var t = self[ti];
+    for (var ti = 0; ti < self._underlying.length; ti++) {
+        var t = self._underlying[ti];
         if (f(t)) {
             rs.push(r);
         }
@@ -144,7 +144,8 @@ ThingArray.prototype.add = function (thing, paramd) {
     });
 
     thing[self._array_id] = self; // TD: see if this is still necessary
-    Array.prototype.push.call(self, thing);
+    self._underlying.push(thing);
+    self.length = self._underlying.length;
 
     // event dispatch
     var changed = false;
@@ -229,12 +230,13 @@ ThingArray.prototype.splice = function (index, howmany, add1) {
         for (var i = 0; i < howmany; i++) {
             var x = index + i;
             if (x < self.length) {
-                delete self[x][self._array_id];
+                delete self._underlying[x][self._array_id];
             }
         }
     }
 
-    Array.prototype.splice.apply(self, arguments);
+    self._underlying.splice(index, howmany, add1);
+    self.length = self._underlying.length;
 
     return self;
 };
@@ -677,8 +679,8 @@ ThingArray.prototype.search = function (d) {
         // find new things matching
         var is_updated = false;
 
-        for (var ii = 0; ii < self.length; ii++) {
-            var thing = self[ii];
+        for (var ii = 0; ii < self._underlying.length; ii++) {
+            var thing = self._underlying[ii];
             var thing_id = thing.thing_id();
 
             if (!self._search_test(d, thing)) {
