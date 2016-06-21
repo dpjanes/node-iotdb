@@ -60,7 +60,7 @@ const make = function (initd) {
      *  Return all things that we know about
      */
     self.things = function () {
-        var things = new thing_array.ThingArray({
+        var things = thing_array.make({
             persist: true,
             things: self,
         });
@@ -122,7 +122,7 @@ const make = function (initd) {
             modeld["meta"] = metad;
         }
 
-        const things = new thing_array.ThingArray({
+        const things = thing_array.make({
             persist: true,
             things: self,
         });
@@ -275,17 +275,11 @@ const make = function (initd) {
      *  before exiting
      */
     self.disconnect = () => {
-        const max_wait = _bridge_exemplars
-            .filter(bx => bx.disconnect)
-            .map(bx => bx.disconnect())
+        return _.flatten([ _bridge_exemplars, _.values(_thingd) ], true)
+            .filter(bort => bort.disconnect)
+            .map(bort => bort.disconnect())
             .filter(wait => _.is.Number(wait))
             .reduce(( sum, wait ) => sum + wait, 0);
-
-        return _.values(_thingd)
-            .filter(thing => thing.disconnect)
-            .map(thing => thing.disconnect())
-            .filter(wait => _.is.Number(wait))
-            .reduce(( sum, wait ) => sum + wait, max_wait);
     };
 
     return self;

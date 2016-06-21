@@ -46,14 +46,8 @@ const PRE_KEYS = [KEY_TAG, ];
 let array_id = 0;
 
 /**
- *  An array for holding {@link Thing}s. When the
- *  methods
- *  {@link ThingArray#start start},
- *  {@link ThingArray#start set},
- *  {@link ThingArray#start end}, or
- *  {@link ThingArray#start get}
- *  are called, that exact method with all the
- *  arguments are called on each item in the array.
+ *  An array for holding and operating on many {@link Thing}s
+ *  at one time.
  *
  *  @constructor
  */
@@ -85,6 +79,10 @@ const ThingArray = function (paramd) {
 ThingArray.prototype = new Array(); // jshint ignore:line
 util.inherits(ThingArray, events.EventEmitter);
 ThingArray.prototype._isThingArray = true;
+
+const make = (paramd) => {
+    return new ThingArray(paramd);
+}
 
 /**
  */
@@ -344,7 +342,7 @@ ThingArray.prototype.merge = function (new_items) {
     /*
      *  Merge (XXX: not sure if should always be persist)
      */
-    var out_items = new ThingArray({
+    var out_items = make({
         persist: true
     });
     var srcs = [
@@ -705,7 +703,7 @@ ThingArray.prototype.filter = function (d) {
     var o;
     var oi;
 
-    var out_items = new ThingArray({
+    var out_items = make({
         persist: persist
     });
 
@@ -833,4 +831,7 @@ ThingArray.prototype.with_facet = function (facet) {
     });
 };
 
-exports.ThingArray = ThingArray;
+/**
+ *  API
+ */
+exports.make = make;

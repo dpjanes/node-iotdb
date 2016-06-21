@@ -20,8 +20,8 @@ var bridge = require("../bridge");
 describe('test_is', function() {
     var testModel = model.make_model().code('a').make();
     var testThing = new testModel();
-    var testThingArray0 = new thing_array.ThingArray();
-    var testThingArray1 = new thing_array.ThingArray();
+    var testThingArray0 = thing_array.make();
+    var testThingArray1 = thing_array.make();
     testThingArray1.push(testThing);
 
     var testBridge = new bridge.Bridge();
