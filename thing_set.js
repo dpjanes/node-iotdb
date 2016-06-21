@@ -431,62 +431,61 @@ const make = function() {
 
     /* --- */
     self._search_test = function (queryd, thing) {
-        var meta = thing.meta();
+        const meta = thing.meta();
 
-        for (var query_key in queryd) {
-            var match = query_key.match(/^(meta|model|istate|ostate|transient):(.+)$/);
+        return _.mapObject(queryd, ( query_value, query_key ) => {
+            const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
             if (!match) {
-                logger.error({
-                    method: "_search_test",
-                    cause: "bad query in the test dictionary",
-                    query_key: query_key,
-                }, "bad match request");
-                return false;
+                throw new Error("bad search: key=" + query_key);
             }
 
-            var query_band = match[1];
-            var query_inner_key = match[2];
-            var query_values = _.ld.list(queryd, query_key, []);
+            return {
+                query_band: match[1],
+                query_inner_key: match[2],
+                query_values: _.ld.list(queryd, query_key, []),
+            };
+        }).map((matchd) => {
+            switch (matchd.query_band) {
+            case "meta":
+            case "connection":
+                matchd.query_values = _.ld.expand(matchd.query_values);
 
-            if (query_band === "meta") {
-                query_values = _.ld.expand(query_values);
+                const thing_state = thing.state(matchd.query_band);
+                const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
 
-                var thing_state = thing.state(query_band);
-                var thing_values = _.ld.expand(_.ld.list(thing_state, query_inner_key, []));
+                return _.intersection(matchd.query_values, thing_values).length > 0;
 
-                var intersection = _.intersection(query_values, thing_values);
-                if (intersection.length === 0) {
-                    return false;
-                }
-            } else if (query_band === "transient") {
-                if (query_inner_key === "tag") {
-                    if (!_.ld.intersects(thing.initd, "tag", query_values)) {
-                        return false;
-                    }
+            case "transient":
+                if (matchd.query_inner_key === "tag") {
+                    return _.ld.intersects(thing.initd, "tag", matchd.query_values);
                 } else {
                     return false;
                 }
-            } else if ((query_band === "ostate") || (query_band === "istate") || (query_band === "model")) {
+
+            case "ostate":
+            case "istate":
+            case "model":
                 logger.error({
                     method: "_search_test",
-                    query_band: query_band,
-                    query_key: query_key,
+                    query_band: matchd.query_band,
+                    query_key: matchd.query_key,
                 }, "function not implemented (yet)");
 
                 return false;
-            } else {
+
+            default:
                 logger.error({
                     method: "_search_test",
                     cause: "programming error - self should never happen",
-                    query_band: query_band,
-                    query_key: query_key,
+                    query_band: matchd.query_band,
+                    query_key: matchd.query_key,
                 }, "bad band");
 
                 return false;
             }
-        }
 
-        return true;
+            return true;
+        }).first(tf => tf === false) !== false;
     };
 
     /**
@@ -495,10 +494,7 @@ const make = function() {
         var o;
         var oi;
 
-        var out_items = make({
-            persist: persist
-        });
-
+        var out_items = make();
         self.filter(thing => self._search_test(d, thing))
             .forEach(thing => out_items.push(thing));
 
