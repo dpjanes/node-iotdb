@@ -24,14 +24,14 @@ describe('test_connect', function() {
                 iotdb.instance = null;
                 var things = iotdb.connect();
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             it('valid model code argument', function(done) {
                 iotdb.instance = null;
                 var things = iotdb.connect("Test");
 
                 things.on("thing", function() {
-                    assert.strictEqual(things.length, 1);
+                    assert.strictEqual(things.count(), 1);
                     done();
                 });
             });
@@ -39,7 +39,7 @@ describe('test_connect', function() {
                 iotdb.instance = null;
                 var things = iotdb.connect("NotATest");
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
         });
         describe('clean setup', function() {
@@ -47,14 +47,14 @@ describe('test_connect', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.connect();
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             it('valid model code argument', function(done) {
                 var iot = new iotdb.IOT()
                 var things = iot.connect("Test");
 
                 things.on("thing", function() {
-                    assert.strictEqual(things.length, 1);
+                    assert.strictEqual(things.count(), 1);
                     done();
                 });
             });
@@ -62,7 +62,7 @@ describe('test_connect', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.connect("NotATest");
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
         });
     });

@@ -27,7 +27,7 @@ describe('test_things', function() {
             var ts = t.things();
 
             assert.ok(_.is.ThingArray(ts));
-            assert.strictEqual(ts.length, 0);
+            assert.strictEqual(ts.count(), 0);
 
             var t2 = things.things();
             assert.strictEqual(t, t2);
@@ -39,7 +39,7 @@ describe('test_things', function() {
             var ts = t.things();
 
             assert.ok(_.is.ThingArray(ts));
-            assert.strictEqual(ts.length, 0);
+            assert.strictEqual(ts.count(), 0);
         });
     });
     describe('connect', function() {

@@ -54,27 +54,26 @@ let array_id = 0;
 const make = function() {
     const self = Object.assign({}, events.EventEmitter.prototype);
 
-    self.length = 0;
     self._array_id = '__thing_set_' + array_id++;
-    self._persistds = [];
-    self._underlying = [];
     self._isThingArray = true;
+
+    let _persistds = [];
+    let _underlying = [];
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
 
-    /**
-     */
-    self.any = function () {
-        return self._underlying.length ? self._underlying[0] : null;
-    };
+    // array compatibility
+    self.every = (f) => _underlying.every(f);
+    self.filter = (f) => _underlying.filter(f);
+    self.find = (f) => _underlying.find(f);
+    self.forEach = (f) => _underlying.forEach(f);
+    self.map = (f) => _underlying.map(f);
+    self.reduce = (f, i) => _underlying.map(f, i);
 
-    self.every = (f) => self._underlying.every(f);
-    self.filter = (f) => self._underlying.filter(f);
-    self.find = (f) => self._underlying.find(f);
-    self.forEach = (f) => self._underlying.forEach(f);
-    self.map = (f) => self._underlying.map(f);
-    self.reduce = (f, i) => self._underlying.map(f, i);
+    // new "array like" stuff
+    self.any = () => _underlying.length ? _underlying[0] : null;
+    self.count = () => _underlying.length;
 
     /**
      *  Add a new thing to self ThingArray.
@@ -103,8 +102,7 @@ const make = function() {
         });
 
         thing[self._array_id] = self; // TD: see if self is still necessary
-        self._underlying.push(thing);
-        self.length = self._underlying.length;
+        _underlying.push(thing);
 
         // event dispatch
         var changed = false;
@@ -128,7 +126,7 @@ const make = function() {
     };
 
     self._persist_post = function (thing) {
-        self._persistds.map(function (pd) {
+        _persistds.map(function (pd) {
             if (PRE_KEYS.indexOf(pd.key) !== -1) {
                 return;
             }
@@ -138,7 +136,7 @@ const make = function() {
     };
 
     self._persist_pre = function (thing) {
-        self._persistds.map(function (pd) {
+        _persistds.map(function (pd) {
             if (PRE_KEYS.indexOf(pd.key) === -1) {
                 return;
             }
@@ -156,10 +154,10 @@ const make = function() {
 
          // there can only be one Setter
         if (key === KEY_SETTER) {
-            self._persistds = self._persistds.filter(p => p.key !== key);
+            _persistds = _persistds.filter(p => p.key !== key);
         }
 
-        self._persistds.push(persistd);
+        _persistds.push(persistd);
     };
 
     /**
@@ -172,20 +170,17 @@ const make = function() {
 
     /**
      */
-    self.splice = function (index, howmany, add1) {
-        assert.ok(add1 === undefined);
-
+    self.splice = function (index, howmany) {
         if (howmany) {
             for (var i = 0; i < howmany; i++) {
                 var x = index + i;
-                if (x < self.length) {
-                    delete self._underlying[x][self._array_id];
+                if (x < self._underlying.length) {
+                    delete _underlying[x][self._array_id];
                 }
             }
         }
 
-        self._underlying.splice(index, howmany, add1);
-        self.length = self._underlying.length;
+        _underlying.splice(index, howmany);
 
         return self;
     };
@@ -354,7 +349,6 @@ const make = function() {
      *  @return {self}
      */
     self.zones = function (zones) {
-
         assert(_.is.String(zones) || _.is.Array(zones));
 
         self._apply_command(model.Model.prototype.zones, arguments);
@@ -496,11 +490,10 @@ const make = function() {
      *  This will bring all downstream ThingArrays into order
      */
     self.things_changed = function () {
-
         logger.trace({
             method: "things_changed",
             array: self._array_id,
-            length: self.length,
+            length: _underlying.length,
         }, "called");
 
         self.emit(EVENT_THINGS_CHANGED);
@@ -600,8 +593,8 @@ const make = function() {
             // find new things matching
             var is_updated = false;
 
-            for (var ii = 0; ii < self._underlying.length; ii++) {
-                var thing = self._underlying[ii];
+            for (var ii = 0; ii < _underlying.length; ii++) {
+                var thing = _underlying[ii];
                 var thing_id = thing.thing_id();
 
                 if (!self._search_test(d, thing)) {

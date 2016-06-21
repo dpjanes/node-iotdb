@@ -24,20 +24,20 @@ describe('test_iotdb', function() {
                 iotdb.instance = null;
                 var things = iotdb.things();
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             /*
             it('valid model code argument', function() {
                 iotdb.instance = null;
                 var things = iotdb.things("Test");
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             it('invalid model code argument', function() {
                 iotdb.instance = null;
                 var things = iotdb.things("NotATest");
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             */
         });
@@ -46,20 +46,20 @@ describe('test_iotdb', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.things();
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             /*
             it('valid model code argument', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.things("Test");
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             it('invalid model code argument', function() {
                 var iot = new iotdb.IOT()
                 var things = iot.things("NotATest");
 
-                assert.strictEqual(things.length, 0);
+                assert.strictEqual(things.count(), 0);
             });
             */
         });
@@ -69,9 +69,9 @@ describe('test_iotdb', function() {
 
                 var ts = iot.connect("Test");
                 ts.on("thing", function() {
-                    assert.strictEqual(iot.things().length, 1);
-                    // assert.strictEqual(iot.things("Test").length, 1);
-                    // assert.strictEqual(iot.things("NotATest").length, 0);
+                    assert.strictEqual(iot.things().count(), 1);
+                    // assert.strictEqual(iot.things("Test").count(), 1);
+                    // assert.strictEqual(iot.things("NotATest").count(), 0);
                     done();
                 });
             });
@@ -80,9 +80,9 @@ describe('test_iotdb', function() {
 
                 var ts = iot.connect("NotATest");
                 setTimeout(function() {
-                    assert.strictEqual(iot.things().length, 0);
-                    // assert.strictEqual(iot.things("Test").length, 0);
-                    // assert.strictEqual(iot.things("NotATest").length, 0);
+                    assert.strictEqual(iot.things().count(), 0);
+                    // assert.strictEqual(iot.things("Test").count(), 0);
+                    // assert.strictEqual(iot.things("NotATest").count(), 0);
                     done();
                 }, 250);
             });
