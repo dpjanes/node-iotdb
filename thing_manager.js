@@ -29,10 +29,9 @@
 const _ = require('./helpers');
 const modules = require("./modules").modules;
 
-const thing_array = require('./thing_array');
+const thing_set = require('./thing_set');
 
 const events = require('events');
-const util = require('util');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -60,7 +59,7 @@ const make = function (initd) {
      *  Return all things that we know about
      */
     self.things = function () {
-        var things = thing_array.make({
+        var things = thing_set.make({
             persist: true,
             things: self,
         });
@@ -122,7 +121,7 @@ const make = function (initd) {
             modeld["meta"] = metad;
         }
 
-        const things = thing_array.make({
+        const things = thing_set.make({
             persist: true,
             things: self,
         });

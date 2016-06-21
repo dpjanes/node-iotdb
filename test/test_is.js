@@ -12,7 +12,7 @@ var assert = require("assert")
 var _ = require("../helpers")
 
 var model = require("../model");
-var thing_array = require("../thing_array");
+var thing_set = require("../thing_set");
 // var transporter = require("../transporter");
 var bridge = require("../bridge");
 
@@ -20,8 +20,8 @@ var bridge = require("../bridge");
 describe('test_is', function() {
     var testModel = model.make_model().code('a').make();
     var testThing = new testModel();
-    var testThingArray0 = thing_array.make();
-    var testThingArray1 = thing_array.make();
+    var testThingArray0 = thing_set.make();
+    var testThingArray1 = thing_set.make();
     testThingArray1.push(testThing);
 
     var testBridge = new bridge.Bridge();

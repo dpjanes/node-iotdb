@@ -32,7 +32,7 @@ const path = require('path');
 const fs = require('fs');
 
 const thing_manager = require('./thing_manager');
-const thing_array = require('./thing_array');
+const thing_set = require('./thing_set');
 const exit = require('./exit');
 
 const _ = require('./helpers');

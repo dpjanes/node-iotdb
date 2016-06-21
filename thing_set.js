@@ -1,5 +1,5 @@
 /*
- *  thing_array.js
+ *  thing_set.js
  *
  *  David Janes
  *  IOTDB
@@ -31,7 +31,7 @@ const assert = require('assert');
 
 const logger = _.logger.make({
     name: 'iotdb',
-    module: 'thing_array',
+    module: 'thing_set',
 });
 
 /* --- constants --- */
@@ -56,7 +56,7 @@ const ThingArray = function (paramd) {
 
     paramd = _.defaults(paramd, {});
 
-    self.array_id = '__thing_array_' + array_id++;
+    self.array_id = '__thing_set_' + array_id++;
     self.length = 0;
     self._things = null;
 

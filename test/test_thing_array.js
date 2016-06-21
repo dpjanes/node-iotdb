@@ -1,5 +1,5 @@
 /*
- *  test_thing_array.js
+ *  test_thing_set.js
  *
  *  David Janes
  *  IOTDB
@@ -14,7 +14,7 @@ var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
 var thing_manager = require("../thing_manager");
-var thing_array = require("../thing_array");
+var thing_set = require("../thing_set");
 
 require('./instrument/iotdb');
 
@@ -44,7 +44,7 @@ var _make_no_things = function(callback) {
     callback(ts);
 };
 
-describe("test_thing_array", function() {
+describe("test_thing_set", function() {
     describe("first", function() {
         it("with one thing", function() {
             _make_thing(function(ts) {
@@ -190,7 +190,7 @@ describe("test_thing_array", function() {
         it("good", function() {
             _make_thing(function(ts1) {
                 var thing1 = ts1.first();
-                var ts2 = thing_array.make();
+                var ts2 = thing_set.make();
                 ts2.push(thing1);
                 var thing2 = ts2.first();
 
@@ -202,7 +202,7 @@ describe("test_thing_array", function() {
         it("double push", function() {
             _make_thing(function(ts1) {
                 var thing1 = ts1.first();
-                var ts2 = thing_array.make();
+                var ts2 = thing_set.make();
                 ts2.push(thing1);
                 ts2.push(thing1);
                 var thing2 = ts2.first();
@@ -215,19 +215,19 @@ describe("test_thing_array", function() {
         describe("bad push", function() {
             it("boolean", function() {
                 assert.throws(function() {
-                    var ts = thing_array.make();
+                    var ts = thing_set.make();
                     ts.push(false);
                 }, Error);
             });
             it("string", function() {
                 assert.throws(function() {
-                    var ts = thing_array.make();
+                    var ts = thing_set.make();
                     ts.push("hello");
                 }, Error);
             });
             it("dictionary", function() {
                 assert.throws(function() {
-                    var ts = thing_array.make();
+                    var ts = thing_set.make();
                     ts.push({ a: 1 });
                 }, Error);
             });
@@ -239,7 +239,7 @@ describe("test_thing_array", function() {
                     var got_new = false;
                     var got_changed = false;
 
-                    var ts2 = thing_array.make();
+                    var ts2 = thing_set.make();
                     ts2.on('EVENT_THING_NEW', function() {
                         got_new = true;
                     });
@@ -269,7 +269,7 @@ describe("test_thing_array", function() {
                     var got_new = false;
                     var got_changed = false;
 
-                    var ts2 = thing_array.make();
+                    var ts2 = thing_set.make();
                     ts2.on('EVENT_THING_NEW', function() {
                         got_new = true;
                     });
@@ -299,7 +299,7 @@ describe("test_thing_array", function() {
                     var got_new = false;
                     var got_changed = false;
 
-                    var ts2 = thing_array.make();
+                    var ts2 = thing_set.make();
                     ts2.on('EVENT_THING_NEW', function() {
                         got_new = true;
                     });
@@ -329,7 +329,7 @@ describe("test_thing_array", function() {
                     var got_new = false;
                     var got_changed = false;
 
-                    var ts2 = thing_array.make();
+                    var ts2 = thing_set.make();
                     ts2.on('EVENT_THING_NEW', function() {
                         got_new = true;
                     });
@@ -359,7 +359,7 @@ describe("test_thing_array", function() {
                     var got_new = false;
                     var got_changed = false;
 
-                    var ts2 = thing_array.make();
+                    var ts2 = thing_set.make();
                     ts2.on('EVENT_THING_NEW', function() {
                         got_new = true;
                     });

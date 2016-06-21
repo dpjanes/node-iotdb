@@ -1,5 +1,5 @@
 /*
- *  test_thing_array_filter.js
+ *  test_thing_set_filter.js
  *
  *  David Janes
  *  IOTDB
@@ -33,7 +33,7 @@ var _make_thing = function(callback) {
     });
 };
 
-describe('test_thing_array', function() {
+describe('test_thing_set', function() {
     describe('search', function() {
         describe('meta:iot:model-id', function() {
             it('matching', function() {
