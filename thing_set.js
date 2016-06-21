@@ -499,10 +499,6 @@ ThingArray.prototype.pull = function () {
 ThingArray.prototype.tag = function () {
     const self = this;
 
-    self.map(function (thing) {
-        thing.tag.apply(thing, Array.prototype.slice.call(arguments));
-    });
-
     self._apply_command(model.Model.prototype.tag, arguments, KEY_TAG);
     self._persist_command(model.Model.prototype.tag, arguments, KEY_TAG);
 
