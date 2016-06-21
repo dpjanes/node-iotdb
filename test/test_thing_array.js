@@ -191,7 +191,7 @@ describe("test_thing_set", function() {
             _make_thing(function(ts1) {
                 var thing1 = ts1.any();
                 var ts2 = thing_set.make();
-                ts2.push(thing1);
+                ts2.add(thing1);
                 var thing2 = ts2.any();
 
                 assert.strictEqual(ts1.length, 1);
@@ -203,8 +203,8 @@ describe("test_thing_set", function() {
             _make_thing(function(ts1) {
                 var thing1 = ts1.any();
                 var ts2 = thing_set.make();
-                ts2.push(thing1);
-                ts2.push(thing1);
+                ts2.add(thing1);
+                ts2.add(thing1);
                 var thing2 = ts2.any();
 
                 assert.strictEqual(ts1.length, 1);
@@ -216,19 +216,19 @@ describe("test_thing_set", function() {
             it("boolean", function() {
                 assert.throws(function() {
                     var ts = thing_set.make();
-                    ts.push(false);
+                    ts.add(false);
                 }, Error);
             });
             it("string", function() {
                 assert.throws(function() {
                     var ts = thing_set.make();
-                    ts.push("hello");
+                    ts.add("hello");
                 }, Error);
             });
             it("dictionary", function() {
                 assert.throws(function() {
                     var ts = thing_set.make();
-                    ts.push({ a: 1 });
+                    ts.add({ a: 1 });
                 }, Error);
             });
         });
@@ -250,7 +250,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.any(), {
+                    ts2.add(ts1.any(), {
                         emit_pushed: false,
                         emit_new: false,
                     })
@@ -280,7 +280,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.any(), {
+                    ts2.add(ts1.any(), {
                         emit_pushed: true,
                         emit_new: false,
                     })
@@ -310,7 +310,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.any(), {
+                    ts2.add(ts1.any(), {
                         emit_pushed: false,
                         emit_new: true,
                     })
@@ -340,7 +340,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.any(), {
+                    ts2.add(ts1.any(), {
                         emit_pushed: true,
                         emit_new: true,
                     })
@@ -370,7 +370,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.any(), {
+                    ts2.add(ts1.any(), {
                         emit_pushed: true,
                         emit_new: true,
                     })

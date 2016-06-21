@@ -22,7 +22,7 @@ describe('test_is', function() {
     var testThing = new testModel();
     var testThingArray0 = thing_set.make();
     var testThingArray1 = thing_set.make();
-    testThingArray1.push(testThing);
+    testThingArray1.add(testThing);
 
     var testBridge = new bridge.Bridge();
     var testTransport = function() {};

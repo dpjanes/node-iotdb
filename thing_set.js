@@ -118,15 +118,11 @@ ThingArray.prototype.filter = function (f) {
 /**
  *  Add a new thing to this ThingArray.
  */
-ThingArray.prototype.push = function (thing, paramd) {
+ThingArray.prototype.add = function (thing, paramd) {
     const self = this;
 
     if (!_.is.Thing(thing)) {
-        logger.fatal({
-            method: "push",
-            thing: thing,
-        }, "attempt to push a non-Thing on a ThingArray");
-        throw new Error("attempt to push a non-Thing on a ThingArray");
+        throw new Error("attempt to add a non-Thing on a ThingArray");
     }
 
     /*
@@ -135,10 +131,6 @@ ThingArray.prototype.push = function (thing, paramd) {
      *  causing this to happen, but I can't find it
      */
     if (self.filter(t => t === thing).length) {
-        logger.error({
-            method: "push",
-            thing_id: thing.thing_id(),
-        }, "preventing same Thing from being pushed");
         return;
     }
 

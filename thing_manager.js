@@ -59,14 +59,11 @@ const make = function (initd) {
      *  Return all things that we know about
      */
     self.things = function () {
-        var things = thing_set.make({
-            persist: true,
-            things: self,
-        });
+        var things = thing_set.make();
 
         self.on("thing", (thing) => things.push(thing))
 
-        _.mapObject(_thingd, ( thing, thing_id ) => things.push(thing))
+        _.mapObject(_thingd, ( thing, thing_id ) => things.add(thing))
 
         return things;
     };
@@ -244,8 +241,8 @@ const make = function (initd) {
             var connectd = _.defaults(binding.connectd, {});
             bridge_instance.connect(connectd)
 
-            // add to the list of things we have built up for self connect
-            things.push(thing);
+            // add to the set of things we have built up for self connect
+            things.add(thing);
 
             // tell the world
             self.emit("thing", thing);
