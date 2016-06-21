@@ -45,17 +45,17 @@ var _make_no_things = function(callback) {
 };
 
 describe("test_thing_set", function() {
-    describe("first", function() {
+    describe("any", function() {
         it("with one thing", function() {
             _make_thing(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 assert.ok(thing);
                 assert.ok(_.is.Thing(thing));
             });
         });
         it("with no things", function() {
             _make_no_things(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 assert.ok(!thing);
                 assert.ok(_.is.Null(thing));
             });
@@ -74,7 +74,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing with no bridge", function() {
             _make_thing(function(ts) {
-                var thing = ts.first();
+                var thing = ts.any();
                 thing.disconnect();
 
                 assert.strictEqual(ts.reachable(), 0);
@@ -82,7 +82,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing that's not reachable", function() {
             _make_thing(function(ts) {
-                ts.first().reachable = function() { return false };
+                ts.any().reachable = function() { return false };
                 assert.strictEqual(ts.reachable(), 0);
             });
         });
@@ -95,7 +95,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing", function(done) {
             _make_thing(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 thing.on("istate", function() {
                     done();
                 });
@@ -113,7 +113,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing", function(done) {
             _make_thing(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 thing.on("istate", function() {
                     done();
                 });
@@ -131,7 +131,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing", function(done) {
             _make_thing(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 thing.on("istate", function() {
                     done();
                 });
@@ -149,7 +149,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing", function(done) {
             _make_thing(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 assert.ok(thing.reachable());
 
                 ts.disconnect();
@@ -171,7 +171,7 @@ describe("test_thing_set", function() {
         });
         it("with one thing", function(done) {
             _make_thing(function(ts) {
-                var thing = ts.first()
+                var thing = ts.any()
                 ts.on("on", function(t, attribute, value) {
                     if (!value) {
                         return;
@@ -189,10 +189,10 @@ describe("test_thing_set", function() {
     describe("push", function() {
         it("good", function() {
             _make_thing(function(ts1) {
-                var thing1 = ts1.first();
+                var thing1 = ts1.any();
                 var ts2 = thing_set.make();
                 ts2.push(thing1);
-                var thing2 = ts2.first();
+                var thing2 = ts2.any();
 
                 assert.strictEqual(ts1.length, 1);
                 assert.strictEqual(ts2.length, 1);
@@ -201,11 +201,11 @@ describe("test_thing_set", function() {
         });
         it("double push", function() {
             _make_thing(function(ts1) {
-                var thing1 = ts1.first();
+                var thing1 = ts1.any();
                 var ts2 = thing_set.make();
                 ts2.push(thing1);
                 ts2.push(thing1);
-                var thing2 = ts2.first();
+                var thing2 = ts2.any();
 
                 assert.strictEqual(ts1.length, 1);
                 assert.strictEqual(ts2.length, 1);
@@ -250,7 +250,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.first(), {
+                    ts2.push(ts1.any(), {
                         emit_pushed: false,
                         emit_new: false,
                     })
@@ -280,7 +280,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.first(), {
+                    ts2.push(ts1.any(), {
                         emit_pushed: true,
                         emit_new: false,
                     })
@@ -310,7 +310,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.first(), {
+                    ts2.push(ts1.any(), {
                         emit_pushed: false,
                         emit_new: true,
                     })
@@ -340,7 +340,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.first(), {
+                    ts2.push(ts1.any(), {
                         emit_pushed: true,
                         emit_new: true,
                     })
@@ -370,7 +370,7 @@ describe("test_thing_set", function() {
                         got_changed = true;
                     });
 
-                    ts2.push(ts1.first(), {
+                    ts2.push(ts1.any(), {
                         emit_pushed: true,
                         emit_new: true,
                     })

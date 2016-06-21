@@ -51,47 +51,27 @@ let array_id = 0;
  *
  *  @constructor
  */
-const ThingArray = function (paramd) {
+const ThingArray = function() {
     const self = this;
 
-    paramd = _.defaults(paramd, {});
-
-    self.array_id = '__thing_set_' + array_id++;
     self.length = 0;
-    self._things = null;
-
-    /*
-     *  If paramd.persist is true, create an array for peristing commands
-     */
-    this._persistds = null;
-    if (paramd.persist) {
-        this._persistds = [];
-    }
-
-    if (paramd.things) {
-        self._things = paramd.things;
-    }
+    self._array_id = '__thing_set_' + array_id++;
+    self._persistds = [];
 
     events.EventEmitter.call(self);
-    this.setMaxListeners(0);
+    self.setMaxListeners(0);
 };
 
 ThingArray.prototype = new Array(); // jshint ignore:line
 util.inherits(ThingArray, events.EventEmitter);
 ThingArray.prototype._isThingArray = true;
 
-const make = (paramd) => {
-    return new ThingArray(paramd);
-}
+const make = () => new ThingArray();
 
 /**
  */
-ThingArray.prototype.first = function () {
-    if (this.length) {
-        return this[0];
-    } else {
-        return null;
-    }
+ThingArray.prototype.any = function () {
+    return this.length ? this[0] : null;
 };
 
 /**
@@ -171,7 +151,7 @@ ThingArray.prototype.push = function (thing, paramd) {
         emit_new: true
     });
 
-    thing[self.array_id] = self; // TD: see if this is still necessary
+    thing[self._array_id] = self; // TD: see if this is still necessary
     Array.prototype.push.call(self, thing);
 
     // event dispatch
@@ -195,19 +175,9 @@ ThingArray.prototype.push = function (thing, paramd) {
     return self;
 };
 
-/**
- *  Return true iff this is a persisting array
- */
-ThingArray.prototype.is_persist = function () {
-    return this._persistds != null;
-};
-
 ThingArray.prototype._persist_post = function (thing) {
     const self = this;
 
-    if (_.is.Empty(self._persistds)) {
-        return;
-    }
 
     self._persistds.map(function (pd) {
         if (PRE_KEYS.indexOf(pd.key) !== -1) {
@@ -221,10 +191,6 @@ ThingArray.prototype._persist_post = function (thing) {
 ThingArray.prototype._persist_pre = function (thing) {
     const self = this;
 
-    if (_.is.Empty(self._persistds)) {
-        return;
-    }
-
     self._persistds.map(function (pd) {
         if (PRE_KEYS.indexOf(pd.key) === -1) {
             return;
@@ -236,10 +202,6 @@ ThingArray.prototype._persist_pre = function (thing) {
 
 ThingArray.prototype._persist_command = function (f, av, key) {
     const self = this;
-
-    if (self._persistds === null) {
-        return;
-    }
 
     var persistd = {
         f: f,
@@ -275,7 +237,7 @@ ThingArray.prototype.splice = function (index, howmany, add1) {
         for (var i = 0; i < howmany; i++) {
             var x = index + i;
             if (x < self.length) {
-                delete self[x][self.array_id];
+                delete self[x][self._array_id];
             }
         }
     }
@@ -365,9 +327,9 @@ ThingArray.prototype.merge = function (new_items) {
     var _on_things_changed = function () {
         logger.trace({
             method: "merge/_on_things_changed",
-            in_array_1: srcs[0].array_id,
-            in_array_2: srcs[1].array_id,
-            out_array: out_items.array_id,
+            in_array_1: srcs[0]._array_id,
+            in_array_2: srcs[1]._array_id,
+            out_array: out_items._array_id,
         }, "called");
 
         _merger(srcs, out_items);
@@ -375,18 +337,15 @@ ThingArray.prototype.merge = function (new_items) {
 
     for (var si in srcs) {
         var src = srcs[si];
-        if (src._persistds === null) {
-            continue;
-        }
 
         events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, _on_things_changed);
     }
 
     logger.info({
         method: "merge",
-        in_array_1: srcs[0].array_id,
-        in_array_2: srcs[1].array_id,
-        out_array: out_items.array_id,
+        in_array_1: srcs[0]._array_id,
+        in_array_2: srcs[1]._array_id,
+        out_array: out_items._array_id,
     }, "merged array");
 
     return out_items;
@@ -413,15 +372,11 @@ ThingArray.prototype.merge = function (new_items) {
 ThingArray.prototype.connect = function (modeld) {
     const self = this;
 
-    if (self._things) {
-        return self.merge(self._things.connect(modeld));
-    } else {
-        var iot = require('./iotdb').iot();
+    var iot = require('./iotdb').iot();
 
-        return self.merge(
-            iot.connect.apply(iot, Array.prototype.slice.call(arguments))
-        );
-    }
+    return self.merge(
+        iot.connect.apply(iot, Array.prototype.slice.call(arguments))
+    );
 };
 
 /**
@@ -631,7 +586,7 @@ ThingArray.prototype.things_changed = function () {
 
     logger.trace({
         method: "things_changed",
-        array: self.array_id,
+        array: self._array_id,
         length: self.length,
     }, "called");
 
@@ -705,7 +660,6 @@ ThingArray.prototype._search_test = function (queryd, thing) {
  */
 ThingArray.prototype.search = function (d) {
     const self = this;
-    var persist = self.is_persist();
     var o;
     var oi;
 
@@ -723,67 +677,65 @@ ThingArray.prototype.search = function (d) {
      *  we use 'events.EventEmitter.prototype.on' because we are doing our own
      *  thing with 'self.on'
      */
-    if (persist) {
-        events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
-            // existing things by ID
-            var oidd = {};
+    events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
+        // existing things by ID
+        var oidd = {};
 
-            for (oi = 0; oi < out_items.length; oi++) {
-                o = out_items[oi];
-                oidd[o.thing_id()] = 1;
+        for (oi = 0; oi < out_items.length; oi++) {
+            o = out_items[oi];
+            oidd[o.thing_id()] = 1;
+        }
+
+        // find new things matching
+        var is_updated = false;
+
+        for (var ii = 0; ii < self.length; ii++) {
+            var thing = self[ii];
+            var thing_id = thing.thing_id();
+
+            if (!self._search_test(d, thing)) {
+                continue;
             }
 
-            // find new things matching
-            var is_updated = false;
-
-            for (var ii = 0; ii < self.length; ii++) {
-                var thing = self[ii];
-                var thing_id = thing.thing_id();
-
-                if (!self._search_test(d, thing)) {
-                    continue;
-                }
-
-                if (oidd[thing_id]) {
-                    delete oidd[thing_id];
-                } else {
-                    out_items.push(thing, {
-                        emit_pushed: false
-                    });
-                    is_updated = true;
-                }
-            }
-
-
-            // remove things that no longer match
-            for (oi = 0; oi < out_items.length; oi++) {
-                o = out_items[oi];
-                if (!oidd[o.thing_id()]) {
-                    continue;
-                }
-
-                // console.log("! ThingArray.search/things_changed: remove old match", o.thing_id())
-                out_items.splice(oi--, 1);
+            if (oidd[thing_id]) {
+                delete oidd[thing_id];
+            } else {
+                out_items.push(thing, {
+                    emit_pushed: false
+                });
                 is_updated = true;
             }
+        }
 
-            /*
-             *  notify downstream - note that we always do this because
-             *  even though this list may not have changed, filters
-             *  downstream may have changed
-             */
-            out_items.things_changed();
-        });
+
+        // remove things that no longer match
+        for (oi = 0; oi < out_items.length; oi++) {
+            o = out_items[oi];
+            if (!oidd[o.thing_id()]) {
+                continue;
+            }
+
+            // console.log("! ThingArray.search/things_changed: remove old match", o.thing_id())
+            out_items.splice(oi--, 1);
+            is_updated = true;
+        }
 
         /*
-         *  Things being added propagates downstream. Note how
-         *  above with { emit_pushed: false } we stop this from being
-         *  unnecessarily being called
+         *  notify downstream - note that we always do this because
+         *  even though this list may not have changed, filters
+         *  downstream may have changed
          */
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
-            self.things_changed();
-        });
-    }
+        out_items.things_changed();
+    });
+
+    /*
+     *  Things being added propagates downstream. Note how
+     *  above with { emit_pushed: false } we stop this from being
+     *  unnecessarily being called
+     */
+    events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
+        self.things_changed();
+    });
 
     return out_items;
 };
