@@ -113,6 +113,28 @@ ThingArray.prototype.map = function (f) {
     return rs;
 };
 
+ThingArray.prototype.forEach = function (f) {
+    const self = this;
+    for (var ti = 0; ti < self.length; ti++) {
+        f(self[ti]);
+    }
+};
+
+ThingArray.prototype.filter = function (f) {
+    const self = this;
+
+    var rs = [];
+    for (var ti = 0; ti < self.length; ti++) {
+        var t = self[ti];
+        if (f(t)) {
+            rs.push(r);
+        }
+    }
+
+    return rs;
+};
+
+
 /**
  *  Add a new thing to this ThingArray.
  */
@@ -132,25 +154,13 @@ ThingArray.prototype.push = function (thing, paramd) {
      *  we do nothing. There may be a deeper bug
      *  causing this to happen, but I can't find it
      */
-    if (self.first(t => t === thing)) {
+    if (self.filter(t => t === thing).length) {
         logger.error({
             method: "push",
             thing_id: thing.thing_id(),
         }, "preventing same Thing from being pushed");
         return;
     }
-    /*
-    for (var ti = 0; ti < self.length; ti++) {
-        var t = self[ti];
-        if (t === thing) {
-            logger.error({
-                method: "push",
-                thing_id: thing.thing_id(),
-            }, "preventing same Thing from being pushed");
-            return;
-        }
-    }
-    */
 
     //  
     self._persist_pre(thing);
@@ -237,32 +247,19 @@ ThingArray.prototype._persist_command = function (f, av, key) {
         key: key
     };
 
-    /*
-     *  If not in a transaction, there can only be one Setter
-     */
+     // there can only be one Setter
     if (key === KEY_SETTER) {
-        for (var pi = 0; pi < self._persistds.length; pi++) {
-            var _persistd = self._persistds[pi];
-            if (_persistd.key === KEY_SETTER) {
-                self._persistds.splice(pi--, 1);
-            }
-        }
-
+        self._persistds = self._persistds.filter(p => p.key !== key);
     }
 
     self._persistds.push(persistd);
 };
 
 /**
- *  Apply the command to everything in the ThingArray
- *  right now.
+ *  Apply the command to everything in the ThingArray right now.
  */
 ThingArray.prototype._apply_command = function (f, av) {
-    const self = this;
-
-    self.map(function (thing) {
-        f.apply(thing, Array.prototype.slice.call(av));
-    });
+    this.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
 };
 
 
@@ -716,15 +713,8 @@ ThingArray.prototype.search = function (d) {
         persist: persist
     });
 
-    self.map(function (thing) {
-        if (self._search_test(d, thing)) {
-            out_items.push(thing);
-        }
-    });
-
-    if (out_items.length === 0) {
-        // console.log("# ThingArray.search: warning - nothing matched", d)
-    }
+    self.filter(thing => self._search_test(d, thing))
+        .forEach(thing => out_items.push(thing));
 
     /*
      *  When 'Things Changed' && persist: update the list.
