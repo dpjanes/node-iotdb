@@ -75,6 +75,7 @@ const make = function() {
     self.any = () => _underlying.length ? _underlying[0] : null;
     self.count = () => _underlying.length;
 
+    // --- IOTDB stuff
     /**
      *  Add a new thing to self ThingArray.
      */
@@ -93,7 +94,7 @@ const make = function() {
         }
 
         //  
-        self._persist_pre(thing);
+        _persist_pre(thing);
 
         // actual add
         paramd = _.defaults(paramd, {
@@ -120,32 +121,24 @@ const make = function() {
         }
 
         // 
-        self._persist_post(thing);
+        _persist_post(thing);
 
         return self;
     };
 
-    self._persist_post = function (thing) {
-        _persistds.map(function (pd) {
-            if (PRE_KEYS.indexOf(pd.key) !== -1) {
-                return;
-            }
-
-            pd.f.apply(thing, Array.prototype.slice.call(pd.av));
-        });
+    const _persist_post = function (thing) {
+        _persistds
+            .filter(pd => PRE_KEYS.indexOf(pd.key) === -1)
+            .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
     };
 
-    self._persist_pre = function (thing) {
-        _persistds.map(function (pd) {
-            if (PRE_KEYS.indexOf(pd.key) === -1) {
-                return;
-            }
-
-            pd.f.apply(thing, Array.prototype.slice.call(pd.av));
-        });
+    const _persist_pre = function (thing) {
+        _persistds
+            .filter(pd => PRE_KEYS.indexOf(pd.key) !== -1)
+            .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
     };
 
-    self._persist_command = function (f, av, key) {
+    const _persist_command = function (f, av, key) {
         var persistd = {
             f: f,
             av: av,
@@ -322,7 +315,7 @@ const make = function() {
      */
     self.disconnect = function () {
         self._apply_command(model.Model.prototype.disconnect, arguments);
-        self._persist_command(model.Model.prototype.disconnect, arguments);
+        _persist_command(model.Model.prototype.disconnect, arguments);
 
         return self;
     };
@@ -337,7 +330,7 @@ const make = function() {
         assert(_.is.String(name));
 
         self._apply_command(model.Model.prototype.name, arguments);
-        self._persist_command(model.Model.prototype.name, arguments);
+        _persist_command(model.Model.prototype.name, arguments);
 
         return self;
     };
@@ -352,7 +345,7 @@ const make = function() {
         assert(_.is.String(zones) || _.is.Array(zones));
 
         self._apply_command(model.Model.prototype.zones, arguments);
-        self._persist_command(model.Model.prototype.zones, arguments);
+        _persist_command(model.Model.prototype.zones, arguments);
 
         return self;
     };
@@ -367,7 +360,7 @@ const make = function() {
         assert(_.is.String(facets) || _.is.Array(facets));
 
         self._apply_command(model.Model.prototype.facets, arguments);
-        self._persist_command(model.Model.prototype.facets, arguments);
+        _persist_command(model.Model.prototype.facets, arguments);
 
         return self;
     };
@@ -380,7 +373,7 @@ const make = function() {
      */
     self.set = function () {
         self._apply_command(model.Model.prototype.set, arguments, KEY_SETTER);
-        self._persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
+        _persist_command(model.Model.prototype.set, arguments, KEY_SETTER);
 
         return self;
     };
@@ -393,7 +386,7 @@ const make = function() {
      */
     self.update = function () {
         self._apply_command(model.Model.prototype.update, arguments, KEY_SETTER);
-        self._persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
+        _persist_command(model.Model.prototype.update, arguments, KEY_SETTER);
 
         return self;
     };
@@ -406,7 +399,7 @@ const make = function() {
      */
     self.pull = function () {
         self._apply_command(model.Model.prototype.pull, arguments);
-        self._persist_command(model.Model.prototype.pull, arguments);
+        _persist_command(model.Model.prototype.pull, arguments);
 
         return self;
     };
@@ -419,7 +412,7 @@ const make = function() {
      */
     self.tag = function () {
         self._apply_command(model.Model.prototype.tag, arguments, KEY_TAG);
-        self._persist_command(model.Model.prototype.tag, arguments, KEY_TAG);
+        _persist_command(model.Model.prototype.tag, arguments, KEY_TAG);
 
         return self;
     };
@@ -439,7 +432,7 @@ const make = function() {
             });
         } else {
             self._apply_command(model.Model.prototype.on, arguments);
-            self._persist_command(model.Model.prototype.on, arguments);
+            _persist_command(model.Model.prototype.on, arguments);
         }
 
         return self;
@@ -465,7 +458,7 @@ const make = function() {
      */
     self.on_change = function () {
         self._apply_command(model.Model.prototype.on_change, arguments);
-        self._persist_command(model.Model.prototype.on_change, arguments);
+        _persist_command(model.Model.prototype.on_change, arguments);
 
         return self;
     };
@@ -501,7 +494,6 @@ const make = function() {
 
 
     /* --- */
-
     self._search_test = function (queryd, thing) {
         var meta = thing.meta();
 
