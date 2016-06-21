@@ -132,15 +132,14 @@ ThingArray.prototype.push = function (thing, paramd) {
      *  we do nothing. There may be a deeper bug
      *  causing this to happen, but I can't find it
      */
-    /*
-    if (self.filter(t => t === thing)) {
+    if (self.first(t => t === thing)) {
         logger.error({
             method: "push",
             thing_id: thing.thing_id(),
         }, "preventing same Thing from being pushed");
         return;
     }
-    */
+    /*
     for (var ti = 0; ti < self.length; ti++) {
         var t = self[ti];
         if (t === thing) {
@@ -151,6 +150,7 @@ ThingArray.prototype.push = function (thing, paramd) {
             return;
         }
     }
+    */
 
     //  
     self._persist_pre(thing);
