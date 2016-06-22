@@ -52,8 +52,8 @@ const _exit_cleanup = function (paramd, err) {
     }
 
     var time_wait = 0;
-    if (paramd.cleanup) {
-        time_wait = paramd.iot._things.disconnect();
+    if (paramd.cleanup && paramd.manager) {
+        time_wait = paramd.manager.disconnect();
     }
 
     if (paramd.exit) {
@@ -70,20 +70,16 @@ const _exit_cleanup = function (paramd, err) {
     }
 };
 
-const setup_exit = function (iot) {
-    if (!iot) {
-        throw new Error("setup_exit: iot is a required argument");
-    }
-
+const setup_exit = function (manager) {
     process.on('exit', function (error) {
         _exit_cleanup({
-            iot: iot,
+            manager: manager,
             from: 'exit'
         }, error);
     });
     process.on('SIGINT', function (error) {
         _exit_cleanup({
-            iot: iot,
+            manager: manager,
             from: 'SIGINT',
             exit: true,
             cleanup: true

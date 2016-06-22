@@ -26,94 +26,41 @@
 
 "use strict";
 
-const events = require('events');
-const util = require('util');
-const path = require('path');
-const fs = require('fs');
-
 const thing_manager = require('./thing_manager');
-const thing_set = require('./thing_set');
 const exit = require('./exit');
 
 const _ = require('./helpers');
 
 /**
- *  Manage things, bridges and connections to the
- *  {@link https://iotdb.org/ IOTDB.org} running
- *  in a NodeJS application.
- *
- *  <p>
- *  Usually created as a singleton using iotdb.iot()
- *
- *  @constructor
+ *  Singleton
  */
-const IOT = function (initd) {
-    const self = this;
+let _instance = null;
 
-    if (exports.instance == null) {
-        exports.instance = self;
+const iot = () => {
+    if (_instance === null) {
+        _instance = thing_manager.make();
+        exit.setup(_instance);
     }
 
-    self.initd = _.defaults(initd, {
-        meta_dir: ".iotdb/meta",
-    });
-
-    exit.setup(self);
-
-    self._setup_events();
-    self._setup_things();
-
-};
-util.inherits(IOT, events.EventEmitter);
-
-IOT.prototype._setup_events = function () {
-    const self = this;
-
-    events.EventEmitter.call(self);
-    self.setMaxListeners(0);
+    return _instance;
 };
 
-/**
- */
-IOT.prototype._setup_things = function () {
-    const self = this;
+const connect = ( model, initd, metad ) => {
+    return iot().connect(model, initd, metad);
+}
 
-    self._things = thing_manager.make();
+const things = () => {
+    return iot().things();
+}
 
-    // consider deleting this code
-    self._things.on("thing", function (thing) {
-        self.emit("thing", thing);
-    });
-};
-
-/**
- *  Return all the Things
- */
-IOT.prototype.things = function (model_code) {
-    return this._things.things(model_code);
-};
-
-
-/**
- *  Connect to Things. Return a Thing Array
- *  of things thus discovered
- */
-IOT.prototype.connect = function (modeld, initd, metad) {
-    return this._things.connect(modeld, initd, metad);
-};
-
-/**
- *  Connect to Things.
- */
-IOT.prototype.discover = function (modeld, initd) {
-    this._things.discover(modeld, initd);
-    return this;
-};
+const _reset_shim = () => {
+    _instance = null;
+}
 
 /*
  *  API
  */
-exports.IOT = IOT;
+// exports.IOT = IOT;
 exports.shutting_down = exit.shutting_down;
 
 exports.attribute = require('./attribute');
@@ -176,48 +123,21 @@ _.id.thing_urn.set({
     machine_id: controller_machine,
 });
 
-
-/**
- *  Really HomeStar related, but having them in 
- *  IOTDB makes debugging projects a lot easier
- */
+//  Really HomeStar related, makes debugging easier
 const homestar = require('./homestar');
 
 exports.load_recipes = homestar.load_recipes;
 exports.recipe = homestar.recipe;
 exports.cookbook = homestar.cookbook;
 
-/**
- *  Users
- */
+// users
 exports.users = require('./users');
 
-/**
- *  Singleton
- */
-exports.instance = null;
+// primary API
+exports.iot = iot;
+exports.connect = connect;
+exports.things = things;
+exports._reset_shim = _reset_shim;
 
-exports.iot = function (paramd) {
-    if (exports.instance == null) {
-        exports.instance = new IOT(paramd);
-    }
-
-    return exports.instance;
-};
-
-exports.connect = function () {
-    var iot = exports.iot();
-
-    return iot.connect.apply(iot, Array.prototype.slice.call(arguments));
-};
-
-exports.things = function () {
-    var iot = exports.iot();
-
-    return iot.things.apply(iot, Array.prototype.slice.call(arguments));
-};
-
-/**
- *  Windows compatibility
- */
+// Windows compatibility
 require("./windows").setup();

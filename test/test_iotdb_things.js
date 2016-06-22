@@ -21,7 +21,7 @@ describe('test_iotdb', function() {
     describe('things', function() {
         describe('global', function() {
             it('no arguments', function() {
-                iotdb.instance = null;
+                iotdb._reset_shim();
                 var things = iotdb.things();
 
                 assert.strictEqual(things.count(), 0);
@@ -43,20 +43,21 @@ describe('test_iotdb', function() {
         });
         describe('clean setup', function() {
             it('no arguments', function() {
-                var iot = new iotdb.IOT()
+                iotdb._reset_shim();
+                var iot = iotdb.iot()
                 var things = iot.things();
 
                 assert.strictEqual(things.count(), 0);
             });
             /*
             it('valid model code argument', function() {
-                var iot = new iotdb.IOT()
+                var iot = iotdb.iot()
                 var things = iot.things("Test");
 
                 assert.strictEqual(things.count(), 0);
             });
             it('invalid model code argument', function() {
-                var iot = new iotdb.IOT()
+                var iot = iotdb.iot()
                 var things = iot.things("NotATest");
 
                 assert.strictEqual(things.count(), 0);
@@ -65,7 +66,8 @@ describe('test_iotdb', function() {
         });
         describe('setup with Thing existing', function() {
             it('connected', function(done) {
-                var iot = new iotdb.IOT()
+                iotdb._reset_shim();
+                var iot = iotdb.iot()
 
                 var ts = iot.connect("Test");
                 ts.on("thing", function() {
@@ -76,7 +78,8 @@ describe('test_iotdb', function() {
                 });
             });
             it('invalid', function(done) {
-                var iot = new iotdb.IOT()
+                iotdb._reset_shim();
+                var iot = iotdb.iot()
 
                 var ts = iot.connect("NotATest");
                 setTimeout(function() {
