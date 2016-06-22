@@ -370,25 +370,12 @@ const make = function() {
      */
     self.on = function (what, callback) {
         if (what === "thing") {
-            self._on_thing(callback);
+            events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, thing => callback(thing));
         } else if ((what === EVENT_THING_NEW) || (what === EVENT_THING_PUSHED) || (what === EVENT_THINGS_CHANGED)) {
-            events.EventEmitter.prototype.on.call(self, what, function (thing) {
-                callback(thing);
-            });
+            events.EventEmitter.prototype.on.call(self, what, thing => callback(thing));
         } else {
-            _apply(model.Model.prototype.on, arguments);
-            _persist(model.Model.prototype.on, arguments);
+            _apply_persist(model.Model.prototype.on, arguments);
         }
-
-        return self;
-    };
-
-    self._on_thing = function (callback) {
-        self.map(callback);
-
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, function (thing) {
-            callback(thing);
-        });
 
         return self;
     };

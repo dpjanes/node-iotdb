@@ -45,7 +45,7 @@
         "url": "https://github.com/dpjanes/node-iotdb"
     }, 
     "scripts": {
-        "cover": "istanbul cover _mocha tests", 
+        "cover": "istanbul cover _mocha", 
         "test": "grunt"
     }, 
     "version": "0.14.2"

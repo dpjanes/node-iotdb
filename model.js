@@ -1291,31 +1291,6 @@ Model.prototype._validate_on_change = function (callback) {
     }
 };
 
-/**
- *  On metadata change (including reachablity)
- */
-Model.prototype.on_meta = function (callback) {
-    const self = this;
-
-    self._validate_on_meta(callback);
-
-    self.__emitter.on(EVENT_META_CHANGED, function (thing) {
-        if (iotdb.shutting_down()) {
-            return;
-        }
-
-        callback(self, []);
-    });
-
-    return self;
-};
-
-Model.prototype._validate_on_meta = function (callback) {
-    if (!_.is.Function(callback)) {
-        throw new Error("Model.on_meta: 'callback' must be a function");
-    }
-};
-
 /*
  *  Send a notification that the metadata has been changed
  */
