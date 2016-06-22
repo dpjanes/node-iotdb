@@ -30,6 +30,7 @@ const _ = require('./helpers');
 const modules = require("./modules").modules;
 
 const thing_set = require('./thing_set');
+const exit = require('./exit');
 
 const events = require('events');
 
@@ -193,7 +194,7 @@ const make = function (initd) {
      *      - if it isn't, replace the bridge with self one
      */
     const _discover_binding_bridge = function (things, modeld, binding, bridge_exemplar, bridge_instance) {
-        if (require('iotdb').shutting_down()) {
+        if (exit.shutting_down()) {
             return;
         }
 

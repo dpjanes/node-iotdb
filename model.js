@@ -34,6 +34,7 @@ const meta_thing = require("./meta");
 const model_maker = require("./model_maker");
 const constants = require("./constants");
 const iotdb = require("./iotdb");
+const exit = require('./exit');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -1297,7 +1298,7 @@ Model.prototype._validate_on_change = function (callback) {
 Model.prototype.meta_changed = function () {
     const self = this;
 
-    if (iotdb.shutting_down()) {
+    if (exit.shutting_down()) {
         return;
     }
 
@@ -1309,7 +1310,7 @@ Model.prototype.meta_changed = function () {
 Model.prototype.connection_changed = function () {
     const self = this;
 
-    if (iotdb.shutting_down()) {
+    if (exit.shutting_down()) {
         return;
     }
 
