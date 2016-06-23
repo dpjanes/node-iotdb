@@ -36,120 +36,82 @@ const logger = _.logger.make({
 
 /* --- constants --- */
 const VERBOSE = true;
-const EVENT_THING_NEW = 'EVENT_THING_NEW';
-const EVENT_THING_PUSHED = 'EVENT_THING_PUSHED';
-const EVENT_THINGS_CHANGED = 'EVENT_THINGS_CHANGED';
 
 const KEY_TAG = 'TAG';
 const KEY_SETTER = 'SETTER';
-const PRE_KEYS = [KEY_TAG, ];
-let array_id = 0;
 
-/**
- *  An array for holding and operating on many {@link Thing}s
- *  at one time.
- *
- *  @constructor
- */
+let sid = 0;
+
 const make = function() {
     const self = Object.assign({}, events.EventEmitter.prototype);
 
-    self._array_id = '__thing_set_' + array_id++;
+    // events
+    const _emitter = new events.EventEmitter();
+    _emitter.setMaxListeners(0);
+
+    // internals (some cheat visibility for downstream sets)
+    self._sid = '_thing_set' + sid++;
     self._isThingArray = true;
 
+    let _things = [];
     let _persistds = [];
-    let _underlying = [];
-
-    events.EventEmitter.call(self);
-    self.setMaxListeners(0);
 
     // array compatibility
-    self.every = (f) => _underlying.every(f);
-    self.filter = (f) => _underlying.filter(f);
-    self.find = (f) => _underlying.find(f);
-    self.forEach = (f) => _underlying.forEach(f);
-    self.map = (f) => _underlying.map(f);
-    self.reduce = (f, i) => _underlying.map(f, i);
+    self.every = (f) => self.all().every(f);
+    self.filter = (f) => self.all().filter(f);
+    self.find = (f) => self.all().find(f);
+    self.forEach = (f) => self.all().forEach(f);
+    self.map = (f) => self.all().map(f);
+    self.reduce = (f, i) => self.all().map(f, i);
 
     // new "array like" stuff
-    self.any = () => _underlying.length ? _underlying[0] : null;
-    self.count = () => _underlying.length;
+    self.all = () => _things;
+    self.any = () => _.is.Empty(_things) ? null : _.first(_things);
+    self.count = () => _things.length;
+    self.empty = () => _things.length === 0;
 
-    // --- IOTDB stuff
-    /**
-     *  Add a new thing to self ThingArray.
-     */
-    self.add = function (thing, paramd) {
+    // --- set specific stuff
+    self.add = function (thing) {
         if (!_.is.Thing(thing)) {
             throw new Error("attempt to add a non-Thing on a ThingArray");
         }
 
-        /*
-         *  If the Thing is already in the array
-         *  we do nothing. There may be a deeper bug
-         *  causing self to happen, but I can't find it
-         */
-        if (self.filter(t => t === thing).length) {
+        if (self.find(t => t === thing)) {
             return;
         }
 
-        //  
-        _persist_pre(thing);
+        thing._sidd = thing._sidd || {};
+        thing._sidd[self._sid] = true;
 
-        // actual add
-        paramd = _.defaults(paramd, {
-            emit_pushed: true,
-            emit_new: true
-        });
+        _do_pre(thing);
+        _things.push(thing);
+        _emitter.emit("thing", thing);
+        _do_post(thing);
 
-        thing[self._array_id] = self; // TD: see if self is still necessary
-        _underlying.push(thing);
-
-        // event dispatch
-        var changed = false;
-        if (paramd.emit_pushed) {
-            self.emit(EVENT_THING_PUSHED, thing);
-            changed = true;
-        }
-        if (paramd.emit_new) {
-            self.emit(EVENT_THING_NEW, thing);
-            changed = true;
-        }
-
-        if (changed) {
-            self.things_changed();
-        }
-
-        // 
-        _persist_post(thing);
-
-        return self;
+        _emitter.emit("changed", self);
     };
 
-    const _persist_post = function (thing) {
-        _persistds
-            .filter(pd => PRE_KEYS.indexOf(pd.key) === -1)
-            .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
-    };
 
-    const _persist_pre = function (thing) {
-        _persistds
-            .filter(pd => PRE_KEYS.indexOf(pd.key) !== -1)
-            .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
-    };
+    const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
+
+    const _do_pre = thing => _persistds
+        .filter(pd => _is_pre_key(pd.key))
+        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
+
+    const _do_post = thing => _persistds
+        .filter(pd => !_is_pre_key(pd.key))
+        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
 
     const _persist = function (f, av, key) {
-        var persistd = {
-            f: f,
-            av: av,
-            key: key
-        };
-
         if (key === KEY_SETTER) {
             _persistds = _persistds.filter(p => p.key !== key);
         }
 
-        _persistds.push(persistd);
+        _persistds.push({
+            f: f,
+            av: av,
+            key: key
+        });
     };
 
     const _apply = (f, av) => self.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
@@ -161,127 +123,43 @@ const make = function() {
         return self;
     };
 
-    /**
-     */
-    self.splice = function (index, howmany) {
-        if (howmany) {
-            for (var i = 0; i < howmany; i++) {
-                var x = index + i;
-                if (x < self._underlying.length) {
-                    delete _underlying[x][self._array_id];
-                }
-            }
+    const _update = ( other_set, filter ) => {
+        const existing_things = self.filter(thing => thing._sidd[other_set._sid]);
+        const other_things = other_set.all();
+
+        const removed_things = _.without(existing_things, other_things);
+        const added_things = _.without(other_things, existing_things);
+
+        if (_.is.Empty(removed_things) && _.is.Empty(added_things)) {
+            return;
         }
 
-        _underlying.splice(index, howmany);
+        removed_things.every(thing => _emitter.emit("removed", thing));
+        added_things.every(thing => {
+            _persistds
+                .filter(pd => _is_pre_key(pd.key))
+                .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
+
+            _do_pre(thing);
+            _things.push(thing);
+            _do_post(thing);
+
+            _emitter.emit("thing", thing);
+        });
+
+        _emitter.emit("changed", self);
+    };
+
+    self.connect = function (modeld, initd, metad) {
+        const other_set = require('./iotdb').iot().connect(modeld, initd, metad);
+
+        _update(other_set, null);
+
+        other_set.on("changed", () => _update(other_set, null));
 
         return self;
     };
 
-    const _merger = function (srcs, out_items) {
-        var o;
-        var oi;
-
-        /**
-         *  Existing things
-         */
-        var oidd = {};
-
-        for (oi = 0; oi < out_items.length; oi++) {
-            o = out_items[oi];
-            oidd[o.thing_id()] = 1;
-        }
-
-        /**
-         *  New things, from any of the srcs
-         */
-        for (var si in srcs) {
-            var src = srcs[si];
-
-            for (var ii = 0; ii < src.length; ii++) {
-                var thing = src[ii];
-                var thing_id = thing.thing_id();
-
-                if (oidd[thing_id]) {
-                    delete oidd[thing_id];
-                } else {
-                    out_items.push(thing, {
-                        emit_pushed: false
-                    });
-                }
-            }
-        }
-
-        /**
-         *  remove things that no longer match
-         */
-        for (oi = 0; oi < out_items.length; oi++) {
-            o = out_items[oi];
-            if (!oidd[o.thing_id()]) {
-                continue;
-            }
-
-            out_items.splice(oi--, 1);
-        }
-
-        /*
-         *  notify downstream - note that we always do self because
-         *  even though self list may not have changed, filters
-         *  downstream may have changed
-         */
-        out_items.things_changed();
-    };
-
-    /**
-     *  Merge another array into self one
-     */
-    self.merge = function (new_items) {
-        var out_items = make()
-        var srcs = [
-            self,
-            new_items
-        ];
-
-        _merger(srcs, out_items);
-
-        srcs.map(src => 
-            events.EventEmitter.prototype.on.call(src, EVENT_THINGS_CHANGED, () => _merger(srcs, out_items)));
-
-        return out_items;
-    };
-
-    /**
-     *  Call IOT.connect() and join all the resulting 
-     *  items into self ThingArray. This lets several
-     *  connect() calls be chained.
-     *
-     *  <pre>
-        things = iot
-           .connect('SomeThing')
-           .connect('AnotherThing')
-
-        things = iot
-            .connect('HueLight')
-            .with_name('Hue Light 1')
-            .connect('WeMoSwitch')
-       </pre>
-     *
-     *  @return {self}
-     */
-    self.connect = function (modeld) {
-        var iot = require('./iotdb').iot();
-
-        return self.merge(
-            iot.connect.apply(iot, Array.prototype.slice.call(arguments))
-        );
-    };
-
-    /**
-     *  Call {@link Thing#update Model.disconnect} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.disconnect = function () {
         return _apply_persist(model.Model.prototype.disconnect, arguments);
     };
@@ -369,27 +247,13 @@ const make = function() {
      *  @return {self}
      */
     self.on = function (what, callback) {
-        if (what === "thing") {
-            events.EventEmitter.prototype.on.call(self, EVENT_THING_NEW, thing => callback(thing));
-        } else if ((what === EVENT_THING_NEW) || (what === EVENT_THING_PUSHED) || (what === EVENT_THINGS_CHANGED)) {
-            events.EventEmitter.prototype.on.call(self, what, thing => callback(thing));
-        } else {
+        if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
             _apply_persist(model.Model.prototype.on, arguments);
+        } else {
+            _emitter.on(what, callback);
         }
 
         return self;
-    };
-
-    /**
-     *  Call {@link Thing#on Model.on_change} on
-     *  every item in the ThingArray.
-     *
-     *  DEPRECIATE
-     *
-     *  @return {self}
-     */
-    self.on_change = function () {
-        return _apply_persist(model.Model.prototype.on_change, arguments);
     };
 
     /**
@@ -401,22 +265,6 @@ const make = function() {
             .reduce(( sum, reachable ) => sum + reachable, 0);
     };
 
-    /**
-     *  Somehow or another, the underlying things were changed.
-     *  This will bring all downstream ThingArrays into order
-     */
-    self.things_changed = function () {
-        logger.trace({
-            method: "things_changed",
-            array: self._array_id,
-            length: _underlying.length,
-        }, "called");
-
-        self.emit(EVENT_THINGS_CHANGED);
-    };
-
-
-    /* --- */
     self._search_test = function (queryd, thing) {
         const meta = thing.meta();
 
@@ -478,34 +326,37 @@ const make = function() {
     /**
      */
     self.search = function (d) {
+        /*
         var o;
         var oi;
 
-        var out_items = make();
-        self.filter(thing => self._search_test(d, thing))
-            .forEach(thing => out_items.push(thing));
+        var result_set = make();
 
-        /*
-         *  When 'Things Changed' && persist: update the list.
-         *
-         *  NOTE:
-         *  we use 'events.EventEmitter.prototype.on' because we are doing our own
-         *  thing with 'self.on'
-         */
+        const _populate = () {
+            const candidate_items = make()
+            self
+                .filter(thing => self._search_test(d, thing))
+                .forEach(thing => candidate_items.add(thing));
+
+            const result_things
+
+            
+        }
+
         events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
             // existing things by ID
             var oidd = {};
 
-            for (oi = 0; oi < out_items.length; oi++) {
-                o = out_items[oi];
+            for (oi = 0; oi < result_set.length; oi++) {
+                o = result_set[oi];
                 oidd[o.thing_id()] = 1;
             }
 
             // find new things matching
             var is_updated = false;
 
-            for (var ii = 0; ii < _underlying.length; ii++) {
-                var thing = _underlying[ii];
+            for (var ii = 0; ii < _things.length; ii++) {
+                var thing = _things[ii];
                 var thing_id = thing.thing_id();
 
                 if (!self._search_test(d, thing)) {
@@ -515,7 +366,7 @@ const make = function() {
                 if (oidd[thing_id]) {
                     delete oidd[thing_id];
                 } else {
-                    out_items.push(thing, {
+                    result_set.push(thing, {
                         emit_pushed: false
                     });
                     is_updated = true;
@@ -524,35 +375,26 @@ const make = function() {
 
 
             // remove things that no longer match
-            for (oi = 0; oi < out_items.length; oi++) {
-                o = out_items[oi];
+            for (oi = 0; oi < result_set.length; oi++) {
+                o = result_set[oi];
                 if (!oidd[o.thing_id()]) {
                     continue;
                 }
 
                 // console.log("! ThingArray.search/things_changed: remove old match", o.thing_id())
-                out_items.splice(oi--, 1);
+                result_set.splice(oi--, 1);
                 is_updated = true;
             }
 
-            /*
-             *  notify downstream - note that we always do self because
-             *  even though self list may not have changed, filters
-             *  downstream may have changed
-             */
-            out_items.things_changed();
+            result_set.things_changed();
         });
 
-        /*
-         *  Things being added propagates downstream. Note how
-         *  above with { emit_pushed: false } we stop self from being
-         *  unnecessarily being called
-         */
         events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
             self.things_changed();
         });
 
-        return out_items;
+        return result_set;
+        */
     };
 
     self.with_id = (id) => self.search({ "meta:iot:thing-id": id, });

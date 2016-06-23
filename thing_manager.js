@@ -62,7 +62,7 @@ const make = function (initd) {
     self.things = function () {
         var things = thing_set.make();
 
-        self.on("thing", (thing) => things.push(thing))
+        self.on("thing", thing => things.add(thing))
 
         _.mapObject(_thingd, ( thing, thing_id ) => things.add(thing))
 
