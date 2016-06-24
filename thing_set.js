@@ -161,7 +161,7 @@ const make = function() {
 
         result_set._update(self, thing => self._search_test(queryd, thing));
 
-        self.on("changed", () => result_set.self._update(self, thing => self._search_test(queryd, thing)));
+        self.on("changed", () => result_set._update(self, thing => self._search_test(queryd, thing)));
 
         return self;
     };
@@ -176,21 +176,25 @@ const make = function() {
 
 
     // -- internals
+    const _search_parse = queryd => _.values(_.mapObject(queryd, ( query_value, query_key ) => {
+        const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
+        if (!match) {
+            throw new Error("bad search: key=" + query_key);
+        }
+
+        return {
+            query_band: match[1],
+            query_inner_key: match[2],
+            query_values: _.ld.list(queryd, query_key, []),
+        };
+    }));
+
     self._search_test = function (queryd, thing) {
         const meta = thing.meta();
 
-        return _.mapObject(queryd, ( query_value, query_key ) => {
-            const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
-            if (!match) {
-                throw new Error("bad search: key=" + query_key);
-            }
 
-            return {
-                query_band: match[1],
-                query_inner_key: match[2],
-                query_values: _.ld.list(queryd, query_key, []),
-            };
-        }).map((matchd) => {
+        _search_parse(queryd)
+            .map((matchd) => {
             switch (matchd.query_band) {
             case "meta":
             case "connection":
@@ -231,7 +235,7 @@ const make = function() {
             }
 
             return true;
-        }).first(tf => tf === false) !== false;
+        }).find(tf => tf === false) !== false;
     };
 
     const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
