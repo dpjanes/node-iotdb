@@ -92,70 +92,12 @@ const make = function() {
     };
 
 
-    const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
-
-    const _do_pre = thing => _persistds
-        .filter(pd => _is_pre_key(pd.key))
-        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
-
-    const _do_post = thing => _persistds
-        .filter(pd => !_is_pre_key(pd.key))
-        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
-
-    const _persist = function (f, av, key) {
-        if (key === KEY_SETTER) {
-            _persistds = _persistds.filter(p => p.key !== key);
-        }
-
-        _persistds.push({
-            f: f,
-            av: av,
-            key: key
-        });
-    };
-
-    const _apply = (f, av) => self.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
-
-    const _apply_persist = (f, av, key) => {
-        _apply(f, av);
-        _persist(f, av, key);
-
-        return self;
-    };
-
-    const _update = ( other_set, filter ) => {
-        const existing_things = self.filter(thing => thing._sidd[other_set._sid]);
-        const other_things = other_set.all();
-
-        const removed_things = _.without(existing_things, other_things);
-        const added_things = _.without(other_things, existing_things);
-
-        if (_.is.Empty(removed_things) && _.is.Empty(added_things)) {
-            return;
-        }
-
-        removed_things.every(thing => _emitter.emit("removed", thing));
-        added_things.every(thing => {
-            _persistds
-                .filter(pd => _is_pre_key(pd.key))
-                .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
-
-            _do_pre(thing);
-            _things.push(thing);
-            _do_post(thing);
-
-            _emitter.emit("thing", thing);
-        });
-
-        _emitter.emit("changed", self);
-    };
-
     self.connect = function (modeld, initd, metad) {
         const other_set = require('./iotdb').iot().connect(modeld, initd, metad);
 
-        _update(other_set, null);
+        self._update(other_set, () => true);
 
-        other_set.on("changed", () => _update(other_set, null));
+        other_set.on("changed", () => self._update(other_set, () => true));
 
         return self;
     };
@@ -164,88 +106,40 @@ const make = function() {
         return _apply_persist(model.Model.prototype.disconnect, arguments);
     };
 
-    /**
-     *  Call {@link Thing#update Model.name} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.name = function (name) {
         assert(_.is.String(name));
 
         return _apply_persist(model.Model.prototype.name, arguments);
     };
 
-    /**
-     *  Call {@link Thing#update Model.zones} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.zones = function (zones) {
         assert(_.is.String(zones) || _.is.Array(zones));
 
         return _apply_persist(model.Model.prototype.zones, arguments);
     };
 
-    /**
-     *  Call {@link Thing#update Model.facets} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.facets = function (facets) {
         assert(_.is.String(facets) || _.is.Array(facets));
 
         return _apply_persist(model.Model.prototype.facets, arguments);
     };
 
-    /**
-     *  Call {@link Thing#set Model.set} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.set = function () {
         return _apply_persist(model.Model.prototype.set, arguments, KEY_SETTER);
     };
 
-    /**
-     *  Call {@link Thing#update Model.update} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.update = function () {
         return _apply_persist(model.Model.prototype.update, arguments, KEY_SETTER);
     };
 
-    /**
-     *  Call {@link Thing#pull Model.pull} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.pull = function () {
         return _apply_persist(model.Model.prototype.pull, arguments);
     };
 
-    /**
-     *  Call {@link Thing#pull Model.tag} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.tag = function () {
         return _apply_persist(model.Model.prototype.tag, arguments, KEY_TAG);
     };
 
-    /**
-     *  Call {@link Thing#on Model.on} on
-     *  every item in the ThingArray.
-     *
-     *  @return {self}
-     */
     self.on = function (what, callback) {
         if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
             _apply_persist(model.Model.prototype.on, arguments);
@@ -256,15 +150,32 @@ const make = function() {
         return self;
     };
 
-    /**
-     *  Return the number of things that can be reached
-     */
     self.reachable = function () {
         return self
             .map((thing) => thing.reachable() ? 1 : 0)
             .reduce(( sum, reachable ) => sum + reachable, 0);
     };
 
+    self.search = function (queryd) {
+        const result_set = make();
+
+        result_set._update(self, thing => self._search_test(queryd, thing));
+
+        self.on("changed", () => result_set.self._update(self, thing => self._search_test(queryd, thing)));
+
+        return self;
+    };
+
+    self.with_id = (id) => self.search({ "meta:iot:thing-id": id, });
+    self.with_code = (code) => self.search({ "meta:iot:model-id": _.id.to_dash_case(code), });
+    self.with_name = (name) => self.search({ "meta:schema:name": name });
+    self.with_zone = (name) => self.search({ "meta:iot:zone": name });
+    self.with_number = (number) => self.search({ "meta:iot:thing-number": parseInt(number) });
+    self.with_tag = (tag) => self.search({ "transient:tag": tag });
+    self.with_facet = (facet) => self.search({ "meta:iot:facet": facet, });
+
+
+    // -- internals
     self._search_test = function (queryd, thing) {
         const meta = thing.meta();
 
@@ -323,87 +234,63 @@ const make = function() {
         }).first(tf => tf === false) !== false;
     };
 
-    /**
-     */
-    self.search = function (d) {
-        /*
-        var o;
-        var oi;
+    const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
 
-        var result_set = make();
+    const _do_pre = thing => _persistds
+        .filter(pd => _is_pre_key(pd.key))
+        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
 
-        const _populate = () {
-            const candidate_items = make()
-            self
-                .filter(thing => self._search_test(d, thing))
-                .forEach(thing => candidate_items.add(thing));
+    const _do_post = thing => _persistds
+        .filter(pd => !_is_pre_key(pd.key))
+        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
 
-            const result_things
-
-            
+    const _persist = function (f, av, key) {
+        if (key === KEY_SETTER) {
+            _persistds = _persistds.filter(p => p.key !== key);
         }
 
-        events.EventEmitter.prototype.on.call(self, EVENT_THINGS_CHANGED, function () {
-            // existing things by ID
-            var oidd = {};
-
-            for (oi = 0; oi < result_set.length; oi++) {
-                o = result_set[oi];
-                oidd[o.thing_id()] = 1;
-            }
-
-            // find new things matching
-            var is_updated = false;
-
-            for (var ii = 0; ii < _things.length; ii++) {
-                var thing = _things[ii];
-                var thing_id = thing.thing_id();
-
-                if (!self._search_test(d, thing)) {
-                    continue;
-                }
-
-                if (oidd[thing_id]) {
-                    delete oidd[thing_id];
-                } else {
-                    result_set.push(thing, {
-                        emit_pushed: false
-                    });
-                    is_updated = true;
-                }
-            }
-
-
-            // remove things that no longer match
-            for (oi = 0; oi < result_set.length; oi++) {
-                o = result_set[oi];
-                if (!oidd[o.thing_id()]) {
-                    continue;
-                }
-
-                // console.log("! ThingArray.search/things_changed: remove old match", o.thing_id())
-                result_set.splice(oi--, 1);
-                is_updated = true;
-            }
-
-            result_set.things_changed();
+        _persistds.push({
+            f: f,
+            av: av,
+            key: key
         });
-
-        events.EventEmitter.prototype.on.call(self, EVENT_THING_PUSHED, function (thing) {
-            self.things_changed();
-        });
-
-        return result_set;
-        */
     };
 
-    self.with_id = (id) => self.search({ "meta:iot:thing-id": id, });
-    self.with_code = (code) => self.search({ "meta:iot:model-id": _.id.to_dash_case(code), });
-    self.with_name = (name) => self.search({ "meta:schema:name": name });
-    self.with_zone = (name) => self.search({ "meta:iot:zone": name });
-    self.with_number = (number) => self.search({ "meta:iot:thing-number": parseInt(number) });
-    self.with_tag = (tag) => self.search({ "transient:tag": tag });
-    self.with_facet = (facet) => self.search({ "meta:iot:facet": facet, });
+    const _apply = (f, av) => self.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
+
+    const _apply_persist = (f, av, key) => {
+        _apply(f, av);
+        _persist(f, av, key);
+
+        return self;
+    };
+
+    self._update = ( other_set, filter ) => {
+        const existing_things = self.filter(thing => thing._sidd[other_set._sid]);
+        const other_things = other_set.all().filter(filter);
+
+        const removed_things = _.without(existing_things, other_things);
+        const added_things = _.without(other_things, existing_things);
+
+        if (_.is.Empty(removed_things) && _.is.Empty(added_things)) {
+            return;
+        }
+
+        removed_things.every(thing => _emitter.emit("removed", thing));
+        added_things.every(thing => {
+            _persistds
+                .filter(pd => _is_pre_key(pd.key))
+                .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
+
+            _do_pre(thing);
+            _things.push(thing);
+            _do_post(thing);
+
+            _emitter.emit("thing", thing);
+        });
+
+        _emitter.emit("changed", self);
+    };
 
     return self;
 };

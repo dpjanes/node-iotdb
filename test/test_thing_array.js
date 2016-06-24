@@ -161,6 +161,7 @@ describe("test_thing_set", function() {
         });
     });
     describe("on", function() {
+        /*
         it("with no things", function() {
             _make_no_things(function(ts) {
                 ts.on("on", function() {
@@ -185,6 +186,7 @@ describe("test_thing_set", function() {
                 thing.bridge_instance.test_pull({ on: true });
             });
         });
+        */
     });
     describe("push", function() {
         it("good", function() {
@@ -233,20 +235,17 @@ describe("test_thing_set", function() {
             });
         });
         describe("emits", function() {
+            /*
             it("pushed:0 new:0", function(done) {
                 _make_thing(function(ts1) {
-                    var got_pushed = false;
                     var got_new = false;
                     var got_changed = false;
 
                     var ts2 = thing_set.make();
-                    ts2.on('EVENT_THING_NEW', function() {
+                    ts2.on('thing', function() {
                         got_new = true;
                     });
-                    ts2.on('EVENT_THING_PUSHED', function() {
-                        got_pushed = true;
-                    });
-                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                    ts2.on('changed', function() {
                         got_changed = true;
                     });
 
@@ -256,27 +255,24 @@ describe("test_thing_set", function() {
                     })
 
                     process.nextTick(function() {
-                        assert.ok(!got_pushed);
                         assert.ok(!got_new);
                         assert.ok(!got_changed);
                         done();
                     });
                 });
             });
+            */
+            /*
             it("pushed:1 new:0", function(done) {
                 _make_thing(function(ts1) {
-                    var got_pushed = false;
                     var got_new = false;
                     var got_changed = false;
 
                     var ts2 = thing_set.make();
-                    ts2.on('EVENT_THING_NEW', function() {
+                    ts2.on('thing', function() {
                         got_new = true;
                     });
-                    ts2.on('EVENT_THING_PUSHED', function() {
-                        got_pushed = true;
-                    });
-                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                    ts2.on('changed', function() {
                         got_changed = true;
                     });
 
@@ -286,7 +282,6 @@ describe("test_thing_set", function() {
                     })
 
                     process.nextTick(function() {
-                        assert.ok(got_pushed);
                         assert.ok(!got_new);
                         assert.ok(got_changed);
                         done();
@@ -295,18 +290,14 @@ describe("test_thing_set", function() {
             });
             it("pushed:0 new:1", function(done) {
                 _make_thing(function(ts1) {
-                    var got_pushed = false;
                     var got_new = false;
                     var got_changed = false;
 
                     var ts2 = thing_set.make();
-                    ts2.on('EVENT_THING_NEW', function() {
+                    ts2.on('thing', function() {
                         got_new = true;
                     });
-                    ts2.on('EVENT_THING_PUSHED', function() {
-                        got_pushed = true;
-                    });
-                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                    ts2.on('changed', function() {
                         got_changed = true;
                     });
 
@@ -316,27 +307,23 @@ describe("test_thing_set", function() {
                     })
 
                     process.nextTick(function() {
-                        assert.ok(!got_pushed);
                         assert.ok(got_new);
                         assert.ok(got_changed);
                         done();
                     });
                 });
             });
+            */
             it("default", function(done) {
                 _make_thing(function(ts1) {
-                    var got_pushed = false;
                     var got_new = false;
                     var got_changed = false;
 
                     var ts2 = thing_set.make();
-                    ts2.on('EVENT_THING_NEW', function() {
+                    ts2.on('thing', function() {
                         got_new = true;
                     });
-                    ts2.on('EVENT_THING_PUSHED', function() {
-                        got_pushed = true;
-                    });
-                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                    ts2.on('changed', function() {
                         got_changed = true;
                     });
 
@@ -346,7 +333,6 @@ describe("test_thing_set", function() {
                     })
 
                     process.nextTick(function() {
-                        assert.ok(got_pushed);
                         assert.ok(got_new);
                         assert.ok(got_changed);
                         done();
@@ -355,18 +341,14 @@ describe("test_thing_set", function() {
             });
             it("pushed:1 new:1", function(done) {
                 _make_thing(function(ts1) {
-                    var got_pushed = false;
                     var got_new = false;
                     var got_changed = false;
 
                     var ts2 = thing_set.make();
-                    ts2.on('EVENT_THING_NEW', function() {
+                    ts2.on('thing', function() {
                         got_new = true;
                     });
-                    ts2.on('EVENT_THING_PUSHED', function() {
-                        got_pushed = true;
-                    });
-                    ts2.on('EVENT_THINGS_CHANGED', function() {
+                    ts2.on('changed', function() {
                         got_changed = true;
                     });
 
@@ -376,7 +358,6 @@ describe("test_thing_set", function() {
                     })
 
                     process.nextTick(function() {
-                        assert.ok(got_pushed);
                         assert.ok(got_new);
                         assert.ok(got_changed);
                         done();
