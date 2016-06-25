@@ -72,9 +72,7 @@ const make = function() {
 
     // --- set specific stuff
     self.add = function (thing) {
-        if (!_.is.Thing(thing)) {
-            throw new Error("attempt to add a non-Thing on a ThingArray");
-        }
+        assert(_.is.Thing(thing));
 
         if (self.find(t => t === thing)) {
             return;
@@ -174,7 +172,6 @@ const make = function() {
     self.with_tag = (tag) => self.search({ "transient:tag": tag });
     self.with_facet = (facet) => self.search({ "meta:iot:facet": facet, });
 
-
     // -- internals
     const _search_parse = queryd => _.values(_.mapObject(queryd, ( query_value, query_key ) => {
         const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
@@ -239,6 +236,7 @@ const make = function() {
         .find(tf => (tf === false)) === undefined ? thing : null;
 
     const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
+    const _is_only_key = key => [ KEY_SETTER ].indexOf(key) > -1;
 
     const _do_pre = thing => _persistds
         .filter(pd => _is_pre_key(pd.key))
@@ -249,7 +247,7 @@ const make = function() {
         .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
 
     const _persist = function (f, av, key) {
-        if (key === KEY_SETTER) {
+        if (_is_only_key(key)) {
             _persistds = _persistds.filter(p => p.key !== key);
         }
 
@@ -265,8 +263,6 @@ const make = function() {
     const _apply_persist = (f, av, key) => {
         _apply(f, av);
         _persist(f, av, key);
-
-        return self;
     };
 
     self._update = ( other_set, filter ) => {
