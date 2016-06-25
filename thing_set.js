@@ -159,11 +159,11 @@ const make = function() {
     self.search = function (queryd) {
         const result_set = make();
 
-        result_set._update(self, thing => self._search_test(queryd, thing));
+        result_set._update(self, thing => _search_filter(queryd, thing));
 
-        self.on("changed", () => result_set._update(self, thing => self._search_test(queryd, thing)));
+        self.on("changed", () => result_set._update(self, thing => _search_filter(queryd, thing)));
 
-        return self;
+        return result_set;
     };
 
     self.with_id = (id) => self.search({ "meta:iot:thing-id": id, });
@@ -189,54 +189,54 @@ const make = function() {
         };
     }));
 
-    self._search_test = function (queryd, thing) {
+    const _search_match = (matchd, thing) => {
         const meta = thing.meta();
 
+        switch (matchd.query_band) {
+        case "meta":
+        case "connection":
+            matchd.query_values = _.ld.expand(matchd.query_values);
 
-        _search_parse(queryd)
-            .map((matchd) => {
-            switch (matchd.query_band) {
-            case "meta":
-            case "connection":
-                matchd.query_values = _.ld.expand(matchd.query_values);
+            const thing_state = thing.state(matchd.query_band);
+            const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
 
-                const thing_state = thing.state(matchd.query_band);
-                const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
+            return _.intersection(matchd.query_values, thing_values).length > 0;
 
-                return _.intersection(matchd.query_values, thing_values).length > 0;
-
-            case "transient":
-                if (matchd.query_inner_key === "tag") {
-                    return _.ld.intersects(thing.initd, "tag", matchd.query_values);
-                } else {
-                    return false;
-                }
-
-            case "ostate":
-            case "istate":
-            case "model":
-                logger.error({
-                    method: "_search_test",
-                    query_band: matchd.query_band,
-                    query_key: matchd.query_key,
-                }, "function not implemented (yet)");
-
-                return false;
-
-            default:
-                logger.error({
-                    method: "_search_test",
-                    cause: "programming error - self should never happen",
-                    query_band: matchd.query_band,
-                    query_key: matchd.query_key,
-                }, "bad band");
-
+        case "transient":
+            if (matchd.query_inner_key === "tag") {
+                return _.ld.intersects(thing.initd, "tag", matchd.query_values);
+            } else {
                 return false;
             }
 
-            return true;
-        }).find(tf => tf === false) !== false;
+        case "ostate":
+        case "istate":
+        case "model":
+            logger.error({
+                method: "_search_match",
+                query_band: matchd.query_band,
+                query_key: matchd.query_key,
+            }, "function not implemented (yet)");
+
+            return false;
+
+        default:
+            logger.error({
+                method: "_search_match",
+                cause: "programming error - self should never happen",
+                query_band: matchd.query_band,
+                query_key: matchd.query_key,
+            }, "bad band");
+
+            return false;
+        }
+
+        return true;
     };
+
+    const _search_filter = ( queryd, thing ) => _search_parse(queryd)
+        .map(matchd => _search_match(matchd, thing))
+        .find(tf => (tf === false)) === undefined ? thing : null;
 
     const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
 
