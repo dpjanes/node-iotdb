@@ -138,13 +138,14 @@ const make = function (initd) {
     const _discover_model = function (things, modeld) {
         const any = modules().bindings()
             .filter(binding => modeld.model_code === binding.model_code)
+            .map(binding => { console.log("binding"); return binding })
             .find(binding => _discover_binding(things, modeld, binding));
 
         if (!any) {
             logger.error({
                 method: "_discover",
                 modeld: modeld,
-                cause: "maybe self Model or it's binding are not added to IOTDB yet?",
+                cause: "maybe Model or it's binding are not added to IOTDB yet?",
             }, "did not find any matching Models");
         }
     };

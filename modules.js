@@ -41,7 +41,7 @@ const logger = _.logger.make({
 
 const make = () => {
     const self = Object.assign({}, events.EventEmitter.prototype);
-    const iotdb = require("iotdb");
+    const iotdb = require("./iotdb");
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
@@ -53,7 +53,7 @@ const make = () => {
     /**
      *  Return all the Modules that have been registered
      */
-    self.modules = () => _.values(this._moduled);
+    self.modules = () => _.values(_moduled);
 
     /**
      *  Manually add another module
@@ -77,13 +77,14 @@ const make = () => {
         }
     };
 
-
     const _load_master = () => {
-        var moduled = iotdb.keystore().get("modules");
-        
-        _.mapObject(moduled, ( module_folder, module_name) => {
+        _.mapObject(iotdb.keystore().get("modules"), ( module_folder, module_name) => {
             try {
-                var module = require(module_folder);
+                const module = require(module_folder);
+                module.module_name = module_name;
+                module.module_folder = module_folder;
+
+                _moduled[module_name] = module
             } catch (x) {
                 logger.error({
                     method: "_load",
@@ -96,10 +97,6 @@ const make = () => {
                 return;
             }
 
-            module.module_name = module_name;
-            module.module_folder = module_folder;
-
-            _moduled[module_name] = module
         });
     };
 
@@ -109,7 +106,7 @@ const make = () => {
             .map(module => {
                 module.Bridge.module_name = module.module_name;
                 module.Bridge.bridge_name = _.id.to_dash_case((new module.Bridge()).name());
-                return module;
+                return module.Bridge;
             });
     };
 
@@ -122,7 +119,7 @@ const make = () => {
      *  This will return the module with the module_name,
      *  or undefined if not found.
      */
-    self.module = (module_name) => self._moduled[module_name];
+    self.module = module_name => _moduled[module_name];
 
     /**
      *  The Bridge is the code that knows how to talk to
@@ -161,8 +158,8 @@ const make = () => {
         } else {
             /* morph the model's code -- see model_maker */
             binding.model_code = _.id.to_dash_case(binding.model_code);
-            var old_model = binding.model;
-            var new_model = function() {
+            const old_model = binding.model;
+            const new_model = function() {
                 old_model.call(this);
                 this.__code = binding.model_code;
             }
@@ -179,13 +176,15 @@ const make = () => {
             _bindings = _.flatten(_.values(_moduled)
                 .filter(module => module.bindings)
                 .map(module => module.bindings)
-                .map(bindings => bindings.map(_setup_binding)), true);
+                .map(bindings => bindings.map(_setup_binding)), true)
+                .filter(binding => binding);
         }
 
         return _bindings;
     };
 
     self.bindings = () => _setup_bindings()
+        .filter(binding => binding.bridge)
         .filter(binding => iotdb.keystore().get("/enabled/modules/" + binding.bridge.module_name, true));
 
     const _load_setup = () => _.values(_moduled)

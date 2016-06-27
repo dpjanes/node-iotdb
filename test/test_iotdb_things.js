@@ -21,7 +21,7 @@ describe('test_iotdb', function() {
     describe('things', function() {
         describe('global', function() {
             it('no arguments', function() {
-                iotdb._reset_shim();
+                iotdb.shims.reset();
                 var things = iotdb.things();
 
                 assert.strictEqual(things.count(), 0);
@@ -43,7 +43,7 @@ describe('test_iotdb', function() {
         });
         describe('clean setup', function() {
             it('no arguments', function() {
-                iotdb._reset_shim();
+                iotdb.shims.reset();
                 var iot = iotdb.iot()
                 var things = iot.things();
 
@@ -66,7 +66,7 @@ describe('test_iotdb', function() {
         });
         describe('setup with Thing existing', function() {
             it('connected', function(done) {
-                iotdb._reset_shim();
+                iotdb.shims.reset();
                 var iot = iotdb.iot()
 
                 var ts = iot.connect("Test");
@@ -78,7 +78,7 @@ describe('test_iotdb', function() {
                 });
             });
             it('invalid', function(done) {
-                iotdb._reset_shim();
+                iotdb.shims.reset();
                 var iot = iotdb.iot()
 
                 var ts = iot.connect("NotATest");

@@ -212,8 +212,6 @@ Keystore.prototype.save = function (key, value, paramd) {
 
 var _keystore;
 
-/**
- */
 const keystore = function () {
     if (!_keystore) {
         _keystore = new Keystore();

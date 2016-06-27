@@ -137,7 +137,12 @@ exports.users = require('./users');
 exports.iot = iot;
 exports.connect = connect;
 exports.things = things;
-exports._reset_shim = _reset_shim;
+
+// testing only
+exports.shims = {
+    reset: _reset_shim,
+    keystore: f => exports.keystore = f,
+}
 
 // Windows compatibility
 require("./windows").setup();

@@ -8,16 +8,13 @@
 
 "use strict";
 
-var assert = require("assert")
-var sleep = require("sleep");
+const path = require("path");
 
-var path = require("path");
+const iotdb = require("../../iotdb");
+const keystore = require("../../keystore");
 
-var iotdb = require("../../iotdb");
-var keystore = require("../../keystore");
-
-var _keystore;
-iotdb.keystore = function() {
+let _keystore;
+iotdb.shims.keystore(() => {
     if (!_keystore) {
         _keystore = new keystore.Keystore();
         _keystore.d = {
@@ -29,4 +26,4 @@ iotdb.keystore = function() {
     }
 
     return _keystore;
-};
+});
