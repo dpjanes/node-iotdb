@@ -35,8 +35,6 @@ const logger = _.logger.make({
 });
 
 /* --- constants --- */
-const VERBOSE = true;
-
 const KEY_TAG = 'TAG';
 const KEY_SETTER = 'SETTER';
 
@@ -101,46 +99,46 @@ const make = function() {
     };
 
     self.disconnect = function () {
-        return _apply_persist(model.Model.prototype.disconnect, arguments);
+        return _apply_persist("disconnect", arguments);
     };
 
     self.name = function (name) {
         assert(_.is.String(name));
 
-        return _apply_persist(model.Model.prototype.name, arguments);
+        return _apply_persist("name", arguments);
     };
 
     self.zones = function (zones) {
         assert(_.is.String(zones) || _.is.Array(zones));
 
-        return _apply_persist(model.Model.prototype.zones, arguments);
+        return _apply_persist("zones", arguments);
     };
 
     self.facets = function (facets) {
         assert(_.is.String(facets) || _.is.Array(facets));
 
-        return _apply_persist(model.Model.prototype.facets, arguments);
+        return _apply_persist("facets", arguments);
     };
 
     self.set = function () {
-        return _apply_persist(model.Model.prototype.set, arguments, KEY_SETTER);
+        return _apply_persist("set", arguments, KEY_SETTER);
     };
 
     self.update = function () {
-        return _apply_persist(model.Model.prototype.update, arguments, KEY_SETTER);
+        return _apply_persist("update", arguments, KEY_SETTER);
     };
 
     self.pull = function () {
-        return _apply_persist(model.Model.prototype.pull, arguments);
+        return _apply_persist("pull", arguments);
     };
 
     self.tag = function () {
-        return _apply_persist(model.Model.prototype.tag, arguments, KEY_TAG);
+        return _apply_persist("tag", arguments, KEY_TAG);
     };
 
     self.on = function (what, callback) {
         if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
-            _apply_persist(model.Model.prototype.on, arguments);
+            _apply_persist("on", arguments);
         } else {
             _emitter.on(what, callback);
         }
@@ -240,29 +238,29 @@ const make = function() {
 
     const _do_pre = thing => _persistds
         .filter(pd => _is_pre_key(pd.key))
-        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
+        .forEach(pd => thing[pd.fname].apply(thing, Array.prototype.slice.call(pd.av)));
 
     const _do_post = thing => _persistds
         .filter(pd => !_is_pre_key(pd.key))
-        .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
+        .forEach(pd => thing[pd.fname].apply(thing, Array.prototype.slice.call(pd.av)));
 
-    const _persist = function (f, av, key) {
+    const _persist = function (fname, av, key) {
         if (_is_only_key(key)) {
             _persistds = _persistds.filter(p => p.key !== key);
         }
 
         _persistds.push({
-            f: f,
+            fname: fname,
             av: av,
             key: key
         });
     };
 
-    const _apply = (f, av) => self.forEach(thing => f.apply(thing, Array.prototype.slice.call(av)));
+    const _apply = (fname, av) => self.forEach(thing => thing[fname].apply(thing, Array.prototype.slice.call(av)));
 
-    const _apply_persist = (f, av, key) => {
-        _apply(f, av);
-        _persist(f, av, key);
+    const _apply_persist = (fname, av, key) => {
+        _apply(fname, av);
+        _persist(fname, av, key);
     };
 
     self._update = ( other_set, filter ) => {
