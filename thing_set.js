@@ -86,9 +86,9 @@ const make = function() {
         _emitter.emit("thing", thing);
         _do_post(thing);
 
+
         _emitter.emit("changed", self);
     };
-
 
     self.connect = function (modeld, initd, metad) {
         const other_set = require('./iotdb').iot().connect(modeld, initd, metad);
@@ -269,8 +269,8 @@ const make = function() {
         const existing_things = self.filter(thing => thing._sidd[other_set._sid]);
         const other_things = other_set.all().filter(filter);
 
-        const removed_things = _.without(existing_things, other_things);
-        const added_things = _.without(other_things, existing_things);
+        const removed_things = _.difference(existing_things, other_things);
+        const added_things = _.difference(other_things, existing_things);
 
         if (_.is.Empty(removed_things) && _.is.Empty(added_things)) {
             return;
