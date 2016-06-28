@@ -55,13 +55,13 @@ const make = function() {
     self.map = (f) => self.all().map(f);
     self.reduce = (f, i) => self.all().map(f, i);
 
-    // new "array like" stuff
+    // new "set like" stuff
     self.all = () => _things;
     self.any = () => _.is.Empty(_things) ? null : _.first(_things);
     self.count = () => _things.length;
     self.empty = () => _things.length === 0;
 
-    // --- set specific stuff
+    // IOTDB stuff
     self.add = function (thing) {
         assert(_.is.Thing(thing));
 
@@ -91,47 +91,18 @@ const make = function() {
         return self;
     };
 
-    self.disconnect = function () {
-        return _apply_persist("disconnect", arguments);
-    };
+    self.disconnect = () => _apply_persist("disconnect", []);
+    self.name = name => _apply_persist("name", [ name ]);
+    self.zones = zones => _apply_persist("zones", [ zones ]);
+    self.facets = facets => _apply_persist("facets", [ facets ]);
+    self.set = (...rest) => _apply_persist("set", rest);
+    self.update = (...rest) => _apply_persist("update", rest);
+    self.pull = (...rest) => _apply_persist("pull", rest);
+    self.tag = (...rest) => _apply_persist("tag", rest);
 
-    self.name = function (name) {
-        assert(_.is.String(name));
-
-        return _apply_persist("name", arguments);
-    };
-
-    self.zones = function (zones) {
-        assert(_.is.String(zones) || _.is.Array(zones));
-
-        return _apply_persist("zones", arguments);
-    };
-
-    self.facets = function (facets) {
-        assert(_.is.String(facets) || _.is.Array(facets));
-
-        return _apply_persist("facets", arguments);
-    };
-
-    self.set = function () {
-        return _apply_persist("set", arguments);
-    };
-
-    self.update = function () {
-        return _apply_persist("update", arguments);
-    };
-
-    self.pull = function () {
-        return _apply_persist("pull", arguments);
-    };
-
-    self.tag = function () {
-        return _apply_persist("tag", arguments);
-    };
-
-    self.on = function (what, callback) {
+    self.on = (what, callback) => {
         if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
-            _apply_persist("on", arguments);
+            _apply_persist("on", [ what, callback ]);
         } else {
             _emitter.on(what, callback);
         }
@@ -139,11 +110,9 @@ const make = function() {
         return self;
     };
 
-    self.reachable = function () {
-        return self
-            .map((thing) => thing.reachable() ? 1 : 0)
-            .reduce(( sum, reachable ) => sum + reachable, 0);
-    };
+    self.reachable = () => self
+        .map((thing) => thing.reachable() ? 1 : 0)
+        .reduce(( sum, reachable ) => sum + reachable, 0);
 
     self.search = function (queryd) {
         const result_set = make();
