@@ -48,11 +48,11 @@ const make = function() {
     let _persistds = [];
 
     // array compatibility
-    self.every = (f) => self.all().every(f);
-    self.filter = (f) => self.all().filter(f);
-    self.find = (f) => self.all().find(f);
-    self.forEach = (f) => self.all().forEach(f);
-    self.map = (f) => self.all().map(f);
+    self.every = f => self.all().every(f);
+    self.filter = f => self.all().filter(f);
+    self.find = f => self.all().find(f);
+    self.forEach = f => self.all().forEach(f);
+    self.map = f => self.all().map(f);
     self.reduce = (f, i) => self.all().map(f, i);
 
     // new "set like" stuff
@@ -111,7 +111,7 @@ const make = function() {
     };
 
     self.reachable = () => self
-        .map((thing) => thing.reachable() ? 1 : 0)
+        .map(thing => thing.reachable() ? 1 : 0)
         .reduce(( sum, reachable ) => sum + reachable, 0);
 
     self.search = function (queryd) {
@@ -124,13 +124,13 @@ const make = function() {
         return result_set;
     };
 
-    self.with_id = (id) => self.search({ "meta:iot:thing-id": id, });
-    self.with_code = (code) => self.search({ "meta:iot:model-id": _.id.to_dash_case(code), });
-    self.with_name = (name) => self.search({ "meta:schema:name": name });
-    self.with_zone = (name) => self.search({ "meta:iot:zone": name });
-    self.with_number = (number) => self.search({ "meta:iot:thing-number": parseInt(number) });
-    self.with_tag = (tag) => self.search({ "transient:tag": tag });
-    self.with_facet = (facet) => self.search({ "meta:iot:facet": facet, });
+    self.with_id = id => self.search({ "meta:iot:thing-id": id, });
+    self.with_code = code => self.search({ "meta:iot:model-id": _.id.to_dash_case(code), });
+    self.with_name = name => self.search({ "meta:schema:name": name });
+    self.with_zone = name => self.search({ "meta:iot:zone": name });
+    self.with_number = number => self.search({ "meta:iot:thing-number": parseInt(number) });
+    self.with_tag = tag => self.search({ "transient:tag": tag });
+    self.with_facet = facet => self.search({ "meta:iot:facet": facet, });
 
     // -- internals
     const _search_parse = queryd => _.values(_.mapObject(queryd, ( query_value, query_key ) => {
