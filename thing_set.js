@@ -23,20 +23,13 @@
 "use strict";
 
 const _ = require("./helpers");
-const attribute = require("./attribute");
-const model = require("./model");
 const events = require('events');
-const util = require('util');
 const assert = require('assert');
 
 const logger = _.logger.make({
     name: 'iotdb',
     module: 'thing_set',
 });
-
-/* --- constants --- */
-const KEY_TAG = 'TAG';
-const KEY_SETTER = 'SETTER';
 
 let sid = 0;
 
@@ -121,11 +114,11 @@ const make = function() {
     };
 
     self.set = function () {
-        return _apply_persist("set", arguments, KEY_SETTER);
+        return _apply_persist("set", arguments);
     };
 
     self.update = function () {
-        return _apply_persist("update", arguments, KEY_SETTER);
+        return _apply_persist("update", arguments);
     };
 
     self.pull = function () {
@@ -133,7 +126,7 @@ const make = function() {
     };
 
     self.tag = function () {
-        return _apply_persist("tag", arguments, KEY_TAG);
+        return _apply_persist("tag", arguments);
     };
 
     self.on = function (what, callback) {
@@ -233,34 +226,33 @@ const make = function() {
         .map(matchd => _search_match(matchd, thing))
         .find(tf => (tf === false)) === undefined ? thing : null;
 
-    const _is_pre_key = key => [ KEY_TAG ].indexOf(key) > -1;
-    const _is_only_key = key => [ KEY_SETTER ].indexOf(key) > -1;
+    const _is_pre = fname => [ "tag" ].indexOf(fname) > -1;
+    const _is_setter = fname => [ "set", "update" ].indexOf(fname) > -1;
 
     const _do_pre = thing => _persistds
-        .filter(pd => _is_pre_key(pd.key))
+        .filter(pd => _is_pre(pd.fname))
         .forEach(pd => thing[pd.fname].apply(thing, Array.prototype.slice.call(pd.av)));
 
     const _do_post = thing => _persistds
-        .filter(pd => !_is_pre_key(pd.key))
+        .filter(pd => !_is_pre(pd.fname))
         .forEach(pd => thing[pd.fname].apply(thing, Array.prototype.slice.call(pd.av)));
 
-    const _persist = function (fname, av, key) {
-        if (_is_only_key(key)) {
-            _persistds = _persistds.filter(p => p.key !== key);
+    const _persist = function (fname, av) {
+        if (_is_setter(fname)) {
+            _persistds = _persistds.filter(p => !_is_setter(p.fname));
         }
 
         _persistds.push({
             fname: fname,
             av: av,
-            key: key
         });
     };
 
     const _apply = (fname, av) => self.forEach(thing => thing[fname].apply(thing, Array.prototype.slice.call(av)));
 
-    const _apply_persist = (fname, av, key) => {
+    const _apply_persist = (fname, av) => {
         _apply(fname, av);
-        _persist(fname, av, key);
+        _persist(fname, av);
     };
 
     self._update = ( other_set, filter ) => {
@@ -276,10 +268,6 @@ const make = function() {
 
         removed_things.every(thing => _emitter.emit("removed", thing));
         added_things.every(thing => {
-            _persistds
-                .filter(pd => _is_pre_key(pd.key))
-                .forEach(pd => pd.f.apply(thing, Array.prototype.slice.call(pd.av)));
-
             _do_pre(thing);
             _things.push(thing);
             _do_post(thing);
