@@ -149,6 +149,13 @@ const make = () => {
             return;
         }
 
+        // G3
+        binding.bandd = {};
+        if (_.is.Dictionary(binding.model)) {
+            binding.bandd.model = binding.model;
+        }
+
+
         if (!_.is.Model(binding.model)) {
             binding.model = model.make_model_from_jsonld(binding.model);
         }
