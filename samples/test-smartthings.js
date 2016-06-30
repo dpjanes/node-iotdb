@@ -28,13 +28,13 @@ iotdb.use("homestar-smartthings");
 const things = iotdb.connect()
 
 things.on('istate', function (thing) {
-    console.log("+ istate\n ", thing.thing_id(), "\n ", thing.state("istate"));
+    console.log("+ istate\n ", thing._tid, thing.thing_id(), "\n ", thing.state("istate"));
 });
 things.on("meta", function (thing) {
-    console.log("+ meta\n ", thing.thing_id(), thing.state("meta"));
+    console.log("+ meta\n ", thing._tid, thing.thing_id(), thing.state("meta"));
 });
 things.on("thing", function (thing) {
-    console.log("+ thing\n ", thing.thing_id(), thing.state("meta"), things._sid);
+    console.log("+ thing\n ", thing._tid, thing.thing_id(), thing.state("meta"), things._sid);
 });
 
 let count = 0;

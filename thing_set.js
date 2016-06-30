@@ -147,7 +147,7 @@ const make = function() {
     }));
 
     const _search_match = (matchd, thing) => {
-        const meta = thing.meta();
+        const meta = thing.state("meta");
 
         switch (matchd.query_band) {
         case "meta":

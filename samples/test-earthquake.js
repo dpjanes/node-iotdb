@@ -27,7 +27,7 @@ const iotdb = require("../iotdb")
 iotdb.use("homestar-feed");
 
 const things = iotdb.connect('USGSEarthquake');
-things.on('state', function (thing) {
+things.on('istate', function (thing) {
     console.log("+ istate\n ", thing.thing_id(), "\n ", thing.state("istate"));
 });
 things.on("meta", function (thing) {

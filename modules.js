@@ -33,6 +33,7 @@ const events = require('events');
 const util = require('util');
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -152,9 +153,16 @@ const make = () => {
         // G3
         binding.bandd = {};
         if (_.is.Dictionary(binding.model)) {
-            binding.bandd.model = binding.model;
-        }
+            const model = _.d.clone.shallow(binding.model);
 
+            if (!model["iot:model-id"]) {
+                const model_url = _.d.get(model, "/@context/@base", "");
+                const model_id = path.basename(url.parse(model_url).path).replace(/^.*:/, '');
+                model["iot:model-id"] = model_id
+            }
+
+            binding.bandd.model = model;
+        }
 
         if (!_.is.Model(binding.model)) {
             binding.model = model.make_model_from_jsonld(binding.model);

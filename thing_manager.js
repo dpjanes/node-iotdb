@@ -29,6 +29,7 @@
 const _ = require('./helpers');
 const modules = require("./modules").modules;
 
+const iotdb_thing = require('iotdb-thing');
 const thing_set = require('./thing_set');
 const exit = require('./exit');
 
@@ -41,10 +42,12 @@ const logger = _.logger.make({
 
 const make = function (initd) {
     const self = Object.assign({}, events.EventEmitter.prototype);
+    const iotdb = require("./iotdb");
 
     const _initd = _.defaults(initd, {});
     let _thingd = {};
     let _bridge_exemplars = [];
+    let _tid = 0;
 
     self.setMaxListeners(0);
 
@@ -138,7 +141,7 @@ const make = function (initd) {
     const _discover_model = function (things, modeld) {
         const any = modules().bindings()
             .filter(binding => modeld.model_code === binding.model_code)
-            .map(binding => { console.log("binding"); return binding })
+            // .map(binding => { console.log("binding"); return binding })
             .find(binding => _discover_binding(things, modeld, binding));
 
         if (!any) {
@@ -160,7 +163,7 @@ const make = function (initd) {
         logger.info({
             method: "_discover_binding",
             modeld: modeld,
-            binding: binding,
+            binding: binding ? "YES" : "-",
         }, "called");
 
         // initialize the bridge for self binding
@@ -179,6 +182,113 @@ const make = function (initd) {
         });
 
         return true;
+    };
+
+    const _build_universal_thing_id = thing => {
+        const thing_id = thing.thing_id();
+        const model_id = thing.model_id();
+        const runner_id = iotdb.keystore().get("/homestar/runner/keys/homestar/key", null);
+        // console.log("HERE:MODEL", thing.model_id(), thing.state("model"));
+        // process.exit()
+
+
+        if (runner_id) {
+            return _.id.uuid.iotdb("t", runner_id.replace(/^.*:/, '') + ":" + _.hash.short(thing_id + ":" + model_id));
+        } else {
+            return thing_id + ":" + model_id;
+        }
+    };
+
+    const _bind_thing_bridge = (thing, bridge, binding) => {
+        const thing_id = _build_universal_thing_id(thing);
+
+        const _reachable_changed = is_reachable => {
+            thing.band("connection").set("iot:reachable", is_reachable);
+        };
+
+        const _update_from_mapping = pulld => {
+            const mapping = bridge.binding.mapping;
+            if (!mapping) {
+                return pulld;
+            }
+
+            pulld = _.d.clone.shallow(pulld);
+
+            _.pairs(pulld)
+                .map(pkv => ({
+                    key: pkv[0],
+                    value: pkv[1],
+                    cvalue: _.ld.compact(pkv[1]),
+                    md: mapping[pkv[0]]
+                }))
+                .filter(d => d.md)
+                .forEach(d => {
+                    _.pairs(d.md)
+                        .filter(mkv => (mkv[1] === d.value) || (mkv[1] === d.cvalue))
+                        .forEach(mkv => pulld[d.key] = mkey[0])
+                    });
+
+            return pulld;
+        }
+
+        const _pull_istate = pulld => {
+            pulld = _.timestamp.add(pulld);
+            // pulld = _update_from_mapping(pulld);
+
+            thing.band("istate").update(pulld, {
+                add_timestamp: true,
+                check_timestamp: true,
+                validate: false,
+            });
+        };
+
+        const _pull_meta = pulld => {
+            _reachable_changed(bridge.reachable() ? true : false);
+
+            let metad = bridge.meta();
+            metad["iot:thing-id"] = thing_id;
+
+            thing.band("meta").update(metad, {
+                add_timestamp: true,
+                check_timestamp: false,
+            });
+        };
+
+        bridge.pulled = pulld => {
+            if (pulld) {
+                _pull_istate(pulld);
+            } else {
+                _pull_meta();
+            } 
+        };
+
+        const _on_ostate = ( thing, band, state ) => {
+            if (bridge._thing && bridge._thing !== thing) {
+                thing.removeListener("ostate", _on_ostate);
+            }
+
+            state = _.object(_.pairs(state)
+                .filter(p => p[1] !== null)
+                .filter(p => !p[0].match(/^@/)));
+            if (_.is.Empty(state)) {
+                return;
+            }
+            
+            bridge.push(state, () => {
+                thing.update("ostate", {});
+            });
+        };
+
+        thing.on("ostate", _on_ostate);
+
+        bridge._thing = thing;
+
+        _pull_meta();
+
+        bridge.connect(_.d.compose.shallow(binding.connectd, {}));
+        bridge.pulled();
+
+        return self;
     };
 
     /**
@@ -202,7 +312,7 @@ const make = function (initd) {
         logger.info({
             method: "_discover_binding_bridge",
             modeld: modeld,
-            binding: binding,
+            binding: binding ? "YES" : "-",
             bridge_instance: bridge_instance.meta(),
         }, "called");
 
@@ -219,51 +329,82 @@ const make = function (initd) {
             }
         }
 
-        // keep the binding with the Bridge 
-        bridge_instance.binding = binding;
+        if (1) {
+            // G3
+            const bandd = _.d.clone.deep(binding.bandd);
+            bandd.meta = {};
+            bandd.istate = {};
+            bandd.ostate = {};
+            bandd.connection = {};
 
-        // now make a model 
-        const model_instance = new binding.model();
-        model_instance.bind_bridge(bridge_instance);
+            const new_thing = iotdb_thing.make(bandd);
+            const new_thing_id = _build_universal_thing_id(new_thing);
+            new_thing._tid = _tid++;
 
-        // is already being tracked? is it reachable if it is ?
-        const thing_id = model_instance.thing_id();
-        let thing = _thingd[thing_id];
+            const old_thing = _thingd[new_thing_id];
+            if (!old_thing) {
+                _thingd[new_thing_id] = new_thing;
 
-        if (modeld.meta) {
-            model_instance.update("meta", modeld.meta);
-        }
+                _bind_thing_bridge(new_thing, bridge_instance, binding);
 
-        if (!thing) {
-            // add the new thing
-            thing = model_instance;
-            _thingd[thing_id] = thing;
+                things.add(new_thing);
 
-            // bring it into play
-            var connectd = _.defaults(binding.connectd, {});
-            bridge_instance.connect(connectd)
-
-            // add to the set of things we have built up for self connect
-            things.add(thing);
-
-            // tell the world
-            self.emit("thing", thing);
-        } else if (thing.reachable()) {
-            // don't replace reachable things
-            return;
-        } else if (!bridge_instance.reachable()) {
-            // don't replace with an unreachable thing
-            return;
+                self.emit("thing", new_thing);
+            } else if (new_thing.reachable()) {
+                return; // don't replace reachable things
+            } else if (!bridge_instance.reachable()) {
+                return; // don't replace with an unreachable thing
+            } else {
+                console.log("SHOULD REPLACE AN OLD THING", old_thing.reachable(), new_thing.reachable());
+                _bind_thing_bridge(old_thing, bridge_instance, binding);
+            }
         } else {
-            // replace the bridge for the existing thing 
-            thing.bind_bridge(bridge_instance);
+            // keep the binding with the Bridge 
+            bridge_instance.binding = binding;
 
-            // bring it into play
-            var connectd = _.defaults(binding.connectd, {});
-            bridge_instance.connect(connectd)
+            // now make a model 
+            const model_instance = new binding.model();
+            model_instance.bind_bridge(bridge_instance);
 
-            // self forces a metadata update
-            bridge_instance.pulled();
+            // is already being tracked? is it reachable if it is ?
+            const thing_id = model_instance.thing_id();
+            let thing = _thingd[thing_id];
+
+            if (modeld.meta) {
+                model_instance.update("meta", modeld.meta);
+            }
+
+            if (!thing) {
+                // add the new thing
+                thing = model_instance;
+                _thingd[thing_id] = thing;
+
+                // bring it into play
+                var connectd = _.defaults(binding.connectd, {});
+                bridge_instance.connect(connectd)
+
+                // add to the set of things we have built up for self connect
+                things.add(thing);
+
+                // tell the world
+                self.emit("thing", thing);
+            } else if (thing.reachable()) {
+                // don't replace reachable things
+                return;
+            } else if (!bridge_instance.reachable()) {
+                // don't replace with an unreachable thing
+                return;
+            } else {
+                // replace the bridge for the existing thing 
+                thing.bind_bridge(bridge_instance);
+
+                // bring it into play
+                var connectd = _.defaults(binding.connectd, {});
+                bridge_instance.connect(connectd)
+
+                // self forces a metadata update
+                bridge_instance.pulled();
+            }
         }
     };
 
