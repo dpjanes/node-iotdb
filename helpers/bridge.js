@@ -29,7 +29,7 @@ const util = require('util');
 
 const logger = _.logger.make({
     name: 'iotdb',
-    module: 'bridge_wrapper',
+    module: 'helpers/bridge',
 });
 
 /**

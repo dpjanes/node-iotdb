@@ -1,5 +1,5 @@
 /*
- *  thing_util.js
+ *  helpers/thing.js
  *
  *  David Janes
  *  IOTDB.org
@@ -26,16 +26,10 @@
 
 "use strict";
 
-const _ = require('./helpers');
+const _ = require("iotdb-helpers");
+const iotdb = require('../iotdb');
 
 const iotdb_thing = require('iotdb-thing');
-const iotdb = require('./iotdb');
-
-const logger = _.logger.make({
-    name: 'iotdb',
-    module: 'thing',
-});
-
 
 const universal_thing_id = thing => {
     const thing_id = thing.thing_id();
@@ -183,6 +177,8 @@ const make_thing = bandd => {
 /**
  *  API
  */
-exports.universal_thing_id = universal_thing_id;
-exports.bind_thing_to_bridge = bind_thing_to_bridge;
-exports.make_thing = make_thing;
+exports.thing = {
+    universal_thing_id: universal_thing_id,
+    bind_thing_to_bridge: bind_thing_to_bridge,
+    make_thing: make_thing,
+};

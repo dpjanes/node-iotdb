@@ -43,7 +43,6 @@ const logger = _.logger.make({
 const make = function (initd) {
     const self = Object.assign({}, events.EventEmitter.prototype);
     const iotdb = require("./iotdb");
-    const thing_util = require('./thing_util');
 
     const _initd = _.defaults(initd, {});
     let _thingd = {};
@@ -224,8 +223,8 @@ const make = function (initd) {
         }
 
         // build a thing
-        const new_thing = thing_util.make_thing(binding.bandd); // iotdb_thing.make(bandd);
-        const new_thing_id = thing_util.universal_thing_id(new_thing);
+        const new_thing = _.thing.make_thing(binding.bandd); // iotdb_thing.make(bandd);
+        const new_thing_id = _.thing.universal_thing_id(new_thing);
         new_thing._tid = _tid++;
 
         // see if it still exists
@@ -233,7 +232,7 @@ const make = function (initd) {
         if (!old_thing) {
             _thingd[new_thing_id] = new_thing;
 
-            thing_util.bind_thing_to_bridge(new_thing, bridge_instance, binding);
+            _.thing.bind_thing_to_bridge(new_thing, bridge_instance, binding);
 
             things.add(new_thing);
 
@@ -247,7 +246,7 @@ const make = function (initd) {
                 old_thing.__bridge.__thing = null;
             }
 
-            thing_util.bind_thing_to_bridge(old_thing, bridge_instance, binding);
+            _.thing.bind_thing_to_bridge(old_thing, bridge_instance, binding);
         }
     };
 
