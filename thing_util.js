@@ -1,5 +1,5 @@
 /*
- *  thing.js
+ *  thing_util.js
  *
  *  David Janes
  *  IOTDB.org
