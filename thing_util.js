@@ -29,6 +29,7 @@
 const _ = require('./helpers');
 
 const iotdb_thing = require('iotdb-thing');
+const iotdb = require('./iotdb');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -49,7 +50,7 @@ const universal_thing_id = thing => {
 };
 
 const bind_thing_to_bridge = (thing, bridge, binding) => {
-    const thing_id = _build_universal_thing_id(thing);
+    const thing_id = universal_thing_id(thing);
 
     const _reachable_changed = is_reachable => {
         thing.band("connection").set("iot:reachable", is_reachable);
@@ -169,7 +170,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
 
 const make_thing = bandd => {
-    const bandd = _.d.clone.deep(binding.bandd);
+    bandd = _.d.clone.deep(bandd);
     bandd.model = bandd.model || {};
     bandd.meta = bandd.meta || {};
     bandd.istate = bandd.istate || {};
