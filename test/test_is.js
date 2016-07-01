@@ -11,15 +11,12 @@
 var assert = require("assert")
 var _ = require("../helpers")
 
-var model = require("../model");
 var thing_set = require("../thing_set");
-// var transporter = require("../transporter");
 var bridge = require("../bridge");
 
 /* --- tests --- */
 describe('test_is', function() {
-    var testModel = model.make_model().code('a').make();
-    var testThing = new testModel();
+    var testThing = { _isThing: true }
     var testThingArray0 = thing_set.make();
     var testThingArray1 = thing_set.make();
     testThingArray1.add(testThing);
@@ -28,25 +25,7 @@ describe('test_is', function() {
     var testTransport = function() {};
     testTransport._isTransport = true;
 
-    it('is.Model', function() {
-        assert.ok(_.is.Model(testModel));
-        assert.ok(!_.is.Model(testThing));
-        assert.ok(!_.is.Model(testThingArray0));
-        assert.ok(!_.is.Model(testThingArray1));
-        assert.ok(!_.is.Model(testTransport));
-        assert.ok(!_.is.Model(testBridge));
-
-        assert.ok(!_.is.Model(null));
-        assert.ok(!_.is.Model(undefined));
-        assert.ok(!_.is.Model(0));
-        assert.ok(!_.is.Model(1));
-        assert.ok(!_.is.Model(""));
-        assert.ok(!_.is.Model("string"));
-        assert.ok(!_.is.Model([ "a", ]));
-        assert.ok(!_.is.Model({ "a": "n" }));
-    });
     it('is.Thing', function() {
-        assert.ok(!_.is.Thing(testModel));
         assert.ok(_.is.Thing(testThing));
         assert.ok(!_.is.Thing(testThingArray0));
         assert.ok(!_.is.Thing(testThingArray1));
@@ -63,7 +42,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Thing({ "a": "n" }));
     });
     it('is.ThingArray', function() {
-        assert.ok(!_.is.ThingArray(testModel));
         assert.ok(!_.is.ThingArray(testThing));
         assert.ok(_.is.ThingArray(testThingArray0));
         assert.ok(_.is.ThingArray(testThingArray1));
@@ -80,7 +58,6 @@ describe('test_is', function() {
         assert.ok(!_.is.ThingArray({ "a": "n" }));
     });
     it('is.Transport', function() {
-        assert.ok(!_.is.Transport(testModel));
         assert.ok(!_.is.Transport(testThing));
         assert.ok(!_.is.Transport(testThingArray0));
         assert.ok(!_.is.Transport(testThingArray1));
@@ -97,7 +74,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Transport({ "a": "n" }));
     });
     it('is.Bridge', function() {
-        assert.ok(!_.is.Bridge(testModel));
         assert.ok(!_.is.Bridge(testThing));
         assert.ok(!_.is.Bridge(testThingArray0));
         assert.ok(!_.is.Bridge(testThingArray1));
@@ -114,7 +90,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Bridge({ "a": "n" }));
     });
     it('is.Dictionary', function() {
-        assert.ok(!_.is.Dictionary(testModel));
         assert.ok(!_.is.Dictionary(testThing));
         // assert.ok(!_.is.Dictionary(testThingArray0));
         // assert.ok(!_.is.Dictionary(testThingArray1));
@@ -131,7 +106,6 @@ describe('test_is', function() {
         assert.ok(_.is.Dictionary({ "a": "n" }));
     });
     it('is.Object', function() {
-        assert.ok(_.is.Object(testModel));
         assert.ok(_.is.Object(testThing));
         assert.ok(_.is.Object(testThingArray0));
         assert.ok(_.is.Object(testThingArray1));
@@ -149,7 +123,6 @@ describe('test_is', function() {
         assert.ok(_.is.Object(function() {}));
     });
     it('is.Null', function() {
-        assert.ok(!_.is.Null(testModel));
         assert.ok(!_.is.Null(testThing));
         assert.ok(!_.is.Null(testThingArray0));
         assert.ok(!_.is.Null(testThingArray1));
@@ -167,7 +140,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Null(function() {}));
     });
     it('is.Undefined', function() {
-        assert.ok(!_.is.Undefined(testModel));
         assert.ok(!_.is.Undefined(testThing));
         assert.ok(!_.is.Undefined(testThingArray0));
         assert.ok(!_.is.Undefined(testThingArray1));
@@ -185,7 +157,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Undefined(function() {}));
     });
     it('is.Boolean', function() {
-        assert.ok(!_.is.Boolean(testModel));
         assert.ok(!_.is.Boolean(testThing));
         assert.ok(!_.is.Boolean(testThingArray0));
         assert.ok(!_.is.Boolean(testThingArray1));
@@ -205,7 +176,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Boolean(function() {}));
     });
     it('is.Number', function() {
-        assert.ok(!_.is.Number(testModel));
         assert.ok(!_.is.Number(testThing));
         assert.ok(!_.is.Number(testThingArray0));
         assert.ok(!_.is.Number(testThingArray1));
@@ -227,7 +197,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Number(function() {}));
     });
     it('is.Integer', function() {
-        assert.ok(!_.is.Integer(testModel));
         assert.ok(!_.is.Integer(testThing));
         assert.ok(!_.is.Integer(testThingArray0));
         assert.ok(!_.is.Integer(testThingArray1));
@@ -252,7 +221,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Integer(function() {}));
     });
     it('is.Date', function() {
-        assert.ok(!_.is.Date(testModel));
         assert.ok(!_.is.Date(testThing));
         assert.ok(!_.is.Date(testThingArray0));
         assert.ok(!_.is.Date(testThingArray1));
@@ -277,7 +245,6 @@ describe('test_is', function() {
         assert.ok(!_.is.Date(function() {}));
     });
     it('is.RegExp', function() {
-        assert.ok(!_.is.RegExp(testModel));
         assert.ok(!_.is.RegExp(testThing));
         assert.ok(!_.is.RegExp(testThingArray0));
         assert.ok(!_.is.RegExp(testThingArray1));
@@ -302,7 +269,6 @@ describe('test_is', function() {
         assert.ok(!_.is.RegExp(function() {}));
     });
     it('is.NaN', function() {
-        assert.ok(!_.is.NaN(testModel));
         assert.ok(!_.is.NaN(testThing));
         assert.ok(!_.is.NaN(testThingArray0));
         assert.ok(!_.is.NaN(testThingArray1));
@@ -327,7 +293,6 @@ describe('test_is', function() {
         assert.ok(!_.is.NaN(function() {}));
     });
     it('is.AbsoluteURL', function() {
-        assert.ok(!_.is.AbsoluteURL(testModel));
         assert.ok(!_.is.AbsoluteURL(testThing));
         assert.ok(!_.is.AbsoluteURL(testThingArray0));
         assert.ok(!_.is.AbsoluteURL(testThingArray1));
@@ -361,7 +326,6 @@ describe('test_is', function() {
         assert.ok(_.is.AbsoluteURL("iot:xxx")); // don't love it
     });
     it('is.FindKey', function() {
-        assert.ok(!_.is.FindKey(testModel));
         assert.ok(!_.is.FindKey(testThing));
         // assert.ok(!_.is.FindKey(testThingArray0));
         // assert.ok(!_.is.FindKey(testThingArray1));

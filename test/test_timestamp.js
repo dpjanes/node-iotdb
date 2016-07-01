@@ -10,7 +10,6 @@
 
 var assert = require("assert")
 var sleep = require("sleep");
-var Meta = require("../meta").Meta;
 var _ = require("../helpers")
 
 var TS_OLD = '2010-03-25T21:28:43.613Z';
