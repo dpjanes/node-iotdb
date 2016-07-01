@@ -27,8 +27,6 @@
 
 const _ = require('./helpers');
 
-const model = require('./model');
-
 const events = require('events');
 const util = require('util');
 const fs = require('fs');
@@ -162,25 +160,6 @@ const make = () => {
             }
 
             binding.bandd.model = model;
-        }
-
-        if (!_.is.Model(binding.model)) {
-            binding.model = model.make_model_from_jsonld(binding.model);
-        }
-
-        if (!binding.model_code) {
-            binding.model_code = (new binding.model()).code();
-        } else {
-            /* morph the model's code -- see model_maker */
-            binding.model_code = _.id.to_dash_case(binding.model_code);
-            const old_model = binding.model;
-            const new_model = function() {
-                old_model.call(this);
-                this.__code = binding.model_code;
-            }
-            new_model.prototype = new old_model();
-
-            binding.model = new_model;
         }
 
         return binding;

@@ -356,86 +356,37 @@ const make = function (initd) {
             }
         }
 
-        if (1) {
-            // G3
-            const bandd = _.d.clone.deep(binding.bandd);
-            bandd.meta = {};
-            bandd.istate = {};
-            bandd.ostate = {};
-            bandd.connection = {};
+        // build a thing
+        const bandd = _.d.clone.deep(binding.bandd);
+        bandd.meta = {};
+        bandd.istate = {};
+        bandd.ostate = {};
+        bandd.connection = {};
 
-            const new_thing = iotdb_thing.make(bandd);
-            const new_thing_id = _build_universal_thing_id(new_thing);
-            new_thing._tid = _tid++;
+        const new_thing = iotdb_thing.make(bandd);
+        const new_thing_id = _build_universal_thing_id(new_thing);
+        new_thing._tid = _tid++;
 
-            const old_thing = _thingd[new_thing_id];
-            if (!old_thing) {
-                _thingd[new_thing_id] = new_thing;
+        // see if it still exists
+        const old_thing = _thingd[new_thing_id];
+        if (!old_thing) {
+            _thingd[new_thing_id] = new_thing;
 
-                _bind_thing_bridge(new_thing, bridge_instance, binding);
+            _bind_thing_bridge(new_thing, bridge_instance, binding);
 
-                things.add(new_thing);
+            things.add(new_thing);
 
-                self.emit("thing", new_thing);
-            } else if (new_thing.reachable()) {
-                return; // don't replace reachable things
-            } else if (!bridge_instance.reachable()) {
-                return; // don't replace with an unreachable thing
-            } else {
-                if (old_thing.__bridge) {
-                    old_thing.__bridge.__thing = null;
-                }
-
-                console.log("SHOULD REPLACE AN OLD THING", old_thing.reachable(), new_thing.reachable());
-                _bind_thing_bridge(old_thing, bridge_instance, binding);
-            }
+            self.emit("thing", new_thing);
+        } else if (new_thing.reachable()) {
+            return; // don't replace reachable things
+        } else if (!bridge_instance.reachable()) {
+            return; // don't replace with an unreachable thing
         } else {
-            // keep the binding with the Bridge 
-            bridge_instance.binding = binding;
-
-            // now make a model 
-            const model_instance = new binding.model();
-            model_instance.bind_bridge(bridge_instance);
-
-            // is already being tracked? is it reachable if it is ?
-            const thing_id = model_instance.thing_id();
-            let thing = _thingd[thing_id];
-
-            if (modeld.meta) {
-                model_instance.update("meta", modeld.meta);
+            if (old_thing.__bridge) {
+                old_thing.__bridge.__thing = null;
             }
 
-            if (!thing) {
-                // add the new thing
-                thing = model_instance;
-                _thingd[thing_id] = thing;
-
-                // bring it into play
-                var connectd = _.defaults(binding.connectd, {});
-                bridge_instance.connect(connectd)
-
-                // add to the set of things we have built up for self connect
-                things.add(thing);
-
-                // tell the world
-                self.emit("thing", thing);
-            } else if (thing.reachable()) {
-                // don't replace reachable things
-                return;
-            } else if (!bridge_instance.reachable()) {
-                // don't replace with an unreachable thing
-                return;
-            } else {
-                // replace the bridge for the existing thing 
-                thing.bind_bridge(bridge_instance);
-
-                // bring it into play
-                var connectd = _.defaults(binding.connectd, {});
-                bridge_instance.connect(connectd)
-
-                // self forces a metadata update
-                bridge_instance.pulled();
-            }
+            _bind_thing_bridge(old_thing, bridge_instance, binding);
         }
     };
 

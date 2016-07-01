@@ -60,17 +60,8 @@ const _reset_shim = () => {
 /*
  *  API
  */
-// exports.IOT = IOT;
 exports.shutting_down = exit.shutting_down;
 
-exports.attribute = require('./attribute');
-for (var key in exports.attribute) {
-    exports[key] = exports.attribute[key];
-}
-
-exports.model = require('./model');
-exports.make_model = exports.model.make_model;
-exports.make_model_from_jsonld = exports.model.make_model_from_jsonld;
 exports._ = _;
 exports.logger = _.logger.logger;
 
