@@ -77,7 +77,6 @@ const make = function() {
         _emitter.emit("thing", thing);
         _do_post(thing);
 
-
         _emitter.emit("changed", self);
     };
 
@@ -200,11 +199,11 @@ const make = function() {
 
     const _do_pre = thing => _persistds
         .filter(pd => _is_pre(pd.fname))
-        .forEach(pd => thing[pd.fname].apply(thing, Array.prototype.slice.call(pd.av)));
+        .forEach(pd => thing[pd.fname].apply(thing, pd.av));
 
     const _do_post = thing => _persistds
         .filter(pd => !_is_pre(pd.fname))
-        .forEach(pd => thing[pd.fname].apply(thing, Array.prototype.slice.call(pd.av)));
+        .forEach(pd => thing[pd.fname].apply(thing, pd.av));
 
     const _persist = function (fname, av) {
         if (_is_setter(fname)) {
@@ -217,7 +216,7 @@ const make = function() {
         });
     };
 
-    const _apply = (fname, av) => self.forEach(thing => thing[fname].apply(thing, Array.prototype.slice.call(av)));
+    const _apply = (fname, av) => self.forEach(thing => thing[fname].apply(thing, av));
 
     const _apply_persist = (fname, av) => {
         _apply(fname, av);

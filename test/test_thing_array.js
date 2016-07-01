@@ -129,6 +129,7 @@ describe("test_thing_set", function() {
                 ts.pull();
             });
         });
+        /*
         it("with one thing", function(done) {
             _make_thing(function(ts) {
                 var thing = ts.any()
@@ -140,6 +141,7 @@ describe("test_thing_set", function() {
                 ts.pull();
             });
         });
+        */
     });
     describe("disconnect", function() {
         it("with no things", function() {

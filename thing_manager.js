@@ -246,25 +246,20 @@ const make = function (initd) {
             _reachable_changed(bridge.reachable() ? true : false);
 
             let metad = bridge.meta();
-            metad["iot:thing-id"] = thing_id;
+            if (metad) {
+                metad["iot:thing-id"] = thing_id;
 
-            thing.band("meta").update(metad, {
-                add_timestamp: true,
-                check_timestamp: false,
-            });
+                thing.band("meta").update(metad, {
+                    add_timestamp: true,
+                    check_timestamp: false,
+                });
+            }
         };
 
-        bridge.pulled = pulld => {
-            if (pulld) {
-                _pull_istate(pulld);
-            } else {
-                _pull_meta();
-            } 
-        };
-
-        const _on_ostate = ( thing, band, state ) => {
-            if (bridge._thing && bridge._thing !== thing) {
+        const _on_ostate = ( _t, _b, state ) => {
+            if (!bridge.__thing) {
                 thing.removeListener("ostate", _on_ostate);
+                return;
             }
 
             state = _.object(_.pairs(state)
@@ -279,16 +274,48 @@ const make = function (initd) {
             });
         };
 
+        const _on_disconnect = () => {
+            thing.removeListener("ostate", _on_ostate);
+            thing.removeListener("disconnect", _on_disconnect);
+            thing.reachable = () => false;
+
+            if (thing.__bridge === thing) {
+                thing.__bridge = null;
+            }
+            bridge.__thing = null;
+
+            bridge.disconnect();
+        }
+
+        const _model_to_meta = () => {
+            const iot_keys = [ "iot:facet", "iot:help", "iot:model-id" ];
+
+            const metad = _.object(_.pairs(thing.state("model"))
+                .filter(kv => iot_keys.indexOf(kv[0]) > -1 || kv[0].match(/^schema:/)))
+
+            thing.band("meta").update(metad);
+        }
+
+        // --- main code
+        bridge.__thing = thing;
+        thing.__bridge = bridge;
+
+        bridge.pulled = pulld => {
+            if (pulld) {
+                _pull_istate(pulld);
+            } else {
+                _pull_meta();
+            } 
+        };
+
+        thing.on("disconnect", _on_disconnect);
         thing.on("ostate", _on_ostate);
 
-        bridge._thing = thing;
-
+        _model_to_meta();
         _pull_meta();
 
         bridge.connect(_.d.compose.shallow(binding.connectd, {}));
-        bridge.pulled();
-
-        return self;
+        bridge.pull();
     };
 
     /**
@@ -355,6 +382,10 @@ const make = function (initd) {
             } else if (!bridge_instance.reachable()) {
                 return; // don't replace with an unreachable thing
             } else {
+                if (old_thing.__bridge) {
+                    old_thing.__bridge.__thing = null;
+                }
+
                 console.log("SHOULD REPLACE AN OLD THING", old_thing.reachable(), new_thing.reachable());
                 _bind_thing_bridge(old_thing, bridge_instance, binding);
             }
