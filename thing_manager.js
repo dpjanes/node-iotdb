@@ -88,20 +88,20 @@ const make = function (initd) {
             modeld = {};
         } else if (_.is.String(modeld)) {
             modeld = {
-                model_code: _.id.to_dash_case(modeld)
+                model_id: _.id.to_dash_case(modeld)
             };
         } else if (_.is.Object(modeld)) {
             /* XXX self needs to be rationalized */
             if (modeld.model) {
-                modeld.model_code = modeld.model;
+                modeld.model_id = modeld.model;
             }
 
-            if (!_.is.String(modeld.model_code)) {
-                throw new Error("expected *.model_code to be a string");
+            if (!_.is.String(modeld.model_id)) {
+                throw new Error("expected *.model_id to be a string");
             }
 
             modeld = _.d.clone.deep(modeld);
-            modeld.model_code = _.id.to_dash_case(modeld.model_code);
+            modeld.model_id = _.id.to_dash_case(modeld.model_id);
         } else {
             throw new Error("expected undefined|null|string|dictionary");
         }
@@ -128,7 +128,7 @@ const make = function (initd) {
         });
 
         process.nextTick(function () {
-            if (modeld.model_code) {
+            if (modeld.model_id) {
                 _discover_model(things, modeld);
             } else {
                 _discover_all(things, modeld);
@@ -140,9 +140,9 @@ const make = function (initd) {
 
     const _discover_model = function (things, modeld) {
         const any = modules().bindings()
-            // .map(binding => { console.log("binding", binding, "want", modeld.model_code); return binding })
-            .filter(binding => modeld.model_code === binding.model_code)
-            // .map(binding => { console.log("BINDING", binding.model_code); return binding })
+            // .map(binding => { console.log("binding", binding, "want", modeld.model_id); return binding })
+            .filter(binding => modeld.model_id === binding.model_id)
+            // .map(binding => { console.log("BINDING", binding.model_id); return binding })
             .find(binding => _discover_binding(things, modeld, binding));
 
         if (!any) {
