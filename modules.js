@@ -160,6 +160,7 @@ const make = () => {
             }
 
             binding.bandd.model = model;
+            binding.model_code = model["iot:model-id"];
         }
 
         return binding;

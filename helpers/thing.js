@@ -27,11 +27,10 @@
 "use strict";
 
 const _ = require("iotdb-helpers");
-const iotdb = require('../iotdb');
 
-const iotdb_thing = require('iotdb-thing');
 
 const universal_thing_id = thing => {
+    const iotdb = require('../iotdb');
     const thing_id = thing.thing_id();
     const model_id = thing.model_id();
     const runner_id = iotdb.keystore().get("/homestar/runner/keys/homestar/key", null);
@@ -164,6 +163,8 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
 
 const make_thing = bandd => {
+    const iotdb_thing = require('iotdb-thing');
+
     bandd = _.d.clone.deep(bandd);
     bandd.model = bandd.model || {};
     bandd.meta = bandd.meta || {};

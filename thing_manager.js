@@ -140,13 +140,14 @@ const make = function (initd) {
 
     const _discover_model = function (things, modeld) {
         const any = modules().bindings()
+            // .map(binding => { console.log("binding", binding, "want", modeld.model_code); return binding })
             .filter(binding => modeld.model_code === binding.model_code)
-            // .map(binding => { console.log("binding"); return binding })
+            // .map(binding => { console.log("BINDING", binding.model_code); return binding })
             .find(binding => _discover_binding(things, modeld, binding));
 
         if (!any) {
             logger.error({
-                method: "_discover",
+                method: "_discover_model",
                 modeld: modeld,
                 cause: "maybe Model or it's binding are not added to IOTDB yet?",
             }, "did not find any matching Models");
