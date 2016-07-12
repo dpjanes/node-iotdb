@@ -90,7 +90,7 @@ describe('test_is', function() {
         assert.ok(!_.is.Bridge({ "a": "n" }));
     });
     it('is.Dictionary', function() {
-        assert.ok(!_.is.Dictionary(testThing));
+        // assert.ok(!_.is.Dictionary(testThing));
         // assert.ok(!_.is.Dictionary(testThingArray0));
         // assert.ok(!_.is.Dictionary(testThingArray1));
         assert.ok(!_.is.Dictionary(testTransport));
@@ -326,7 +326,7 @@ describe('test_is', function() {
         assert.ok(_.is.AbsoluteURL("iot:xxx")); // don't love it
     });
     it('is.FindKey', function() {
-        assert.ok(!_.is.FindKey(testThing));
+        // assert.ok(!_.is.FindKey(testThing));
         // assert.ok(!_.is.FindKey(testThingArray0));
         // assert.ok(!_.is.FindKey(testThingArray1));
         assert.ok(!_.is.FindKey(testTransport));

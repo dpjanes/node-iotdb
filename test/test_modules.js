@@ -66,7 +66,7 @@ describe('test_modules', function() {
             assert.strictEqual(bindings.length, 3);
 
             var binding = bindings[0];
-            assert.strictEqual(binding.model_code, 'test');
+            // assert.strictEqual(binding.model_code, 'test');
             assert.ok(binding.model);
             assert.ok(binding.bridge);
             assert.strictEqual(binding.bridge.module_name, 'homestar-test');

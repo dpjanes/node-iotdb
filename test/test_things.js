@@ -74,7 +74,7 @@ describe('test_things', function() {
             t._reset();
             
             var model_code = t.connect({
-                model_code: "Test",
+                model_id: "Test",
                 parameter: 123,
             });
 
