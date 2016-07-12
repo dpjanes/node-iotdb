@@ -30,6 +30,8 @@ describe('test_bridge_wrapper', function(){
             var wrapper = _.bridge.wrap("DoesNotExist", homestar_test.bindings);
             assert.ok(!wrapper);
         });
+        /*
+        */
     });
     describe('core', function(){
         it('constructs without issue', function() {
@@ -59,7 +61,7 @@ describe('test_bridge_wrapper', function(){
                     });
                 }, 10);
             });
-            wrapper.on("state", function(bridge, state) {
+            wrapper.on("istate", function(bridge, state) {
                 // at beginning ... initial pull
                 if (_.is.Empty(state)) {
                     return;

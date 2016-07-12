@@ -41,20 +41,16 @@ const logger = _.logger.make({
  *  but sometimes this is helpful, especially if
  *  you just want to use the moduels stand-alone
  */
-const BridgeWrapper = function (binding, initd) {
-    var self = this;
-    events.EventEmitter.call(self);
+const make = (binding, initd) => {
+    const self = Object.assign({}, events.EventEmitter.prototype);
 
-    initd = _.defaults(initd, binding.initd, {});
-    var connectd = _.defaults(binding.connectd, {});
+    const bridge_exemplar = new binding.bridge(_.defaults(initd, binding.initd, {}));
 
-    var bridge_exemplar = new binding.bridge(initd);
-
-    bridge_exemplar.discovered = function (bridge_instance) {
-        /* bindings can ignore certatin discoveries */
+    bridge_exemplar.discovered = (bridge_instance) => {
         if (binding && binding.matchd) {
-            var bridge_meta = _.ld.compact(bridge_instance.meta());
-            var binding_meta = _.ld.compact(binding.matchd);
+            const bridge_meta = _.ld.compact(bridge_instance.meta());
+            const binding_meta = _.ld.compact(binding.matchd);
+
             if (!_.d.is.superset(bridge_meta, binding_meta)) {
                 if (bridge_exemplar.ignore) {
                     bridge_exemplar.ignore(bridge_instance);
@@ -65,28 +61,23 @@ const BridgeWrapper = function (binding, initd) {
             }
         }
 
-        /* to bring along data stored here */
+        // to bring along data stored here - horrible side effect, revisit
         bridge_instance.binding = binding;
 
-        /* now make a model */
-        var model_class = binding.model;
-        if (!_.is.Model(model_class)) {
-            model_class = require('../model').make_model_from_jsonld(model_class);
-        }
+        const thing = _.thing.make_thing({
+            model: binding.model,
+        });
+        _.thing.bind_thing_to_bridge(thing, bridge_instance, binding);
 
-        var model_instance = new model_class();
-        model_instance.bind_bridge(bridge_instance);
+        self.emit("thing", thing);
 
-        self.emit("thing", model_instance);
+        // deal with pulls
+        const model_pulled = bridge_instance.pulled;
+        bridge_instance.pulled = function (pulld) {
+            model_pulled(pulld);
 
-        /* OK: here's dealing with pulls */
-        var model_pulled = bridge_instance.pulled;
-        bridge_instance.pulled = function (stated) {
-            /* this will go to the Model */
-            model_pulled(stated);
-
-            if (stated) {
-                self.emit("state", bridge_instance, stated);
+            if (pulld) {
+                self.emit("istate", bridge_instance, pulld);
             } else if (bridge_instance.reachable()) {
                 self.emit("meta", bridge_instance);
             } else {
@@ -95,56 +86,31 @@ const BridgeWrapper = function (binding, initd) {
             }
         };
 
-        /* the last thing we do before announcing discovery is connect it */
-        bridge_instance.connect(connectd)
+        // connect and announce
+        bridge_instance.connect(_.defaults(binding.connectd, {}));
 
         self.emit("bridge", bridge_instance);
     };
 
-    process.nextTick(function () {
-        bridge_exemplar.discover();
-    });
-};
+    process.nextTick(() => bridge_exemplar.discover());
 
-util.inherits(BridgeWrapper, events.EventEmitter);
-
-/**
- *  Explicitly given a binding, make a Bridge Wrapper
- */
-const bridge_wrapper = function (binding, initd) {
-    return new BridgeWrapper(binding, initd);
+    return self;
 };
 
 /**
- *  Finds a Model by name in a list of bindings,
- *  then wraps it
+ *  Finds a Model by model_id in a list of bindings, then wraps it
  */
-const make_wrap = function (name, bindings, initd) {
-    var model_code = _.id.to_dash_case(name);
-    for (var bi in bindings) {
-        var binding = bindings[bi];
-        if (!binding.model) {
-            continue
-        }
-
-        var model_class = binding.model;
-        if (!_.is.Model(model_class)) {
-            model_class = require('../model').make_model_from_jsonld(model_class);
-        }
-
-        var model_instance = new model_class();
-        if (model_code !== model_instance.code()) {
-            continue;
-        }
-
-        return bridge_wrapper(binding, initd);
-    }
-};
+const wrap = (model_id, bindings, initd) => bindings
+    .filter(binding => binding.model)
+    .filter(binding => binding.bridge)
+    .filter(binding => _.ld.first(binding.model, "iot:model-id") === _.id.to_dash_case(model_id))
+    .map(binding => make(binding, initd))
+    .find(wrapper => true);
 
 /**
  *  API
  */
 exports.bridge = {
-    make: bridge_wrapper,
-    wrap: make_wrap,
+    make: make,
+    wrap: wrap,
 };

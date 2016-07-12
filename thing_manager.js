@@ -91,7 +91,7 @@ const make = function (initd) {
                 model_id: _.id.to_dash_case(modeld)
             };
         } else if (_.is.Object(modeld)) {
-            /* XXX self needs to be rationalized */
+            // XXX this needs to be rationalized 
             if (modeld.model) {
                 modeld.model_id = modeld.model;
             }

@@ -18,6 +18,7 @@
   "@type": "iot:Model",
   "schema:name": "Test",
   "schema:description": "Test",
+  "iot:model-id": "test",
   "iot:attribute": [
     {
       "@type": "iot:Attribute",
