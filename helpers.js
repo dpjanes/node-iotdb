@@ -27,7 +27,6 @@
 const _ = require("iotdb-helpers");
 
 const local_modules = [
-    require('./helpers/cfg'),
     require('./helpers/is'),
     require('./helpers/version'),
     require('./helpers/bridge'),
@@ -38,9 +37,5 @@ local_modules.map(local_module => {
         _[local_name] = _.d.compose.shallow(local_value, _[local_name]);
     });
 });
-
-_.noop = () => {};
-_.make_done = (done) => (value) => done(null, value);
-_.make_error = (done) => (error) => done(error);
 
 module.exports = _;

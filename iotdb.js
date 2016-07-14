@@ -114,13 +114,6 @@ _.id.thing_urn.set({
     machine_id: controller_machine,
 });
 
-//  Really HomeStar related, makes debugging easier
-const homestar = require('./homestar');
-
-exports.load_recipes = homestar.load_recipes;
-exports.recipe = homestar.recipe;
-exports.cookbook = homestar.cookbook;
-
 // users
 exports.users = require('./users');
 

@@ -85,7 +85,7 @@ describe('test_things', function() {
             t._reset();
             
             var model_code = t.connect({
-                model: "Test",
+                model_id: "Test",
                 parameter: 123,
             });
 
@@ -96,7 +96,7 @@ describe('test_things', function() {
             t._reset();
             
             var model_code = t.connect({
-                model: "Test",
+                model_id: "Test",
             }, {
                 parameter: 123,
             }, {
@@ -121,7 +121,7 @@ describe('test_things', function() {
                 
                 assert.throws(function() {
                     var model_code = t.connect({
-                        model: 123,
+                        model_id: 123,
                     });
                 }, Error);
             });
@@ -131,7 +131,7 @@ describe('test_things', function() {
                 
                 assert.throws(function() {
                     var model_code = t.connect({
-                        model: "ModelCode",
+                        model_id: "ModelCode",
                     }, 1234);
                 }, Error);
             });
@@ -141,7 +141,7 @@ describe('test_things', function() {
                 
                 assert.throws(function() {
                     var model_code = t.connect({
-                        model: "ModelCode",
+                        model_id: "ModelCode",
                     }, {}, 1234);
                 }, Error);
             });
@@ -153,7 +153,7 @@ describe('test_things', function() {
                 t._reset();
                 
                 var model_code = t.discover({
-                    model: "Test",
+                    model_id: "Test",
                     bridge: "test-bridge",
                 });
             });
@@ -170,7 +170,7 @@ describe('test_things', function() {
                 t._reset();
                 
                 var ts = t.connect({
-                    model: "Test",
+                    model_id: "Test",
                 });
 
                 ts.on("thing", function() {

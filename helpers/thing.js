@@ -28,7 +28,6 @@
 
 const _ = require("iotdb-helpers");
 
-
 const universal_thing_id = thing => {
     const iotdb = require('../iotdb');
     const thing_id = thing.thing_id();

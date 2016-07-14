@@ -39,59 +39,42 @@ const logger = _.logger.make({
 });
 
 let _shutting_down = false;
+let _process = process;
 
-const _exit_cleanup = function (paramd, err) {
-    _shutting_down = true;
+const setup = manager => {
+    const _shutdown = () => {
+        _shutting_down = true;
 
-    if (!((err === 0) && (paramd.from === "exit"))) {
-        logger.info({
-            method: "_exit_cleanup",
-            from: paramd.from,
-            err: err
-        }, "start");
-    }
+        const time_wait = manager.disconnect();
 
-    var time_wait = 0;
-    if (paramd.cleanup && paramd.manager) {
-        time_wait = paramd.manager.disconnect();
-    }
-
-    if (paramd.exit) {
         if (time_wait === 0) {
-            console.log("### calling process.exit(0) - good-bye!");
-            process.exit(0);
+            console.log("### calling _process.exit(0) - good-bye!");
+            _process.exit(0);
         } else {
             logger.info({
                 method: "_exit_cleanup",
                 exiting_in: time_wait / 1000.0
             }, "delaying exit");
-            setTimeout(process.exit, time_wait);
+
+            setTimeout(() => _process.exit(0), time_wait);
         }
-    }
-};
+    };
 
-const setup_exit = function (manager) {
-    process.on('exit', function (error) {
-        _exit_cleanup({
-            manager: manager,
-            from: 'exit'
-        }, error);
-    });
-    process.on('SIGINT', function (error) {
-        _exit_cleanup({
-            manager: manager,
-            from: 'SIGINT',
-            exit: true,
-            cleanup: true
-        }, error);
-    });
+    _process.on('SIGINT', _shutdown);
 };
-
 
 /**
  *  API
  */
-exports.setup = setup_exit;
+exports.setup = setup;
 exports.shutting_down = function () {
     return _shutting_down;
 };
+
+exports.shims = {
+    setProcess: f => {
+        _process = f;
+        _shutting_down = false;
+    },
+    getProcess: () => _process,
+}

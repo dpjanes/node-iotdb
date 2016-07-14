@@ -27,11 +27,8 @@
 
 const _ = require('./helpers');
 
+const assert = require('assert');
 const events = require('events');
-const util = require('util');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -47,7 +44,6 @@ const make = () => {
 
     const _moduled = {}
     let _bridges = [];
-    let _bindings;
 
     /**
      *  Return all the Modules that have been registered
@@ -140,45 +136,26 @@ const make = () => {
     };
 
     const _setup_binding = binding => {
-        if (!binding) {
-            return;
-        } else if (!binding.bridge) {
-            return;
-        } else if (!binding.model) {
-            return;
-        }
-
-        // G3
-        binding.bandd = {};
-        if (_.is.Dictionary(binding.model)) {
-            const model = _.d.clone.shallow(binding.model);
-
-            if (!model["iot:model-id"]) {
-                const model_url = _.d.get(model, "/@context/@base", "");
-                const model_id = path.basename(url.parse(model_url).path).replace(/^.*:/, '');
-                model["iot:model-id"] = model_id
-            }
-
-            binding.bandd.model = model;
-            binding.model_id = model["iot:model-id"];
-        }
+        binding = _.d.clone.deep(binding);
+        binding.bandd = {
+            model: binding.model
+        };
+        binding.model_id = binding.model["iot:model-id"];
+        assert(binding.model_id, "models must have 'iot:model-id'");
 
         return binding;
     }
 
-    const _setup_bindings = () => {
-        if (!_bindings) {
-            _bindings = _.flatten(_.values(_moduled)
+    self.bindings = () => 
+        _.flatten(
+            _.values(_moduled)
                 .filter(module => module.bindings)
                 .map(module => module.bindings)
-                .map(bindings => bindings.map(_setup_binding)), true)
-                .filter(binding => binding);
-        }
-
-        return _bindings;
-    };
-
-    self.bindings = () => _setup_bindings()
+                .map(bindings => bindings
+                        .filter(binding => binding.bridge)
+                        .filter(binding => binding.model)
+                        .map(_setup_binding)
+                ), true)
         .filter(binding => binding.bridge)
         .filter(binding => iotdb.keystore().get("/enabled/modules/" + binding.bridge.module_name, true));
 

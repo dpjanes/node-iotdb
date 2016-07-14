@@ -34,7 +34,7 @@ const logger = _.logger.make({
 let sid = 0;
 
 const make = function() {
-    const self = Object.assign({}, events.EventEmitter.prototype);
+    const self = Object.assign({}, events.EventEmitter.prototype);  // XXX remove Emitter?
 
     // events
     const _emitter = new events.EventEmitter();
