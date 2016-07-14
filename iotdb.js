@@ -75,9 +75,7 @@ exports.Keystore = keystore.Keystore;
 const modules = require('./modules');
 exports.modules = modules.modules;
 exports.Modules = modules.Modules;
-exports.use = function(module_name, module) {
-    modules.modules().use(module_name, module);
-};
+exports.use = (module_name, module) => modules.modules().use(module_name, module);
 
 /**
  *  Metadata related to this controller & session
@@ -85,10 +83,10 @@ exports.use = function(module_name, module) {
 const iot_controller_machine = _.ld.expand('iot:runner.id');
 const iot_controller_session = _.ld.expand('iot:runner.timestamp');
 
-var controller_machine;
+let controller_machine;
 const controller_session = _.timestamp.make();
 
-var machine_id;
+let machine_id;
 (function() {
     const keystore = exports.keystore();
 

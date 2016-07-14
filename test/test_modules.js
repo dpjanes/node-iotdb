@@ -19,6 +19,10 @@ var keystore = require("../keystore");
 require('./instrument/iotdb');
 
 describe('test_modules', function() {
+    after('', function() {
+        modules.shims.reset();
+    });
+
     describe('constructor', function() {
         it('global', function() {
             var m = modules.modules();
@@ -111,6 +115,73 @@ describe('test_modules', function() {
             var m = modules.modules();
             var bridge = m.bridge("test-bridge");
             assert.ok(!bridge);
+        });
+    });
+    describe('use', function() {
+        beforeEach('before', function() {
+            modules.shims.require(name => require("./instrument/" + name));
+        });
+        afterEach('after', function() {
+            modules.shims.require(require);
+        });
+        it('one good argument', function() {
+            modules.shims.reset();
+            var m = modules.modules();
+            m.use("homestar-test");
+        });
+        it('one bad argument', function() {
+            var m = modules.modules();
+            assert.throws(() => {
+                m.use("homestar-test-xxx")
+            }, Error);
+        });
+        it('two good argument', function() {
+            var m = modules.modules();
+            m.use("test", require("./instrument/homestar-test"));
+        });
+        it('second argument does not exist', function() {
+            var m = modules.modules();
+            assert.throws(() => {
+                m.use("test", require("./instrument/homestar-test-xxx"));
+            }, Error);
+        });
+        it('second argument is string', function() {
+            var m = modules.modules();
+            assert.throws(() => {
+                m.use("test", "./instrument/homestar-test-xxx");
+            }, Error);
+        });
+        it('module is called', function() {
+            const m = modules.modules();
+            let _use = false;
+            let _setup = false;
+
+            m.use("test", {
+                use: () => _use = true,
+                setup: () => _setup = true,
+            });
+
+            assert.ok(_use);
+            assert.ok(_setup);
+        });
+        it('module is registered', function() {
+            modules.shims.reset();
+            const m = modules.modules();
+            assert.ok(!m.module("test"));
+            m.use("test", {});
+            assert.ok(m.module("test"));
+        });
+        it('iotdb version', function() {
+            let _use = false;
+            let _setup = false;
+
+            iotdb.use("test", {
+                use: () => _use = true,
+                setup: () => _setup = true,
+            });
+
+            assert.ok(_use);
+            assert.ok(_setup);
         });
     });
 });

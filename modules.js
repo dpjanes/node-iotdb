@@ -35,6 +35,8 @@ const logger = _.logger.make({
     module: 'modules',
 });
 
+let _require = require;
+
 const make = () => {
     const self = Object.assign({}, events.EventEmitter.prototype);
     const iotdb = require("./iotdb");
@@ -58,8 +60,11 @@ const make = () => {
      */
     self.use = function (module_name, module) {
         if (!module) {
-            module = require(module_name);
+            module = _require(module_name);
         }
+
+        assert(_.is.String(module_name), "first argument must be a string");
+        assert(_.is.Object(module), "second argument must an object or inferred, got: " + typeof module);
 
         _moduled[module_name] = module
         _load_bridges();
@@ -186,3 +191,7 @@ const modules = () => {
  *  API
  */
 exports.modules = modules;
+exports.shims = {
+    reset: () => _modules = null,
+    require: r => _require = r,
+};
