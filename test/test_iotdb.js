@@ -18,7 +18,10 @@ require('./instrument/iotdb');
 describe('test_iotdb', function() {
     describe('constructor', function() {
         it('global', function() {
-            var iot = iotdb.iot()
+            assert.ok(iotdb.iot());
+        });
+        it('global returns same object', function() {
+            assert.strictEqual(iotdb.iot(), iotdb.iot());
         });
     });
 });

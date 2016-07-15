@@ -34,10 +34,10 @@ const _ = require('./helpers');
 /**
  *  Singleton
  */
-let _instance = null;
+let _instance;
 
 const iot = () => {
-    if (_instance === null) {
+    if (!_instance) {
         _instance = thing_manager.make();
         exit.setup(_instance);
     }

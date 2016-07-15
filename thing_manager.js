@@ -223,6 +223,7 @@ const make = function (initd) {
         const new_thing_id = _.thing.universal_thing_id(new_thing);
         new_thing._tid = _tid++;
 
+        
         // see if it still exists
         const old_thing = _thingd[new_thing_id];
         if (!old_thing) {
