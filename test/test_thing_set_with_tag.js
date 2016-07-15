@@ -34,6 +34,7 @@ var _make_thing = function(callback) {
 };
 
 describe('test_thing_set', function() {
+    /*
     describe('with', function(done) {
         describe('with_tag', function(done) {
             it('matching', function(done) {
@@ -80,4 +81,5 @@ describe('test_thing_set', function() {
             });
         });
     });
+    */
 });
