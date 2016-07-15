@@ -134,9 +134,7 @@ const make = function() {
     // -- internals
     const _search_parse = queryd => _.values(_.mapObject(queryd, ( query_value, query_key ) => {
         const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
-        if (!match) {
-            throw new Error("bad search: key=" + query_key);
-        }
+        assert(match, "bad search: key=" + query_key);
 
         return {
             query_band: match[1],
@@ -155,6 +153,8 @@ const make = function() {
 
             const thing_state = thing.state(matchd.query_band);
             const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
+
+            console.log(matchd.query_values, thing_values);
 
             return _.intersection(matchd.query_values, thing_values).length > 0;
 

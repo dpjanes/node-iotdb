@@ -28,10 +28,8 @@
 
 const _ = require("iotdb-helpers");
 
-const universal_thing_id = thing => {
+const _universal_thing_id = ( thing_id, model_id ) => {
     const iotdb = require('../iotdb');
-    const thing_id = thing.thing_id();
-    const model_id = thing.model_id();
     const runner_id = iotdb.keystore().get("/homestar/runner/keys/homestar/key", null);
 
     if (runner_id) {
@@ -41,9 +39,11 @@ const universal_thing_id = thing => {
     }
 };
 
-const bind_thing_to_bridge = (thing, bridge, binding) => {
-    const thing_id = universal_thing_id(thing);
+const universal_thing_id = thing => {
+    return _universal_thing_id(thing.thing_id(), thing.model_id());
+};
 
+const bind_thing_to_bridge = (thing, bridge, binding) => {
     const _reachable_changed = is_reachable => {
         thing.band("connection").set("iot:reachable", is_reachable);
     };
@@ -75,7 +75,6 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
     const _pull_istate = pulld => {
         pulld = _.timestamp.add(pulld);
-        // pulld = _update_from_mapping(pulld);
 
         thing.band("istate").update(pulld, {
             add_timestamp: true,
@@ -84,18 +83,17 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         });
     };
 
-    const _pull_meta = pulld => {
+    const _bridge_to_meta = pulld => {
         _reachable_changed(bridge.reachable() ? true : false);
 
-        let metad = bridge.meta();
-        if (metad) {
-            metad["iot:thing-id"] = thing_id;
+        const metad = bridge.meta();
 
-            thing.band("meta").update(metad, {
-                add_timestamp: true,
-                check_timestamp: false,
-            });
-        }
+        metad["iot:thing-id"] = _universal_thing_id(metad["iot:thing-id"], thing.model_id());
+
+        thing.band("meta").update(metad, {
+            add_timestamp: true,
+            check_timestamp: false,
+        });
     };
 
     const _on_ostate = ( _t, _b, state ) => {
@@ -146,7 +144,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         if (pulld) {
             _pull_istate(pulld);
         } else {
-            _pull_meta();
+            _reachable_changed(bridge.reachable() ? true : false);
         } 
     };
 
@@ -154,7 +152,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     thing.on("ostate", _on_ostate);
 
     _model_to_meta();
-    _pull_meta();
+    _bridge_to_meta();
 
     bridge.connect(_.d.compose.shallow(binding.connectd, {}));
     bridge.pull();
@@ -178,7 +176,7 @@ const make_thing = bandd => {
  *  API
  */
 exports.thing = {
-    universal_thing_id: universal_thing_id,
     bind_thing_to_bridge: bind_thing_to_bridge,
+    universal_thing_id: universal_thing_id,
     make_thing: make_thing,
 };

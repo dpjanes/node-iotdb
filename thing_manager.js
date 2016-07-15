@@ -33,6 +33,7 @@ const iotdb_thing = require('iotdb-thing');
 const thing_set = require('./thing_set');
 const exit = require('./exit');
 
+const assert = require("assert");
 const events = require('events');
 
 const logger = _.logger.make({
@@ -91,31 +92,22 @@ const make = function (initd) {
                 model_id: _.id.to_dash_case(modeld)
             };
         } else if (_.is.Object(modeld)) {
-            if (!_.is.String(modeld.model_id)) {
-                throw new Error("expected *.model_id to be a string");
-            }
+            assert(_.is.String(modeld.model_id), "expected *.model_id to be a string");
 
             modeld = _.d.clone.deep(modeld);
             modeld.model_id = _.id.to_dash_case(modeld.model_id);
         } else {
-            throw new Error("expected undefined|null|string|dictionary");
+            assert(false, "expected undefined|null|string|dictionary");
         }
 
         if (initd !== undefined) {
-            if (!_.is.Object(initd)) {
-                throw new Error("expected initd to be a Dictionary");
-            }
+            assert(_.is.Object(initd), "expected initd to be a Dictionary");
 
             modeld = _.defaults(modeld, initd);
         }
 
-        if (metad !== undefined) {
-            if (!_.is.Object(metad)) {
-                throw new Error("expected metad to be a Dictionary");
-            }
-
-            modeld["meta"] = metad;
-        }
+        metad = metad || {};
+        assert(_.is.Object(metad), "expected initd to be a Dictionary");
 
         const things = thing_set.make({
             persist: true,
@@ -124,21 +116,21 @@ const make = function (initd) {
 
         process.nextTick(function () {
             if (modeld.model_id) {
-                _discover_model(things, modeld);
+                _discover_model(things, modeld, metad);
             } else {
-                _discover_all(things, modeld);
+                _discover_all(things, modeld, metad);
             }
         });
 
         return things; 
     };
 
-    const _discover_model = function (things, modeld) {
+    const _discover_model = function (things, modeld, metad) {
         const any = modules().bindings()
             // .map(binding => { console.log("binding", binding, "want", modeld.model_id); return binding })
             .filter(binding => modeld.model_id === binding.model_id)
             // .map(binding => { console.log("BINDING", binding.model_id); return binding })
-            .find(binding => _discover_binding(things, modeld, binding));
+            .find(binding => _discover_binding(things, modeld, metad, binding));
 
         if (!any) {
             logger.error({
@@ -149,13 +141,13 @@ const make = function (initd) {
         }
     };
 
-    const _discover_all = function (things, modeld) {
+    const _discover_all = function (things, modeld, metad) {
         modules().bindings()
             .filter(binding => binding.discover !== false)
-            .map(binding => _discover_binding(things, modeld, binding));
+            .map(binding => _discover_binding(things, modeld, metad, binding));
     };
 
-    const _discover_binding = function (things, modeld, binding) {
+    const _discover_binding = function (things, modeld, metad, binding) {
         logger.info({
             method: "_discover_binding",
             modeld: modeld,
@@ -169,7 +161,7 @@ const make = function (initd) {
         _bridge_exemplars.push(bridge_exemplar);
 
         bridge_exemplar.discovered = function (bridge_instance) {
-            _discover_binding_bridge(things, modeld, binding, bridge_exemplar, bridge_instance);
+            _discover_binding_bridge(things, modeld, metad, binding, bridge_exemplar, bridge_instance);
         };
 
         // and kick off the discovery … later
@@ -193,7 +185,7 @@ const make = function (initd) {
      *      - see if exiting one is reachable?
      *      - if it isn't, replace the bridge with self one
      */
-    const _discover_binding_bridge = function (things, modeld, binding, bridge_exemplar, bridge_instance) {
+    const _discover_binding_bridge = function (things, modeld, metad, binding, bridge_exemplar, bridge_instance) {
         if (exit.shutting_down()) {
             return;
         }
@@ -222,7 +214,6 @@ const make = function (initd) {
         const new_thing = _.thing.make_thing(binding.bandd); // iotdb_thing.make(bandd);
         const new_thing_id = _.thing.universal_thing_id(new_thing);
         new_thing._tid = _tid++;
-
         
         // see if it still exists
         const old_thing = _thingd[new_thing_id];
@@ -230,6 +221,11 @@ const make = function (initd) {
             _thingd[new_thing_id] = new_thing;
 
             _.thing.bind_thing_to_bridge(new_thing, bridge_instance, binding);
+
+            new_thing.band("meta").update(metad, {
+                add_timestamp: true,
+                check_timestamp: false,
+            });
 
             things.add(new_thing);
 

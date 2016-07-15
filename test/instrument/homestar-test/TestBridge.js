@@ -42,7 +42,8 @@ var TestBridge = function (initd, native) {
 
     self.initd = _.defaults(initd,
         iotdb.keystore().get("bridges/TestBridge/initd"), {
-            poll: 30
+            poll: 30,
+            number: 10,
         }
     );
     self.native = native;   // the thing that does the work - keep this name
@@ -203,13 +204,9 @@ TestBridge.prototype.meta = function () {
     }
 
     return {
-        "iot:thing-id": _.id.thing_urn.unique("Test", self.native.uuid, self.initd.number),
+        "iot:thing-id": _.id.thing_urn.unique("Test", "0FAF0A6A-C1AD-413D-8C1B-2EEE3CBA9F0D", self.initd.number),
         "schema:name": self.native.name || "Test",
-
-        // "iot:thing-number": self.initd.number,
-        // "iot:device-id": _.id.thing_urn.unique("Test", self.native.uuid),
-        // "schema:manufacturer": "",
-        // "schema:model": "",
+        "iot:thing-number": self.initd.number,
     };
 };
 

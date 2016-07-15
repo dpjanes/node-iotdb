@@ -34,41 +34,48 @@ var _make_thing = function(callback) {
 };
 
 describe('test_thing_set', function() {
-    describe('with', function() {
-        describe('with_tag', function() {
-            it('matching', function() {
+    describe('with', function(done) {
+        describe('with_tag', function(done) {
+            it('matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.with_tag("a");
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array', function() {
+            it('matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.with_tag([ "a", "b", "c"]);
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array with some non matching items', function() {
+            it('matching with array with some non matching items', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.with_tag([ "c", "d", "e"]);
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('not matching', function() {
+            it('not matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.with_tag("e");
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    assert.ok(ms.empty());
+                    done();
                 });
             });
-            it('not matching with array', function() {
+            it('not matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.with_tag([ "e", "f", "g" ]);
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    assert.ok(ms.empty());
+                    done();
                 });
             });
         });
