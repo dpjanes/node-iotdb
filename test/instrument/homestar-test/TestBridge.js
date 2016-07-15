@@ -22,9 +22,9 @@
 
 "use strict";
 
-var iotdb = require('iotdb');
+var iotdb = require('../../../iotdb');
+var bridge = require('../../../bridge');
 var _ = iotdb._;
-var bunyan = iotdb.bunyan;
 
 var logger = iotdb.logger({
     name: 'node-iotdb',
@@ -53,7 +53,7 @@ var TestBridge = function (initd, native) {
     }
 };
 
-TestBridge.prototype = new iotdb.Bridge();
+TestBridge.prototype = new bridge.Bridge();
 
 TestBridge.prototype.name = function () {
     return "TestBridge";

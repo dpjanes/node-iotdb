@@ -53,10 +53,6 @@ const things = () => {
     return iot().things();
 }
 
-const _reset_shim = () => {
-    _instance = null;
-}
-
 /*
  *  API
  */
@@ -77,40 +73,13 @@ exports.modules = modules.modules;
 exports.Modules = modules.Modules;
 exports.use = (module_name, module) => modules.modules().use(module_name, module);
 
-/**
- *  Metadata related to this controller & session
- */
-const iot_controller_machine = _.ld.expand('iot:runner.id');
-const iot_controller_session = _.ld.expand('iot:runner.timestamp');
-
-let controller_machine;
-const controller_session = _.timestamp.make();
-
-let machine_id;
-(function() {
-    const keystore = exports.keystore();
-
-    controller_machine = keystore.get("/homestar/runner/keys/homestar/key", null);
-    if (!controller_machine) {
-        controller_machine = keystore.get("/machine_id", null);
+const runner_timestamp = _.timestamp.make();
+exports.controller_meta = () => {
+    return {
+        "iot:runner.timestamp": runner_timestamp,
+        "iot:runner.id": _.id.machine_id(),
     }
-})();
-
-exports.controller_meta = function () {
-    const metad = {};
-
-    metad[iot_controller_session] = controller_session;
-
-    if (controller_machine) {
-        metad[iot_controller_machine] = controller_machine;
-    }
-
-    return metad;
 };
-
-_.id.thing_urn.set({
-    machine_id: controller_machine,
-});
 
 // users
 exports.users = require('./users');
@@ -122,9 +91,12 @@ exports.things = things;
 
 // testing only
 exports.shims = {
-    reset: _reset_shim,
-    keystore: f => exports.keystore = f,
+    reset: () => _instance = null,
+    keystore: k => { let ok = exports.keystore; exports.keystore = k; return ok },
 }
 
 // Windows compatibility
 require("./windows").setup();
+
+console.log("IOTDB LOADED", __filename);
+exports.__filename = __filename;

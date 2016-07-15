@@ -14,7 +14,6 @@ var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
 var modules = require("../modules");
-var keystore = require("../keystore");
 
 require('./instrument/iotdb');
 

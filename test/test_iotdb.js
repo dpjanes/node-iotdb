@@ -13,7 +13,6 @@ var sleep = require("sleep");
 var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
-var keystore = require("../keystore");
 
 require('./instrument/iotdb');
 

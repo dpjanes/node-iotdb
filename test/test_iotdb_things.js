@@ -13,11 +13,10 @@ var sleep = require("sleep");
 var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
-var keystore = require("../keystore");
 
 require('./instrument/iotdb');
 
-describe('test_iotdb', function() {
+describe('test_iotdb_things', function() {
     describe('things', function() {
         describe('global', function() {
             it('no arguments', function() {

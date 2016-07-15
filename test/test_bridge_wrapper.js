@@ -9,24 +9,22 @@
 "use strict";
 
 var assert = require("assert")
-var sleep = require("sleep");
-var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
-
+var _ = require("../helpers")
 require('./instrument/iotdb');
-
-var test = require("./instrument/homestar-test/models/Test");
-var homestar_test = require("./instrument/homestar-test");
 
 /* --- tests --- */
 describe('test_bridge_wrapper', function(){
+
     describe('make_wrap', function(){
         it('works as expected', function() {
+            var homestar_test = require("./instrument/homestar-test");
             var wrapper = _.bridge.wrap("Test", homestar_test.bindings);
             assert.ok(wrapper);
         });
         it('fails as expected', function() {
+            var homestar_test = require("./instrument/homestar-test");
             var wrapper = _.bridge.wrap("DoesNotExist", homestar_test.bindings);
             assert.ok(!wrapper);
         });
@@ -35,9 +33,11 @@ describe('test_bridge_wrapper', function(){
     });
     describe('core', function(){
         it('constructs without issue', function() {
+            var test = require("./instrument/homestar-test/models/Test");
             var wrapper = _.bridge.make(test.binding);
         });
         it('emits thing', function(done) {
+            var test = require("./instrument/homestar-test/models/Test");
             var wrapper = _.bridge.make(test.binding);
             wrapper.on("thing", function(thing) {
                 assert.ok(_.is.Thing(thing));
@@ -45,6 +45,7 @@ describe('test_bridge_wrapper', function(){
             });
         });
         it('emits bridge', function(done) {
+            var test = require("./instrument/homestar-test/models/Test");
             var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
@@ -52,6 +53,7 @@ describe('test_bridge_wrapper', function(){
             });
         });
         it('emits state', function(done) {
+            var test = require("./instrument/homestar-test/models/Test");
             var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
@@ -74,6 +76,7 @@ describe('test_bridge_wrapper', function(){
             });
         });
         it('emits meta', function(done) {
+            var test = require("./instrument/homestar-test/models/Test");
             var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));
@@ -88,6 +91,7 @@ describe('test_bridge_wrapper', function(){
             });
         });
         it('emits disconnected', function(done) {
+            var test = require("./instrument/homestar-test/models/Test");
             var wrapper = _.bridge.make(test.binding);
             wrapper.on("bridge", function(bridge) {
                 assert.ok(_.is.Bridge(bridge));

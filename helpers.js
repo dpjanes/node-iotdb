@@ -31,6 +31,7 @@ const local_modules = [
     require('./helpers/version'),
     require('./helpers/bridge'),
     require('./helpers/thing'),
+    require('./helpers/id'),
 ];
 local_modules.map(local_module => {
     _.mapObject(local_module, ( local_value, local_name ) => {
