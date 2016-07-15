@@ -98,5 +98,5 @@ exports.shims = {
 // Windows compatibility
 require("./windows").setup();
 
-console.log("IOTDB LOADED", __filename);
+// debugging
 exports.__filename = __filename;
