@@ -10,7 +10,6 @@
 "use strict";
 
 var assert = require("assert")
-var sleep = require("sleep");
 const iotdb = require("../iotdb");
 const _ = require("../helpers");
 

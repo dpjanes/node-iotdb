@@ -10,7 +10,6 @@
 "use strict";
 
 var assert = require("assert")
-var sleep = require("sleep");
 var _ = require("../helpers")
 
 describe('test_net', function() {

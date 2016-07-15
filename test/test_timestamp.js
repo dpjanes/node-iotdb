@@ -9,7 +9,6 @@
 "use strict";
 
 var assert = require("assert")
-var sleep = require("sleep");
 var _ = require("../helpers")
 
 var TS_OLD = '2010-03-25T21:28:43.613Z';
