@@ -35,192 +35,212 @@ var _make_thing = function(callback) {
 describe('test_thing_set', function() {
     describe('search', function() {
         describe('meta:iot:model-id', function() {
-            it('matching', function() {
+            it('matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:model-id": "test",
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array', function() {
+            it('matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:model-id": [ "test", "not-a-name", ],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('not matching', function() {
+            it('not matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:model-id": "not-a-name",
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
         });
         describe('meta:schema:name', function() {
-            it('matching', function() {
+            it('matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:schema:name": "The Thing Name",
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array', function() {
+            it('matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:schema:name": [ "The Thing Name", "not-a-name", ],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('not matching', function() {
+            it('not matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:schema:name": "not-a-name",
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
         });
         describe('meta:iot:thing-number', function() {
-            it('matching', function() {
+            it('matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:thing-number": 32,
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array', function() {
+            it('matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:thing-number": [ 32, 21, ],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('not matching', function() {
+            it('not matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:thing-number": 21,
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
-            it('not matching with string argument that looks like it should match', function() {
+            it('not matching with string argument that looks like it should match', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:thing-number": "32",
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
         });
         describe('transient:tag', function() {
-            it('matching', function() {
+            it('matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "transient:tag": "a",
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array', function() {
+            it('matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "transient:tag": [ "a", "b", "c"],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array with some non matching items', function() {
+            it('matching with array with some non matching items', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "transient:tag": [ "c", "d", "e"],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('not matching', function() {
+            it('not matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "transient:tag": "e",
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
-            it('not matching with array', function() {
+            it('not matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "transient:tag": [ "e", "f", ],
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
         });
         describe('meta:iot:zone', function() {
-            it('matching', function() {
+            it('matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:zone": "a",
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array', function() {
+            it('matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:zone": [ "a", "b", "c"],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('matching with array with some non matching items', function() {
+            it('matching with array with some non matching items', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:zone": [ "c", "d", "e"],
                     });
 
-                    assert.strictEqual(ms.length, 1);
+                    assert.strictEqual(ms.count(), 1);
+                    done();
                 });
             });
-            it('not matching', function() {
+            it('not matching', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:zone": "e",
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
-            it('not matching with array', function() {
+            it('not matching with array', function(done) {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:zone": [ "e", "f", ],
                     });
 
-                    assert.strictEqual(ms.length, 0);
+                    assert.strictEqual(ms.count(), 0);
+                    done();
                 });
             });
         });
