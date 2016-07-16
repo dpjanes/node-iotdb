@@ -140,6 +140,18 @@ describe('test_thing_set', function() {
                 });
             });
         });
+        describe('transient:other', function() {
+            it('called', function(done) {
+                _make_thing(function(ts) {
+                    var ms = ts.search({
+                        "transient:other": "a",
+                    });
+
+                    assert.strictEqual(ms.count(), 0);
+                    done();
+                });
+            });
+        });
         describe('transient:tag', function() {
             it('matching', function(done) {
                 _make_thing(function(ts) {
@@ -237,6 +249,55 @@ describe('test_thing_set', function() {
                 _make_thing(function(ts) {
                     var ms = ts.search({
                         "meta:iot:zone": [ "e", "f", ],
+                    });
+
+                    assert.strictEqual(ms.count(), 0);
+                    done();
+                });
+            });
+        });
+        describe('weird', function() {
+            it('will not work', function(done) {
+                _make_thing(function(ts) {
+                    assert.throws(() => {
+                        ts.search({
+                            "weird:other": "a",
+                        });
+                    }, Error);
+                    done();
+                });
+            });
+        });
+        // these are not implemented yet - change when implemented
+        describe('istate:fail', function() {
+            it('called', function(done) {
+                _make_thing(function(ts) {
+                    var ms = ts.search({
+                        "istate:other": "a",
+                    });
+
+                    assert.strictEqual(ms.count(), 0);
+                    done();
+                });
+            });
+        });
+        describe('ostate:fail', function() {
+            it('called', function(done) {
+                _make_thing(function(ts) {
+                    var ms = ts.search({
+                        "ostate:other": "a",
+                    });
+
+                    assert.strictEqual(ms.count(), 0);
+                    done();
+                });
+            });
+        });
+        describe('model:fail', function() {
+            it('called', function(done) {
+                _make_thing(function(ts) {
+                    var ms = ts.search({
+                        "model:other": "a",
                     });
 
                     assert.strictEqual(ms.count(), 0);

@@ -149,19 +149,18 @@ const make = function() {
         switch (matchd.query_band) {
         case "meta":
         case "connection":
-            matchd.query_values = _.ld.expand(matchd.query_values);
-
+        {
+            const query_values = _.ld.expand(matchd.query_values);
             const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
 
-            return _.intersection(matchd.query_values, thing_values).length > 0;
+            return _.intersection(query_values, thing_values).length > 0;
+        }
 
         case "transient":
-            if (matchd.query_inner_key === "tag") {
-                const thing_values = _.ld.list(thing_state, matchd.query_inner_key, []);
-                return _.intersection(matchd.query_values, thing_values).length > 0;
-            } else {
-                return false;
-            }
+        {
+            const thing_values = _.ld.list(thing_state, matchd.query_inner_key, []);
+            return _.intersection(matchd.query_values, thing_values).length > 0;
+        }
 
         case "ostate":
         case "istate":
@@ -173,19 +172,7 @@ const make = function() {
             }, "function not implemented (yet)");
 
             return false;
-
-        default:
-            logger.error({
-                method: "_search_match",
-                cause: "programming error - self should never happen",
-                query_band: matchd.query_band,
-                query_key: matchd.query_key,
-            }, "bad band");
-
-            return false;
         }
-
-        return true;
     };
 
     const _search_filter = ( queryd, thing ) => _search_parse(queryd)
