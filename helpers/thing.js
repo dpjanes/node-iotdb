@@ -86,9 +86,8 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     const _bridge_to_meta = pulld => {
         _reachable_changed(bridge.reachable() ? true : false);
 
-        const metad = bridge.meta();
-
-        metad["iot:thing-id"] = _universal_thing_id(metad["iot:thing-id"], thing.model_id());
+        const metad = thing.state("meta");
+        metad["iot:thing-id"] = universal_thing_id(thing); 
 
         thing.band("meta").update(metad, {
             add_timestamp: true,
@@ -150,6 +149,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
     thing.on("disconnect", _on_disconnect);
     thing.on("ostate", _on_ostate);
+
 
     _model_to_meta();
     _bridge_to_meta();

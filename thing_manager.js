@@ -198,8 +198,8 @@ const make = function (initd) {
         }, "called");
 
         // bindings can ignore certatin discoveries 
+        const bridge_meta = _.ld.compact(bridge_instance.meta());
         if (binding && binding.matchd) {
-            const bridge_meta = _.ld.compact(bridge_instance.meta());
             const binding_meta = _.ld.compact(binding.matchd);
             if (!_.d.is.superset(bridge_meta, binding_meta)) {
                 if (bridge_exemplar.ignore) {
@@ -211,8 +211,11 @@ const make = function (initd) {
         }
 
         // build a thing
-        const new_thing = _.thing.make_thing(binding.bandd); // iotdb_thing.make(bandd);
-        const new_thing_id = _.thing.universal_thing_id(new_thing);
+        const bandd = _.d.clone.deep(binding.bandd);
+        bandd.meta = _.d.compose.shallow(metad, bridge_meta, bandd.meta, {});
+
+        const new_thing = _.thing.make_thing(bandd); 
+        const new_thing_id = new_thing.thing_id();
         new_thing._tid = _tid++;
         
         // see if it still exists

@@ -99,15 +99,17 @@ const make = function() {
     self.pull = (...rest) => _apply_persist("pull", rest);
     self.tag = (...rest) => _apply_persist("tag", rest);
 
-    self.on = (what, callback) => {
+    const _on = (how, what, callback) => {
         if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
-            _apply_persist("on", [ what, callback ]);
+            _apply_persist(how, [ what, callback ]);
         } else {
-            _emitter.on(what, callback);
+            _emitter[how](what, callback);
         }
 
         return self;
     };
+    self.on = (what, callback) => _on("on", what, callback);
+    self.once = (what, callback) => _on("once", what, callback);
 
     self.reachable = () => self
         .map(thing => thing.reachable() ? 1 : 0)
