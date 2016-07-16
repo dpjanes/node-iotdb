@@ -53,7 +53,7 @@ const make = function() {
     self.find = f => self.all().find(f);
     self.forEach = f => self.all().forEach(f);
     self.map = f => self.all().map(f);
-    self.reduce = (f, i) => self.all().map(f, i);
+    self.reduce = (f, i) => self.all().reduce(f, i);
 
     // new "set like" stuff
     self.all = () => _things;
@@ -144,23 +144,21 @@ const make = function() {
     }));
 
     const _search_match = (matchd, thing) => {
-        const meta = thing.state("meta");
+        const thing_state = thing.state(matchd.query_band);
 
         switch (matchd.query_band) {
         case "meta":
         case "connection":
             matchd.query_values = _.ld.expand(matchd.query_values);
 
-            const thing_state = thing.state(matchd.query_band);
             const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
-
-            console.log(matchd.query_values, thing_values);
 
             return _.intersection(matchd.query_values, thing_values).length > 0;
 
         case "transient":
             if (matchd.query_inner_key === "tag") {
-                return _.ld.intersects(thing.initd, "tag", matchd.query_values);
+                const thing_values = _.ld.list(thing_state, matchd.query_inner_key, []);
+                return _.intersection(matchd.query_values, thing_values).length > 0;
             } else {
                 return false;
             }

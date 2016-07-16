@@ -33,53 +33,61 @@ var _make_thing = function(callback) {
     });
 };
 
-describe('test_thing_set', function() {
-    /*
-    describe('with', function(done) {
-        describe('with_tag', function(done) {
-            it('matching', function(done) {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag("a");
+describe('test_thing_set_tag', function() {
+    describe('tag', function(done) {
+        it('sets the tags', function(done) {
+            _make_thing(function(ts) {
+                const thing = ts.any();
+                const band = thing.band("transient");
+                const state = band.state();
 
-                    assert.strictEqual(ms.count(), 1);
-                    done();
-                });
-            });
-            it('matching with array', function(done) {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag([ "a", "b", "c"]);
-
-                    assert.strictEqual(ms.count(), 1);
-                    done();
-                });
-            });
-            it('matching with array with some non matching items', function(done) {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag([ "c", "d", "e"]);
-
-                    assert.strictEqual(ms.count(), 1);
-                    done();
-                });
-            });
-            it('not matching', function(done) {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag("e");
-
-                    assert.strictEqual(ms.count(), 0);
-                    assert.ok(ms.empty());
-                    done();
-                });
-            });
-            it('not matching with array', function(done) {
-                _make_thing(function(ts) {
-                    var ms = ts.with_tag([ "e", "f", "g" ]);
-
-                    assert.strictEqual(ms.count(), 0);
-                    assert.ok(ms.empty());
-                    done();
-                });
+                assert.deepEqual(state, { tag: [ 'a', 'b', 'c' ] });
+                done();
             });
         });
     });
-    */
+    describe('with_tag', function(done) {
+        it('matching', function(done) {
+            _make_thing(function(ts) {
+                var ms = ts.with_tag("a");
+
+                assert.strictEqual(ms.count(), 1);
+                done();
+            });
+        });
+        it('matching with array', function(done) {
+            _make_thing(function(ts) {
+                var ms = ts.with_tag([ "a", "b", "c"]);
+
+                assert.strictEqual(ms.count(), 1);
+                done();
+            });
+        });
+        it('matching with array with some non matching items', function(done) {
+            _make_thing(function(ts) {
+                var ms = ts.with_tag([ "c", "d", "e"]);
+
+                assert.strictEqual(ms.count(), 1);
+                done();
+            });
+        });
+        it('not matching', function(done) {
+            _make_thing(function(ts) {
+                var ms = ts.with_tag("e");
+
+                assert.strictEqual(ms.count(), 0);
+                assert.ok(ms.empty());
+                done();
+            });
+        });
+        it('not matching with array', function(done) {
+            _make_thing(function(ts) {
+                var ms = ts.with_tag([ "e", "f", "g" ]);
+
+                assert.strictEqual(ms.count(), 0);
+                assert.ok(ms.empty());
+                done();
+            });
+        });
+    });
 });

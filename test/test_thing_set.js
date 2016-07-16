@@ -45,51 +45,58 @@ var _make_no_things = function(callback) {
 
 describe("test_thing_set", function() {
     describe("any", function() {
-        it("with one thing", function() {
+        it("with one thing", function(done) {
             _make_thing(function(ts) {
                 var thing = ts.any()
                 assert.ok(thing);
                 assert.ok(_.is.Thing(thing));
+                done();
             });
         });
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 var thing = ts.any()
                 assert.ok(!thing);
                 assert.ok(_.is.Null(thing));
+                done();
             });
         });
     });
     describe("reachable", function() {
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 assert.strictEqual(ts.reachable(), 0);
+                done();
             });
         });
-        it("with one thing", function() {
+        it("with one thing", function(done) {
             _make_thing(function(ts) {
                 assert.strictEqual(ts.reachable(), 1);
+                done();
             });
         });
-        it("with one thing with no bridge", function() {
+        it("with one thing with no bridge", function(done) {
             _make_thing(function(ts) {
                 var thing = ts.any();
                 thing.disconnect();
 
                 assert.strictEqual(ts.reachable(), 0);
+                done();
             });
         });
-        it("with one thing that's not reachable", function() {
+        it("with one thing that's not reachable", function(done) {
             _make_thing(function(ts) {
                 ts.any().reachable = function() { return false };
                 assert.strictEqual(ts.reachable(), 0);
+                done();
             });
         });
     });
     describe("set", function() {
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 ts.set(":on", true);
+                done();
             });
         });
         it("with one thing", function(done) {
@@ -103,11 +110,12 @@ describe("test_thing_set", function() {
         });
     });
     describe("update", function() {
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 ts.update("ostate", {
                     "on": true,
                 });
+                done();
             });
         });
         it("with one thing", function(done) {
@@ -123,9 +131,10 @@ describe("test_thing_set", function() {
         });
     });
     describe("pull", function() {
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 ts.pull();
+                done();
             });
         });
         /*
@@ -143,9 +152,10 @@ describe("test_thing_set", function() {
         */
     });
     describe("disconnect", function() {
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 ts.disconnect();
+                done();
             });
         });
         it("with one thing", function(done) {
@@ -163,7 +173,7 @@ describe("test_thing_set", function() {
     });
     describe("on", function() {
         /*
-        it("with no things", function() {
+        it("with no things", function(done) {
             _make_no_things(function(ts) {
                 ts.on("on", function() {
                     assert.ok(false);
@@ -190,19 +200,20 @@ describe("test_thing_set", function() {
         */
     });
     describe("push", function() {
-        it("good", function() {
+        it("good", function(done) {
             _make_thing(function(ts1) {
                 var thing1 = ts1.any();
                 var ts2 = thing_set.make();
                 ts2.add(thing1);
                 var thing2 = ts2.any();
 
-                assert.strictEqual(ts1.length, 1);
-                assert.strictEqual(ts2.length, 1);
+                assert.strictEqual(ts1.count(), 1);
+                assert.strictEqual(ts2.count(), 1);
                 assert.strictEqual(thing1, thing2);
+                done();
             });
         });
-        it("double push", function() {
+        it("double push", function(done) {
             _make_thing(function(ts1) {
                 var thing1 = ts1.any();
                 var ts2 = thing_set.make();
@@ -210,32 +221,36 @@ describe("test_thing_set", function() {
                 ts2.add(thing1);
                 var thing2 = ts2.any();
 
-                assert.strictEqual(ts1.length, 1);
-                assert.strictEqual(ts2.length, 1);
+                assert.strictEqual(ts1.count(), 1);
+                assert.strictEqual(ts2.count(), 1);
                 assert.strictEqual(thing1, thing2);
+                done();
             });
         });
         describe("bad push", function() {
-            it("boolean", function() {
+            it("boolean", function(done) {
                 assert.throws(function() {
                     var ts = thing_set.make();
                     ts.add(false);
                 }, Error);
+                done();
             });
-            it("string", function() {
+            it("string", function(done) {
                 assert.throws(function() {
                     var ts = thing_set.make();
                     ts.add("hello");
                 }, Error);
+                done();
             });
-            it("dictionary", function() {
+            it("dictionary", function(done) {
                 assert.throws(function() {
                     var ts = thing_set.make();
                     ts.add({ a: 1 });
                 }, Error);
+                done();
             });
         });
-        describe("emits", function() {
+        describe("emits", function(done) {
             /*
             it("pushed:0 new:0", function(done) {
                 _make_thing(function(ts1) {
@@ -364,6 +379,48 @@ describe("test_thing_set", function() {
                         done();
                     });
                 });
+            });
+        });
+    });
+    describe("every", function() {
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                let count = 0;
+                ts.every(thing => {
+                    count += 1;
+                });
+                assert.strictEqual(count, 1);
+                done();
+            });
+        });
+        it("with no things", function(done) {
+            _make_no_things(function(ts) {
+                let count = 0;
+                ts.every(thing => {
+                    count += 1;
+                });
+                assert.strictEqual(count, 0);
+                done();
+            });
+        });
+    });
+    describe("reduce", function() {
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                const count = ts.reduce((value, thing) => {
+                    return value + 10;
+                }, 10);
+                assert.strictEqual(count, 20);
+                done();
+            });
+        });
+        it("with no things", function(done) {
+            _make_no_things(function(ts) {
+                const count = ts.reduce((value, thing) => {
+                    return value + 10;
+                }, 10);
+                assert.strictEqual(count, 10);
+                done();
             });
         });
     });
