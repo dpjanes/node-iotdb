@@ -64,7 +64,7 @@ const make = function (initd) {
      *  Return all things that we know about
      */
     self.things = function () {
-        var things = thing_set.make();
+        var things = thing_set.make(self);
 
         self.on("thing", thing => things.add(thing))
 
@@ -109,10 +109,7 @@ const make = function (initd) {
         metad = metad || {};
         assert(_.is.Object(metad), "expected initd to be a Dictionary");
 
-        const things = thing_set.make({
-            persist: true,
-            things: self,
-        });
+        const things = thing_set.make(self);
 
         process.nextTick(function () {
             if (modeld.model_id) {

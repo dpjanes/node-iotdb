@@ -33,8 +33,11 @@ const logger = _.logger.make({
 
 let sid = 0;
 
-const make = function() {
+const make = function(tm) {
     const self = {};
+
+    // the thing_manager associated with this thing_set - defaults to iotdb
+    tm = tm || require('./iotdb').iot();
 
     // events
     const _emitter = new events.EventEmitter();
@@ -81,7 +84,7 @@ const make = function() {
     };
 
     self.connect = function (modeld, initd, metad) {
-        const other_set = require('./iotdb').iot().connect(modeld, initd, metad);
+        const other_set = tm.connect(modeld, initd, metad);
 
         self._update(other_set, () => true);
 
@@ -120,7 +123,9 @@ const make = function() {
 
         result_set._update(self, thing => _search_filter(queryd, thing));
 
-        self.on("changed", () => result_set._update(self, thing => _search_filter(queryd, thing)));
+        self.on("changed", () => {
+            result_set._update(self, thing => _search_filter(queryd, thing))
+        });
 
         return result_set;
     };
@@ -232,6 +237,11 @@ const make = function() {
 
         _emitter.emit("changed", self);
     };
+
+    // whenever metadata of anything changes, emit a change
+    self.on("meta", () => {
+        _emitter.emit("changed", self)
+    });
 
     return self;
 };
