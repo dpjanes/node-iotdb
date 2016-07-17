@@ -77,8 +77,10 @@ const make = function(tm) {
 
         _do_pre(thing);
         _things.push(thing);
+        console.log("POST.1");
         _emitter.emit("thing", thing);
         _do_post(thing);
+        console.log("POST.99");
 
         _emitter.emit("changed", self);
     };
@@ -94,9 +96,9 @@ const make = function(tm) {
     };
 
     self.disconnect = () => _apply_persist("disconnect", []);
-    self.name = name => _apply_persist("name", [ name ]);
-    self.zones = zones => _apply_persist("zones", [ zones ]);
-    self.facets = facets => _apply_persist("facets", [ facets ]);
+    self.name = (...rest) => _apply_persist("name", rest);
+    self.zones = (...rest) => _apply_persist("zones", rest);
+    self.facets = (...rest) => _apply_persist("facets", rest);
     self.set = (...rest) => _apply_persist("set", rest);
     self.update = (...rest) => _apply_persist("update", rest);
     self.pull = (...rest) => _apply_persist("pull", rest);
@@ -187,8 +189,8 @@ const make = function(tm) {
         .map(matchd => _search_match(matchd, thing))
         .find(tf => (tf === false)) === undefined ? thing : null;
 
-    const _is_pre = fname => [ "tag" ].indexOf(fname) > -1;
-    const _is_setter = fname => [ "set", "update" ].indexOf(fname) > -1;
+    const _is_pre = fname => true; // [ "tag" ].indexOf(fname) > -1;
+    const _is_setter = fname => false; // [ "set", "update" ].indexOf(fname) > -1;
 
     const _do_pre = thing => _persistds
         .filter(pd => _is_pre(pd.fname))
@@ -212,6 +214,9 @@ const make = function(tm) {
     const _apply = (fname, av) => self.forEach(thing => thing[fname].apply(thing, av));
 
     const _apply_persist = (fname, av) => {
+        if (fname === "name") {
+            console.log("HERE:XXX", self.count());
+        }
         _apply(fname, av);
         _persist(fname, av);
     };
