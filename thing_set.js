@@ -86,9 +86,9 @@ const make = function(tm) {
     self.connect = function (modeld, initd, metad) {
         const other_set = tm.connect(modeld, initd, metad);
 
-        self._update(other_set, () => true);
+        self._update(other_set, () => true, "connect-initial");
 
-        other_set.on("changed", () => self._update(other_set, () => true));
+        other_set.on("changed", () => self._update(other_set, () => true, "connect-changed"));
 
         return self;
     };
@@ -102,15 +102,6 @@ const make = function(tm) {
     self.pull = (...rest) => _apply_persist("pull", rest);
     self.tag = (...rest) => _apply_persist("tag", rest);
 
-    const _on = (how, what, callback) => {
-        if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
-            _apply_persist(how, [ what, callback ]);
-        } else {
-            _emitter[how](what, callback);
-        }
-
-        return self;
-    };
     self.on = (what, callback) => _on("on", what, callback);
     self.once = (what, callback) => _on("once", what, callback);
 
@@ -121,10 +112,10 @@ const make = function(tm) {
     self.search = function (queryd) {
         const result_set = make();
 
-        result_set._update(self, thing => _search_filter(queryd, thing));
+        result_set._update(self, thing => _search_filter(queryd, thing), "search-initial");
 
         self.on("changed", () => {
-            result_set._update(self, thing => _search_filter(queryd, thing))
+            result_set._update(self, thing => _search_filter(queryd, thing), "search-on")
         });
 
         return result_set;
@@ -139,6 +130,16 @@ const make = function(tm) {
     self.with_facet = facet => self.search({ "meta:iot:facet": facet, });
 
     // -- internals
+    const _on = (how, what, callback) => {
+        if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
+            _apply_persist(how, [ what, callback ]);
+        } else {
+            _emitter[how](what, callback);
+        }
+
+        return self;
+    };
+
     const _search_parse = queryd => _.values(_.mapObject(queryd, ( query_value, query_key ) => {
         const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
         assert(match, "bad search: key=" + query_key);
@@ -215,8 +216,8 @@ const make = function(tm) {
         _persist(fname, av);
     };
 
-    self._update = ( other_set, filter ) => {
-        const existing_things = self.filter(thing => thing._sidd[other_set._sid]);
+    self._update = ( other_set, filter, reason ) => {
+        const existing_things = self.all(); // .filter(thing => thing._sidd[other_set._sid]);
         const other_things = other_set.all().filter(filter);
 
         const removed_things = _.difference(existing_things, other_things);
@@ -226,14 +227,17 @@ const make = function(tm) {
             return;
         }
 
+        _things = _.difference(_things, removed_things);
         removed_things.every(thing => _emitter.emit("removed", thing));
-        added_things.every(thing => {
-            _do_pre(thing);
-            _things.push(thing);
-            _do_post(thing);
 
-            _emitter.emit("thing", thing);
-        });
+        added_things
+            .every(thing => {
+                _do_pre(thing);
+                _things.push(thing);
+                _do_post(thing);
+
+                _emitter.emit("thing", thing)
+            });
 
         _emitter.emit("changed", self);
     };
