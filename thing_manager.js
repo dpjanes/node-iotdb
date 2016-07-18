@@ -148,7 +148,6 @@ const make = function (initd) {
         logger.info({
             method: "_discover_binding",
             modeld: modeld,
-            binding: binding ? "YES" : "-",
         }, "called");
 
         // initialize the bridge for self binding
@@ -190,13 +189,12 @@ const make = function (initd) {
         logger.info({
             method: "_discover_binding_bridge",
             modeld: modeld,
-            binding: binding ? "YES" : "-",
             bridge_instance: bridge_instance.meta(),
         }, "called");
 
         // bindings can ignore certatin discoveries 
         const bridge_meta = _.ld.compact(bridge_instance.meta());
-        if (binding && binding.matchd) {
+        if (binding.matchd) {
             const binding_meta = _.ld.compact(binding.matchd);
             if (!_.d.is.superset(bridge_meta, binding_meta)) {
                 if (bridge_exemplar.ignore) {
