@@ -77,10 +77,8 @@ const make = function(tm) {
 
         _do_pre(thing);
         _things.push(thing);
-        console.log("POST.1");
         _emitter.emit("thing", thing);
         _do_post(thing);
-        console.log("POST.99");
 
         _emitter.emit("changed", self);
     };
@@ -190,7 +188,7 @@ const make = function(tm) {
         .find(tf => (tf === false)) === undefined ? thing : null;
 
     const _is_pre = fname => true; // [ "tag" ].indexOf(fname) > -1;
-    const _is_setter = fname => false; // [ "set", "update" ].indexOf(fname) > -1;
+    const _is_setter = fname => [ "set", "update" ].indexOf(fname) > -1;
 
     const _do_pre = thing => _persistds
         .filter(pd => _is_pre(pd.fname))
@@ -214,9 +212,6 @@ const make = function(tm) {
     const _apply = (fname, av) => self.forEach(thing => thing[fname].apply(thing, av));
 
     const _apply_persist = (fname, av) => {
-        if (fname === "name") {
-            console.log("HERE:XXX", self.count());
-        }
         _apply(fname, av);
         _persist(fname, av);
     };
