@@ -107,7 +107,7 @@ const make = function (initd) {
         }
 
         metad = metad || {};
-        assert(_.is.Object(metad), "expected initd to be a Dictionary");
+        assert(_.is.Object(metad), "expected metad to be a Dictionary");
 
         const things = thing_set.make(self);
 
