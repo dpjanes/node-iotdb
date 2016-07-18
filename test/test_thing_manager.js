@@ -19,46 +19,45 @@ require('./instrument/iotdb');
 describe('test_thing_manager', function() {
     describe('constructor', function() {
         it('new', function() {
-            var t = thing_manager.make();
-            t._reset();
-            var ts = t.things();
+            const tm = thing_manager.make();
+            const ts = tm.things();
 
-            assert.ok(_.is.ThingArray(ts));
+            assert.ok(_.is.ThingSet(ts));
             assert.strictEqual(ts.count(), 0);
         });
     });
     describe('connect', function() {
         it('no argument', function() {
-            var t = thing_manager.make();
-            t._reset();
+            const tm = thing_manager.make();
+            tm._reset();
             
-            var model_code = t.connect();
+            var model_code = tm.connect();
 
 //XXX            assert.strictEqual(model_code, undefined);
         });
         it('model:Test / string argument', function() {
-            var t = thing_manager.make();
-            t._reset();
+            const tm = thing_manager.make();
+            tm._reset();
             
-            var model_code = t.connect("Test");
+            var model_code = tm.connect("Test");
 
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('model:Test / string argument + dictionary', function() {
-            var t = thing_manager.make();
-            t._reset();
+            const tm = thing_manager.make();
+            tm._reset();
             
-            var model_code = t.connect("Test", {
+            var model_code = tm.connect("Test", {
                 parameter: 123,
             });
 
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('model:Test / dictionary', function() {
-            var t = thing_manager.make();
-            t._reset();
+            const tm = thing_manager.make();
+            tm._reset();
             
-            var model_code = t.connect({
+            var model_code = tm.connect({
                 model_id: "Test",
                 parameter: 123,
             });
@@ -66,10 +65,10 @@ describe('test_thing_manager', function() {
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('model:Test / dictionary (obsolete way)', function() {
-            var t = thing_manager.make();
-            t._reset();
+            const tm = thing_manager.make();
+            tm._reset();
             
-            var model_code = t.connect({
+            var model_code = tm.connect({
                 model_id: "Test",
                 parameter: 123,
             });
@@ -77,10 +76,10 @@ describe('test_thing_manager', function() {
 //XXX            assert.strictEqual(model_code, "test");
         });
         it('multiple dictionaries', function() {
-            var t = thing_manager.make();
-            t._reset();
+            const tm = thing_manager.make();
+            tm._reset();
             
-            var model_code = t.connect({
+            var model_code = tm.connect({
                 model_id: "Test",
             }, {
                 parameter: 123,
@@ -93,39 +92,39 @@ describe('test_thing_manager', function() {
         });
         describe('bad', function() {
             it('bad argument', function() {
-                var t = thing_manager.make();
-                t._reset();
+                const tm = thing_manager.make();
+                tm._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.connect(123);
+                    var model_code = tm.connect(123);
                 }, Error);
             });
             it('bad model code', function() {
-                var t = thing_manager.make();
-                t._reset();
+                const tm = thing_manager.make();
+                tm._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.connect({
+                    var model_code = tm.connect({
                         model_id: 123,
                     });
                 }, Error);
             });
             it('bad second argument', function() {
-                var t = thing_manager.make();
-                t._reset();
+                const tm = thing_manager.make();
+                tm._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.connect({
+                    var model_code = tm.connect({
                         model_id: "ModelCode",
                     }, 1234);
                 }, Error);
             });
             it('bad third argument', function() {
-                var t = thing_manager.make();
-                t._reset();
+                const tm = thing_manager.make();
+                tm._reset();
                 
                 assert.throws(function() {
-                    var model_code = t.connect({
+                    var model_code = tm.connect({
                         model_id: "ModelCode",
                     }, {}, 1234);
                 }, Error);
@@ -134,10 +133,10 @@ describe('test_thing_manager', function() {
         /*
         describe('discover_bridge', function() {
             it('simple', function() {
-                var t = thing_manager.make();
-                t._reset();
+                const tm = thing_manager.make();
+                tm._reset();
                 
-                var model_code = t.discover({
+                var model_code = tm.discover({
                     model_id: "Test",
                     bridge: "test-bridge",
                 });
@@ -146,20 +145,20 @@ describe('test_thing_manager', function() {
         */
         describe('disconnect', function() {
             it('nothing connected', function() {
-                var t = thing_manager.make();
-                t._reset();
-                t.disconnect();
+                const tm = thing_manager.make();
+                tm._reset();
+                tm.disconnect();
             });
             it('something connected', function(done) {
-                var t = thing_manager.make();
-                t._reset();
+                const tm = thing_manager.make();
+                tm._reset();
                 
-                var ts = t.connect({
+                const ts = tm.connect({
                     model_id: "Test",
                 });
 
                 ts.on("thing", function() {
-                    t.disconnect();
+                    tm.disconnect();
                     done();
                 });
 

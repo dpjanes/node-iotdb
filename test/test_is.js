@@ -17,9 +17,9 @@ var bridge = require("../bridge");
 /* --- tests --- */
 describe('test_is', function() {
     var testThing = { _isThing: true, on: () => {} }
-    var testThingArray0 = thing_set.make();
-    var testThingArray1 = thing_set.make();
-    testThingArray1.add(testThing);
+    var testThingSet0 = thing_set.make();
+    var testThingSet1 = thing_set.make();
+    testThingSet1.add(testThing);
 
     var testBridge = new bridge.Bridge();
     var testTransport = function() {};
@@ -27,8 +27,8 @@ describe('test_is', function() {
 
     it('is.Thing', function() {
         assert.ok(_.is.Thing(testThing));
-        assert.ok(!_.is.Thing(testThingArray0));
-        assert.ok(!_.is.Thing(testThingArray1));
+        assert.ok(!_.is.Thing(testThingSet0));
+        assert.ok(!_.is.Thing(testThingSet1));
         assert.ok(!_.is.Thing(testTransport));
         assert.ok(!_.is.Thing(testBridge));
 
@@ -41,26 +41,26 @@ describe('test_is', function() {
         assert.ok(!_.is.Thing([ "a", ]));
         assert.ok(!_.is.Thing({ "a": "n" }));
     });
-    it('is.ThingArray', function() {
-        assert.ok(!_.is.ThingArray(testThing));
-        assert.ok(_.is.ThingArray(testThingArray0));
-        assert.ok(_.is.ThingArray(testThingArray1));
-        assert.ok(!_.is.ThingArray(testTransport));
-        assert.ok(!_.is.ThingArray(testBridge));
+    it('is.ThingSet', function() {
+        assert.ok(!_.is.ThingSet(testThing));
+        assert.ok(_.is.ThingSet(testThingSet0));
+        assert.ok(_.is.ThingSet(testThingSet1));
+        assert.ok(!_.is.ThingSet(testTransport));
+        assert.ok(!_.is.ThingSet(testBridge));
 
-        assert.ok(!_.is.ThingArray(null));
-        assert.ok(!_.is.ThingArray(undefined));
-        assert.ok(!_.is.ThingArray(0));
-        assert.ok(!_.is.ThingArray(1));
-        assert.ok(!_.is.ThingArray(""));
-        assert.ok(!_.is.ThingArray("string"));
-        assert.ok(!_.is.ThingArray([ "a", ]));
-        assert.ok(!_.is.ThingArray({ "a": "n" }));
+        assert.ok(!_.is.ThingSet(null));
+        assert.ok(!_.is.ThingSet(undefined));
+        assert.ok(!_.is.ThingSet(0));
+        assert.ok(!_.is.ThingSet(1));
+        assert.ok(!_.is.ThingSet(""));
+        assert.ok(!_.is.ThingSet("string"));
+        assert.ok(!_.is.ThingSet([ "a", ]));
+        assert.ok(!_.is.ThingSet({ "a": "n" }));
     });
     it('is.Transport', function() {
         assert.ok(!_.is.Transport(testThing));
-        assert.ok(!_.is.Transport(testThingArray0));
-        assert.ok(!_.is.Transport(testThingArray1));
+        assert.ok(!_.is.Transport(testThingSet0));
+        assert.ok(!_.is.Transport(testThingSet1));
         assert.ok(_.is.Transport(testTransport));
         assert.ok(!_.is.Transport(testBridge));
 
@@ -75,8 +75,8 @@ describe('test_is', function() {
     });
     it('is.Bridge', function() {
         assert.ok(!_.is.Bridge(testThing));
-        assert.ok(!_.is.Bridge(testThingArray0));
-        assert.ok(!_.is.Bridge(testThingArray1));
+        assert.ok(!_.is.Bridge(testThingSet0));
+        assert.ok(!_.is.Bridge(testThingSet1));
         assert.ok(!_.is.Bridge(testTransport));
         assert.ok(_.is.Bridge(testBridge));
 
@@ -91,8 +91,8 @@ describe('test_is', function() {
     });
     it('is.Dictionary', function() {
         // assert.ok(!_.is.Dictionary(testThing));
-        // assert.ok(!_.is.Dictionary(testThingArray0));
-        // assert.ok(!_.is.Dictionary(testThingArray1));
+        // assert.ok(!_.is.Dictionary(testThingSet0));
+        // assert.ok(!_.is.Dictionary(testThingSet1));
         assert.ok(!_.is.Dictionary(testTransport));
         assert.ok(!_.is.Dictionary(testBridge));
 
@@ -107,8 +107,8 @@ describe('test_is', function() {
     });
     it('is.Object', function() {
         assert.ok(_.is.Object(testThing));
-        assert.ok(_.is.Object(testThingArray0));
-        assert.ok(_.is.Object(testThingArray1));
+        assert.ok(_.is.Object(testThingSet0));
+        assert.ok(_.is.Object(testThingSet1));
         assert.ok(_.is.Object(testTransport));
         assert.ok(_.is.Object(testBridge));
 
@@ -124,8 +124,8 @@ describe('test_is', function() {
     });
     it('is.Null', function() {
         assert.ok(!_.is.Null(testThing));
-        assert.ok(!_.is.Null(testThingArray0));
-        assert.ok(!_.is.Null(testThingArray1));
+        assert.ok(!_.is.Null(testThingSet0));
+        assert.ok(!_.is.Null(testThingSet1));
         assert.ok(!_.is.Null(testTransport));
         assert.ok(!_.is.Null(testBridge));
 
@@ -141,8 +141,8 @@ describe('test_is', function() {
     });
     it('is.Undefined', function() {
         assert.ok(!_.is.Undefined(testThing));
-        assert.ok(!_.is.Undefined(testThingArray0));
-        assert.ok(!_.is.Undefined(testThingArray1));
+        assert.ok(!_.is.Undefined(testThingSet0));
+        assert.ok(!_.is.Undefined(testThingSet1));
         assert.ok(!_.is.Undefined(testTransport));
         assert.ok(!_.is.Undefined(testBridge));
 
@@ -158,8 +158,8 @@ describe('test_is', function() {
     });
     it('is.Boolean', function() {
         assert.ok(!_.is.Boolean(testThing));
-        assert.ok(!_.is.Boolean(testThingArray0));
-        assert.ok(!_.is.Boolean(testThingArray1));
+        assert.ok(!_.is.Boolean(testThingSet0));
+        assert.ok(!_.is.Boolean(testThingSet1));
         assert.ok(!_.is.Boolean(testTransport));
         assert.ok(!_.is.Boolean(testBridge));
 
@@ -177,8 +177,8 @@ describe('test_is', function() {
     });
     it('is.Number', function() {
         assert.ok(!_.is.Number(testThing));
-        assert.ok(!_.is.Number(testThingArray0));
-        assert.ok(!_.is.Number(testThingArray1));
+        assert.ok(!_.is.Number(testThingSet0));
+        assert.ok(!_.is.Number(testThingSet1));
         assert.ok(!_.is.Number(testTransport));
         assert.ok(!_.is.Number(testBridge));
 
@@ -198,8 +198,8 @@ describe('test_is', function() {
     });
     it('is.Integer', function() {
         assert.ok(!_.is.Integer(testThing));
-        assert.ok(!_.is.Integer(testThingArray0));
-        assert.ok(!_.is.Integer(testThingArray1));
+        assert.ok(!_.is.Integer(testThingSet0));
+        assert.ok(!_.is.Integer(testThingSet1));
         assert.ok(!_.is.Integer(testTransport));
         assert.ok(!_.is.Integer(testBridge));
 
@@ -222,8 +222,8 @@ describe('test_is', function() {
     });
     it('is.Date', function() {
         assert.ok(!_.is.Date(testThing));
-        assert.ok(!_.is.Date(testThingArray0));
-        assert.ok(!_.is.Date(testThingArray1));
+        assert.ok(!_.is.Date(testThingSet0));
+        assert.ok(!_.is.Date(testThingSet1));
         assert.ok(!_.is.Date(testTransport));
         assert.ok(!_.is.Date(testBridge));
 
@@ -246,8 +246,8 @@ describe('test_is', function() {
     });
     it('is.RegExp', function() {
         assert.ok(!_.is.RegExp(testThing));
-        assert.ok(!_.is.RegExp(testThingArray0));
-        assert.ok(!_.is.RegExp(testThingArray1));
+        assert.ok(!_.is.RegExp(testThingSet0));
+        assert.ok(!_.is.RegExp(testThingSet1));
         assert.ok(!_.is.RegExp(testTransport));
         assert.ok(!_.is.RegExp(testBridge));
 
@@ -270,8 +270,8 @@ describe('test_is', function() {
     });
     it('is.NaN', function() {
         assert.ok(!_.is.NaN(testThing));
-        assert.ok(!_.is.NaN(testThingArray0));
-        assert.ok(!_.is.NaN(testThingArray1));
+        assert.ok(!_.is.NaN(testThingSet0));
+        assert.ok(!_.is.NaN(testThingSet1));
         assert.ok(!_.is.NaN(testTransport));
         assert.ok(!_.is.NaN(testBridge));
 
@@ -294,8 +294,8 @@ describe('test_is', function() {
     });
     it('is.AbsoluteURL', function() {
         assert.ok(!_.is.AbsoluteURL(testThing));
-        assert.ok(!_.is.AbsoluteURL(testThingArray0));
-        assert.ok(!_.is.AbsoluteURL(testThingArray1));
+        assert.ok(!_.is.AbsoluteURL(testThingSet0));
+        assert.ok(!_.is.AbsoluteURL(testThingSet1));
         assert.ok(!_.is.AbsoluteURL(testTransport));
         assert.ok(!_.is.AbsoluteURL(testBridge));
 
@@ -327,8 +327,8 @@ describe('test_is', function() {
     });
     it('is.FindKey', function() {
         // assert.ok(!_.is.FindKey(testThing));
-        // assert.ok(!_.is.FindKey(testThingArray0));
-        // assert.ok(!_.is.FindKey(testThingArray1));
+        // assert.ok(!_.is.FindKey(testThingSet0));
+        // assert.ok(!_.is.FindKey(testThingSet1));
         assert.ok(!_.is.FindKey(testTransport));
         assert.ok(!_.is.FindKey(testBridge));
 

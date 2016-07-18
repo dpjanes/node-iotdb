@@ -45,7 +45,7 @@ const make = function(tm) {
 
     // internals (some cheat visibility for downstream sets)
     self._sid = '_thing_set' + sid++;
-    self._isThingArray = true;
+    self._isThingSet = true;
 
     let _things = [];
     let _persistds = [];
