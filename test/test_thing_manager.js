@@ -1,5 +1,5 @@
 /*
- *  test_things.js
+ *  test_thing_manager.js
  *
  *  David Janes
  *  IOTDB
@@ -16,21 +16,8 @@ var thing_manager = require("../thing_manager");
 
 require('./instrument/iotdb');
 
-describe('test_things', function() {
+describe('test_thing_manager', function() {
     describe('constructor', function() {
-            /*
-        it('global', function() {
-            var t = things.things();
-            t._reset();
-            var ts = t.things();
-
-            assert.ok(_.is.ThingArray(ts));
-            assert.strictEqual(ts.count(), 0);
-
-            var t2 = things.things();
-            assert.strictEqual(t, t2);
-        });
-         */
         it('new', function() {
             var t = thing_manager.make();
             t._reset();
