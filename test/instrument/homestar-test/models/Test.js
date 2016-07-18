@@ -8,5 +8,5 @@
 
 exports.binding = {
     bridge: require('../TestBridge').Bridge,
-    model: require('./Test.json'),
+    model: require('./test.json'),
 };
