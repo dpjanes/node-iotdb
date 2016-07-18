@@ -28,7 +28,6 @@ exports.bindings = [
     require('./models/TestNoDiscover').binding,
     require('./models/TestMissingBridge').binding,
     require('./models/TestMissingModel').binding,
-    require('./models/TestRenameModel').binding,
 ];
 
 // exports.iotdb = require("iotdb");
