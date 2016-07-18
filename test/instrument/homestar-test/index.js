@@ -25,6 +25,7 @@
 exports.Bridge = require('./TestBridge').Bridge;
 exports.bindings = [
     require('./models/Test').binding,
+    require('./models/TestMatch').binding,
     require('./models/TestNoDiscover').binding,
     require('./models/TestMissingBridge').binding,
     require('./models/TestMissingModel').binding,

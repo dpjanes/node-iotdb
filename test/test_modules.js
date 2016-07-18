@@ -65,7 +65,7 @@ describe('test_modules', function() {
             var bindings = m.bindings();
 
             assert.ok(_.is.Array(bindings));
-            assert.strictEqual(bindings.length, 2);
+            assert.strictEqual(bindings.length, 3);
 
             var binding = bindings[0];
             // assert.strictEqual(binding.model_code, 'test');

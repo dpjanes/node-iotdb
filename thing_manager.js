@@ -195,16 +195,9 @@ const make = function (initd) {
         }, "called");
 
         // bindings can ignore certatin discoveries 
-        const bridge_meta = _.ld.compact(bridge_instance.meta());
-        if (binding.matchd) {
-            const binding_meta = _.ld.compact(binding.matchd);
-            if (!_.d.is.superset(bridge_meta, binding_meta)) {
-                if (bridge_exemplar.ignore) {
-                    bridge_exemplar.ignore(bridge_instance);
-                }
-
-                return;
-            }
+        const bridge_meta = bridge_instance.meta();
+        if (binding.matchd && !_.d.is.superset(bridge_meta, binding.matchd)) {
+            return;
         }
 
         // build a thing

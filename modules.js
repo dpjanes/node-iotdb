@@ -145,7 +145,7 @@ const make = () => {
         binding.bandd = {
             model: binding.model
         };
-        binding.model_id = binding.model_id || binding.model["iot:model-id"];
+        binding.model_id = binding.model["iot:model-id"];
         assert(binding.model_id, "models must have 'iot:model-id'");
 
         return binding;
