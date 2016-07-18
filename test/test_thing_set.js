@@ -382,11 +382,11 @@ describe("test_thing_set", function() {
             });
         });
     });
-    describe("every", function() {
+    describe("forEach", function() {
         it("with one thing", function(done) {
             _make_thing(function(ts) {
                 let count = 0;
-                ts.every(thing => {
+                ts.forEach(thing => {
                     count += 1;
                 });
                 assert.strictEqual(count, 1);
@@ -396,7 +396,7 @@ describe("test_thing_set", function() {
         it("with no things", function(done) {
             _make_no_things(function(ts) {
                 let count = 0;
-                ts.every(thing => {
+                ts.forEach(thing => {
                     count += 1;
                 });
                 assert.strictEqual(count, 0);
@@ -420,6 +420,23 @@ describe("test_thing_set", function() {
                     return value + 10;
                 }, 10);
                 assert.strictEqual(count, 10);
+                done();
+            });
+        });
+    });
+    describe("filter", function() {
+        it("with one thing", function(done) {
+            _make_thing(function(ts) {
+                const things = ts.filter(thing => true);
+                assert.strictEqual(things.length, 1);
+                assert.ok(_.is.Thing(things[0]));
+                done();
+            });
+        });
+        it("with no things", function(done) {
+            _make_no_things(function(ts) {
+                const things = ts.filter(thing => true);
+                assert.strictEqual(things.length, 0);
                 done();
             });
         });

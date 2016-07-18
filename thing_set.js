@@ -51,7 +51,6 @@ const make = function(tm) {
     let _persistds = [];
 
     // array compatibility
-    self.every = f => self.all().every(f);
     self.filter = f => self.all().filter(f);
     self.find = f => self.all().find(f);
     self.forEach = f => self.all().forEach(f);
@@ -75,10 +74,11 @@ const make = function(tm) {
         thing._sidd = thing._sidd || {};
         thing._sidd[self._sid] = true;
 
-        _do_pre(thing);
+        // _do_pre(thing);
+        _persisted(thing);
         _things.push(thing);
         _emitter.emit("thing", thing);
-        _do_post(thing);
+        // _do_post(thing);
 
         _emitter.emit("changed", self);
     };
@@ -86,8 +86,7 @@ const make = function(tm) {
     self.connect = function (modeld, initd, metad) {
         const other_set = tm.connect(modeld, initd, metad);
 
-        self._update(other_set, () => true, "connect-initial");
-
+        // other_set will be empty until nextTick guarenteed
         other_set.on("changed", () => self._update(other_set, () => true, "connect-changed"));
 
         return self;
@@ -187,8 +186,9 @@ const make = function(tm) {
         .map(matchd => _search_match(matchd, thing))
         .find(tf => (tf === false)) === undefined ? thing : null;
 
-    const _is_pre = fname => true; // [ "tag" ].indexOf(fname) > -1;
     const _is_setter = fname => [ "set", "update" ].indexOf(fname) > -1;
+    /*
+    const _is_pre = fname => true; // [ "tag" ].indexOf(fname) > -1;
 
     const _do_pre = thing => _persistds
         .filter(pd => _is_pre(pd.fname))
@@ -197,6 +197,10 @@ const make = function(tm) {
     const _do_post = thing => _persistds
         .filter(pd => !_is_pre(pd.fname))
         .forEach(pd => thing[pd.fname].apply(thing, pd.av));
+    */
+    const _persisted = thing => _persistds
+        .forEach(pd => thing[pd.fname].apply(thing, pd.av));
+
 
     const _persist = function (fname, av) {
         if (_is_setter(fname)) {
@@ -228,13 +232,14 @@ const make = function(tm) {
         }
 
         _things = _.difference(_things, removed_things);
-        removed_things.every(thing => _emitter.emit("removed", thing));
+        removed_things.forEach(thing => _emitter.emit("removed", thing));
 
         added_things
-            .every(thing => {
-                _do_pre(thing);
+            .forEach(thing => {
+                // _do_pre(thing);
+                _persisted(thing);
                 _things.push(thing);
-                _do_post(thing);
+                // _do_post(thing);
 
                 _emitter.emit("thing", thing)
             });
