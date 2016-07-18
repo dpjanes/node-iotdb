@@ -30,6 +30,7 @@ exports.is = {
     Thing: (o) => o && o._isThing,
     Model: (o) => o && o._isModel,
     ThingSet: (o) => o && o._isThingSet,
+    ThingArray: (o) => o && o._isThingSet,
     Transport: (o) => o && o._isTransport,
     Transporter: (o) => o && o._isTransport,
     Bridge: (o) => o && o._isBridge,
