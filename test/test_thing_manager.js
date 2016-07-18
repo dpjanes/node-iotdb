@@ -12,6 +12,7 @@ var assert = require("assert")
 var _ = require("../helpers")
 
 var iotdb = require("../iotdb");
+var exit = require("../exit");
 var thing_manager = require("../thing_manager");
 
 require('./instrument/iotdb');
@@ -121,6 +122,25 @@ describe('test_thing_manager', function() {
                     model_id: "ModelCode",
                 }, {}, 1234);
             }, Error);
+        });
+    });
+    describe('connect while shutting down', function() {
+        beforeEach(function() {
+            exit.shims.setShuttingDown(true);
+        });
+        afterEach(function() {
+            exit.shims.setShuttingDown(false);
+        });
+        it('no argument', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect();
+            ts.on("thing", (thing) => {
+                assert.ok(false, "you should not get here while shutting down");
+            });
+            tm.on("done", () => {
+                done();
+            });
         });
     });
     describe('disconnect', function() {

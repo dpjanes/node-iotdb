@@ -77,4 +77,5 @@ exports.shims = {
         _shutting_down = false;
     },
     getProcess: () => _process,
+    setShuttingDown: v => _shutting_down = v,
 }

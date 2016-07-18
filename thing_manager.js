@@ -111,13 +111,15 @@ const make = function (initd) {
 
         const things = thing_set.make(self);
 
-        process.nextTick(function () {
+        process.nextTick(() => {
             if (modeld.model_id) {
                 _discover_model(things, modeld, metad);
             } else {
                 _discover_all(things, modeld, metad);
             }
         });
+
+        process.nextTick(() => self.emit("done"));
 
         return things; 
     };
