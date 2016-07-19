@@ -28,7 +28,6 @@
 
 const thing_manager = require('./thing_manager');
 const exit = require('./exit');
-
 const _ = require('./helpers');
 
 /**
