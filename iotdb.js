@@ -64,9 +64,9 @@ exports.logger = _.logger.logger;
 const bridge = require('./bridge');
 exports.Bridge = bridge.Bridge;
 
-const keystore = require('./keystore');
-exports.keystore = keystore.keystore;
-exports.Keystore = keystore.Keystore;
+const settings = require('./settings');
+exports.settings = settings.settings;
+exports.Settings = settings.Settings;
 
 const modules = require('./modules');
 exports.modules = modules.modules;
@@ -92,7 +92,7 @@ exports.things = things;
 // testing only
 exports.shims = {
     reset: () => _instance = null,
-    keystore: k => { let ok = exports.keystore; exports.keystore = k; return ok },
+    settings: k => { let ok = exports.settings; exports.settings = k; return ok },
 }
 
 // Windows compatibility

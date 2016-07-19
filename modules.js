@@ -78,7 +78,7 @@ const make = () => {
     };
 
     const _load_master = () => {
-        _.mapObject(iotdb.keystore().get("modules"), ( module_folder, module_name) => {
+        _.mapObject(iotdb.settings().get("modules"), ( module_folder, module_name) => {
             try {
                 const module = require(module_folder);
                 module.module_name = module_name;
@@ -162,7 +162,7 @@ const make = () => {
                         .map(_setup_binding)
                 ), true)
         .filter(binding => binding.bridge)
-        .filter(binding => iotdb.keystore().get("/enabled/modules/" + binding.bridge.module_name, true));
+        .filter(binding => iotdb.settings().get("/enabled/modules/" + binding.bridge.module_name, true));
 
     const _load_setup = () => _.values(_moduled)
         .filter(module => module.setup)

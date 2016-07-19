@@ -41,7 +41,7 @@ var TestBridge = function (initd, native) {
     var self = this;
 
     self.initd = _.defaults(initd,
-        iotdb.keystore().get("bridges/TestBridge/initd"), {
+        iotdb.settings().get("bridges/TestBridge/initd"), {
             poll: 30,
             number: 10,
             reachable: true,

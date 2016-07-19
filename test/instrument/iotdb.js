@@ -11,13 +11,13 @@
 const path = require("path");
 
 const iotdb = require("../../iotdb");
-const keystore = require("../../keystore");
+const settings = require("../../settings");
 
-let _keystore;
-iotdb.shims.keystore(() => {
-    if (!_keystore) {
-        _keystore = new keystore.Keystore();
-        _keystore.d = {
+let _settings;
+iotdb.shims.settings(() => {
+    if (!_settings) {
+        _settings = new settings.Settings();
+        _settings.d = {
             "modules": {
                 "homestar-test": path.join(__dirname, "./homestar-test"),
                 "homestar-broken": path.join(__dirname, "./homestar-broken"),
@@ -25,5 +25,5 @@ iotdb.shims.keystore(() => {
         };
     }
 
-    return _keystore;
+    return _settings;
 });

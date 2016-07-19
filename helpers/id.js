@@ -34,8 +34,8 @@ const _safe = function(component) {
  */
 const machine_id = () => {
     const iotdb = require("../iotdb");
-    const keystore = iotdb.keystore();
-    return keystore.get("/homestar/runner/keys/homestar/key", keystore.get("/machine_id", ""));
+    const settings = iotdb.settings();
+    return settings.get("/homestar/runner/keys/homestar/key", settings.get("/machine_id", ""));
 }
 
 /**

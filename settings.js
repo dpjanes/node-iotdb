@@ -1,5 +1,5 @@
 /*
- *  keystore.js
+ *  settings.js
  *
  *  David Janes
  *  IOTDB.org
@@ -8,7 +8,7 @@
  *
  *  Copyright [2013-2016] [David P. Janes]
  *
- *  Much cleaner Keystore than the one in IOTDB.js
+ *  Much cleaner Settings than the one in IOTDB.js
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ const process = require('process');
 
 const logger = _.logger.make({
     name: 'iotdb',
-    module: 'keystore',
+    module: 'settings',
 });
 
 /**
@@ -68,12 +68,12 @@ const _paths = function() {
     return paths;
 };
 
-const Keystore = function (paramd) {
+const Settings = function (paramd) {
     const self = this;
 
     self.paramd = _.defaults(paramd, {
         root: "/",
-        keystore: "keystore.json",
+        settings: "settings.json",
         path: _paths(), // [".iotdb", "$HOME/.iotdb", ],
         makedirs: true,
     })
@@ -85,9 +85,9 @@ const Keystore = function (paramd) {
     self._load();
 };
 
-util.inherits(Keystore, events.EventEmitter);
+util.inherits(Settings, events.EventEmitter);
 
-Keystore.prototype._normalize_key = function (key) {
+Settings.prototype._normalize_key = function (key) {
     const self = this;
 
     if (!key.match(/^\//)) {
@@ -97,11 +97,11 @@ Keystore.prototype._normalize_key = function (key) {
     return "/" + key.replace(/^\/*/, '');
 };
 
-Keystore.prototype._load = function () {
+Settings.prototype._load = function () {
     const self = this;
     self.d = {};
 
-    var filenames = _.cfg.find(self.paramd.path, "keystore.json");
+    var filenames = _.cfg.find(self.paramd.path, "settings.json");
     filenames.reverse();
 
     if (filenames.length === 0) {
@@ -115,11 +115,11 @@ Keystore.prototype._load = function () {
         if (paramd.error) {
             logger.error({
                 method: "_load",
-                cause: "likely user hasn't added keystore.json using 'iotdb' - not serious",
+                cause: "likely user hasn't added settings.json using 'iotdb' - not serious",
                 filename: paramd.filename,
                 error: paramd.error,
                 exception: paramd.exception,
-            }, "error loading JSON keystore.json");
+            }, "error loading JSON settings.json");
         } else {
             _.d.smart_extend(self.d, paramd.doc);
         }
@@ -132,7 +132,7 @@ Keystore.prototype._load = function () {
 
 /**
  */
-Keystore.prototype.get = function (key, otherwise) {
+Settings.prototype.get = function (key, otherwise) {
     const self = this;
 
     key = self._normalize_key(key);
@@ -142,7 +142,7 @@ Keystore.prototype.get = function (key, otherwise) {
 
 /**
  */
-Keystore.prototype.set = function (key, value) {
+Settings.prototype.set = function (key, value) {
     const self = this;
 
     key = self._normalize_key(key);
@@ -154,7 +154,7 @@ Keystore.prototype.set = function (key, value) {
 
 /**
  */
-Keystore.prototype.save = function (key, value, paramd) {
+Settings.prototype.save = function (key, value, paramd) {
     const self = this;
 
     key = self._normalize_key(key);
@@ -169,12 +169,12 @@ Keystore.prototype.save = function (key, value, paramd) {
     if (paramd.filename) {
         filename = paramd.filename
     } else if (paramd.global) {
-        filename = self.paramd.path[self.paramd.path.length - 1] + "/" + self.paramd.keystore;
+        filename = self.paramd.path[self.paramd.path.length - 1] + "/" + self.paramd.settings;
     } else {
-        filename = self.paramd.path[0] + "/" + self.paramd.keystore;
+        filename = self.paramd.path[0] + "/" + self.paramd.settings;
     }
 
-    // load keystore
+    // load settings
     var d = {};
     _.cfg.load.json([filename], function (paramd) {
         for (var pd in paramd.doc) {
@@ -188,7 +188,7 @@ Keystore.prototype.save = function (key, value, paramd) {
         value = value(_.d.get(d, key));
     }
 
-    // update the (just loaded) keystore
+    // update the (just loaded) settings
     _.d.set(d, key, value);
 
     // save - XXX does not deal with recursion yet
@@ -210,18 +210,18 @@ Keystore.prototype.save = function (key, value, paramd) {
     self.set(key, value);
 };
 
-var _keystore;
+var _settings;
 
-const keystore = function () {
-    if (!_keystore) {
-        _keystore = new Keystore();
+const settings = function () {
+    if (!_settings) {
+        _settings = new Settings();
     }
 
-    return _keystore;
+    return _settings;
 }
 
 /*
  *  API
  */
-exports.Keystore = Keystore;
-exports.keystore = keystore;
+exports.Settings = Settings;
+exports.settings = settings;

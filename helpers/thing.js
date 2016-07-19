@@ -30,7 +30,7 @@ const _ = require("iotdb-helpers");
 
 const _universal_thing_id = ( thing_id, model_id ) => {
     const iotdb = require('../iotdb');
-    const runner_id = iotdb.keystore().get("/homestar/runner/keys/homestar/key", null);
+    const runner_id = iotdb.settings().get("/homestar/runner/keys/homestar/key", null);
 
     if (runner_id) {
         return _.id.uuid.iotdb("t", runner_id.replace(/^.*:/, '') + ":" + _.hash.short(thing_id + ":" + model_id));
