@@ -69,11 +69,35 @@ describe('test_settings', function() {
             });
         });
     });
-    it('instance', function() {
-        const s1 = settings.instance();
-        const s2 = settings.instance();
+    describe('instance', function() {
+        beforeEach(function() {
+            iotdb.shims.settings(settings.instance);
+        });
+        afterEach(function() {
+            iotdb.shims.settings();
+        });
+        
+        it('module', function() {
+            const s1 = settings.instance();
+            const s2 = settings.instance();
 
-        assert.ok(s1);
-        assert.strictEqual(s1, s2);
+            assert.ok(s1);
+            assert.strictEqual(s1, s2);
+        });
+        it('iotdb', function() {
+            const s1 = iotdb.settings();
+            const s2 = settings.instance();
+
+            assert.ok(s1);
+            assert.strictEqual(s1, s2);
+        });
+        it('iotdb / legacy', function() {
+            const s1 = iotdb.keystore();
+            const s2 = settings.instance();
+
+            assert.ok(s1);
+            assert.strictEqual(s1, s2);
+        });
     });
 });
+// iotdb.shims.settings(() => {

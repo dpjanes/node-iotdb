@@ -18,7 +18,7 @@ describe('test_iotdb_id', function() {
     describe('returns first', function() {
         let ok;
         beforeEach(function() {
-            ok = iotdb.shims.settings(() => ({
+            iotdb.shims.settings(() => ({
                 get: ( key, otherwise ) => {
                     if (key === "/homestar/runner/keys/homestar/key") {
                         return "first";
@@ -29,7 +29,7 @@ describe('test_iotdb_id', function() {
             }));
         });
         afterEach(function() {
-            iotdb.shims.settings(ok);
+            iotdb.shims.settings();
         });
         it('returns first', function() {
             const metad = iotdb.controller_meta()

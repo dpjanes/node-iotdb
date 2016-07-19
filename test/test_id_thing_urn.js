@@ -14,9 +14,8 @@ const iotdb = require("../iotdb");
 const _ = require("../helpers");
 
 describe('test_id_thing_urn', function(){
-    let ok;
     beforeEach(function() {
-        ok = iotdb.shims.settings(() => ({
+        iotdb.shims.settings(() => ({
             get: ( key, otherwise ) => {
                 if (key === "/homestar/runner/keys/homestar/key") {
                     return "UNIQUE-MACHINE-ID";
@@ -25,10 +24,9 @@ describe('test_id_thing_urn', function(){
                 }
             }
         }));
-        // console.log("HERE:TEST", iotdb.__filename);
     });
     afterEach(function() {
-        iotdb.shims.settings(ok);
+        iotdb.shims.settings();
     });
     it('machine_id', function(){
         var response = _.id.machine_id();

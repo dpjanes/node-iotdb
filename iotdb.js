@@ -90,8 +90,16 @@ exports.things = things;
 
 // testing only
 exports.shims = {
+    _settings: null,
     reset: () => _instance = null,
-    settings: k => { let ok = exports.settings; exports.settings = k; return ok },
+    settings: k => {
+        if (k) {
+            exports.shims._settings = exports.settings;
+            exports.settings = k;
+        } else {
+            exports.settings = exports.shims._settings
+        }
+    },
 }
 
 // Windows compatibility
