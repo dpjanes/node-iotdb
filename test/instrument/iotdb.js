@@ -16,7 +16,7 @@ const settings = require("../../settings");
 let _settings;
 iotdb.shims.settings(() => {
     if (!_settings) {
-        _settings = new settings.Settings();
+        _settings = settings.make();
         _settings.d = {
             "modules": {
                 "homestar-test": path.join(__dirname, "./homestar-test"),

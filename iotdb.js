@@ -66,6 +66,7 @@ exports.Bridge = bridge.Bridge;
 const settings = require('./settings');
 exports.settings = settings.instance;
 exports.Settings = settings.Settings;
+exports.keystore = () => exports.settings();
 
 const modules = require('./modules');
 exports.modules = modules.instance;

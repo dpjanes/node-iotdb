@@ -32,7 +32,7 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const process = require('process');
+const assert = require('assert');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -101,33 +101,20 @@ Settings.prototype._load = function () {
     const self = this;
     self.d = {};
 
-    var filenames = _.cfg.find(self.paramd.path, "settings.json");
+    const filenames = _.cfg.find(self.paramd.path, self.paramd.settings);
     filenames.reverse();
 
-    if (filenames.length === 0) {
-        self.emit("loaded");
-        return;
-    }
+    const docds = [];
+    _.cfg.load.json(filenames, docd => docds.push(docd));
 
-    var count = 0;
+    docds
+        .filter(docd => docd.error)
+        .forEach(docd => assert(!docd.error, docd.error));
 
-    _.cfg.load.json(filenames, function (paramd) {
-        if (paramd.error) {
-            logger.error({
-                method: "_load",
-                cause: "likely user hasn't added settings.json using 'iotdb' - not serious",
-                filename: paramd.filename,
-                error: paramd.error,
-                exception: paramd.exception,
-            }, "error loading JSON settings.json");
-        } else {
-            _.d.smart_extend(self.d, paramd.doc);
-        }
+    docds
+        .forEach(docd => _.d.smart_extend(self.d, docd.doc));
 
-        if (++count === 0) {
-            self.emit("loaded");
-        }
-    });
+    self.emit("loaded");
 };
 
 /**
@@ -210,18 +197,22 @@ Settings.prototype.save = function (key, value, paramd) {
     self.set(key, value);
 };
 
+const make = (paramd) => {
+    return new Settings(paramd);
+};
+
 let _settings;
 
-const instance = function () {
+const instance = () => {
     if (!_settings) {
-        _settings = new Settings();
+        _settings = make();
     }
 
     return _settings;
-}
+};
 
 /*
  *  API
  */
-exports.Settings = Settings;
+exports.make = make;
 exports.instance = instance;
