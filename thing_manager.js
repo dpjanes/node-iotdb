@@ -243,13 +243,12 @@ const make = function (initd) {
      *  returning the amount of time we should wait
      *  before exiting
      */
-    self.disconnect = () => {
-        return _.flatten([ _bridge_exemplars, _.values(_thingd) ], true)
+    self.disconnect = () =>
+        _.flatten([ _bridge_exemplars, _.values(_thingd) ], true)
             .filter(bort => bort.disconnect)
             .map(bort => bort.disconnect())
             .filter(wait => _.is.Number(wait))
             .reduce(( sum, wait ) => sum + wait, 0);
-    };
 
     return self;
 }
