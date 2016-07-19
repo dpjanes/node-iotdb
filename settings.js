@@ -210,9 +210,9 @@ Settings.prototype.save = function (key, value, paramd) {
     self.set(key, value);
 };
 
-var _settings;
+let _settings;
 
-const settings = function () {
+const instance = function () {
     if (!_settings) {
         _settings = new Settings();
     }
@@ -224,4 +224,4 @@ const settings = function () {
  *  API
  */
 exports.Settings = Settings;
-exports.settings = settings;
+exports.instance = instance;

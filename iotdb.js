@@ -64,7 +64,7 @@ const bridge = require('./bridge');
 exports.Bridge = bridge.Bridge;
 
 const settings = require('./settings');
-exports.settings = settings.settings;
+exports.settings = settings.instance;
 exports.Settings = settings.Settings;
 
 const modules = require('./modules');
