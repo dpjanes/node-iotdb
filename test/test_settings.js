@@ -69,4 +69,11 @@ describe('test_settings', function() {
             });
         });
     });
+    it('instance', function() {
+        const s1 = settings.instance();
+        const s2 = settings.instance();
+
+        assert.ok(s1);
+        assert.strictEqual(s1, s2);
+    });
 });

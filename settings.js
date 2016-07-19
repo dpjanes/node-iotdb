@@ -105,59 +105,6 @@ const make = (initd) => {
         self.emit("changed", key);
     };
 
-    self.save = (key, value, paramd) => {
-        key = _normalize_key(key);
-        paramd = _.d.compose.shallow(paramd, {
-            global: false,
-            filename: null,
-            set: true,
-            mkdirs: false,
-        });
-
-        let filename;
-        if (paramd.filename) {
-            filename = paramd.filename
-        } else if (paramd.global) {
-            filename = _initd.path[_initd.path.length - 1] + "/" + _initd.settings;
-        } else {
-            filename = _initd.path[0] + "/" + _initd.settings;
-        }
-
-        // load settings
-        const d = {};
-        _.cfg.load.json([filename], function (paramd) {
-            for (const pd in paramd.doc) {
-                d[pd] = paramd.doc[pd];
-            }
-        });
-
-        // if value is a function, we call it with the current value to get a new value
-        // self allows "in-place" updating of a particular value
-        if (_.is.Function(value)) {
-            value = value(_.d.get(d, key));
-        }
-
-        // update the (just loaded) settings
-        _.d.set(d, key, value);
-
-        // save 
-        if (paramd.mkdirs) {
-            const dirname = path.dirname(filename)
-            try {
-                fs.mkdirSync(dirname);
-            } catch (x) {}
-        }
-        fs.writeFileSync(filename, JSON.stringify(d, null, 2));
-
-        logger.info({
-            key: key,
-            value: value,
-            filename: filename,
-        }, "updated");
-
-        self.set(key, value);
-    };
-
     self.setMaxListeners(0);
     _load()
 
