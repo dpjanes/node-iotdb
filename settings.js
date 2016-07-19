@@ -41,10 +41,10 @@ const logger = _.logger.make({
  */
 const _paths = function() {
     const paths = [];
-    let current = process.cwd();
+    let current_folder = process.cwd();
 
     while (true) {
-        const iotdb_folder = path.join(current, ".iotdb");
+        const iotdb_folder = path.join(current_folder, ".iotdb");
 
         try {
             const stbuf = fs.statSync(iotdb_folder);
@@ -54,12 +54,12 @@ const _paths = function() {
         } catch (x) {
         }
 
-        const next = path.normalize(path.join(current, ".."));
-        if (next === current) {
+        const next_folder = path.normalize(path.join(current_folder, ".."));
+        if (next_folder === current_folder) {
             break;
         }
 
-        current = next;
+        current_folder = next_folder;
     }
 
     return paths;
@@ -90,14 +90,7 @@ const make = (initd) => {
         filenames.reverse();
 
         const docds = [];
-        _.cfg.load.json(filenames, docd => docds.push(docd));
-
-        docds
-            .filter(docd => docd.error)
-            .forEach(docd => assert(!docd.error, docd.error));
-
-        docds
-            .forEach(docd => _.d.smart_extend(self.d, docd.doc));
+        _.cfg.load.json(filenames, docd => _.d.smart_extend(self.d, docd.doc));
 
         self.emit("loaded");
     };
@@ -186,3 +179,6 @@ const instance = () => {
  */
 exports.make = make;
 exports.instance = instance;
+exports.shims = {
+    paths: _paths,
+};
