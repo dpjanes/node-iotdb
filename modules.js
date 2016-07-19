@@ -179,7 +179,7 @@ let _modules;
 
 /**
  */
-const modules = () => {
+const instance = () => {
     if (!_modules) {
         _modules = make();
     }
@@ -190,7 +190,7 @@ const modules = () => {
 /*
  *  API
  */
-exports.modules = modules;
+exports.instance = instance;
 exports.shims = {
     reset: () => _modules = null,
     require: r => _require = r,

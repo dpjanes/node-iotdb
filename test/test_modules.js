@@ -23,14 +23,14 @@ describe('test_modules', function() {
 
     describe('constructor', function() {
         it('global', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var ms = m.modules();
 
             assert.ok(_.is.Array(ms));
             assert.strictEqual(ms.length, 1);
             assert.strictEqual(ms[0].module_name, 'homestar-test');
 
-            var m2 = modules.modules();
+            var m2 = modules.instance();
             assert.strictEqual(m, m2);
         });
         /*
@@ -46,14 +46,14 @@ describe('test_modules', function() {
     });
     describe('name', function() {
         it('find by name', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var module = m.module("homestar-test");
 
             assert.ok(module);
             assert.strictEqual(module.module_name, 'homestar-test');
         });
         it('find by name (missing)', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var module = m.module("homestar-bad");
 
             assert.ok(_.is.Equal(module, undefined));
@@ -61,7 +61,7 @@ describe('test_modules', function() {
     });
     describe('bindings', function() {
         it('returns expected values', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var bindings = m.bindings();
 
             assert.ok(_.is.Array(bindings));
@@ -75,7 +75,7 @@ describe('test_modules', function() {
             assert.strictEqual(binding.bridge.bridge_name, 'test-bridge');
         });
         it('returns same bindings', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var bindings1 = m.bindings();
             var bindings2 = m.bindings();
 
@@ -86,7 +86,7 @@ describe('test_modules', function() {
     });
     describe('bridges', function() {
         it('returns something', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var bridges = m.bridges();
 
             assert.ok(_.is.Array(bridges));
@@ -97,7 +97,7 @@ describe('test_modules', function() {
             assert.strictEqual(bridge.bridge_name, 'test-bridge');
         });
         it('returns same object', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var bridges1 = m.bridges();
             var bridges2 = m.bridges();
             assert.strictEqual(bridges1, bridges2);
@@ -105,12 +105,12 @@ describe('test_modules', function() {
     });
     describe('bridge', function() {
         it('find by name', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var bridge = m.bridge("homestar-test");
             assert.ok(bridge);
         });
         it('find by name (missing)', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             var bridge = m.bridge("test-bridge");
             assert.ok(!bridge);
         });
@@ -124,33 +124,33 @@ describe('test_modules', function() {
         });
         it('one good argument', function() {
             modules.shims.reset();
-            var m = modules.modules();
+            var m = modules.instance();
             m.use("homestar-test");
         });
         it('one bad argument', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             assert.throws(() => {
                 m.use("homestar-test-xxx")
             }, Error);
         });
         it('two good argument', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             m.use("test", require("./instrument/homestar-test"));
         });
         it('second argument does not exist', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             assert.throws(() => {
                 m.use("test", require("./instrument/homestar-test-xxx"));
             }, Error);
         });
         it('second argument is string', function() {
-            var m = modules.modules();
+            var m = modules.instance();
             assert.throws(() => {
                 m.use("test", "./instrument/homestar-test-xxx");
             }, Error);
         });
         it('module is called', function() {
-            const m = modules.modules();
+            const m = modules.instance();
             let _use = false;
             let _setup = false;
 
@@ -164,7 +164,7 @@ describe('test_modules', function() {
         });
         it('module is registered', function() {
             modules.shims.reset();
-            const m = modules.modules();
+            const m = modules.instance();
             assert.ok(!m.module("test"));
             m.use("test", {});
             assert.ok(m.module("test"));

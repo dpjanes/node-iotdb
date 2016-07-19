@@ -73,7 +73,7 @@ const Settings = function (paramd) {
 
     self.paramd = _.defaults(paramd, {
         root: "/",
-        settings: "settings.json",
+        settings: "keystore.json",
         path: _paths(), // [".iotdb", "$HOME/.iotdb", ],
         makedirs: true,
     })

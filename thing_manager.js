@@ -27,7 +27,6 @@
 "use strict";
 
 const _ = require('./helpers');
-const modules = require("./modules").modules;
 
 const iotdb_thing = require('iotdb-thing');
 const thing_set = require('./thing_set');
@@ -125,7 +124,7 @@ const make = function (initd) {
     };
 
     const _discover_model = function (things, modeld, metad) {
-        const any = modules().bindings()
+        const any = iotdb.modules().bindings()
             // .map(binding => { console.log("binding", binding, "want", modeld.model_id); return binding })
             .filter(binding => modeld.model_id === binding.model_id)
             // .map(binding => { console.log("BINDING", binding.model_id); return binding })
@@ -141,7 +140,7 @@ const make = function (initd) {
     };
 
     const _discover_all = function (things, modeld, metad) {
-        modules().bindings()
+        iotdb.modules().bindings()
             .filter(binding => binding.discover !== false)
             .map(binding => _discover_binding(things, modeld, metad, binding));
     };

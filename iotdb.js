@@ -69,9 +69,8 @@ exports.settings = settings.settings;
 exports.Settings = settings.Settings;
 
 const modules = require('./modules');
-exports.modules = modules.modules;
-exports.Modules = modules.Modules;
-exports.use = (module_name, module) => modules.modules().use(module_name, module);
+exports.modules = modules.instance;
+exports.use = (module_name, module) => exports.modules().use(module_name, module);
 
 const runner_timestamp = _.timestamp.make();
 exports.controller_meta = () => {
