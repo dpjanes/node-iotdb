@@ -43,6 +43,7 @@ const logger = _.logger.make({
  */
 const make = (binding, initd) => {
     const self = Object.assign({}, events.EventEmitter.prototype);
+    const thing_manager = require("../thing_manager");
 
     const bridge_exemplar = new binding.bridge(_.defaults(initd, binding.initd, {}));
 
@@ -64,10 +65,10 @@ const make = (binding, initd) => {
         // to bring along data stored here - horrible side effect, revisit
         bridge_instance.binding = binding;
 
-        const thing = _.thing.make_thing({
+        const thing = thing_manager.make_thing({
             model: binding.model,
         });
-        _.thing.bind_thing_to_bridge(thing, bridge_instance, binding);
+        thing_manager.bind_thing_to_bridge(thing, bridge_instance, binding);
 
         self.emit("thing", thing);
 

@@ -40,6 +40,147 @@ const logger = _.logger.make({
     module: 'things',
 });
 
+const _universal_thing_id = thing => {
+    const iotdb = require('./iotdb');
+    const runner_id = iotdb.settings().get("/homestar/runner/keys/homestar/key", null);
+    const thing_id = thing.thing_id();
+    const model_id = thing.model_id();
+
+    if (runner_id) {
+        return _.id.uuid.iotdb("t", runner_id.replace(/^.*:/, '') + ":" + _.hash.short(thing_id + ":" + model_id));
+    } else {
+        return thing_id + ":" + model_id;
+    }
+};
+
+const bind_thing_to_bridge = (thing, bridge, binding) => {
+    const _reachable_changed = is_reachable => {
+        thing.band("connection").set("iot:reachable", is_reachable);
+    };
+
+    const _update_from_mapping = pulld => {
+        const mapping = bridge.binding.mapping;
+        if (!mapping) {
+            return pulld;
+        }
+
+        pulld = _.d.clone.shallow(pulld);
+
+        _.pairs(pulld)
+            .map(pkv => ({
+                key: pkv[0],
+                value: pkv[1],
+                cvalue: _.ld.compact(pkv[1]),
+                md: mapping[pkv[0]]
+            }))
+            .filter(d => d.md)
+            .forEach(d => {
+                _.pairs(d.md)
+                    .filter(mkv => (mkv[1] === d.value) || (mkv[1] === d.cvalue))
+                    .forEach(mkv => pulld[d.key] = mkey[0])
+                });
+
+        return pulld;
+    }
+
+    const _pull_istate = pulld => {
+        pulld = _.timestamp.add(pulld);
+
+        thing.band("istate").update(pulld, {
+            add_timestamp: true,
+            check_timestamp: true,
+            validate: false,
+        });
+    };
+
+    const _bridge_to_meta = pulld => {
+        _reachable_changed(bridge.reachable() ? true : false);
+
+        const metad = thing.state("meta");
+        metad["iot:thing-id"] = _universal_thing_id(thing); 
+
+        thing.band("meta").update(metad, {
+            add_timestamp: true,
+            check_timestamp: false,
+        });
+    };
+
+    const _on_ostate = ( _t, _b, state ) => {
+        if (!bridge.__thing) {
+            thing.removeListener("ostate", _on_ostate);
+            return;
+        }
+
+        state = _.object(_.pairs(state)
+            .filter(p => p[1] !== null)
+            .filter(p => !p[0].match(/^@/)));
+        if (_.is.Empty(state)) {
+            return;
+        }
+        
+        bridge.push(state, () => {
+            thing.update("ostate", {});
+        });
+    };
+
+    const _on_disconnect = () => {
+        thing.removeListener("ostate", _on_ostate);
+        thing.removeListener("disconnect", _on_disconnect);
+        thing.reachable = () => false;
+
+        if (thing.__bridge === thing) {
+            thing.__bridge = null;
+        }
+        bridge.__thing = null;
+
+        bridge.disconnect();
+    }
+
+    const _model_to_meta = () => {
+        const iot_keys = [ "iot:facet", "iot:help", "iot:model-id" ];
+
+        const metad = _.object(_.pairs(thing.state("model"))
+            .filter(kv => iot_keys.indexOf(kv[0]) > -1 || kv[0].match(/^schema:/)))
+
+        thing.band("meta").update(metad);
+    }
+
+    // --- main code
+    bridge.__thing = thing;
+    thing.__bridge = bridge;
+
+    bridge.pulled = pulld => {
+        if (pulld) {
+            _pull_istate(pulld);
+        } else {
+            _reachable_changed(bridge.reachable() ? true : false);
+        } 
+    };
+
+    thing.on("disconnect", _on_disconnect);
+    thing.on("ostate", _on_ostate);
+
+
+    _model_to_meta();
+    _bridge_to_meta();
+
+    bridge.connect(_.d.compose.shallow(binding.connectd, {}));
+    bridge.pull();
+};
+
+const make_thing = bandd => {
+    const iotdb_thing = require('iotdb-thing');
+
+    bandd = _.d.clone.deep(bandd);
+    bandd.model = bandd.model || {};
+    bandd.meta = bandd.meta || {};
+    bandd.istate = bandd.istate || {};
+    bandd.ostate = bandd.ostate || {};
+    bandd.connection = bandd.connection || {};
+
+    return iotdb_thing.make(bandd);
+};
+
 const make = function (initd) {
     const self = Object.assign({}, events.EventEmitter.prototype);
     const iotdb = require("./iotdb");
@@ -203,7 +344,7 @@ const make = function (initd) {
         const bandd = _.d.clone.deep(binding.bandd);
         bandd.meta = _.d.compose.shallow(metad, bridge_meta, bandd.meta, {});
 
-        const new_thing = _.thing.make_thing(bandd); 
+        const new_thing = make_thing(bandd); 
         const new_thing_id = new_thing.thing_id();
         new_thing._tid = _tid++;
 
@@ -212,7 +353,7 @@ const make = function (initd) {
         if (!old_thing) {
             _thingd[new_thing_id] = new_thing;
 
-            _.thing.bind_thing_to_bridge(new_thing, bridge_instance, binding);
+            bind_thing_to_bridge(new_thing, bridge_instance, binding);
 
             new_thing.band("meta").update(metad, {
                 add_timestamp: true,
@@ -233,7 +374,7 @@ const make = function (initd) {
                 old_thing.__bridge.__thing = null;
             }
 
-            _.thing.bind_thing_to_bridge(old_thing, bridge_instance, binding);
+            bind_thing_to_bridge(old_thing, bridge_instance, binding);
             self.emit("_bridge_replaced");
         }
     };
@@ -257,3 +398,5 @@ const make = function (initd) {
  *  API
  */
 exports.make = make;
+exports.bind_thing_to_bridge = bind_thing_to_bridge;
+exports.make_thing = make_thing;

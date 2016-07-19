@@ -30,7 +30,6 @@ const local_modules = [
     require('./helpers/is'),
     require('./helpers/version'),
     require('./helpers/bridge'),
-    require('./helpers/thing'),
     require('./helpers/id'),
 ];
 local_modules.map(local_module => {
