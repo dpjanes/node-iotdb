@@ -15,12 +15,12 @@ var iotdb = require("../iotdb");
 var settings = require("../settings");
 
 describe('test_iotdb_id', function() {
-    describe('returns first', function() {
+    describe('returns /machine_id', function() {
         let ok;
         beforeEach(function() {
             iotdb.shims.settings(() => ({
                 get: ( key, otherwise ) => {
-                    if (key === "/homestar/runner/keys/homestar/key") {
+                    if (key === "/machine_id") {
                         return "first";
                     } else {
                         return otherwise;
@@ -36,6 +36,7 @@ describe('test_iotdb_id', function() {
             assert.strictEqual(metad["iot:runner.id"], "first");
         });
     });
+    /*
     describe('returns second', function() {
         let ok;
         beforeEach(function() {
@@ -59,6 +60,7 @@ describe('test_iotdb_id', function() {
             assert.strictEqual(metad["iot:runner.id"], "second");
         });
     });
+    */
     it('has timestamp', function() {
         const metad = iotdb.controller_meta()
         const timestamp = metad["iot:runner.timestamp"];

@@ -214,4 +214,29 @@ describe('test_thing_manager', function() {
             });
         });
     });
+    describe('thing-id', function() {
+        beforeEach(function() {
+            iotdb.shims.settings(() => ({
+                get: ( key, otherwise ) => {
+                    if (key === "/homestar/runner/keys/homestar/key") {
+                        return "UNIQUE-MACHINE-ID";
+                    } else {
+                        return otherwise;
+                    }
+                }
+            }));
+        });
+        afterEach(function() {
+            iotdb.shims.settings();
+        });
+        it('make sure homestar key is used', function(done) {
+            const tm = thing_manager.make();
+            
+            tm.connect('Test');
+            tm.once("thing", thing => {
+                assert.strictEqual(thing.thing_id(), "urn:iotdb:t:UNIQUE-MACHINE-ID:Det4E2Xc");
+                done();
+            });
+        });
+    });
 });

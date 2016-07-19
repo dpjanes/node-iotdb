@@ -17,8 +17,10 @@ describe('test_id_thing_urn', function(){
     beforeEach(function() {
         iotdb.shims.settings(() => ({
             get: ( key, otherwise ) => {
-                if (key === "/homestar/runner/keys/homestar/key") {
+                if (key === "/machine_id") {
                     return "UNIQUE-MACHINE-ID";
+                } else if (key === "/homestar/runner/keys/homestar/key") {
+                    return "HOMESTAR-ID";
                 } else {
                     return otherwise;
                 }
