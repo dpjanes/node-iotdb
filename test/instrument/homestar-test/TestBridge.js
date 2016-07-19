@@ -44,6 +44,7 @@ var TestBridge = function (initd, native) {
         iotdb.keystore().get("bridges/TestBridge/initd"), {
             poll: 30,
             number: 10,
+            reachable: true,
         }
     );
     self.native = native;   // the thing that does the work - keep this name
@@ -128,11 +129,11 @@ TestBridge.prototype._forget = function () {
  */
 TestBridge.prototype.disconnect = function () {
     var self = this;
-    if (!self.native || !self.native) {
-        return;
+    if (self.native) {
+        self._forget();
     }
 
-    self._forget();
+    return 0.5;
 };
 
 /* --- data --- */
@@ -214,7 +215,7 @@ TestBridge.prototype.meta = function () {
  *  See {iotdb.bridge.Bridge#reachable} for documentation.
  */
 TestBridge.prototype.reachable = function () {
-    return this.native !== null;
+    return this.initd.reachable && this.native !== null;
 };
 
 /**

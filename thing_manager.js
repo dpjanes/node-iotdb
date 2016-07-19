@@ -207,7 +207,7 @@ const make = function (initd) {
         const new_thing = _.thing.make_thing(bandd); 
         const new_thing_id = new_thing.thing_id();
         new_thing._tid = _tid++;
-        
+
         // see if it still exists
         const old_thing = _thingd[new_thing_id];
         if (!old_thing) {
@@ -223,16 +223,19 @@ const make = function (initd) {
             things.add(new_thing);
 
             self.emit("thing", new_thing);
-        } else if (new_thing.reachable()) {
-            return; // don't replace reachable things
         } else if (!bridge_instance.reachable()) {
-            return; // don't replace with an unreachable thing
+            // don't replace with an unreachable thing
+            self.emit("_ignored", "new thing not reachable");
+        } else if (old_thing.reachable()) {
+            // don't replace reachable things
+            self.emit("_ignored", "old thing still reachable");
         } else {
             if (old_thing.__bridge) {
                 old_thing.__bridge.__thing = null;
             }
 
             _.thing.bind_thing_to_bridge(old_thing, bridge_instance, binding);
+            self.emit("_bridge_replaced");
         }
     };
 

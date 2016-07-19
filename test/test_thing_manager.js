@@ -162,4 +162,56 @@ describe('test_thing_manager', function() {
 
         });
     });
+    describe('connect replacement', function() {
+        it('block replacement of reachable thing', function(done) {
+            const tm = thing_manager.make();
+            
+            tm.connect('Test');
+            tm.once("thing", () => {
+                tm.connect('Test');
+                tm.once("_ignored", reason => {
+                    assert.strictEqual(reason, "old thing still reachable");
+                    done();
+                });
+            });
+        });
+        it("don't allow replacement with unreachable thing", function(done) {
+            const tm = thing_manager.make();
+            
+            tm.connect('Test');
+            tm.once("thing", () => {
+                tm.connect('Test', { reachable: false });
+                tm.once("_ignored", reason => {
+                    assert.strictEqual(reason, "new thing not reachable");
+                    done();
+                });
+            });
+        });
+        it('replace unreachable thing', function(done) {
+            const tm = thing_manager.make();
+            
+            tm.connect('Test');
+            tm.once("thing", (thing) => {
+                thing.__bridge.test_disconnect();
+                tm.connect('Test');
+                tm.once("_bridge_replaced", reason => {
+                    done();
+                });
+            });
+        });
+        it('replace unreachable thing - without bridge', function(done) {
+            const tm = thing_manager.make();
+            
+            tm.connect('Test');
+            tm.once("thing", (thing) => {
+                thing.__bridge.test_disconnect();
+                thing.__bridge = null;
+
+                tm.connect('Test');
+                tm.once("_bridge_replaced", reason => {
+                    done();
+                });
+            });
+        });
+    });
 });
