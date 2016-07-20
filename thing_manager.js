@@ -54,10 +54,6 @@ const _universal_thing_id = thing => {
 };
 
 const bind_thing_to_bridge = (thing, bridge, binding) => {
-    const _reachable_changed = is_reachable => {
-        thing.band("connection").set("iot:reachable", is_reachable);
-    };
-
     const _update_from_mapping = pulld => {
         const mapping = bridge.binding.mapping;
         if (!mapping) {
@@ -94,23 +90,20 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     };
 
     const _bridge_to_meta = pulld => {
-        _reachable_changed(bridge.reachable() ? true : false);
-
         const metad = thing.state("meta");
         metad["iot:thing-id"] = _universal_thing_id(thing); 
 
         thing.band("meta").update(metad, {
-            add_timestamp: true,
+            add_timestamp: false,
             check_timestamp: false,
         });
     };
 
-    const _on_ostate = ( _t, _b, state ) => {
-        if (!bridge.__thing) {
-            thing.removeListener("ostate", _on_ostate);
-            return;
-        }
+    const _on_reachable = () => {
+        thing.band("connection").set("iot:reachable", bridge.reachable());
+    };
 
+    const _on_ostate = ( _t, _b, state ) => {
         state = _.object(_.pairs(state)
             .filter(p => p[1] !== null)
             .filter(p => !p[0].match(/^@/)));
@@ -155,7 +148,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         if (pulld) {
             _pull_istate(pulld);
         } else {
-            _reachable_changed(bridge.reachable() ? true : false);
+            _on_reachable();
         } 
     };
 
@@ -163,6 +156,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     thing.on("ostate", _on_ostate);
 
     _model_to_meta();
+    _on_reachable();
     _bridge_to_meta();
 
     bridge.connect(_.d.compose.shallow(binding.connectd, {}));
