@@ -161,6 +161,97 @@ describe('test_thing_manager', function() {
             });
 
         });
+        it('thing.disconnect emits disconnect event', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect({
+                model_id: "Test",
+            });
+
+            ts.on("thing", function(thing) {
+                thing.on("disconnect", () => {
+                    done();
+                });
+
+                thing.disconnect();
+            });
+
+        });
+        it('thing_manager.disconnect causes disconnect event', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect({
+                model_id: "Test",
+            });
+
+            ts.on("thing", function(thing) {
+                thing.on("disconnect", () => {
+                    done();
+                });
+
+                tm.disconnect();
+            });
+
+        });
+        it('thing is no longer reachable', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect({
+                model_id: "Test",
+            });
+
+            ts.on("thing", function(thing) {
+                thing.on("disconnect", () => {
+                    assert.ok(!thing.reachable());
+                    done();
+                });
+
+                thing.disconnect();
+            });
+        });
+        it('thing no longer has a bridge and visa versa', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect({
+                model_id: "Test",
+            });
+
+            ts.on("thing", function(thing) {
+                assert.ok(thing.__bridge);
+                assert.ok(thing.__bridge.__thing === thing);
+
+                const bridge = thing.__bridge;
+
+                thing.on("disconnect", () => {
+                    assert.ok(!thing.__bridge);
+                    assert.ok(!bridge.__thing);
+                    done();
+                });
+
+                thing.disconnect();
+            });
+        });
+        it('thing without bridge doesn\' blow up', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect({
+                model_id: "Test",
+            });
+
+            ts.on("thing", function(thing) {
+                assert.ok(thing.__bridge);
+                const bridge = thing.__bridge;
+                thing.__bridge = null;
+
+                thing.on("disconnect", () => {
+                    assert.ok(!thing.__bridge);
+                    assert.ok(!bridge.__thing);
+                    done();
+                });
+
+                thing.disconnect();
+            });
+        });
     });
     describe('connect replacement', function() {
         it('block replacement of reachable thing', function(done) {
@@ -273,6 +364,40 @@ describe('test_thing_manager', function() {
                 bandd[band].something = 10;
                 assert.deepEqual(state, thing.band("model").state(band));
             });
+        });
+    });
+    describe('ostate', function() {
+        it('something connected', function(done) {
+            const tm = thing_manager.make();
+            
+            const ts = tm.connect({
+                model_id: "Test",
+            });
+
+            ts.on("thing", function(thing) {
+                let got_true = false;
+                let got_null = false;
+
+                thing.set(":on", true);
+                thing.on("ostate", ( thing, band, state ) => {
+                    if (state.on === true) {
+                        assert.ok(!got_true);
+                        assert.ok(!got_null);
+                        got_true = true;
+                    } else if (state.on === null) {
+                        assert.ok(!got_null);
+                        assert.ok(got_true);
+                        got_null = true;
+                    } else {
+                        assert.ok(false, "only expect null and true");
+                    }
+
+                    if (got_true && got_null) {
+                        done();
+                    }
+                });
+            });
+
         });
     });
 });

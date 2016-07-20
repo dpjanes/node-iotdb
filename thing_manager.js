@@ -119,7 +119,9 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         }
         
         bridge.push(state, () => {
-            thing.update("ostate", {});
+            process.nextTick(() => {
+                thing.update("ostate", {}, { replace: true });
+            });
         });
     };
 
@@ -128,7 +130,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         thing.removeListener("disconnect", _on_disconnect);
         thing.reachable = () => false;
 
-        if (thing.__bridge === thing) {
+        if (thing.__bridge && (thing.__bridge.__thing === thing)) {
             thing.__bridge = null;
         }
         bridge.__thing = null;
