@@ -26,6 +26,7 @@
 
 "use strict";
 
+const iotdb_thing = require("iotdb-thing");
 const thing_manager = require('./thing_manager');
 const exit = require('./exit');
 const _ = require('./helpers');
@@ -87,6 +88,9 @@ exports.users = require('./users');
 exports.iot = iot;
 exports.connect = connect;
 exports.things = things;
+
+// coercsion
+exports.as = iotdb_thing.as;
 
 // testing only
 exports.shims = {
