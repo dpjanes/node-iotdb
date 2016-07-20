@@ -160,7 +160,6 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     thing.on("disconnect", _on_disconnect);
     thing.on("ostate", _on_ostate);
 
-
     _model_to_meta();
     _bridge_to_meta();
 
@@ -177,6 +176,7 @@ const make_thing = bandd => {
     bandd.istate = bandd.istate || {};
     bandd.ostate = bandd.ostate || {};
     bandd.connection = bandd.connection || {};
+    bandd.transient = bandd.transient || {};
 
     return iotdb_thing.make(bandd);
 };

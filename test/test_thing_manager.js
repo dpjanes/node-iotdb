@@ -239,4 +239,40 @@ describe('test_thing_manager', function() {
             });
         });
     });
+    describe('make_thing', function() {
+        it('returns a Thing', function() {
+            const bandd = {};
+            const thing = thing_manager.make_thing(bandd);
+
+            assert.ok(_.is.Thing(thing));
+        });
+        it('has required bands', function() {
+            const bandd = {};
+            const thing = thing_manager.make_thing(bandd);
+
+            assert.ok(thing.band("model"));
+            assert.ok(thing.band("meta"));
+            assert.ok(thing.band("istate"));
+            assert.ok(thing.band("ostate"));
+            assert.ok(thing.band("connection"));
+            assert.ok(thing.band("transient"));
+        });
+        it('bands are immutable', function() {
+            const bandd = {
+                model: {},
+                meta: {},
+                istate: {},
+                ostate: {},
+                connection: {},
+                transient: {},
+            };
+            const thing = thing_manager.make_thing(bandd);
+
+            [ "model", "meta", "istate", "ostate", "connection", "transient" ].forEach(band => {
+                const state = thing.band("model").state(band);
+                bandd[band].something = 10;
+                assert.deepEqual(state, thing.band("model").state(band));
+            });
+        });
+    });
 });
