@@ -25,6 +25,8 @@
 const semver = require('semver');
 const _ = require("iotdb-helpers");
 
+let _version = process.versions.node;
+
 const _die = function(error, paramd) {
     if (!error) {
         return;
@@ -33,46 +35,43 @@ const _die = function(error, paramd) {
     console.log("#######################");
     console.log("## " + _.error.message(error));
     console.log("## ");
-
-    if (paramd.satisfies) {
-        console.log("## Expected Version: " + paramd.satisfies);
-    }
-    if (paramd.version) {
-        console.log("## Got Version: " + paramd.version);
-    }
-    if (paramd.cause) {
-        console.log("## Cause: " + paramd.cause);
-    }
-
+    console.log("## Expected Version: " + paramd.satisfies);
+    console.log("## Got Version: " + paramd.version);
+    console.log("## Cause: " + paramd.cause);
     console.log("## ");
     console.log("#######################");
 
-    process.exit(1);
+    throw error;
 };
 
-const _check = function(paramd, callback) {
-    if (!paramd.version) {
-        return callback(null, null);
+const _check = function(paramd, done) {
+    if (!semver.satisfies(paramd.version, paramd.satisfies)) {
+        return done(new Error("Version not satisfied: need " + paramd.satisfies + " got: " + paramd.version), paramd);
     }
 
-    if (paramd.satisfies && !semver.satisfies(paramd.version, paramd.satisfies)) {
-        return callback(new Error(paramd.error || "Version not satisfied"), paramd);
-    }
-
-    return callback(null, null);
+    return done(null, paramd);
 };
 
-const check_node = function (callback) {
+const check_node = function (done) {
     _check({
         message: "Bad Node.JS Version",
-        version: process.versions.node,
+        version: _version,
         satisfies: ">=4.0.0",
         cause: "Older Node.JS installed. Upgrade your version of Node.JS to something more modern",
-    }, callback || _die);
+    }, done || _die);
 };
 
 exports.version = {
     check: {
         node: check_node,
+    },
+};
+exports.shims = {
+    version: v => {
+        if (v) {
+            _version = v;
+        } else {
+            _version = process.versions.node;
+        }
     },
 };
