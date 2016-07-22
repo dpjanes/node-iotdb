@@ -28,8 +28,6 @@ describe('test_bridge_wrapper', function(){
             var wrapper = _.bridge.wrap("DoesNotExist", homestar_test.bindings);
             assert.ok(!wrapper);
         });
-        /*
-        */
     });
     describe('core', function(){
         it('constructs without issue', function() {
@@ -103,6 +101,28 @@ describe('test_bridge_wrapper', function(){
                 assert.ok(_.is.Bridge(bridge));
                 done();
                 done = function() {};
+            });
+        });
+    });
+    describe('match rules', function(){
+        it('emits thing on match', function(done) {
+            var test_match = require("./instrument/homestar-test/models/TestMatch");
+            var wrapper = _.bridge.make(test_match.binding, {
+                number: 101,
+            });
+            wrapper.on("thing", function(thing) {
+                assert.ok(_.is.Thing(thing));
+                done();
+            });
+        });
+        it('emits ignored on no-match', function(done) {
+            var test_match = require("./instrument/homestar-test/models/TestMatch");
+            var wrapper = _.bridge.make(test_match.binding, {
+                number: 102,
+            });
+            wrapper.on("ignored", function(bridge) {
+                assert.ok(_.is.Bridge(bridge));
+                done();
             });
         });
     });
