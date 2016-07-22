@@ -1,11 +1,9 @@
 /*
- *  is.js
+ *  test-denon-volume.js
  *
  *  David Janes
  *  IOTDB.org
- *  2014-04-15
- *
- *  Test types
+ *  2016-07-22
  *
  *  Copyright [2013-2016] [David P. Janes]
  *
@@ -24,14 +22,21 @@
 
 "use strict";
 
-const _ = require("iotdb-helpers");
+const iotdb = require("../iotdb")
 
-exports.is = {
-    Thing: (o) => o && o._isThing,
-    ThingSet: (o) => o && o._isThingSet,
-    ThingArray: (o) => o && o._isThingSet,
-    Transport: (o) => o && o._isTransport,
-    Transporter: (o) => o && o._isTransport,
-    Bridge: (o) => o && o._isBridge,
-    FindKey: (o) => _.is.String(o) || _.is.Dictionary(o),
-};
+iotdb.use("homestar-denon-avr");
+
+const things = iotdb.connect("DenonAVR");
+
+things.on('istate', function (thing) {
+    console.log("+ istate\n ", thing.thing_id(), "\n ", thing.state("istate"));
+});
+things.on("meta", function (thing) {
+    console.log("+ meta\n ", thing.thing_id(), thing.state("meta"));
+});
+things.on("thing", function (thing) {
+    console.log("+ thing\n ", thing.thing_id(), thing.state("meta"), things._sid);
+});
+
+let count = 0;
+setInterval(() => things.set(":volume", (count += 10) % 100, iotdb.as.percent()), 1000);

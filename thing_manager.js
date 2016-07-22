@@ -54,31 +54,6 @@ const _universal_thing_id = thing => {
 };
 
 const bind_thing_to_bridge = (thing, bridge, binding) => {
-    const _update_from_mapping = pulld => {
-        const mapping = bridge.binding.mapping;
-        if (!mapping) {
-            return pulld;
-        }
-
-        pulld = _.d.clone.shallow(pulld);
-
-        _.pairs(pulld)
-            .map(pkv => ({
-                key: pkv[0],
-                value: pkv[1],
-                cvalue: _.ld.compact(pkv[1]),
-                md: mapping[pkv[0]]
-            }))
-            .filter(d => d.md)
-            .forEach(d => {
-                _.pairs(d.md)
-                    .filter(mkv => (mkv[1] === d.value) || (mkv[1] === d.cvalue))
-                    .forEach(mkv => pulld[d.key] = mkey[0])
-                });
-
-        return pulld;
-    }
-
     const _pull_istate = pulld => {
         pulld = _.timestamp.add(pulld);
 

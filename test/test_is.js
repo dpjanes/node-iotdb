@@ -45,6 +45,8 @@ describe('test_is', function() {
         assert.ok(!_.is.ThingSet(testThing));
         assert.ok(_.is.ThingSet(testThingSet0));
         assert.ok(_.is.ThingSet(testThingSet1));
+        assert.ok(_.is.ThingArray(testThingSet0));
+        assert.ok(_.is.ThingArray(testThingSet1));
         assert.ok(!_.is.ThingSet(testTransport));
         assert.ok(!_.is.ThingSet(testBridge));
 
@@ -62,6 +64,7 @@ describe('test_is', function() {
         assert.ok(!_.is.Transport(testThingSet0));
         assert.ok(!_.is.Transport(testThingSet1));
         assert.ok(_.is.Transport(testTransport));
+        assert.ok(_.is.Transporter(testTransport));
         assert.ok(!_.is.Transport(testBridge));
 
         assert.ok(!_.is.Transport(null));

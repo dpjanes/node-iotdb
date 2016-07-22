@@ -48,18 +48,9 @@ const make = (binding, initd) => {
     const bridge_exemplar = new binding.bridge(_.defaults(initd, binding.initd, {}));
 
     bridge_exemplar.discovered = (bridge_instance) => {
-        if (binding && binding.matchd) {
-            const bridge_meta = _.ld.compact(bridge_instance.meta());
-            const binding_meta = _.ld.compact(binding.matchd);
-
-            if (!_.d.is.superset(bridge_meta, binding_meta)) {
-                if (bridge_exemplar.ignore) {
-                    bridge_exemplar.ignore(bridge_instance);
-                }
-
-                self.emit("ignored", bridge_instance);
-                return;
-            }
+        if (binding.matchd && !_.d.is.superset(bridge_instance.meta(), binding.matchd)) {
+            self.emit("ignored", bridge_instance);
+            return;
         }
 
         // to bring along data stored here - horrible side effect, revisit
