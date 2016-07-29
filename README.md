@@ -11,21 +11,23 @@ A Node.JS platform for semantically control all your Things.
 
 	$ npm install iotdb
 	
-
 ### Turn WeMo on or off
 
 	const iotdb = require("iotdb");
+    iotdb.use("homestar-wemo");
 	
 	things = iotdb.connect("WeMoSocket");
 	things.set(":on", true)
 	things.set(":on", false)
 	
 N.B. 
+* you must have installed the NPM package <code>homestar-wemo</code>
 * <code>:on</code> is the "semantic" term that universally means "turn/is something on or off". It expands to <code>iot-purpose:on</code> which in turn expands to the URL <code>https://iotdb.org/pub/iot-purpose#on</code>.
 
 ### Wait for a WeMo to change state
 
 	const iotdb = require("iotdb");
+    iotdb.use("homestar-wemo");
 	
 	things = iotdb.connect("WeMoSocket");
 	things.on("istate", thing => {
