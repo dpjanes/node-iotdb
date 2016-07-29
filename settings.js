@@ -28,8 +28,6 @@ const _ = require('./helpers');
 const events = require('events');
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
-const assert = require('assert');
 
 const logger = _.logger.make({
     name: 'iotdb',
@@ -84,14 +82,14 @@ const make = (initd) => {
     };
 
     const _load = function () {
-        self.d = {};
-
         const filenames = _.cfg.find(_initd.path, _initd.settings);
-        filenames.reverse();
 
-        const docds = [];
-        _.cfg.load.json(filenames, docd => _.d.smart_extend(self.d, docd.doc));
-
+        // IDK why the following does not work
+        // _.cfg.load.json(filenames, docd => self.d = _.d.compose.deep(self.d, docd.doc))
+        _.cfg.load.json(filenames, docd => {
+            self.d = _.d.compose.deep(self.d, docd.doc)
+        });
+        
         self.emit("loaded");
     };
 
