@@ -38,5 +38,5 @@ N.B.
 N.B. 
 * <code>istate</code> is the actual current state of the Thing. In IOTDB a Thing may have many states associated with it, called <i>bands</i>.
 
-## What do we mean by Semantics?
+## Next Steps
 

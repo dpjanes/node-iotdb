@@ -103,6 +103,7 @@ const make = function(tm) {
 
     self.on = (what, callback) => _on("on", what, callback);
     self.once = (what, callback) => _on("once", what, callback);
+    self.addListener = (what, callback) => _on("on", what, callback);
 
     self.reachable = () => self
         .map(thing => thing.reachable() ? 1 : 0)
