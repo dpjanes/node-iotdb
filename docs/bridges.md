@@ -35,6 +35,11 @@ Control [LG Smart TVs](http://www.lg.com/us/experience-tvs/smart-tv).
 
 Control Google [Nest](https://nest.com/ca/) devices.
 
+### [homestar-runner](https://github.com/dpjanes/homestar-runner)
+
+Monitor the status of an IOTDB or Home☆Star installation itself.
+Very reflexive!
+
 ### [homestar-smartthings](https://github.com/dpjanes/homestar-smartthings)
 
 Control Samsung [SmartThings](https://www.smartthings.com/) devices. 
@@ -47,7 +52,7 @@ Control [TCP Connnected](http://www.tcpi.com/) Lights.
 
 Control Belkin [WeMo](http://www.wemo.com/) Switches and other devices.
 
-Although we''ve put this as Class A, some of the odder devices - e.g. Crockpot -
+Although we&apos;ve put this as Class A, some of the odder devices - e.g. Crockpot -
 have not been tested yet.
 
 ## Class B - Working, but may have gaps
@@ -55,6 +60,10 @@ have not been tested yet.
 ### [homestar-samsung-smart-tv](https://github.com/dpjanes/homestar-samsung-smart-tv)
 
 ## Class C - Need a lot of TLC
+
+### [homestar-null](https://github.com/dpjanes/homestar-null)
+### [homestar-littlebits](https://github.com/dpjanes/homestar-littlebits)
+### [homestar-sonos](https://github.com/dpjanes/homestar-sonos)
 
 ## Class D - Stubs or Not Working
 
@@ -81,8 +90,4 @@ have not been tested yet.
 
 ### [homestar-alexa](https://github.com/dpjanes/homestar-alexa)
 ### [homestar-aws](https://github.com/dpjanes/homestar-aws)
-### [homestar-littlebits](https://github.com/dpjanes/homestar-littlebits)
-### [homestar-null](https://github.com/dpjanes/homestar-null)
-### [homestar-runner](https://github.com/dpjanes/homestar-runner)
-### [homestar-sonos](https://github.com/dpjanes/homestar-sonos)
 ### [homestar-template](https://github.com/dpjanes/homestar-template)

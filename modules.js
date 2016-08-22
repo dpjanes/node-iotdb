@@ -63,7 +63,6 @@ const make = () => {
             module = _require(module_name);
         }
 
-        // keep things immutable
         module = _.d.clone.deep(module);
 
         assert(_.is.String(module_name), "first argument must be a string");
