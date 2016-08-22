@@ -35,6 +35,10 @@ Control [LG Smart TVs](http://www.lg.com/us/experience-tvs/smart-tv).
 
 Control Google [Nest](https://nest.com/ca/) devices.
 
+### [homestar-rest](https://github.com/dpjanes/homestar-rest)
+
+Control via HTTP REST APIs.
+
 ### [homestar-runner](https://github.com/dpjanes/homestar-runner)
 
 Monitor the status of an IOTDB or Home☆Star installation itself.
@@ -79,7 +83,6 @@ have not been tested yet.
 
 ### [homestar-ble](https://github.com/dpjanes/homestar-ble)
 ### [homestar-particle](https://github.com/dpjanes/homestar-particle)
-### [homestar-rest](https://github.com/dpjanes/homestar-rest)
 ### [homestar-ifttt](https://github.com/dpjanes/homestar-ifttt)
 ### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
