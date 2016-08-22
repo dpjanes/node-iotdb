@@ -2,6 +2,10 @@
 
 ## Class A - Working, use me
 
+### [homestar-ble](https://github.com/dpjanes/homestar-ble)
+
+Control and monitor [Bluetooth Low Energy](https://en.wikipedia.org/wiki/Bluetooth_low_energy) devices.
+
 ### [homestar-denon-avr](https://github.com/dpjanes/homestar-denon-avr)
 
 Control [Denon Audio Visual Receivers](https://usa.denon.com/us/product/hometheater/receivers)
@@ -9,6 +13,10 @@ Control [Denon Audio Visual Receivers](https://usa.denon.com/us/product/homethea
 ### [homestar-feed](https://github.com/dpjanes/homestar-feed)
 
 Get data from Atom / RSS feeds.
+
+### [homestar-ifttt](https://github.com/dpjanes/homestar-ifttt)
+
+Send commands to [IFTTT](https://ifttt.com/), receive messages from IFTTT. Uses the Maker channel.
 
 ### [homestar-hue](https://github.com/dpjanes/homestar-hue)
 
@@ -81,9 +89,7 @@ have not been tested yet.
 
 -------------
 
-### [homestar-ble](https://github.com/dpjanes/homestar-ble)
 ### [homestar-particle](https://github.com/dpjanes/homestar-particle)
-### [homestar-ifttt](https://github.com/dpjanes/homestar-ifttt)
 ### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
 ### [homestar-itach-ir](https://github.com/dpjanes/homestar-itach-ir)
