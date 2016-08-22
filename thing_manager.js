@@ -80,7 +80,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
     const _on_ostate = ( _t, _b, state ) => {
         state = _.object(_.pairs(state)
-            .filter(p => p[1] !== null)
+            // .filter(p => p[1] !== null)
             .filter(p => !p[0].match(/^@/)));
         if (_.is.Empty(state)) {
             return;

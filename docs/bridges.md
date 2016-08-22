@@ -69,6 +69,10 @@ have not been tested yet.
 
 ## Class B - Working, but may have gaps
 
+### [homestar-command](https://github.com/dpjanes/homestar-command)
+
+Control Node.JS code or Shell commands.
+
 ### [homestar-samsung-smart-tv](https://github.com/dpjanes/homestar-samsung-smart-tv)
 
 ## Class C - Need a lot of TLC
@@ -93,10 +97,8 @@ have not been tested yet.
 ### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
 ### [homestar-itach-ir](https://github.com/dpjanes/homestar-itach-ir)
-### [homestar-command](https://github.com/dpjanes/homestar-command)
 
 ### [homestar-chromecast](https://github.com/dpjanes/homestar-chromecast)
 
 ### [homestar-alexa](https://github.com/dpjanes/homestar-alexa)
 ### [homestar-aws](https://github.com/dpjanes/homestar-aws)
-### [homestar-template](https://github.com/dpjanes/homestar-template)
