@@ -61,9 +61,10 @@ const make = () => {
     self.use = function (module_name, module) {
         if (!module) {
             module = _require(module_name);
-        } else {
-            module = _.d.clone.deep(module);
         }
+
+        // keep things immutable
+        module = _.d.clone.deep(module);
 
         assert(_.is.String(module_name), "first argument must be a string");
         assert(_.is.Object(module), "second argument must an object or inferred, got: " + typeof module);
