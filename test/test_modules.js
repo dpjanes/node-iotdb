@@ -169,6 +169,14 @@ describe('test_modules', function() {
             m.use("test", {});
             assert.ok(m.module("test"));
         });
+        it('module gets assigned module_name', function() {
+            // as reported by @mishoboss 2016-08-22 on Slack
+            modules.shims.reset();
+            const m = modules.instance();
+            m.use("test", {});
+            const t = m.module("test");
+            assert.strictEqual(t.module_name, "test");
+        });
         it('iotdb version', function() {
             let _use = false;
             let _setup = false;

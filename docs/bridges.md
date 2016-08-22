@@ -58,8 +58,9 @@ have not been tested yet.
 
 ## Class D - Stubs or Not Working
 
-### [homestar-insteon](https://github.com/dpjanes/homestar-insteon)
+### [homestar-coap](https://github.com/dpjanes/homestar-coap)
 ### [homestar-ecobee](https://github.com/dpjanes/homestar-ecobee)
+### [homestar-insteon](https://github.com/dpjanes/homestar-insteon)
 ### [homestar-plugfest](https://github.com/dpjanes/homestar-plugfest)
 ### [homestar-openweathermap](https://github.com/dpjanes/homestar-openweathermap)
 ### [homestar-squeezebox](https://github.com/dpjanes/homestar-squeezebox)
@@ -74,13 +75,12 @@ have not been tested yet.
 ### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
 ### [homestar-itach-ir](https://github.com/dpjanes/homestar-itach-ir)
+### [homestar-command](https://github.com/dpjanes/homestar-command)
 
 ### [homestar-chromecast](https://github.com/dpjanes/homestar-chromecast)
 
 ### [homestar-alexa](https://github.com/dpjanes/homestar-alexa)
 ### [homestar-aws](https://github.com/dpjanes/homestar-aws)
-### [homestar-coap](https://github.com/dpjanes/homestar-coap)
-### [homestar-command](https://github.com/dpjanes/homestar-command)
 ### [homestar-littlebits](https://github.com/dpjanes/homestar-littlebits)
 ### [homestar-null](https://github.com/dpjanes/homestar-null)
 ### [homestar-runner](https://github.com/dpjanes/homestar-runner)
