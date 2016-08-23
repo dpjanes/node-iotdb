@@ -5,7 +5,7 @@
     }, 
     "dependencies": {
         "iotdb-helpers": "~3.0.3", 
-        "iotdb-thing": "~3.0.1", 
+        "iotdb-thing": "~3.0.3", 
         "semver": "~5.3.0"
     }, 
     "description": "IOTDB.org", 
@@ -43,5 +43,5 @@
         "cover": "istanbul cover _mocha", 
         "test": "grunt"
     }, 
-    "version": "3.0.1"
+    "version": "3.0.2"
 }
