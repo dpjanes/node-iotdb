@@ -22,6 +22,10 @@ Send commands to [IFTTT](https://ifttt.com/), receive messages from IFTTT. Uses 
 
 Control [Philip Hue](http://www2.meethue.com/en-ca/) Lights
 
+### [homestar-itach-ir](https://github.com/dpjanes/homestar-itach-ir)
+
+Control IR Devices using [iTach IR](http://www.globalcache.com/products/itach/wf2irspecs/) controller
+
 ### [homestar-knx](https://github.com/dpjanes/homestar-knx)
 
 Control [KNX](https://en.wikipedia.org/wiki/KNX_(standard)) devices. 
@@ -69,9 +73,18 @@ have not been tested yet.
 
 ## Class B - Working, but may have gaps
 
+### [homestar-chromecast](https://github.com/dpjanes/homestar-chromecast)
+
+Control [Google Chromecast](https://www.google.com/intl/en_ca/chromecast/?utm_source=chromecast.com).
+
+This works OK but some of the underlying node modules are flaky.
+
 ### [homestar-command](https://github.com/dpjanes/homestar-command)
 
 Control Node.JS code or Shell commands.
+This works, but it would be nice for them to be able to do things like
+send back data.
+
 
 ### [homestar-samsung-smart-tv](https://github.com/dpjanes/homestar-samsung-smart-tv)
 
@@ -82,6 +95,12 @@ Control Node.JS code or Shell commands.
 ### [homestar-sonos](https://github.com/dpjanes/homestar-sonos)
 
 ## Class D - Stubs or Not Working
+
+### [homestar-alexa](https://github.com/dpjanes/homestar-alexa)
+
+This was the code for this 
+[https://www.hackster.io/dpjanes/home-star-aws-iot-amazon-echo-07319c](https://www.hackster.io/dpjanes/home-star-aws-iot-amazon-echo-07319c).
+Not actively maintained, something better coming soon.
 
 ### [homestar-coap](https://github.com/dpjanes/homestar-coap)
 ### [homestar-ecobee](https://github.com/dpjanes/homestar-ecobee)
@@ -96,9 +115,6 @@ Control Node.JS code or Shell commands.
 ### [homestar-particle](https://github.com/dpjanes/homestar-particle)
 ### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
-### [homestar-itach-ir](https://github.com/dpjanes/homestar-itach-ir)
 
-### [homestar-chromecast](https://github.com/dpjanes/homestar-chromecast)
 
-### [homestar-alexa](https://github.com/dpjanes/homestar-alexa)
 ### [homestar-aws](https://github.com/dpjanes/homestar-aws)
