@@ -1,5 +1,21 @@
 # Bridges
 
+Bridges are [modules](modules.md) that allow IOTDB to connect to Things, to actually
+make them do things / get readings.
+
+## Use
+
+If you want to use a Bridge, just `use` it
+
+    const iotdb = require("iotdb")
+    iotdb.use("homestar-wemo")
+
+and it will import the module. After you&apos;ve imported the module, you can then connect
+to _Models_, which will get you access to the individual things. 
+
+    const things = iotdb.connect("WeMoSwitch")
+
+# Available Bridges
 ## Class A - Working, use me
 
 ### [homestar-ble](https://github.com/dpjanes/homestar-ble)
@@ -17,6 +33,10 @@ Get data from Atom / RSS feeds.
 ### [homestar-ifttt](https://github.com/dpjanes/homestar-ifttt)
 
 Send commands to [IFTTT](https://ifttt.com/), receive messages from IFTTT. Uses the Maker channel.
+
+### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
+
+Control and monitor Arduino devices using Firmata / Johnny-Five.
 
 ### [homestar-hue](https://github.com/dpjanes/homestar-hue)
 
@@ -115,8 +135,4 @@ Not actively maintained, something better coming soon.
 
 -------------
 
-### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
-
-
-### [homestar-aws](https://github.com/dpjanes/homestar-aws)
