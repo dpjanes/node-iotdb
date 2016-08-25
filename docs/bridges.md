@@ -47,6 +47,10 @@ Control [LG Smart TVs](http://www.lg.com/us/experience-tvs/smart-tv).
 
 Control Google [Nest](https://nest.com/ca/) devices.
 
+### [homestar-particle](https://github.com/dpjanes/homestar-particle)
+
+Control [Particle.io](https://www.particle.io/) boards.
+
 ### [homestar-rest](https://github.com/dpjanes/homestar-rest)
 
 Control via HTTP REST APIs.
@@ -85,7 +89,6 @@ Control Node.JS code or Shell commands.
 This works, but it would be nice for them to be able to do things like
 send back data.
 
-
 ### [homestar-samsung-smart-tv](https://github.com/dpjanes/homestar-samsung-smart-tv)
 
 ## Class C - Need a lot of TLC
@@ -112,7 +115,6 @@ Not actively maintained, something better coming soon.
 
 -------------
 
-### [homestar-particle](https://github.com/dpjanes/homestar-particle)
 ### [homestar-johnny-five](https://github.com/dpjanes/homestar-johnny-five)
 ### [homestar-gpio](https://github.com/dpjanes/homestar-gpio)
 
