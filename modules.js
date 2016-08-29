@@ -109,7 +109,7 @@ const make = () => {
             .filter(module => module.Bridge)
             .map(module => {
                 module.Bridge.module_name = module.module_name;
-                module.Bridge.bridge_name = _.id.to_dash_case((new module.Bridge()).name());
+                // module.Bridge.bridge_name = _.id.to_dash_case((new module.Bridge()).name());
                 return module.Bridge;
             });
     };
