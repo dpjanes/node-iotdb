@@ -56,7 +56,7 @@ const check_node = function (done) {
     _check({
         message: "Bad Node.JS Version",
         version: _version,
-        satisfies: ">=4.0.0",
+        satisfies: ">=6.0.0",
         cause: "Older Node.JS installed. Upgrade your version of Node.JS to something more modern",
     }, done || _die);
 };
