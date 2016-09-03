@@ -103,6 +103,32 @@ const make = (initd) => {
         self.emit("changed", key);
     };
 
+    /*
+     */
+    let _saved = null;
+
+    self.save = (key, value) => {
+        self.set(key, value);
+
+        const _save_path = ".iotdb/keystore.json";
+
+        if (!_saved) {
+            _saved = {};
+            _.cfg.load.json([ _save_path ], docd => _saved = _.d.compose.deep(_saved, docd.doc));
+        }
+
+        _.d.set(_saved, _normalize_key(key), value);
+
+        process.nextTick(() => {
+            if (!_saved) {
+                return;
+            }
+
+            fs.writeFile(_save_path, JSON.stringify(_saved, null, 2));
+            _saved = null;
+        });
+    };
+
     self.setMaxListeners(0);
     _load()
 

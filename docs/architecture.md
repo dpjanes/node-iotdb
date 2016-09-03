@@ -40,7 +40,7 @@ ThingSets can chain creation and can filter for specific results.
     iotdb
         .connect("WeMoSocket")
         .connect("WeMoInsight")
-        .with_room("David's Living Room")
+        .with_zone("David's Living Room")
 
 See the [source code here](https://github.com/dpjanes/node-iotdb/blob/master/thing_set.js)
 for more operations.

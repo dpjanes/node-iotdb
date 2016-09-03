@@ -119,7 +119,7 @@ will observe the error.
                 return new errors.AccessDenied()
             }
         }
-    });
+    }, wrapped_transporter);
 
 You can use `check_write` to control access to `put`.
 
