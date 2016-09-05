@@ -219,6 +219,13 @@ Bridge.prototype._validate_configure = function (app) {
 };
 
 /**
+ *  EXEMPLAR.
+ *  Reset the Bridge to ground state
+ */
+Bridge.prototype.reset = function (app) {
+};
+
+/**
  *  EXEMPLAR
  *  <p>
  *  Do not implement - new code will be injected at runtime
