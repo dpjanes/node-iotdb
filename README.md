@@ -5,6 +5,8 @@
 A Node.JS platform for semantically control all your Things. 
 100% test coverage.
 
+**Node.JS 6 or higher is required!**
+
 # Hello, World
 
 ## Install IOTDB

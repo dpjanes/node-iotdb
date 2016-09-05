@@ -13,6 +13,7 @@ These are in alphabetical order.
 * [Architecture](architecture.md) 
 * [Bands](bands.md)
 * [Briges](bridges.md)
+* [Core Ideas](core.md)
 * [FAQ](faq.md)
 * [HomeStar](homestar.md)
 * [Installation](install.md)

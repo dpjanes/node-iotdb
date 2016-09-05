@@ -92,6 +92,16 @@ exports.things = things;
 // coercsion
 exports.as = iotdb_thing.as;
 
+const reset = () => {
+    if (_instance) {
+        _instance.disconnect();
+        _instance = null;
+    }
+
+    modules.reset();
+    settings.reset()
+}
+
 // testing only
 exports.shims = {
     _settings: null,

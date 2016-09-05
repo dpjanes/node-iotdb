@@ -60,12 +60,19 @@ describe("test_thing_set_search_dynamic", function() {
                 "meta:schema:name": "B",
             });
 
-            ts.connect("Test", {}, { "schema:name": "A", });
+            console.log("ss._sid", ss._sid);
+            console.log("ts._sid", ts._sid);
+
+            console.log("HERE:A.1");
+            const zs = ts.connect("Test", {}, { "schema:name": "A", });
             ts.on("thing", function(thing) {
                 assert.strictEqual(ss.count(), 0);
+                console.log("HERE:B.1", thing.name());
                 thing.update("meta", { "schema:name": "B" });
+                console.log("HERE:B.2", thing.name());
 
                 ss.on("thing", function() {
+                    console.log("DONE");
                     assert.strictEqual(ss.count(), 1);
                     done();
                 });

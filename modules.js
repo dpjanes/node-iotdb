@@ -191,10 +191,15 @@ const instance = () => {
     return _modules;
 }
 
+const reset = () => {
+    _modules = null;
+};
+
 /*
  *  API
  */
 exports.instance = instance;
+exports.reset = reset;
 exports.shims = {
     reset: () => _modules = null,
     require: r => _require = r,

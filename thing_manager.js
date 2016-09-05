@@ -175,7 +175,7 @@ const make = function (initd) {
      *  Return all things that we know about
      */
     self.things = function () {
-        var things = thing_set.make(self);
+        const things = thing_set.make(self);
 
         self.on("thing", thing => things.add(thing))
 

@@ -74,11 +74,9 @@ const make = function(tm) {
         thing._sidd = thing._sidd || {};
         thing._sidd[self._sid] = true;
 
-        // _do_pre(thing);
         _persisted(thing);
         _things.push(thing);
         _emitter.emit("thing", thing);
-        // _do_post(thing);
 
         _emitter.emit("changed", self);
     };
@@ -87,7 +85,9 @@ const make = function(tm) {
         const other_set = tm.connect(modeld, initd, metad);
 
         // other_set will be empty until nextTick guarenteed
-        other_set.on("changed", () => self._update(other_set, () => true, "connect-changed"));
+        other_set.on("changed", () => {
+            self._update(other_set, () => true, "connect-changed");
+        });
 
         return self;
     };
@@ -237,10 +237,8 @@ const make = function(tm) {
 
         added_things
             .forEach(thing => {
-                // _do_pre(thing);
                 _persisted(thing);
                 _things.push(thing);
-                // _do_post(thing);
 
                 _emitter.emit("thing", thing)
             });

@@ -145,11 +145,16 @@ const instance = () => {
     return _settings;
 };
 
+const reset = () => {
+    _settings = null;
+};
+
 /*
  *  API
  */
 exports.make = make;
 exports.instance = instance;
+exports.reset = reset;
 exports.shims = {
     paths: _paths,
 };
