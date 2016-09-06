@@ -4,8 +4,8 @@
         "url": "https://github.com/dpjanes/node-iotdb/issues"
     }, 
     "dependencies": {
-        "iotdb-helpers": "~3.0.7", 
-        "iotdb-thing": "~3.0.6", 
+        "iotdb-helpers": "~3.0.9", 
+        "iotdb-thing": "~3.0.8", 
         "semver": "~5.3.0"
     }, 
     "description": "IOTDB.org", 
@@ -43,5 +43,5 @@
         "cover": "istanbul cover _mocha", 
         "test": "grunt"
     }, 
-    "version": "3.0.4"
+    "version": "3.0.5"
 }
