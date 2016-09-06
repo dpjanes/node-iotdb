@@ -126,6 +126,7 @@ You can use `check_write` to control access to `put`.
 # Transporters
 
 * [iotdb-transport](https://github.com/dpjanes/iotdb-transport) - base classes
+* [iotdb-transport-coap](https://github.com/dpjanes/iotdb-transport-coap)
 * [iotdb-transport-express](https://github.com/dpjanes/iotdb-transport-express)
 * [iotdb-transport-fs](https://github.com/dpjanes/iotdb-transport-fs)
 * [iotdb-transport-iotdb](https://github.com/dpjanes/iotdb-transport-iotdb)
@@ -138,6 +139,5 @@ You can use `check_write` to control access to `put`.
 
 These need some (or a lot!) of work
 
-* [iotdb-transport-coap](https://github.com/dpjanes/iotdb-transport-coap)
 * [iotdb-transport-firebase](https://github.com/dpjanes/iotdb-transport-firebase)
 * [iotdb-transport-pubnub](https://github.com/dpjanes/iotdb-transport-pubnub)
