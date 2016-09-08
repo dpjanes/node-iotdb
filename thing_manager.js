@@ -355,6 +355,10 @@ const make = function (initd) {
             .reduce(( sum, wait ) => sum + wait, 0);
 
     self.reset = () => {
+        _.flatten([ _bridge_exemplars, _.values(_thingd).map(thing => thing.__bridge) ], true)
+            .filter(bridge => bridge)
+            .forEach(bridge => bridge.reset());
+
         self.disconnect();
 
         _thingd = {};

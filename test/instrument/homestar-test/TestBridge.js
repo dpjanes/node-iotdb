@@ -31,6 +31,8 @@ var logger = iotdb.logger({
     module: 'tests/instrument/homestar-test/TestBridge',
 });
 
+let _reset_count = 0;
+
 /**
  *  See {iotdb.bridge.Bridge#Bridge} for documentation.
  *  <p>
@@ -193,6 +195,15 @@ TestBridge.prototype.pull = function () {
     self.pulled(self.istate);
 };
 
+TestBridge.prototype.reset = function () {
+    var self = this;
+
+    if (!self.__reset) {
+        self.__reset = true;
+        _reset_count ++;
+    }
+};
+
 /* --- state --- */
 
 /**
@@ -243,6 +254,9 @@ TestBridge.prototype.test_pull = function (stated) {
     self.istate = _.d.compose.shallow(stated, self.istate);
     self.pulled(self.istate);
 };
+
+TestBridge.prototype._reset_reset = () => _reset_count = 0;
+TestBridge.prototype._reset_count = () => _reset_count;
 
 /*
  *  API

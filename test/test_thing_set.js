@@ -171,33 +171,37 @@ describe("test_thing_set", function() {
             });
         });
     });
-    describe("on", function() {
-        /*
-        it("with no things", function(done) {
-            _make_no_things(function(ts) {
-                ts.on("on", function() {
-                    assert.ok(false);
-                });
-                ts.set(":on", true);
+    describe("on(s)", function() {
+        it("on", function(done) {
+            var t = thing_manager.make();
+            t.reset();
+            
+            var ts = t.connect("Test");
+            ts.on("thing", function(thing) {
+                assert.ok(_.is.Thing(thing));
+                done();
             });
         });
-        it("with one thing", function(done) {
-            _make_thing(function(ts) {
-                var thing = ts.any()
-                ts.on("on", function(t, attribute, value) {
-                    if (!value) {
-                        return;
-                    }
-                    done();
-                });
-
-                // called 3 times, for initialization, istate and ostate
-                // so we use the bridge instance
-                // ts.set(":on", true);
-                thing.bridge_instance.test_pull({ on: true });
+        it("addListener", function(done) {
+            var t = thing_manager.make();
+            t.reset();
+            
+            var ts = t.connect("Test");
+            ts.addListener("thing", function(thing) {
+                assert.ok(_.is.Thing(thing));
+                done();
             });
         });
-        */
+        it("once", function(done) {
+            var t = thing_manager.make();
+            t.reset();
+            
+            var ts = t.connect("Test");
+            ts.once("thing", function(thing) {
+                assert.ok(_.is.Thing(thing));
+                done();
+            });
+        });
     });
     describe("push", function() {
         it("good", function(done) {

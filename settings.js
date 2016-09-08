@@ -34,6 +34,8 @@ const logger = _.logger.make({
     module: 'settings',
 });
 
+let _writeFileSync = fs.writeFileSync;
+
 /**
  *  Return every folder from CWD to / that has a ".iotdb" folder in it
  */
@@ -124,7 +126,7 @@ const make = (initd) => {
                 return;
             }
 
-            fs.writeFile(_save_path, JSON.stringify(_saved, null, 2));
+            _writeFileSync(_save_path, JSON.stringify(_saved, null, 2));
             _saved = null;
         });
     };
@@ -157,4 +159,5 @@ exports.instance = instance;
 exports.reset = reset;
 exports.shims = {
     paths: _paths,
+    writeFileSync: f => _writeFileSync = f || fs.writeFileSync,
 };
