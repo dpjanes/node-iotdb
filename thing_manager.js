@@ -40,12 +40,12 @@ const logger = _.logger.make({
     module: 'things',
 });
 
-const _universal_thing_id = thing => {
+const _make_thing_id = thing => {
     const iotdb = require('./iotdb');
     const runner_id = iotdb.settings().get("/homestar/runner/keys/homestar/key", null);
     const thing_id = thing.thing_id();
     const model_id = thing.model_id();
-
+        
     if (runner_id) {
         return _.id.uuid.iotdb("t", runner_id.replace(/^.*:/, '') + ":" + _.hash.short(thing_id + ":" + model_id));
     } else {
@@ -54,6 +54,8 @@ const _universal_thing_id = thing => {
 };
 
 const bind_thing_to_bridge = (thing, bridge, binding) => {
+    const iotdb = require("./iotdb");
+
     const _pull_istate = pulld => {
         pulld = _.timestamp.add(pulld);
 
@@ -66,7 +68,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
     const _bridge_to_meta = pulld => {
         const metad = thing.state("meta");
-        metad["iot:thing-id"] = _universal_thing_id(thing); 
+        metad["iot:thing-id"] = iotdb.make_thing_id(thing); 
 
         thing.band("meta").update(metad, {
             add_timestamp: false,
@@ -115,6 +117,15 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         thing.band("meta").update(metad);
     }
 
+    const _controller_to_connection = () => {
+        thing.band("connection").update(iotdb.controller_meta(), {
+            replace: false,
+            add_timestamp: true,
+            check_timestamp: true,
+            validate: false,
+        });
+    }
+
     // --- main code
     bridge.__thing = thing;
     thing.__bridge = bridge;
@@ -131,6 +142,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     thing.on("ostate", _on_ostate);
 
     _model_to_meta();
+    _controller_to_connection();
     _on_reachable();
     _bridge_to_meta();
 
@@ -374,3 +386,4 @@ const make = function (initd) {
 exports.make = make;
 exports.bind_thing_to_bridge = bind_thing_to_bridge;
 exports.make_thing = make_thing;
+exports.make_thing_id = _make_thing_id;

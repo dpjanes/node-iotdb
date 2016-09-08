@@ -88,6 +88,7 @@ exports.users = require('./users');
 exports.iot = iot;
 exports.connect = connect;
 exports.things = things;
+exports.make_thing_id = require("./thing_manager").make_thing_id;
 
 // coercsion
 exports.as = iotdb_thing.as;

@@ -45,7 +45,6 @@ describe('test_connect_bands', function() {
         _make_thing(function(ts) {
             const thing = ts.any();
             const id = thing.thing_id();
-            console.log("META", thing.state("meta"));
             assert.strictEqual(id, "urn:iotdb:thing:Test:0FAF0A6A-C1AD-413D-8C1B-2EEE3CBA9F0D:10:test");
 
             done();
