@@ -115,7 +115,7 @@ describe('test_thing_manager', function() {
         });
         it('bad third argument', function() {
             const tm = thing_manager.make();
-            tm._reset();
+            tm.reset();
             
             assert.throws(function() {
                 tm.connect({

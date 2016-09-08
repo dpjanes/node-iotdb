@@ -164,14 +164,6 @@ const make = function (initd) {
     self.setMaxListeners(0);
 
     /**
-     *  This is for testing only
-     */
-    self._reset = function () {
-        _thingd = {};
-        _bridge_exemplars = [];
-    };
-
-    /**
      *  Return all things that we know about
      */
     self.things = function () {
@@ -361,6 +353,13 @@ const make = function (initd) {
             .map(bort => bort.disconnect())
             .filter(wait => _.is.Number(wait))
             .reduce(( sum, wait ) => sum + wait, 0);
+
+    self.reset = () => {
+        self.disconnect();
+
+        _thingd = {};
+        _bridge_exemplars = [];
+    };
 
     return self;
 }

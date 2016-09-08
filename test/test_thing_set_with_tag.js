@@ -18,7 +18,7 @@ require('./instrument/iotdb');
 
 var _make_thing = function(callback) {
     var t = thing_manager.make();
-    t._reset();
+    t.reset();
     
     var ts = t.connect("Test", {}, {
         "schema:name": "The Thing Name",

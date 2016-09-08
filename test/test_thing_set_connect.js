@@ -31,7 +31,7 @@ describe("test_thing_set_connect", function() {
         });
         it("from non-empty thing_set", function(done) {
             var tm = thing_manager.make();
-            tm._reset();
+            tm.reset();
             
             var ts_1 = tm.connect("Test", { number: 1 }, { "schema:name": "A" });
             ts_1.once("thing", function(thing) {

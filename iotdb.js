@@ -92,7 +92,7 @@ exports.things = things;
 // coercsion
 exports.as = iotdb_thing.as;
 
-const reset = () => {
+exports.reset = () => {
     if (_instance) {
         _instance.disconnect();
         _instance = null;
