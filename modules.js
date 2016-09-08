@@ -192,11 +192,6 @@ const instance = () => {
 }
 
 const reset = () => {
-    if (_modules) {
-        _bridges
-            .forEach(bridge => bridge.reset());
-    }
-
     _modules = null;
 };
 
