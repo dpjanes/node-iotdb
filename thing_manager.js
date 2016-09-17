@@ -45,9 +45,14 @@ const _make_thing_id = thing => {
     const runner_id = iotdb.settings().get("/homestar/runner/keys/homestar/key", null);
     const thing_id = thing.thing_id();
     const model_id = thing.model_id();
-        
-    if (runner_id) {
-        return _.id.uuid.iotdb("t", runner_id.replace(/^.*:/, '') + ":" + _.hash.short(thing_id + ":" + model_id));
+
+    if (!_.is.Empty(runner_id)) {
+        const prefix = _.id.uuid.iotdb("t", runner_id.replace(/^.*:/, '') + ":")
+        if (thing_id.indexOf(prefix) === 0) {
+            return thing_id;
+        } else {
+            return prefix + _.hash.short(thing_id + ":" + model_id);
+        }
     } else {
         return thing_id + ":" + model_id;
     }
@@ -114,7 +119,9 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         const metad = _.object(_.pairs(thing.state("model"))
             .filter(kv => iot_keys.indexOf(kv[0]) > -1 || kv[0].match(/^schema:/)))
 
-        thing.band("meta").update(metad);
+        thing.band("meta").update(metad, {
+            add_timestamp: false,
+        });
     }
 
     const _controller_to_connection = () => {
