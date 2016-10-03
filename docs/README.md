@@ -18,5 +18,6 @@ These are in alphabetical order.
 * [HomeStar](homestar.md)
 * [Installation](install.md)
 * [Modules](modules.md)
+* [Semantics](semantics.md)
 * [Thing](thing.md)
 * [Transporters](transporters.md)
