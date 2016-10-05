@@ -1,4 +1,4 @@
-2# The Atomic Theory of Internet of Things Interoperability
+# The Atomic Theory of Internet of Things Interoperability
 
 # Introduction
 
