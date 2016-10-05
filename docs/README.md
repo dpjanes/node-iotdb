@@ -11,6 +11,7 @@ or just have a question, please
 These are in alphabetical order.
 
 * [Architecture](architecture.md) 
+* [Atomic Theory](atomic-theory.md)
 * [Bands](bands.md)
 * [Briges](bridges.md)
 * [Core Ideas](core.md)
