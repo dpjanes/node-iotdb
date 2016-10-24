@@ -58,6 +58,7 @@ const make = (binding, initd) => {
 
         const thing = thing_manager.make_thing({
             model: binding.model,
+            meta: bridge_instance.meta(),
         });
         thing_manager.bind_thing_to_bridge(thing, bridge_instance, binding);
 
