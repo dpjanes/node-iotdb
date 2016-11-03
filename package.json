@@ -20,7 +20,7 @@
         "load-grunt-tasks": "~3.5.2", 
         "request": "~2.75.0"
     }, 
-    "homepage": "https://iotdb.org", 
+    "homepage": "https://github.com/dpjanes/node-iotdb",
     "keywords": [
         "IOTDB", 
         "IOT", 

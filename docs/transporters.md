@@ -30,15 +30,13 @@ Here&apos;s something things you can do:
 * tell a [MQTT Transporter](https://github.com/dpjanes/iotdb-transport-mqtt) to `monitor` a IOTDB Transporter, so that all changes to
   the IOTDB Transporter go to the MQTT transporter, and all requests
   sent to the MQTT Transporter update the IOTDB Transporter
-* simlar for [CoAP Transporter](https://github.com/dpjanes/iotdb-transport-coap)
-* tell a [Express Transporter](https://github.com/dpjanes/iotdb-transport-express) to `use` a IOTDB Transporter as a data source,
-  such that an API is exported to IOTDB in a couple of lines of code
+* create an [Express Transporter](https://github.com/dpjanes/iotdb-transport-express) that takes an [IOTDB Transporter](https://github.com/dpjanes/iotdb-transport-iotdb) as argument to create an API.
 
 Our intention is to develop more Transporters for popular data stores.
 
 # API
 
-These APIs use [Reactive Extentsions](https://github.com/Reactive-Extensions/RxJS).
+These APIs use [Reactive Extensions](https://github.com/Reactive-Extensions/RxJS).
 
 ## Standard Methods
 
@@ -124,17 +122,6 @@ This returns a Promise so you know when the operations are all complete.
 
 _This could probably use `d.check_source` and `d.check_destination` like `monitor`_.
 
-### use(source\_transport, d)
-
-This replaces all the underlying rx functions with that 
-of the `source\_transport`. 
-
-This is only used in these two transporters, see the documention 
-for those.
-
-* [iotdb-transport-redis](https://github.com/dpjanes/iotdb-transport-redis)
-* [iotdb-transport-mqtt](https://github.com/dpjanes/iotdb-transport-mqtt)
-
 # Access Transporter
 
 This Transport can be to control what items can be read fro
@@ -164,6 +151,8 @@ There is an example of this the sample code for
 [iotdb-transport-memory](https://github.com/dpjanes/iotdb-transport-memory).
 
 # Transporters
+
+Every transporter has documentation and samples showing how it is to be used.
 
 * [iotdb-transport](https://github.com/dpjanes/iotdb-transport) - base classes
 * [iotdb-transport-coap](https://github.com/dpjanes/iotdb-transport-coap)
