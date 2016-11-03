@@ -79,6 +79,10 @@ If the update fails, `onError` will be called with an appropriate error code.
 Get a Thing&apos;s band&apos;s value. `d.id`, `d.band` are required.
 `thing.id`, `thing.band` and `thing.value` are delivered.
 
+### remove(d)
+
+Remove a Thing&apos;s band&apos;s value. `d.id`, `d.band` are required.
+
 ### bands(d)
 
 Get the bands for a Thing. `d.id`
@@ -95,8 +99,41 @@ Similar to `all` but will only return the Thing matching `d.id`
 
 ## Binding Methods
 
-### use(source\_transport, d)
 ### monitor(source\_transport, d)
+
+All changes to the `source\_transport` will be `put` to 
+this transport (the destination).
+
+If a `put` reports an `errors.Timestamp`, this will `put` the
+change to the `source\_transport`. This can be used
+to keep the two transporters in sync.
+
+Two useful subparameters are:
+
+* `d.check_source`
+* `d.check_destination`
+
+If either of them _return_ an error, the `put` operation will
+not happen. This allows selective or controlled data updates.
+There is an example of this [homestar-persist](https://github.com/dpjanes/homestar-persist).
+
+### copy(source\_transport, d)
+
+Copy all the data in the `source\_transport` to this transport (the destination).  
+This returns a Promise so you know when the operations are all complete.
+
+_This could probably use `d.check_source` and `d.check_destination` like `monitor`_.
+
+### use(source\_transport, d)
+
+This replaces all the underlying rx functions with that 
+of the `source\_transport`. 
+
+This is only used in these two transporters, see the documention 
+for those.
+
+* [iotdb-transport-redis](https://github.com/dpjanes/iotdb-transport-redis)
+* [iotdb-transport-mqtt](https://github.com/dpjanes/iotdb-transport-mqtt)
 
 # Access Transporter
 
@@ -123,6 +160,9 @@ will observe the error.
 
 You can use `check_write` to control access to `put`.
 
+There is an example of this the sample code for
+[iotdb-transport-memory](https://github.com/dpjanes/iotdb-transport-memory).
+
 # Transporters
 
 * [iotdb-transport](https://github.com/dpjanes/iotdb-transport) - base classes
@@ -132,6 +172,7 @@ You can use `check_write` to control access to `put`.
 * [iotdb-transport-iotdb](https://github.com/dpjanes/iotdb-transport-iotdb)
 * [iotdb-transport-memory](https://github.com/dpjanes/iotdb-transport-memory)
 * [iotdb-transport-mqtt](https://github.com/dpjanes/iotdb-transport-mqtt)
+* [iotdb-transport-opensensors](https://github.com/dpjanes/iotdb-transport-opensensors)
 * [iotdb-transport-null](https://github.com/dpjanes/iotdb-transport-null)
 * [iotdb-transport-redis](https://github.com/dpjanes/iotdb-transport-redis)
 
