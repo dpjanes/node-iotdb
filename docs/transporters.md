@@ -156,6 +156,7 @@ Every transporter has documentation and samples showing how it is to be used.
 
 * [iotdb-transport](https://github.com/dpjanes/iotdb-transport) - base classes
 * [iotdb-transport-coap](https://github.com/dpjanes/iotdb-transport-coap)
+* [iotdb-transport-dweet](https://github.com/dpjanes/iotdb-transport-dweet)
 * [iotdb-transport-express](https://github.com/dpjanes/iotdb-transport-express)
 * [iotdb-transport-fs](https://github.com/dpjanes/iotdb-transport-fs)
 * [iotdb-transport-iotdb](https://github.com/dpjanes/iotdb-transport-iotdb)
