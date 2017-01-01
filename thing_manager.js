@@ -116,7 +116,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     const _model_to_meta = () => {
         const iot_keys = [ "iot:facet", "iot:help", "iot:model-id" ];
 
-        const metad = _.object(_.pairs(thing.state("model"))
+        const metad = _.object(_.pairs(Object.assign({}, thing.state("model"), thing.state("meta")))
             .filter(kv => iot_keys.indexOf(kv[0]) > -1 || kv[0].match(/^schema:/)))
 
         thing.band("meta").update(metad, {
@@ -321,6 +321,7 @@ const make = function (initd) {
         if (binding.matchd && !_.d.is.superset(bridge_meta, binding.matchd)) {
             return;
         }
+
 
         // build a thing
         const bandd = _.d.clone.deep(binding.bandd);

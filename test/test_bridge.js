@@ -61,10 +61,12 @@ describe('test_bridge', function() {
             assert.strictEqual(paramd.cookd.a, undefined);
             assert.strictEqual(paramd.cookd.b, 2);
         });
+        /*
         it('name', function() {
             var b = new bridge.Bridge();
             assert.strictEqual(b.name(), "");
         });
+        */
         it('discover', function() {
             var b = new bridge.Bridge();
             b.discover();
