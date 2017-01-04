@@ -59,6 +59,10 @@ Control [LIFX](http://www.lifx.com/) Lights
 Pull [METAR](https://en.wikipedia.org/wiki/METAR) weather observations from around the globe.
 This can generate quite a bit of test data if you need it.
 
+### [homestar-openweathermap](https://github.com/dpjanes/homestar-openweathermap)
+
+Get [OpenWeatherMap](http://openweathermap.org/) current weather observation and forecasts.
+
 ### [homestar-lg-smart-tv](https://github.com/dpjanes/homestar-lg-smart-tv)
 
 Control [LG Smart TVs](http://www.lg.com/us/experience-tvs/smart-tv).
@@ -129,7 +133,6 @@ Not actively maintained, something better coming soon.
 ### [homestar-ecobee](https://github.com/dpjanes/homestar-ecobee)
 ### [homestar-insteon](https://github.com/dpjanes/homestar-insteon)
 ### [homestar-plugfest](https://github.com/dpjanes/homestar-plugfest)
-### [homestar-openweathermap](https://github.com/dpjanes/homestar-openweathermap)
 ### [homestar-squeezebox](https://github.com/dpjanes/homestar-squeezebox)
 ### [homestar-wink](https://github.com/dpjanes/homestar-wink)
 

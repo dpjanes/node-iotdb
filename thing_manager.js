@@ -64,11 +64,22 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     const _pull_istate = pulld => {
         pulld = _.timestamp.add(pulld);
 
+        // const istate = thing.state("istate");
+
         thing.band("istate").update(pulld, {
             add_timestamp: true,
             check_timestamp: true,
             validate: false,
-        });
+        })
+            .catch(error => {
+                logger.error({
+                    error: _.error.message(error),
+                    cause: "this usually happens because a Bridge is furiously creating updates",
+                    // old_istate: istate,
+                    // new_istate: pulld,
+                }, "error updating istate");
+            });
+
     };
 
     const _bridge_to_meta = pulld => {
