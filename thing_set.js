@@ -33,7 +33,7 @@ const logger = _.logger.make({
 
 let sid = 0;
 
-const make = function(tm) {
+const make = function (tm) {
     const self = {};
 
     // the thing_manager associated with this thing_set - defaults to iotdb
@@ -107,7 +107,7 @@ const make = function(tm) {
 
     self.reachable = () => self
         .map(thing => thing.reachable() ? 1 : 0)
-        .reduce(( sum, reachable ) => sum + reachable, 0);
+        .reduce((sum, reachable) => sum + reachable, 0);
 
     self.search = function (queryd) {
         const result_set = make();
@@ -121,18 +121,32 @@ const make = function(tm) {
         return result_set;
     };
 
-    self.with_id = id => self.search({ "meta:iot:thing-id": id, });
-    self.with_code = code => self.search({ "meta:iot:model-id": _.id.to_dash_case(code), });
-    self.with_name = name => self.search({ "meta:schema:name": name });
-    self.with_zone = name => self.search({ "meta:iot:zone": name });
-    self.with_number = number => self.search({ "meta:iot:thing-number": parseInt(number) });
-    self.with_tag = tag => self.search({ "transient:tag": tag });
-    self.with_facet = facet => self.search({ "meta:iot:facet": facet, });
+    self.with_id = id => self.search({
+        "meta:iot:thing-id": id,
+    });
+    self.with_code = code => self.search({
+        "meta:iot:model-id": _.id.to_dash_case(code),
+    });
+    self.with_name = name => self.search({
+        "meta:schema:name": name
+    });
+    self.with_zone = name => self.search({
+        "meta:iot:zone": name
+    });
+    self.with_number = number => self.search({
+        "meta:iot:thing-number": parseInt(number)
+    });
+    self.with_tag = tag => self.search({
+        "transient:tag": tag
+    });
+    self.with_facet = facet => self.search({
+        "meta:iot:facet": facet,
+    });
 
     // -- internals
     const _on = (how, what, callback) => {
-        if (_.contains([ "istate", "ostate", "state", "meta", "model", "connection" ], what)) {
-            _apply_persist(how, [ what, callback ]);
+        if (_.contains(["istate", "ostate", "state", "meta", "model", "connection"], what)) {
+            _apply_persist(how, [what, callback]);
         } else {
             _emitter[how](what, callback);
         }
@@ -140,7 +154,7 @@ const make = function(tm) {
         return self;
     };
 
-    const _search_parse = queryd => _.values(_.mapObject(queryd, ( query_value, query_key ) => {
+    const _search_parse = queryd => _.values(_.mapObject(queryd, (query_value, query_key) => {
         const match = query_key.match(/^(meta|model|istate|ostate|connection|transient):(.+)$/);
         assert(match, "bad search: key=" + query_key);
 
@@ -157,18 +171,18 @@ const make = function(tm) {
         switch (matchd.query_band) {
         case "meta":
         case "connection":
-        {
-            const query_values = _.ld.expand(matchd.query_values);
-            const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
+            {
+                const query_values = _.ld.expand(matchd.query_values);
+                const thing_values = _.ld.expand(_.ld.list(thing_state, matchd.query_inner_key, []));
 
-            return _.intersection(query_values, thing_values).length > 0;
-        }
+                return _.intersection(query_values, thing_values).length > 0;
+            }
 
         case "transient":
-        {
-            const thing_values = _.ld.list(thing_state, matchd.query_inner_key, []);
-            return _.intersection(matchd.query_values, thing_values).length > 0;
-        }
+            {
+                const thing_values = _.ld.list(thing_state, matchd.query_inner_key, []);
+                return _.intersection(matchd.query_values, thing_values).length > 0;
+            }
 
         case "ostate":
         case "istate":
@@ -183,11 +197,11 @@ const make = function(tm) {
         }
     };
 
-    const _search_filter = ( queryd, thing ) => _search_parse(queryd)
+    const _search_filter = (queryd, thing) => _search_parse(queryd)
         .map(matchd => _search_match(matchd, thing))
         .find(tf => (tf === false)) === undefined ? thing : null;
 
-    const _is_setter = fname => [ "set", "update" ].indexOf(fname) > -1;
+    const _is_setter = fname => ["set", "update"].indexOf(fname) > -1;
     /*
     const _is_pre = fname => true; // [ "tag" ].indexOf(fname) > -1;
 
@@ -221,7 +235,7 @@ const make = function(tm) {
         _persist(fname, av);
     };
 
-    self._update = ( other_set, filter, reason ) => {
+    self._update = (other_set, filter, reason) => {
         const existing_things = self.all(); // .filter(thing => thing._sidd[other_set._sid]);
         const other_things = other_set.all().filter(filter);
 

@@ -45,7 +45,7 @@ const iot = () => {
     return _instance;
 };
 
-const connect = ( model, initd, metad ) => {
+const connect = (model, initd, metad) => {
     return iot().connect(model, initd, metad);
 }
 

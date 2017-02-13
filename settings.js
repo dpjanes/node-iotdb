@@ -39,7 +39,7 @@ let _writeFileSync = fs.writeFileSync;
 /**
  *  Return every folder from CWD to / that has a ".iotdb" folder in it
  */
-const _paths = function() {
+const _paths = function () {
     const paths = [];
     let current_folder = process.cwd();
 
@@ -51,8 +51,7 @@ const _paths = function() {
             if (stbuf.isDirectory()) {
                 paths.push(iotdb_folder);
             }
-        } catch (x) {
-        }
+        } catch (x) {}
 
         const next_folder = path.normalize(path.join(current_folder, ".."));
         if (next_folder === current_folder) {
@@ -71,7 +70,7 @@ const make = (initd) => {
     const _initd = _.d.compose.shallow(initd, {
         root: "/",
         settings: "keystore.json",
-        path: _paths(), 
+        path: _paths(),
     })
     self.d = {}
 
@@ -91,7 +90,7 @@ const make = (initd) => {
         _.cfg.load.json(filenames, docd => {
             self.d = _.d.compose.deep(self.d, docd.doc)
         });
-        
+
         self.emit("loaded");
     };
 
@@ -116,7 +115,7 @@ const make = (initd) => {
 
         if (!_saved) {
             _saved = {};
-            _.cfg.load.json([ _save_path ], docd => _saved = _.d.compose.deep(_saved, docd.doc));
+            _.cfg.load.json([_save_path], docd => _saved = _.d.compose.deep(_saved, docd.doc));
         }
 
         _.d.set(_saved, _normalize_key(key), value);

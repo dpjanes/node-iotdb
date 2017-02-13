@@ -26,7 +26,7 @@
 
 const crypto = require('crypto');
 
-const _safe = function(component) {
+const _safe = function (component) {
     return encodeURIComponent(component).replace('%', '$');
 };
 
@@ -42,8 +42,8 @@ const machine_id = () => {
 /**
  *  Unique thing
  */
-const _thing_urn_unique = function() {
-    const parts = [ "urn", "iotdb", "thing" ];
+const _thing_urn_unique = function () {
+    const parts = ["urn", "iotdb", "thing"];
     for (let ai in arguments) {
         parts.push(_safe(arguments[ai]));
     }
@@ -54,8 +54,8 @@ const _thing_urn_unique = function() {
 /**
  *  Unique thing, but hashing required of last com
  */
-const _thing_urn_unique_hash = function() {
-    const parts = [ "urn", "iotdb", "thing" ];
+const _thing_urn_unique_hash = function () {
+    const parts = ["urn", "iotdb", "thing"];
     for (let ai = 0; ai < arguments.length - 1; ai++) {
         parts.push(_safe(arguments[ai]));
     }
@@ -72,11 +72,11 @@ const _thing_urn_unique_hash = function() {
 /**
  *  Unique on this machine
  */
-const _thing_urn_machine = function() {
+const _thing_urn_machine = function () {
     const hasher = crypto.createHash('md5');
     hasher.update(machine_id());
 
-    const parts = [ "urn", "iotdb", "thing" ];
+    const parts = ["urn", "iotdb", "thing"];
     for (let ai in arguments) {
         parts.push(_safe(arguments[ai]));
         hasher.update("" + arguments[ai]);

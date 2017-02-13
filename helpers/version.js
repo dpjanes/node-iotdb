@@ -27,7 +27,7 @@ const _ = require("iotdb-helpers");
 
 let _version = process.versions.node;
 
-const _die = function(error, paramd) {
+const _die = function (error, paramd) {
     if (!error) {
         return;
     }
@@ -44,7 +44,7 @@ const _die = function(error, paramd) {
     throw error;
 };
 
-const _check = function(paramd, done) {
+const _check = function (paramd, done) {
     if (!semver.satisfies(paramd.version, paramd.satisfies)) {
         return done(new Error("Version not satisfied: need " + paramd.satisfies + " got: " + paramd.version), paramd);
     }

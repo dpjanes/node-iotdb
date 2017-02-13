@@ -222,8 +222,7 @@ Bridge.prototype._validate_configure = function (app) {
  *  EXEMPLAR.
  *  Reset the Bridge to ground state
  */
-Bridge.prototype.reset = function () {
-};
+Bridge.prototype.reset = function () {};
 
 /**
  *  EXEMPLAR

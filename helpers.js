@@ -33,7 +33,7 @@ const local_modules = [
     require('./helpers/id'),
 ];
 local_modules.map(local_module => {
-    _.mapObject(local_module, ( local_value, local_name ) => {
+    _.mapObject(local_module, (local_value, local_name) => {
         _[local_name] = _.d.compose.shallow(local_value, _[local_name]);
     });
 });

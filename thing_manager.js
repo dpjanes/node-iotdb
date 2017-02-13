@@ -67,10 +67,10 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         // const istate = thing.state("istate");
 
         thing.band("istate").update(pulld, {
-            add_timestamp: true,
-            check_timestamp: true,
-            validate: false,
-        })
+                add_timestamp: true,
+                check_timestamp: true,
+                validate: false,
+            })
             .catch(error => {
                 logger.error({
                     error: _.error.message(error),
@@ -84,7 +84,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
 
     const _bridge_to_meta = pulld => {
         const metad = thing.state("meta");
-        metad["iot:thing-id"] = iotdb.make_thing_id(thing); 
+        metad["iot:thing-id"] = iotdb.make_thing_id(thing);
 
         thing.band("meta").update(metad, {
             add_timestamp: false,
@@ -96,17 +96,19 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
         thing.band("connection").set("iot:reachable", bridge.reachable());
     };
 
-    const _on_ostate = ( _t, _b, state ) => {
+    const _on_ostate = (_t, _b, state) => {
         state = _.object(_.pairs(state)
             .filter(p => p[1] !== null)
             .filter(p => !p[0].match(/^@/)));
         if (_.is.Empty(state)) {
             return;
         }
-        
+
         bridge.push(state, () => {
             process.nextTick(() => {
-                thing.update("ostate", {}, { replace: true });
+                thing.update("ostate", {}, {
+                    replace: true
+                });
             });
         });
     };
@@ -125,7 +127,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
     }
 
     const _model_to_meta = () => {
-        const iot_keys = [ "iot:facet", "iot:help", "iot:model-id" ];
+        const iot_keys = ["iot:facet", "iot:help", "iot:model-id"];
 
         const metad = _.object(_.pairs(Object.assign({}, thing.state("model"), thing.state("meta")))
             .filter(kv => iot_keys.indexOf(kv[0]) > -1 || kv[0].match(/^schema:/)))
@@ -153,7 +155,7 @@ const bind_thing_to_bridge = (thing, bridge, binding) => {
             _pull_istate(pulld);
         } else {
             _on_reachable();
-        } 
+        }
     };
 
     thing.on("disconnect", _on_disconnect);
@@ -201,7 +203,7 @@ const make = function (initd) {
 
         self.on("thing", thing => things.add(thing))
 
-        _.mapObject(_thingd, ( thing, thing_id ) => things.add(thing))
+        _.mapObject(_thingd, (thing, thing_id) => things.add(thing))
 
         return things;
     };
@@ -254,7 +256,7 @@ const make = function (initd) {
 
         process.nextTick(() => self.emit("done"));
 
-        return things; 
+        return things;
     };
 
     const _discover_model = function (things, modeld, metad) {
@@ -338,7 +340,7 @@ const make = function (initd) {
         const bandd = _.d.clone.deep(binding.bandd);
         bandd.meta = _.d.compose.shallow(metad, bridge_meta, bandd.meta, {});
 
-        const new_thing = make_thing(bandd); 
+        const new_thing = make_thing(bandd);
         const new_thing_id = new_thing.thing_id();
         new_thing._tid = _tid++;
 
@@ -379,14 +381,14 @@ const make = function (initd) {
      *  before exiting
      */
     self.disconnect = () =>
-        _.flatten([ _bridge_exemplars, _.values(_thingd) ], true)
-            .filter(bort => bort.disconnect)
-            .map(bort => bort.disconnect())
-            .filter(wait => _.is.Number(wait))
-            .reduce(( sum, wait ) => sum + wait, 0);
+        _.flatten([_bridge_exemplars, _.values(_thingd)], true)
+        .filter(bort => bort.disconnect)
+        .map(bort => bort.disconnect())
+        .filter(wait => _.is.Number(wait))
+        .reduce((sum, wait) => sum + wait, 0);
 
     self.reset = () => {
-        _.flatten([ _bridge_exemplars, _.values(_thingd).map(thing => thing.__bridge) ], true)
+        _.flatten([_bridge_exemplars, _.values(_thingd).map(thing => thing.__bridge)], true)
             .filter(bridge => bridge)
             .forEach(bridge => bridge.reset());
 
