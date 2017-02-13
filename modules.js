@@ -68,6 +68,10 @@ const make = () => {
         assert(_.is.String(module_name), "first argument must be a string");
         assert(_.is.Object(module), "second argument must an object or inferred, got: " + typeof module);
 
+        if (module.binding && !module.Bridge) {
+            return _use_binding(module.binding);
+        }
+
         module.module_name = module_name;
 
         _moduled[module_name] = module
@@ -80,6 +84,28 @@ const make = () => {
             module.use();
         }
     };
+
+    /**
+     *  For loading outside of the normal module system
+     *  e.g. use("./model-folder")
+     */
+    const _use_binding = binding => {
+        const module_name = binding.bridge;
+        assert(_.is.String(module_name), "_use_binding: binding.bridge must be a String");
+
+        const old_module = _moduled[module_name];
+        assert(old_module, "_use_binding: binding.module does not refer to an existing module");
+
+        const new_module = _.d.clone.shallow(old_module);
+
+        const new_binding = _.d.clone.shallow(binding);
+        new_binding.bridge = new_module.Bridge;
+        new_binding.__sideload = true;
+
+        new_module.bindings = old_module.bindings.concat(new_binding);
+
+        _moduled[module_name] = new_module
+    }
 
     const _load_master = () => {
         _.mapObject(iotdb.settings().get("modules"), (module_folder, module_name) => {
