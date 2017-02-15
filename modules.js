@@ -69,8 +69,11 @@ const make = () => {
         assert(_.is.Object(module), "second argument must an object or inferred, got: " + typeof module);
 
         if (module.binding && !module.Bridge) {
+            console.log("DEBUG: will _use_binding", module);
+
             return _use_binding(module.binding);
         }
+        console.log("DEBUG: standard module:", _.is.String(module_name) ? module_name : null);
 
         module.module_name = module_name;
 
@@ -102,7 +105,8 @@ const make = () => {
         new_binding.bridge = new_module.Bridge;
         new_binding.__sideload = true;
 
-        new_module.bindings = old_module.bindings.concat(new_binding);
+        new_module.bindings = Object.assign([], old_module.bindings);
+        new_module.bindings.splice(0, 0, new_binding);
 
         _moduled[module_name] = new_module
     }
