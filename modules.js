@@ -105,8 +105,16 @@ const make = () => {
         new_binding.bridge = new_module.Bridge;
         new_binding.__sideload = true;
 
-        new_module.bindings = Object.assign([], old_module.bindings);
+        const new_name  = binding.model["iot:model-id"]
+
+        new_module.bindings = old_module.bindings
+            .filter(binding => binding.model && binding.model["iot:model-id"] !== new_name)
         new_module.bindings.splice(0, 0, new_binding);
+
+        // console.log("HERE:XXX", new_module.bindings)
+        // process.exit()
+        //
+        console.log("MODULE_NAME", module_name);
 
         _moduled[module_name] = new_module
     }
