@@ -40,12 +40,19 @@ let _require = require;
 const make = () => {
     const self = Object.assign({}, events.EventEmitter.prototype);
     const iotdb = require("./iotdb");
+    const settings = iotdb.settings();
 
     events.EventEmitter.call(self);
     self.setMaxListeners(0);
 
     const _moduled = {}
     let _bridges = [];
+
+    /**
+     *  If use_bindings is false, bindings that come with modules
+     *  will _not_ be loaded
+     */
+    const use_bindings = settings.get("use_bindings", true) ? true : false;
 
     /**
      *  Return all the Modules that have been registered
@@ -69,11 +76,14 @@ const make = () => {
         assert(_.is.Object(module), "second argument must an object or inferred, got: " + typeof module);
 
         if (module.binding && !module.Bridge) {
-            console.log("DEBUG: will _use_binding", module);
+            // console.log("DEBUG: will _use_binding", module);
 
             return _use_binding(module.binding);
         }
-        console.log("DEBUG: standard module:", _.is.String(module_name) ? module_name : null);
+
+        if (!use_bindings) {
+            module.bindings = []
+        }
 
         module.module_name = module_name;
 
@@ -105,26 +115,25 @@ const make = () => {
         new_binding.bridge = new_module.Bridge;
         new_binding.__sideload = true;
 
-        const new_name  = binding.model["iot:model-id"]
-
-        new_module.bindings = old_module.bindings
-            .filter(binding => binding.model && binding.model["iot:model-id"] !== new_name)
+        new_module.bindings = Object.assign([], old_module.bindings);
         new_module.bindings.splice(0, 0, new_binding);
 
-        // console.log("HERE:XXX", new_module.bindings)
+        // console.log("HERE:DEBUG", new_module.bindings)
         // process.exit()
-        //
-        console.log("MODULE_NAME", module_name);
 
         _moduled[module_name] = new_module
     }
 
     const _load_master = () => {
-        _.mapObject(iotdb.settings().get("modules"), (module_folder, module_name) => {
+        _.mapObject(settings.get("modules"), (module_folder, module_name) => {
             try {
                 const module = require(module_folder);
                 module.module_name = module_name;
                 module.module_folder = module_folder;
+
+                if (!use_bindings) {
+                    module.bindings = []
+                }
 
                 _moduled[module_name] = module
             } catch (x) {
@@ -204,7 +213,7 @@ const make = () => {
                 .map(_setup_binding)
             ), true)
         .filter(binding => binding.bridge)
-        .filter(binding => iotdb.settings().get("/enabled/modules/" + binding.bridge.module_name, true));
+        .filter(binding => settings.get("/enabled/modules/" + binding.bridge.module_name, true));
 
     const _load_setup = () => _.values(_moduled)
         .filter(module => module.setup)
