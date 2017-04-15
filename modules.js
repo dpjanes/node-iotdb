@@ -52,7 +52,7 @@ const make = () => {
      *  If use_bindings is false, bindings that come with modules
      *  will _not_ be loaded
      */
-    const use_bindings = settings.get("use_bindings", true) ? true : false;
+    const use_bindings = settings.get("/use_bindings/all", true) ? true : false;
 
     /**
      *  Return all the Modules that have been registered
@@ -76,12 +76,12 @@ const make = () => {
         assert(_.is.Object(module), "second argument must an object or inferred, got: " + typeof module);
 
         if (module.binding && !module.Bridge) {
-            // console.log("DEBUG: will _use_binding", module);
-
             return _use_binding(module.binding);
         }
 
         if (!use_bindings) {
+            module.bindings = []
+        } else if (!settings.get("/use_bindings/modules/" + module_name, true)) {
             module.bindings = []
         }
 
@@ -132,6 +132,8 @@ const make = () => {
                 module.module_folder = module_folder;
 
                 if (!use_bindings) {
+                    module.bindings = []
+                } else if (!settings.get("/use_bindings/modules/" + module_name, true)) {
                     module.bindings = []
                 }
 
